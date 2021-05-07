@@ -8,17 +8,16 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.stt.dash.app.security.CurrentUser;
-import com.stt.dash.backend.data.entity.AbstractEntity;
+import com.stt.dash.backend.data.entity.AbstractEntitySequence;
 import com.stt.dash.backend.data.entity.util.EntityUtil;
 import com.stt.dash.backend.service.FilterableCrudService;
 import com.stt.dash.ui.components.SearchBar;
 import com.stt.dash.ui.utils.TemplateUtil;
 import com.stt.dash.ui.views.HasNotifications;
-import elemental.json.Json;
 
 import java.util.function.Consumer;
 
-public abstract class AbstractBakeryCrudView<E extends AbstractEntity> extends Crud<E>
+public abstract class AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         implements HasUrlParameter<Long>, HasNotifications {
 
     private static final String DISCARD_MESSAGE = "There are unsaved modifications to the %s. Discard changes?";

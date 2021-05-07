@@ -2,7 +2,7 @@ package com.stt.dash.ui.crud;
 
 import java.util.List;
 
-import com.stt.dash.backend.data.entity.AbstractEntity;
+import com.stt.dash.backend.data.entity.AbstractEntitySequence;
 import com.stt.dash.backend.service.FilterableCrudService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +12,7 @@ import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.provider.QuerySortOrderBuilder;
 
-public class CrudEntityDataProvider<T extends AbstractEntity> extends FilterablePageableDataProvider<T, String> {
+public class CrudEntityDataProvider<T extends AbstractEntitySequence> extends FilterablePageableDataProvider<T, String> {
 
 	private final FilterableCrudService<T> crudService;
 	private List<QuerySortOrder> defaultSortOrders;

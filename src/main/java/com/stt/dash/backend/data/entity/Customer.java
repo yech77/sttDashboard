@@ -7,7 +7,7 @@ import javax.validation.constraints.Size;
 
 
 @Entity
-public class Customer extends AbstractEntity {
+public class Customer extends AbstractEntitySequence {
 
 	@NotBlank
 	@Size(max = 255)

@@ -38,7 +38,7 @@ import com.stt.dash.backend.data.OrderState;
 		@NamedAttributeNode("history")
 })})
 @Table(indexes = @Index(columnList = "dueDate"))
-public class Order extends AbstractEntity implements OrderSummary {
+public class Order extends AbstractEntitySequence implements OrderSummary {
 
 	public static final String ENTITY_GRAPTH_BRIEF = "Order.brief";
 	public static final String ENTITY_GRAPTH_FULL = "Order.full";

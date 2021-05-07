@@ -2,7 +2,7 @@ package com.stt.dash.ui.crud;
 
 import com.stt.dash.app.HasLogger;
 import com.stt.dash.app.security.CurrentUser;
-import com.stt.dash.backend.data.entity.AbstractEntity;
+import com.stt.dash.backend.data.entity.AbstractEntitySequence;
 import com.stt.dash.backend.service.CrudService;
 import com.stt.dash.backend.service.UserFriendlyDataException;
 import com.stt.dash.ui.utils.messages.CrudErrorMessage;
@@ -14,7 +14,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.validation.ConstraintViolationException;
 import java.util.function.Consumer;
 
-public class CrudEntityPresenter<E extends AbstractEntity>	implements HasLogger {
+public class CrudEntityPresenter<E extends AbstractEntitySequence>	implements HasLogger {
 
 	private final CrudService<E> crudService;
 
