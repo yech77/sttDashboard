@@ -15,6 +15,8 @@ public interface OUserRepository extends JpaRepository<OUser, Long> {
 
 	OUser findByUserName(String userName);
 
+	Page<OUser> findBy(Pageable pageable);
+
 	List<OUser> findByUserParent(OUser userParent);
 
 	@Query("select u from OUser u " +
@@ -24,4 +26,11 @@ public interface OUserRepository extends JpaRepository<OUser, Long> {
 	List<OUser> findByUserEmailIn(List<String> userEmails);
 
 	List<OUser> findAllByUserParentNotNull();
+
+
+	Page<OUser> findByUserEmailLikeIgnoreCaseOrUserNameLikeIgnoreCaseOrUserLastnameLikeIgnoreCase(
+			String emailLike, String firstNameLike, String lastNameLike, Pageable pageable);
+
+	long countByUserEmailLikeIgnoreCaseOrUserNameLikeIgnoreCaseOrUserLastnameLikeIgnoreCase(
+			String emailLike, String firstNameLike, String lastNameLike);
 }

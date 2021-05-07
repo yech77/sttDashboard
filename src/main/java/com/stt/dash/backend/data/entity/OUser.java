@@ -240,6 +240,22 @@ public class OUser extends AbstractEntitySequence {
         this.createdDate = createdDate;
     }
 
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
