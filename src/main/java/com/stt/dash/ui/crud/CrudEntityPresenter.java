@@ -75,6 +75,7 @@ public class CrudEntityPresenter<E extends AbstractEntitySequence>	implements Ha
 	}
 
 	public boolean loadEntity(Long id, Consumer<E> onSuccess) {
+		System.out.println("ID ******************** " + id);
 		return executeOperation(() -> onSuccess.accept(crudService.load(id)));
 	}
 }
