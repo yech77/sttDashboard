@@ -17,7 +17,8 @@ import com.stt.dash.ui.views.HasNotifications;
 
 import java.util.function.Consumer;
 
-public abstract class AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
+public abstract class
+AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         implements HasUrlParameter<Long>, HasNotifications {
 
     private static final String DISCARD_MESSAGE = "There are unsaved modifications to the %s. Discard changes?";

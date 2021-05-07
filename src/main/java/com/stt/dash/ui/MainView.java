@@ -7,6 +7,7 @@ import static com.stt.dash.ui.utils.BakeryConst.TITLE_STOREFRONT;
 import static com.stt.dash.ui.utils.BakeryConst.TITLE_USERS;
 import static com.stt.dash.ui.utils.BakeryConst.VIEWPORT;
 
+import com.stt.dash.ui.views.admin.products.ORolesView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -104,6 +105,9 @@ public class MainView extends AppLayout {
 		tabs.add(createTab(VaadinIcon.CLOCK,TITLE_DASHBOARD, DashboardView.class));
 		if (SecurityUtils.isAccessGranted(UsersView.class)) {
 			tabs.add(createTab(VaadinIcon.USER,TITLE_USERS, UsersView.class));
+		}
+		if (SecurityUtils.isAccessGranted(ORolesView.class)) {
+			tabs.add(createTab(VaadinIcon.USER,"ORoles", ORolesView.class));
 		}
 		if (SecurityUtils.isAccessGranted(ProductsView.class)) {
 			tabs.add(createTab(VaadinIcon.CALENDAR, TITLE_PRODUCTS, ProductsView.class));
