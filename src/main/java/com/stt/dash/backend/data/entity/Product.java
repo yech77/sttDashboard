@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Entity
-public class Product extends AbstractEntity {
+public class Product extends AbstractEntitySequence {
 
 	@NotBlank(message = "{bakery.name.required}")
 	@Size(max = 255)

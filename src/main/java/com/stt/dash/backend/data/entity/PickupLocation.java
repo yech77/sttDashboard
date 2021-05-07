@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Entity
-public class PickupLocation extends AbstractEntity {
+public class PickupLocation extends AbstractEntitySequence {
 
 	@Size(max = 255)
 	@NotBlank

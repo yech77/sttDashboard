@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Entity(name="UserInfo")
-public class User extends AbstractEntity {
+public class User extends AbstractEntitySequence {
 
 	@NotEmpty
 	@Email

@@ -4,10 +4,10 @@ import javax.persistence.EntityNotFoundException;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.stt.dash.backend.data.entity.AbstractEntity;
+import com.stt.dash.backend.data.entity.AbstractEntitySequence;
 import com.stt.dash.backend.data.entity.User;
 
-public interface CrudService<T extends AbstractEntity> {
+public interface CrudService<T extends AbstractEntitySequence> {
 
 	JpaRepository<T, Long> getRepository();
 

@@ -1,13 +1,15 @@
 package com.stt.dash.backend.data.entity;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.persistence.*;
+
 @MappedSuperclass
-public abstract class AbstractEntity implements Serializable {
+public abstract class AbstractEntitySequence implements Serializable {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
 
 	@Version
@@ -34,7 +36,7 @@ public abstract class AbstractEntity implements Serializable {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		AbstractEntity that = (AbstractEntity) o;
+		AbstractEntitySequence that = (AbstractEntitySequence) o;
 		return version == that.version &&
 				Objects.equals(id, that.id);
 	}

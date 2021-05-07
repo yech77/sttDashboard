@@ -12,7 +12,7 @@ import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.shared.Registration;
 import com.stt.dash.app.HasLogger;
 import com.stt.dash.app.security.CurrentUser;
-import com.stt.dash.backend.data.entity.AbstractEntity;
+import com.stt.dash.backend.data.entity.AbstractEntitySequence;
 import com.stt.dash.backend.data.entity.util.EntityUtil;
 import com.stt.dash.backend.service.CrudService;
 import com.stt.dash.backend.service.UserFriendlyDataException;
@@ -20,7 +20,7 @@ import com.stt.dash.ui.utils.messages.CrudErrorMessage;
 import com.stt.dash.ui.utils.messages.Message;
 import com.stt.dash.ui.views.EntityView;
 
-public class EntityPresenter<T extends AbstractEntity, V extends EntityView<T>>
+public class EntityPresenter<T extends AbstractEntitySequence, V extends EntityView<T>>
 	implements HasLogger {
 
 	private CrudService<T> crudService;
@@ -192,7 +192,7 @@ public class EntityPresenter<T extends AbstractEntity, V extends EntityView<T>>
 /**
  * Holds variables that change.
  */
-class EntityPresenterState<T extends AbstractEntity> {
+class EntityPresenterState<T extends AbstractEntitySequence> {
 
 	private T entity;
 	private String entityName;

@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 import com.stt.dash.backend.data.OrderState;
 
 @Entity
-public class HistoryItem extends AbstractEntity {
+public class HistoryItem extends AbstractEntitySequence {
 
 	private OrderState newState;
 
