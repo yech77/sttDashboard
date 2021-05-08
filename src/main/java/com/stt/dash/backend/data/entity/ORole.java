@@ -1,6 +1,7 @@
 package com.stt.dash.backend.data.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.util.Set;
 
 @Entity
@@ -13,9 +14,13 @@ public class ORole extends AbstractEntitySequence {
             inverseJoinColumns = @JoinColumn(name = "oauthority_id"))
     private Set<OAuthority> Authorities;
 
-//    @ManyToMany(mappedBy = "roles")
+    //    @ManyToMany(mappedBy = "roles")
 //    private Set<OUser> users;
-
+    @NotNull
+    @NotBlank
+    @NotEmpty
+    @Size(min=2, max = 10)
+    @Column(unique = true)
     private String rolName;
 
     public Set<OAuthority> getAuthorities() {

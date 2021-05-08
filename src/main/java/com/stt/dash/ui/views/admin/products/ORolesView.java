@@ -15,6 +15,7 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,10 +74,11 @@ public class ORolesView extends AbstractBakeryCrudView<ORole> {
         Authorities.setItemLabelGenerator(OAuthority::getAuthName);
         FormLayout form = new FormLayout(roleName, Authorities);
 
-        BeanValidationBinder<ORole> binder = new BeanValidationBinder<>(ORole.class);
+        Binder<ORole> binder = new BeanValidationBinder<>(ORole.class);
 
         binder.forField(roleName)
                 .bind(ORole::getRolName, ORole::setRolName);
+//        binder.bind(roleName, "rolName");
         binder.forField(Authorities)
                 .bind(ORole::getAuthorities, ORole::setAuthorities);
 //		binder.forField(price).withConverter(new PriceConverter()).bind("price");
