@@ -223,6 +223,12 @@
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin.gatanaso</groupId>
+            <artifactId>multiselect-combo-box-flow</artifactId>
+            <version>3.0.2</version>
+            <type>jar</type>
+        </dependency>
         <!-- Compile scope is needed to run on WildFly -->
 <!--        <dependency>-->
         <!--            <groupId>org.reactivestreams</groupId>-->
