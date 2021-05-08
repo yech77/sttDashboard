@@ -12,27 +12,34 @@ import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
 
+import com.stt.dash.backend.data.entity.*;
+import com.stt.dash.backend.repositories.*;
+import org.apache.http.auth.AUTH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.stt.dash.backend.data.OrderState;
 import com.stt.dash.backend.data.Role;
-import com.stt.dash.backend.data.entity.Customer;
-import com.stt.dash.backend.data.entity.HistoryItem;
-import com.stt.dash.backend.data.entity.Order;
-import com.stt.dash.backend.data.entity.OrderItem;
-import com.stt.dash.backend.data.entity.PickupLocation;
-import com.stt.dash.backend.data.entity.Product;
-import com.stt.dash.backend.data.entity.User;
-import com.stt.dash.backend.repositories.OrderRepository;
-import com.stt.dash.backend.repositories.PickupLocationRepository;
-import com.stt.dash.backend.repositories.ProductRepository;
-import com.stt.dash.backend.repositories.UserRepository;
 
 @SpringComponent
 public class DataGenerator implements HasLogger {
 
+	public enum AUTH {
+		CREATE_USER_IS, CREATE_USER_HAS, CREATE_USER_BY,
+		SCREEN_CLIENTS, SCREEN_USER,
+		FILE_DOWNLOAD_SMS, FILE_UPLOAD,
+		UI_ROL,
+		UI_USER,
+		UI_AUDIT,
+		UI_TRAFFIC_SMS,
+		UI_SEARCH_SMS,
+		UI_AGENDA_SMS,
+		UI_PROGRAM_SMS,
+		UI_EVOLUTION_CARRIER,
+		UI_EVOLUTION_CLIENT,
+		UI_EVOLUTION_SYSTEMID
+	}
 	private static final String[] FILLING = new String[] { "Strawberry", "Chocolate", "Blueberry", "Raspberry",
 			"Vanilla" };
 	private static final String[] TYPE = new String[] { "Cake", "Pastry", "Tart", "Muffin", "Biscuit", "Bread", "Bagel",
@@ -52,20 +59,70 @@ public class DataGenerator implements HasLogger {
 	private ProductRepository productRepository;
 	private PickupLocationRepository pickupLocationRepository;
 	private PasswordEncoder passwordEncoder;
-
+	private final OAuthorityRepository oauth_repo;
 	@Autowired
 	public DataGenerator(OrderRepository orderRepository, UserRepository userRepository,
-			ProductRepository productRepository, PickupLocationRepository pickupLocationRepository,
-			PasswordEncoder passwordEncoder) {
+						 ProductRepository productRepository, PickupLocationRepository pickupLocationRepository,
+						 PasswordEncoder passwordEncoder, OAuthorityRepository oauth_repo) {
 		this.orderRepository = orderRepository;
 		this.userRepository = userRepository;
 		this.productRepository = productRepository;
 		this.pickupLocationRepository = pickupLocationRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.oauth_repo = oauth_repo;
 	}
 
 	@PostConstruct
 	public void loadData() {
+		/**/
+
+		OAuthority oauth = new OAuthority();
+		/* UI */
+		oauth = new OAuthority();
+		oauth.setAuthName(AUTH.UI_AUDIT.name());
+		oauth.setAuthDesc("Permite ver la Pantalla AUDITEVEN");
+		oauth_repo.save(oauth);
+
+		oauth = new OAuthority();
+		oauth.setAuthName(AUTH.UI_ROL.name());
+		oauth.setAuthDesc("Permite ver la Pantalla ROL");
+		oauth_repo.save(oauth);
+
+		oauth = new OAuthority();
+		oauth.setAuthName(AUTH.UI_USER.name());
+		oauth.setAuthDesc("Permite ver la Pantalla USER");
+		oauth_repo.save(oauth);
+		oauth = new OAuthority();
+		oauth.setAuthName(AUTH.UI_EVOLUTION_CARRIER.name());
+		oauth.setAuthDesc("Permite ver la Pantalla AUDITEVEN");
+		oauth_repo.save(oauth);
+
+		oauth = new OAuthority();
+		oauth.setAuthName(AUTH.UI_EVOLUTION_CLIENT.name());
+		oauth.setAuthDesc("Permite ver la Pantalla ROL");
+		oauth_repo.save(oauth);
+
+		oauth = new OAuthority();
+		oauth.setAuthName(AUTH.UI_EVOLUTION_SYSTEMID.name());
+		oauth.setAuthDesc("Permite ver la Pantalla USER");
+		oauth_repo.save(oauth);
+		oauth = new OAuthority();
+		oauth.setAuthName(AUTH.UI_SEARCH_SMS.name());
+		oauth.setAuthDesc("Permite ver la Pantalla USER");
+		oauth_repo.save(oauth);
+		oauth = new OAuthority();
+		oauth.setAuthName(AUTH.UI_TRAFFIC_SMS.name());
+		oauth.setAuthDesc("Permite ver la Pantalla TRAFICO");
+		oauth_repo.save(oauth);
+		oauth = new OAuthority();
+		oauth.setAuthName(AUTH.UI_AGENDA_SMS.name());
+		oauth.setAuthDesc("Permite ver la Pantalla AGENDA");
+		oauth_repo.save(oauth);
+		oauth = new OAuthority();
+		oauth.setAuthName(AUTH.UI_PROGRAM_SMS.name());
+		oauth.setAuthDesc("Permite ver la Pantalla MANEJO DE RECADOS");
+		oauth_repo.save(oauth);
+		/**/
 		if (userRepository.count() != 0L) {
 			getLogger().info("Using existing database");
 			return;
