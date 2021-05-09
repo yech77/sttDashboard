@@ -3,6 +3,7 @@ package com.stt.dash.ui.views.dashboard.main;
 import com.stt.dash.backend.data.DashboardData;
 import com.stt.dash.backend.data.DeliveryStats;
 import com.stt.dash.backend.data.SmsByYearMonthDay;
+import com.stt.dash.backend.data.SmsByYearMonthDayHour;
 import com.stt.dash.backend.data.entity.Order;
 import com.stt.dash.backend.data.entity.OrderSummary;
 import com.stt.dash.backend.data.entity.Product;
@@ -52,7 +53,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
     private static final String[] MONTH_LABELS = new String[]{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
             "Aug", "Sep", "Oct", "Nov", "Dec"};
 
-    private static final String[] militaryHours = new String[]{"0:00", "1:00", "2:00", "3:00", "4:00", "5:00", "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"};
+    private static final String[] MILITARY_HOURS = new String[]{"0:00", "1:00", "2:00", "3:00", "4:00", "5:00", "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"};
 
     private final OrderService orderService;
     private final SmsHourService smsHourService;
@@ -198,9 +199,25 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         Configuration yearConf = deliveriesThisYearChart.getConfiguration();
         configureColumnChart(yearConf);
 
-        yearConf.setTitle("Mennsajes del dia: " + today.getDayOfMonth());
-        yearConf.getxAxis().setCategories(MONTH_LABELS);
-        yearConf.addSeries(new ListSeries("per Month", data.getDeliveriesThisYear()));
+        yearConf.setTitle("Mensajes del dia: " + today.getDayOfMonth());
+        yearConf.getxAxis().setCategories(MILITARY_HOURS);
+        List<SmsByYearMonthDayHour> smsByHour = smsHourService.getGroupSmsByYearMonthDayHourMessageType(2021, 5, 9, Arrays.asList("C0001", "C000102"));
+
+        List<Number> mtHour = fillHouList(smsByHour, "MT");
+        List<Number> moHour = fillHouList(smsByHour, "MO");
+        /**/
+
+        ListSeries mtHourListSeries = new ListSeries("MT");
+        ListSeries moHourListSeries = new ListSeries("MO");
+        mtHourListSeries.setData(mtHour);
+        moHourListSeries.setData(moHour);
+//        yearConf.addSeries(new ListSeries("per Month", data.getDeliveriesThisYear()));
+        Tooltip tooltip = new Tooltip();
+        tooltip.setValueDecimals(0);
+//        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">Día: {point.x}</span><br/>");
+        tooltip.setShared(true);
+        yearConf.setSeries(mtHourListSeries, moHourListSeries);
+        yearConf.setTooltip(tooltip);
         /**/
         // init the 'Deliveries in [this month]' chart
         Configuration monthConf = deliveriesThisMonthChart.getConfiguration();
@@ -225,12 +242,12 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         ListSeries moListSeries = new ListSeries("MO");
         mtListSeries.setData(mt);
         moListSeries.setData(mo);
-        Tooltip tooltip = new Tooltip();
-        tooltip.setValueDecimals(0);
+        Tooltip tooltip2 = new Tooltip();
+        tooltip2.setValueDecimals(0);
 //        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">Día: {point.x}</span><br/>");
-        tooltip.setShared(true);
+        tooltip2.setShared(true);
         monthConf.setSeries(mtListSeries, moListSeries);
-        monthConf.setTooltip(tooltip);
+        monthConf.setTooltip(tooltip2);
     }
 
     private void configureColumnChart(Configuration conf) {
@@ -272,15 +289,15 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
      * @return una sublista desde 0 hasta le dia actual.
      */
     private List<Number> fillDays(final List<SmsByYearMonthDay> dailyList, String type) {
-        List<Number> numberList = new ArrayList<>(9 + dailyList.size());
+        List<Number> numberList = new ArrayList<>(31 + dailyList.size());
         /* Llenar e iniciaizar los dias hasta hoy en cero. */
-        for (int fakeDay = 0; fakeDay < 9; fakeDay++) {
+        for (int fakeDay = 0; fakeDay < 31; fakeDay++) {
             numberList.add(0l);
         }
         /* Sustituir en la lista los dias con valores. Solos los tipo 'type' */
         for (SmsByYearMonthDay smsByYearMonthDay : dailyList) {
             /*Valida que no mostrara data mayor al dia de hoy.*/
-            if (smsByYearMonthDay.getDaySms() > 9) {
+            if (smsByYearMonthDay.getDaySms() > 31) {
                 continue;
             }
             if (type.equals(smsByYearMonthDay.getSomeCode())) {
@@ -289,8 +306,35 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
             }
         }
         /* Limitar hasta el dia de hoy. */
-        numberList = numberList.subList(0, 9);
+        numberList = numberList.subList(0, 31);
 //        log.info("{} Day List of {} day[{}-{}]", getStringLog(), type, 1, actual_day);
+        return numberList;
+    }
+
+    /**
+     * Crea una Lista con valor 0, con los dias que no tienen data.
+     *
+     * @param HourList
+     * @param type
+     * @return
+     */
+    private List<Number> fillHouList(final List<SmsByYearMonthDayHour> HourList, String type) {
+        List<Number> numberList = new ArrayList<>(23 + 1);
+        /* Llenar e iniciaizar los dias hasta hoy en cero. */
+        for (int fakeDay = 0; fakeDay < 23 + 1; fakeDay++) {
+//            log.info("{} FakeHour {}-{}", getStringLog(), fakeDay, actual_hour);
+            numberList.add(0l);
+        }
+        /**/
+        for (SmsByYearMonthDayHour smsByYearMonthDayHour : HourList) {
+            if (type.equals(smsByYearMonthDayHour.getSomeCode())) {
+//                log.info("{} Setting {}", getStringLog(), smsByYearMonthDayHour.getHourSms());
+                numberList.add(smsByYearMonthDayHour.getHourSms(), smsByYearMonthDayHour.getTotal());
+            }
+        }
+//        log.info("{} Hour List of {}-{}", getStringLog(), type, numberList);
+        numberList = numberList.subList(0, 23 + 1);
+//        log.info("{} Hour Sub List of {}-{}", getStringLog(), type, numberList);
         return numberList;
     }
 }
