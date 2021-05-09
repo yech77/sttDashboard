@@ -1,13 +1,7 @@
 package com.stt.dash.ui;
 
-import static com.stt.dash.ui.utils.BakeryConst.TITLE_DASHBOARD;
-import static com.stt.dash.ui.utils.BakeryConst.TITLE_LOGOUT;
-import static com.stt.dash.ui.utils.BakeryConst.TITLE_PRODUCTS;
-import static com.stt.dash.ui.utils.BakeryConst.TITLE_STOREFRONT;
-import static com.stt.dash.ui.utils.BakeryConst.TITLE_USERS;
-import static com.stt.dash.ui.utils.BakeryConst.VIEWPORT;
-
 import com.stt.dash.ui.views.admin.products.ORolesView;
+import com.stt.dash.ui.views.dashboard.main.MainDashboardView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -34,6 +28,8 @@ import com.stt.dash.ui.views.storefront.StorefrontView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.stt.dash.ui.utils.BakeryConst.*;
 
 @Viewport(VIEWPORT)
 @PWA(name = "Bakery App Starter", shortName = "Orinoco Dash",
@@ -103,11 +99,15 @@ public class MainView extends AppLayout {
 		tabs.add(createTab(VaadinIcon.EDIT, TITLE_STOREFRONT,
 						StorefrontView.class));
 		tabs.add(createTab(VaadinIcon.CLOCK,TITLE_DASHBOARD, DashboardView.class));
-		if (SecurityUtils.isAccessGranted(UsersView.class)) {
-			tabs.add(createTab(VaadinIcon.USER,TITLE_USERS, UsersView.class));
-		}
+
 		if (SecurityUtils.isAccessGranted(ORolesView.class)) {
 			tabs.add(createTab(VaadinIcon.USER,"ORoles", ORolesView.class));
+		}
+		if (SecurityUtils.isAccessGranted(ORolesView.class)) {
+			tabs.add(createTab(VaadinIcon.USER,TITLE_DASHBOARD_MAIN, MainDashboardView.class));
+		}
+		if (SecurityUtils.isAccessGranted(UsersView.class)) {
+			tabs.add(createTab(VaadinIcon.USER,TITLE_USERS, UsersView.class));
 		}
 		if (SecurityUtils.isAccessGranted(ProductsView.class)) {
 			tabs.add(createTab(VaadinIcon.CALENDAR, TITLE_PRODUCTS, ProductsView.class));
