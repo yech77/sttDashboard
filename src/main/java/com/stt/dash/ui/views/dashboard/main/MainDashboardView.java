@@ -268,10 +268,10 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         conf.getChart().setType(ChartType.AREASPLINE);
         conf.getChart().setBorderRadius(4);
 
-        conf.setTitle("Sales last years");
+        conf.setTitle("SMS Últimos Tres Meses");
 
         conf.getxAxis().setVisible(false);
-        conf.getxAxis().setCategories(MONTH_LABELS);
+        conf.getxAxis().setCategories("Marzo", "Abril", "Mayo");
 
         conf.getyAxis().getTitle().setText(null);
 
