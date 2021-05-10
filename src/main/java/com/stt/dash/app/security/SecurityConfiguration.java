@@ -1,5 +1,6 @@
 package com.stt.dash.app.security;
 
+import com.stt.dash.app.DataGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -98,7 +99,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
 
 				// Allow all requests by logged in users.
-				.anyRequest().hasAnyAuthority(Role.getAllRoles())
+				.anyRequest().hasAnyAuthority(DataGenerator.AUTH.CREATE_USER_BY.getAllAuth())
+//				.anyRequest().hasAnyAuthority(Role.getAllRoles())
 
 				// Configure the login page.
 				.and().formLogin().loginPage(LOGIN_URL).permitAll().loginProcessingUrl(LOGIN_PROCESSING_URL)

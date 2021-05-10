@@ -19,8 +19,8 @@ public class ORole extends AbstractEntitySequence {
     @NotNull
     @NotBlank
     @NotEmpty
-    @Size(min=2, max = 10)
-    @Column(unique = true)
+    @Size(min=2, max = 150)
+    @Column(length = 150, unique = true)
     private String rolName;
 
     public Set<OAuthority> getAuthorities() {

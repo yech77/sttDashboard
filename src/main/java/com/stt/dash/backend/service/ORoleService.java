@@ -67,7 +67,7 @@ public class ORoleService implements FilterableCrudService<ORole>{
     }
 
     public List<ORole> findAll(String filterText) {
-        if (filterText.length() < 1) {
+        if (filterText==null || filterText.length() < 1) {
             return role_repo.findAll();
         }
         return role_repo.searchAll(filterText);
