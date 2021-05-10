@@ -20,7 +20,7 @@ public class DashboardUtils {
 
 	public static OrdersCountDataWithChart getTodaysOrdersCountData(DeliveryStats deliveryStats,
 			Iterator<OrderSummary> ordersIterator) {
-		OrdersCountDataWithChart ordersCountData = new OrdersCountDataWithChart("Remaining Today", null,
+		OrdersCountDataWithChart ordersCountData = new OrdersCountDataWithChart("Mensajes Enviados", null,
 				deliveryStats.getDueToday() - deliveryStats.getDeliveredToday(), deliveryStats.getDueToday());
 
 		LocalDate date = LocalDate.now();
@@ -58,7 +58,7 @@ public class DashboardUtils {
 
 	public static OrdersCountData getTomorrowOrdersCountData(DeliveryStats deliveryStats,
 			Iterator<OrderSummary> ordersIterator) {
-		OrdersCountData ordersCountData = new OrdersCountData("Tomorrow", null, deliveryStats.getDueTomorrow());
+		OrdersCountData ordersCountData = new OrdersCountData("TOTAL", null, deliveryStats.getDueTomorrow());
 
 		LocalDate date = LocalDate.now().plusDays(1);
 		LocalTime minTime = LocalTime.MAX;
@@ -86,7 +86,7 @@ public class DashboardUtils {
 	}
 
 	public static OrdersCountData getNewOrdersCountData(DeliveryStats deliveryStats, Order lastOrder) {
-		return new OrdersCountData("New", createSubtitle(lastOrder), deliveryStats.getNewOrders());
+		return new OrdersCountData("MO", createSubtitle(lastOrder), deliveryStats.getNewOrders());
 	}
 
 	private static final String NEW_ORDERS_COUNT_SUBTITLE_PATTERN = "Last %d%s ago";

@@ -1,9 +1,6 @@
 package com.stt.dash.ui.views.dashboard.main;
 
-import com.stt.dash.backend.data.DashboardData;
-import com.stt.dash.backend.data.DeliveryStats;
-import com.stt.dash.backend.data.SmsByYearMonthDay;
-import com.stt.dash.backend.data.SmsByYearMonthDayHour;
+import com.stt.dash.backend.data.*;
 import com.stt.dash.backend.data.entity.Order;
 import com.stt.dash.backend.data.entity.OrderSummary;
 import com.stt.dash.backend.data.entity.Product;
@@ -17,6 +14,7 @@ import com.stt.dash.ui.views.dashboard.DashboardCounterLabel;
 import com.stt.dash.ui.views.dashboard.DashboardUtils;
 import com.stt.dash.ui.views.dashboard.DataSeriesItemWithRadius;
 import com.stt.dash.ui.views.storefront.OrderCard;
+import com.stt.dash.ui.views.storefront.beans.OrdersCountData;
 import com.stt.dash.ui.views.storefront.beans.OrdersCountDataWithChart;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Tag;
@@ -34,12 +32,10 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.MonthDay;
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -60,9 +56,9 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
 
     @Id("todayCount")
     private DashboardCounterLabel todayCount;
-
-    @Id("notAvailableCount")
-    private DashboardCounterLabel notAvailableCount;
+//
+//    @Id("notAvailableCount")
+//    private DashboardCounterLabel notAvailableCount;
 
     @Id("newCount")
     private DashboardCounterLabel newCount;
@@ -154,7 +150,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
                 .getTodaysOrdersCountData(deliveryStats, orders.iterator());
         todayCount.setOrdersCountData(todaysOrdersCountData);
         initTodayCountSolidgaugeChart(todaysOrdersCountData);
-        notAvailableCount.setOrdersCountData(DashboardUtils.getNotAvailableOrdersCountData(deliveryStats));
+//        notAvailableCount.setOrdersCountData(DashboardUtils.getNotAvailableOrdersCountData(deliveryStats));
         Order lastOrder = orderService.load(orders.get(orders.size() - 1).getId());
         newCount.setOrdersCountData(DashboardUtils.getNewOrdersCountData(deliveryStats, lastOrder));
         tomorrowCount.setOrdersCountData(DashboardUtils.getTomorrowOrdersCountData(deliveryStats, orders.iterator()));
@@ -168,7 +164,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         configuration.getTooltip().setEnabled(false);
 
         configuration.getyAxis().setMin(0);
-        configuration.getyAxis().setMax(data.getOverall());
+        configuration.getyAxis().setMax(1);
         configuration.getyAxis().getLabels().setEnabled(false);
 
         PlotOptionsSolidgauge opt = new PlotOptionsSolidgauge();
@@ -176,7 +172,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         configuration.setPlotOptions(opt);
 
         DataSeriesItemWithRadius point = new DataSeriesItemWithRadius();
-        point.setY(data.getCount());
+        point.setY(1);
         point.setInnerRadius("100%");
         point.setRadius("110%");
         configuration.setSeries(new DataSeries(point));
@@ -271,14 +267,49 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         conf.setTitle("SMS Últimos Tres Meses");
 
         conf.getxAxis().setVisible(false);
-        conf.getxAxis().setCategories("Marzo", "Abril", "Mayo");
+        String [] ml = new String[]{"Marzo", "Abril", "Mayo"};
+        conf.getxAxis().setCategories(ml);
 
         conf.getyAxis().getTitle().setText(null);
 
-        int year = Year.now().getValue();
-        for (int i = 0; i < 3; i++) {
-            conf.addSeries(new ListSeries(Integer.toString(year - i), data.getSalesPerMonth(i)));
+        List<SmsByYearMonth> l = smsHourService.getGroupCarrierByYeMoWhMoIn(2021, monthsIn(2), Arrays.asList("C0001", "C000102"));
+        List<Integer> mList = monthsIn(2);
+        for (Integer integer : mList) {
+            boolean thisHasIt = false;
+            for (SmsByYearMonth smsByYearMonth : l) {
+                /* Si tengo el Month me salgo del ciclo. */
+                if (smsByYearMonth.getGroupBy() == integer) {
+                    thisHasIt = true;
+                    break;
+                }
+            }
+            /* Agregar el mes faltante a la respuesta. */
+            if (!thisHasIt) {
+//                log.info("TRIMESTRE COLUMN DATA - ADDING MONTH({}) WITH 0 ", integer);
+                SmsByYearMonth o = new SmsByYearMonth(0, 2021, integer, "N/A");
+                l.add(o);
+            }
         }
+        /* Ordenar la lista por YearMonth */
+        Map<String, SmsByYearMonth> forTriOrderedMap = new HashMap<>();
+        l.forEach(smsByYearMonth -> {
+            forTriOrderedMap.put(smsByYearMonth.forKey(), smsByYearMonth);
+        });
+        SortedSet<String> trikeys = new TreeSet<>(forTriOrderedMap.keySet());
+//        log.info("TRIMESTRE COLUMN DATA - BEFORE CLEARING {}", l);
+        l.clear();
+        trikeys.forEach(key -> {
+            l.add(forTriOrderedMap.get(key));
+        });
+        System.out.println("TRIMESTRE COLUMN DATA - FILLED AND ORDERED: "+ l);
+        for (int i = 0; i < 3; i++) {
+            conf.addSeries(new ListSeries(ml[i], data.getSalesPerMonth(i)));
+        }
+        /**/
+//        int year = Year.now().getValue();
+//        for (int i = 0; i < 3; i++) {
+//            conf.addSeries(new ListSeries(Integer.toString(year - i), data.getSalesPerMonth(i)));
+//        }
     }
 
     /**
@@ -337,4 +368,19 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
 //        log.info("{} Hour Sub List of {}-{}", getStringLog(), type, numberList);
         return numberList;
     }
+    /**
+     * Devuelve un listado de los meses atras, segun monthback.
+     *
+     * @param monthback
+     * @return
+     */
+    private List<Integer> monthsIn(int monthback) {
+        List<Integer> lm = new ArrayList<>(monthback);
+        for (int i = monthback; i > 0; i--) {
+            lm.add(LocalDate.now().getMonth().minus(i).getValue());
+        }
+        lm.add(LocalDate.now().getMonth().getValue());
+        return lm;
+    }
+
 }
