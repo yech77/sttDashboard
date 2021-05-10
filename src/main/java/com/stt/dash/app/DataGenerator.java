@@ -13,10 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Supplier;
 
 @SpringComponent
@@ -35,7 +32,21 @@ public class DataGenerator implements HasLogger {
         UI_PROGRAM_SMS,
         UI_EVOLUTION_CARRIER,
         UI_EVOLUTION_CLIENT,
-        UI_EVOLUTION_SYSTEMID
+        UI_EVOLUTION_SYSTEMID;
+        public String [] getAllAuth(){
+            String [] s = new String[AUTH.values().length];
+            for(int i=0; i<AUTH.values().length; i++){
+                s[i]= AUTH.values()[i].name();
+            }
+            return s;
+        };
+    }
+
+
+    public enum ROL {
+        AUDITORIA, ROLES, USUARIOS, TRAFICO_SMS, BUSQUEDA_SMS,
+        AGENDAR_SMS, PROGRAMAR_SMS, EVOLUCION_CLIENTE, EVOLUCION_OPERADORA,
+        EVOLUCION_PASAPORTES
     }
 
     private static final String[] FILLING = new String[]{"Strawberry", "Chocolate", "Blueberry", "Raspberry",
@@ -53,22 +64,29 @@ public class DataGenerator implements HasLogger {
     private final Random random = new Random(1L);
 
     private OrderRepository orderRepository;
-    private UserRepository userRepository;
+    private UserRepository ouser_repo;
     private ProductRepository productRepository;
     private PickupLocationRepository pickupLocationRepository;
     private PasswordEncoder passwordEncoder;
     private OAuthorityRepository oauth_repo;
+    private ORoleRepository orole_repo;
+    private ClientRepository client_repo;
 
     @Autowired
-    public DataGenerator(OrderRepository orderRepository, UserRepository userRepository,
+    public DataGenerator(OrderRepository orderRepository, UserRepository ouser_repo,
                          ProductRepository productRepository, PickupLocationRepository pickupLocationRepository,
-                         PasswordEncoder passwordEncoder, @Autowired OAuthorityRepository oauth_repo) {
+                         PasswordEncoder passwordEncoder,
+                         OAuthorityRepository oauth_repo,
+                         ORoleRepository orole_repo,
+                         ClientRepository client_repo) {
         this.orderRepository = orderRepository;
-        this.userRepository = userRepository;
+        this.ouser_repo = ouser_repo;
         this.productRepository = productRepository;
         this.pickupLocationRepository = pickupLocationRepository;
         this.passwordEncoder = passwordEncoder;
         this.oauth_repo = oauth_repo;
+        this.orole_repo = orole_repo;
+        this.client_repo = client_repo;
     }
 
     @PostConstruct
@@ -123,8 +141,233 @@ public class DataGenerator implements HasLogger {
             oauth_repo.save(oauth);
         }
 
+        if (orole_repo.count() < 1) {
+            ORole orole = new ORole();
+            Set<OAuthority> o = new HashSet<>();
+            /**/
+            orole = new ORole();
+            orole.setRolName(ROL.AGENDAR_SMS.name());
+            o = new HashSet<>();
+            o.add(oauth_repo.findByAuthName(AUTH.UI_AGENDA_SMS.name()).get(0));
+            orole.setAuthorities(o);
+            orole_repo.saveAndFlush(orole);
+            /**/
+            orole = new ORole();
+            orole.setRolName(ROL.AUDITORIA.name());
+            o = new HashSet<>();
+            o.add(oauth_repo.findByAuthName(AUTH.UI_AUDIT.name()).get(0));
+            orole.setAuthorities(o);
+            orole_repo.save(orole);
+            /**/
+            orole = new ORole();
+            orole.setRolName(ROL.BUSQUEDA_SMS.name());
+            o = new HashSet<>();
+            o.add(oauth_repo.findByAuthName(AUTH.UI_SEARCH_SMS.name()).get(0));
+            orole.setAuthorities(o);
+            orole_repo.save(orole);
+            /**/
+            orole = new ORole();
+            orole.setRolName(ROL.EVOLUCION_CLIENTE.name());
+            o = new HashSet<>();
+            o.add(oauth_repo.findByAuthName(AUTH.UI_EVOLUTION_CLIENT.name()).get(0));
+            orole.setAuthorities(o);
+            orole_repo.save(orole);
+            /**/
+            orole = new ORole();
+            orole.setRolName(ROL.EVOLUCION_OPERADORA.name());
+            o = new HashSet<>();
+            o.add(oauth_repo.findByAuthName(AUTH.UI_EVOLUTION_CARRIER.name()).get(0));
+            orole.setAuthorities(o);
+            orole_repo.save(orole);
+            /**/
+            orole = new ORole();
+            orole.setRolName(ROL.EVOLUCION_PASAPORTES.name());
+            o = new HashSet<>();
+            o.add(oauth_repo.findByAuthName(AUTH.UI_EVOLUTION_SYSTEMID.name()).get(0));
+            orole.setAuthorities(o);
+            orole_repo.save(orole);
+            /**/
+            orole = new ORole();
+            orole.setRolName(ROL.PROGRAMAR_SMS.name());
+            o = new HashSet<>();
+            o.add(oauth_repo.findByAuthName(AUTH.UI_PROGRAM_SMS.name()).get(0));
+            orole.setAuthorities(o);
+            orole_repo.save(orole);
+            /**/
+            orole = new ORole();
+            orole.setRolName(ROL.ROLES.name());
+            o = new HashSet<>();
+            o.add(oauth_repo.findByAuthName(AUTH.UI_ROL.name()).get(0));
+            orole.setAuthorities(o);
+            orole_repo.save(orole);
+            /**/
+            orole = new ORole();
+            orole.setRolName(ROL.TRAFICO_SMS.name());
+            o = new HashSet<>();
+            o.add(oauth_repo.findByAuthName(AUTH.UI_TRAFFIC_SMS.name()).get(0));
+            orole.setAuthorities(o);
+            orole_repo.save(orole);
+            /**/
+            orole = new ORole();
+            orole.setRolName(ROL.USUARIOS.name());
+            o = new HashSet<>();
+            o.add(oauth_repo.findByAuthName(AUTH.UI_USER.name()).get(0));
+            orole.setAuthorities(o);
+            orole_repo.save(orole);
+        }
+        /**
+         * ***************
+         * LOS USUARIOS LOS VA A CREAR SIEMPRE. SI EXISTEN LOS MODIFICA.
+         *
+         * ***************
+         */
+        boolean doUser=true;
+        if (doUser) {
+            User ouser = ouser_repo.findByEmailIgnoreCase("enavas@soltextech.com");
+            if (ouser == null) {
+                ouser = new User();
+            } else {
+                System.out.println("** FOUNDED " + ouser.getEmail());
+            }
+            ouser.setFirstName("Elizabeth");
+            ouser.setLastName("Navas");
+            ouser.setEmail("enavas@soltextech.com");
+            ouser.setUserType(OUser.OUSER_TYPE.HAS);
+            ouser.setUserTypeOrd(OUser.OUSER_TYPE_ORDINAL.COMERCIAL);
+            ouser.setPasswordHash(passwordEncoder.encode("enavas"));
+            List<Client> c = client_repo.findAll();
+            if (c != null) {
+                ouser.setClients(new HashSet<>(c));
+            }
+
+            /*Roles*/
+            Set<ORole> r = new HashSet<>();
+            r.add(orole_repo.findByRolName(ROL.AGENDAR_SMS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.AUDITORIA.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.BUSQUEDA_SMS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_CLIENTE.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_OPERADORA.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_PASAPORTES.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.PROGRAMAR_SMS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.ROLES.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.TRAFICO_SMS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.USUARIOS.name()).get(0));
+            ouser.setRoles(r);
+            ouser_repo.saveAndFlush(ouser);
+
+            ouser = ouser_repo.findByEmailIgnoreCase("gbandres@soltextech.com");
+            if (ouser == null) {
+                ouser = new User();
+            } else {
+                System.out.println("** FOUNDED " + ouser.getEmail());
+            }
+            ouser.setFirstName("Gleryxa");
+            ouser.setLastName("Bandres");
+            ouser.setEmail("gbandres@soltextech.com");
+            ouser.setUserType(OUser.OUSER_TYPE.HAS);
+            ouser.setUserTypeOrd(OUser.OUSER_TYPE_ORDINAL.COMERCIAL);
+            ouser.setPasswordHash(passwordEncoder.encode("gbandres"));
+
+            if (c != null) {
+                ouser.setClients(new HashSet<>(c));
+            }
+            /*Roles*/
+            r = new HashSet<>();
+            r.add(orole_repo.findByRolName(ROL.AGENDAR_SMS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.AUDITORIA.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.BUSQUEDA_SMS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_CLIENTE.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_OPERADORA.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_PASAPORTES.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.PROGRAMAR_SMS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.ROLES.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.TRAFICO_SMS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.USUARIOS.name()).get(0));
+            ouser.setRoles(r);
+
+            /* Gleryxa fue creada por enavas*/
+            ouser.setUserParent(ouser_repo.findByEmailIgnoreCase("enavas@soltextech.com"));
+            ouser_repo.saveAndFlush(ouser);
+            /**
+             * ***************
+             */
+
+            ouser = ouser_repo.findByEmailIgnoreCase("lsuarez@soltextech.com");
+            if (ouser == null) {
+                ouser = new User();
+            } else {
+                System.out.println("** FOUNDED " + ouser.getEmail());
+            }
+
+            ouser.setFirstName("Luis");
+            ouser.setLastName("Suarez");
+            ouser.setEmail("lsuarez@soltextech.com");
+            ouser.setUserType(OUser.OUSER_TYPE.HAS);
+            ouser.setUserTypeOrd(OUser.OUSER_TYPE_ORDINAL.COMERCIAL);
+            ouser.setPasswordHash(passwordEncoder.encode("lsuarez"));
+
+            if (c != null) {
+                ouser.setClients(new HashSet<>(c));
+            }
+            /*Roles*/
+            r = new HashSet<>();
+            r.add(orole_repo.findByRolName(ROL.AGENDAR_SMS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.AUDITORIA.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.BUSQUEDA_SMS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_CLIENTE.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_OPERADORA.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_PASAPORTES.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.PROGRAMAR_SMS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.ROLES.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.TRAFICO_SMS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.USUARIOS.name()).get(0));
+            ouser.setRoles(r);
+
+            /* Luis fue creada por enavas*/
+            ouser.setUserParent(ouser_repo.findByEmailIgnoreCase("enavas@soltextech.com"));
+            ouser_repo.saveAndFlush(ouser);
+            /**
+             *
+             * /**
+             * ***************
+             */
+            ouser = ouser_repo.findByEmailIgnoreCase("dsolorzano@soltextech.com");
+            if (ouser == null) {
+                ouser = new User();
+            } else {
+                System.out.println("** FOUNDED " + ouser.getEmail());
+            }
+            ouser.setFirstName("Denny");
+            ouser.setLastName("Solorzano");
+            ouser.setEmail("dsolorzano@soltextech.com");
+            ouser.setUserType(OUser.OUSER_TYPE.HAS);
+            ouser.setUserTypeOrd(OUser.OUSER_TYPE_ORDINAL.COMERCIAL);
+            ouser.setPasswordHash(passwordEncoder.encode("dsolorzano"));
+
+            if (c != null) {
+                ouser.setClients(new HashSet<>(c));
+            }
+
+            /*Roles*/
+            r = new HashSet<>();
+            r.add(orole_repo.findByRolName(ROL.AGENDAR_SMS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.AUDITORIA.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.BUSQUEDA_SMS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_CLIENTE.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_OPERADORA.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_PASAPORTES.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.PROGRAMAR_SMS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.ROLES.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.TRAFICO_SMS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.USUARIOS.name()).get(0));
+            ouser.setRoles(r);
+
+            /* Denny fue creada por enavas*/
+            ouser.setUserParent(ouser_repo.findByEmailIgnoreCase("enavas@soltextech.com"));
+            ouser_repo.saveAndFlush(ouser);
+        }
         /**/
-        if (userRepository.count() != 0L) {
+        if (ouser_repo.count() != 0L) {
             getLogger().info("Using existing database");
             return;
         }
@@ -132,11 +375,11 @@ public class DataGenerator implements HasLogger {
         getLogger().info("Generating demo data");
 
         getLogger().info("... generating users");
-        User baker = createBaker(userRepository, passwordEncoder);
-        User barista = createBarista(userRepository, passwordEncoder);
-        createAdmin(userRepository, passwordEncoder);
+        User baker = createBaker(ouser_repo, passwordEncoder);
+        User barista = createBarista(ouser_repo, passwordEncoder);
+        createAdmin(ouser_repo, passwordEncoder);
         // A set of products without constrains that can be deleted
-        createDeletableUsers(userRepository, passwordEncoder);
+        createDeletableUsers(ouser_repo, passwordEncoder);
 
         getLogger().info("... generating products");
         // A set of products that will be used for creating orders.
