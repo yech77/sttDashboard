@@ -59,7 +59,7 @@ class DashboardView extends PolymerElement {
         <dashboard-counter-label id="todayCount" class="green">
           <vaadin-chart id="todayCountChart" class="counter"></vaadin-chart>
         </dashboard-counter-label>
-        <dashboard-counter-label id="notAvailableCount" class="red"></dashboard-counter-label>
+<!--        <dashboard-counter-label id="notAvailableCount" class="red"></dashboard-counter-label>-->
         <dashboard-counter-label id="newCount" class="blue"></dashboard-counter-label>
         <dashboard-counter-label id="tomorrowCount" class="gray"></dashboard-counter-label>
       </vaadin-board-row>
