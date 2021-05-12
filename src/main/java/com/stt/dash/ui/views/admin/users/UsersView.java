@@ -82,7 +82,7 @@ public class UsersView extends AbstractBakeryCrudView<User> {
             allUsers.addAll(sessionObjectUtils.getUserFamily(currentUser));
         }
         UserForm form = new UserForm(roleList,
-                null,
+                new ArrayList<>(currentUser.getUser().getClients()),
                 null,
                 allUsers, currentUser, passwordEncoder);
         return new BinderCrudEditor<User>(form.getBinder(), form);
