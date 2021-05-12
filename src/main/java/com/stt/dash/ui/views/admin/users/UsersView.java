@@ -8,9 +8,11 @@ import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.OUserRepository;
 import com.stt.dash.backend.service.ORoleService;
 import com.stt.dash.backend.service.UserService;
+import com.stt.dash.backend.util.SessionObjectUtils;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.crud.AbstractBakeryCrudView;
 import com.stt.dash.ui.utils.BakeryConst;
+import com.stt.dash.ui.views.HasNotifications;
 import com.vaadin.flow.component.crud.BinderCrudEditor;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.router.PageTitle;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -37,14 +40,17 @@ public class UsersView extends AbstractBakeryCrudView<User> {
                      OUserRepository ouser_repo,
                      PasswordEncoder passwordEncoder) {
         super(User.class, service, new Grid<>(),
-                createForm(roleService.findAll(""), service, passwordEncoder, currentUser),
+                createForm(roleService.findAll(""),
+                        service,
+                        currentUser,
+                        passwordEncoder),
                 currentUser);
     }
 
     @Override
     public void setupGrid(Grid<User> grid) {
-        grid.addColumn(User::getEmail).setWidth("270px").setHeader("Email").setFlexGrow(5);
-        grid.addColumn(u -> u.getFirstName() + " " + u.getLastName()).setHeader("Name").setWidth("200px").setFlexGrow(5);
+        grid.addColumn(User::getEmail).setWidth("250px").setHeader("Correo").setFlexGrow(5);
+        grid.addColumn(u -> u.getFirstName() + " " + u.getLastName()).setHeader("Nombre").setWidth("180px").setFlexGrow(5);
         grid.addColumn(role -> {
             Set<ORole> authority = role.getRoles();
             if (authority == null) {
@@ -68,13 +74,17 @@ public class UsersView extends AbstractBakeryCrudView<User> {
                                                      UserService userService,
                                                      CurrentUser currentUser,
                                                      PasswordEncoder passwordEncoder) {
-        List<User> allUsers=null;
-        if (currentUser.getUser().getUserTypeOrd() == OUser.OUSER_TYPE_ORDINAL.COMERCIAL) {
+        SessionObjectUtils sessionObjectUtils = new SessionObjectUtils(currentUser);
+        List<User> allUsers=new ArrayList<>();
+        if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
             allUsers.addAll(userService.getRepository().findAll());
         } else {
-            allUsers.addAll(session_utils.getUserFamily(currentUser));
+            allUsers.addAll(sessionObjectUtils.getUserFamily(currentUser));
         }
-        UserForm form = new UserForm(roleList, passwordEncoder);
+        UserForm form = new UserForm(roleList,
+                null,
+                null,
+                allUsers, currentUser, passwordEncoder);
         return new BinderCrudEditor<User>(form.getBinder(), form);
     }
 }

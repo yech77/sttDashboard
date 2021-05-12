@@ -31,6 +31,7 @@ public interface CrudService<T extends AbstractEntitySequence> {
 	}
 
 	default T load(long id) {
+		System.out.println("CARGANDO!!!!!!!!");
 		T entity = getRepository().findById(id).orElse(null);
 		if (entity == null) {
 			throw new EntityNotFoundException();

@@ -4,11 +4,8 @@ import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.OClientSession;
 import com.stt.dash.backend.data.OSystemIdSession;
 import com.stt.dash.backend.data.OUserSession;
-import com.stt.dash.backend.data.entity.OUser;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.OUserRepository;
-import com.stt.dash.backend.service.OUserService;
-import com.stt.dash.backend.service.UserService;
 import com.vaadin.flow.server.VaadinSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,23 +22,29 @@ public class SessionObjectUtils {
     private static final String UI_CODE = "SOU";
 
     private OUserSession ouser_session;
+    private CurrentUser currentUser;
 
     //private OUserRepository ouser_repo;
     public SessionObjectUtils(OUserSession ouser_session) {
         this.ouser_session = ouser_session;
     }
 
-    public List<User> getUserFamilyExceptSelf(OUserRepository ouser_repo) {
-        List<User> family = getUserFamily(ouser_repo);
-        if (family.size() > 0) {
-            family.remove(getThisUserEntity(ouser_repo));
-        }
-        return family;
+    public SessionObjectUtils(CurrentUser currentUser) {
+        this.currentUser=currentUser;
     }
 
-    public void updateDataUserSession(UserService user_serv) {
-        ouser_session.setUser(user_serv.findByUserEmail(ouser_session.getUserEmail()));
+    public List<User> getUserFamilyExceptSelf(OUserRepository ouser_repo) {
+//        List<User> family = getUserFamily(ouser_repo);
+//        if (family.size() > 0) {
+//            family.remove(getThisUserEntity(ouser_repo));
+//        }
+//        return family;
+        return null;
     }
+
+//    public void updateDataUserSession(UserService user_serv) {
+//        ouser_session.setUser(user_serv.findByUserEmail(ouser_session.getUserEmail()));
+//    }
 
     public List<User> getUserFamily(CurrentUser currentUser) {
         List<User> allUsers = new ArrayList<>();
@@ -60,33 +63,32 @@ public class SessionObjectUtils {
             }
         }
         allUsers.addAll(currentFam);
-
         System.out.println("Usuarios en la familia de " + currentUser.getUser().getEmail() + ": " + allUsers);
         return allUsers;
     }
 
-    public List<User> getUserFamily(OUserRepository ouser_repo) {
-        User thisUser = getThisUserEntity(ouser_repo);
-        List<User> allUsers = new ArrayList<>();
-        List<User> currentFam = new ArrayList<>();
-        List<User> addingChildren = new ArrayList<>();
-
-        currentFam.add(thisUser);
-        addingChildren.addAll(thisUser.getUserChildren());
-        while (addingChildren.size() > 0) {
-            allUsers.addAll(currentFam);
-            currentFam.clear();
-            currentFam.addAll(addingChildren);
-            addingChildren.clear();
-            for (User user : currentFam) {
-                addingChildren.addAll(user.getUserChildren());
-            }
-        }
-        allUsers.addAll(currentFam);
-
-        System.out.println("Usuarios en la familia de " + thisUser.getUserEmail() + ": " + allUsers);
-        return allUsers;
-    }
+//    public List<User> getUserFamily(OUserRepository ouser_repo) {
+//        User thisUser = getThisUserEntity(ouser_repo);
+//        List<User> allUsers = new ArrayList<>();
+//        List<User> currentFam = new ArrayList<>();
+//        List<User> addingChildren = new ArrayList<>();
+//
+//        currentFam.add(thisUser);
+//        addingChildren.addAll(thisUser.getUserChildren());
+//        while (addingChildren.size() > 0) {
+//            allUsers.addAll(currentFam);
+//            currentFam.clear();
+//            currentFam.addAll(addingChildren);
+//            addingChildren.clear();
+//            for (User user : currentFam) {
+//                addingChildren.addAll(user.getUserChildren());
+//            }
+//        }
+//        allUsers.addAll(currentFam);
+//
+//        System.out.println("Usuarios en la familia de " + thisUser.getUserEmail() + ": " + allUsers);
+//        return allUsers;
+//    }
 
     /**
      * Genera una lista de usuarios sobre los cuales el usuario actual tiene
@@ -132,15 +134,15 @@ public class SessionObjectUtils {
      * @deprecated
      * @see
      */
-    public User getThisUserEntity(OUserRepository ouser_repo) {
-        log.info("{} looking user[{}]", getStringLog(), ouser_session.getUserEmail());
-        User user = ouser_session.getUser();
-        if (user == null) {
-            return null;
-        }
-        log.info("{} found user[{}]", getStringLog(), ouser_session.getUserEmail());
-        return user;
-    }
+//    public User getThisUserEntity(OUserRepository ouser_repo) {
+//        log.info("{} looking user[{}]", getStringLog(), ouser_session.getUserEmail());
+//        User user = ouser_session.getUser();
+//        if (user == null) {
+//            return null;
+//        }
+//        log.info("{} found user[{}]", getStringLog(), ouser_session.getUserEmail());
+//        return user;
+//    }
 
     /**
      * Devuelve el objeto User que corresponde a la sesión actual
@@ -148,15 +150,15 @@ public class SessionObjectUtils {
      * @param ouser_serv
      * @return
      */
-    public User getThisUserEntity(UserService ouser_serv) {
-        log.info("{} looking user[{}]", getStringLog(), ouser_session.getUserEmail());
-        User list = ouser_serv.findByUserEmail(ouser_session.getUserEmail());
-        if (list == null) {
-            return null;
-        }
-        log.info("{} found user[{}]", getStringLog(), ouser_session.getUserEmail());
-        return list;
-    }
+//    public User getThisUserEntity(UserService ouser_serv) {
+//        log.info("{} looking user[{}]", getStringLog(), ouser_session.getUserEmail());
+//        User list = ouser_serv.findByUserEmail(ouser_session.getUserEmail());
+//        if (list == null) {
+//            return null;
+//        }
+//        log.info("{} found user[{}]", getStringLog(), ouser_session.getUserEmail());
+//        return list;
+//    }
 
     /**
      * Devuelve un List de los systemidsde los clientes..
@@ -183,7 +185,6 @@ public class SessionObjectUtils {
     /**
      * Devuelve un List de los clientes del usuario.
      *
-     * @param cli
      * @return
      */
     public final List<OClientSession> getClients() {
@@ -195,7 +196,6 @@ public class SessionObjectUtils {
     }
 
     /**
-     *
      * @param client_cod
      * @return OClientSession
      */

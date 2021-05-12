@@ -1,4 +1,4 @@
-package com.stt.dash.ui.views.admin.products;
+package com.stt.dash.ui.views.rol;
 
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.Role;
@@ -27,9 +27,9 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Set;
 
-@Route(value = "OROLES", layout = MainView.class)
-@PageTitle("OROLES")
-@Secured(Role.ADMIN)
+@Route(value = "ROLES", layout = MainView.class)
+@PageTitle("ROLES")
+@Secured({Role.ADMIN, "UI_ROL"})
 public class ORolesView extends AbstractBakeryCrudView<ORole> {
 
     private CurrencyFormatter currencyFormatter = new CurrencyFormatter();

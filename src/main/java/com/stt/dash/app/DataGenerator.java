@@ -92,6 +92,12 @@ public class DataGenerator implements HasLogger {
     @PostConstruct
     public void loadData() {
         /**/
+        if (ouser_repo.count() != 0L) {
+            getLogger().info("Using existing database");
+            return;
+        }
+
+        /**/
         if (oauth_repo.count() <1) {
             OAuthority oauth = new OAuthority();
             /* UI */
@@ -232,8 +238,8 @@ public class DataGenerator implements HasLogger {
             ouser.setFirstName("Elizabeth");
             ouser.setLastName("Navas");
             ouser.setEmail("enavas@soltextech.com");
-            ouser.setUserType(OUser.OUSER_TYPE.HAS);
-            ouser.setUserTypeOrd(OUser.OUSER_TYPE_ORDINAL.COMERCIAL);
+            ouser.setUserType(User.OUSER_TYPE.HAS);
+            ouser.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
             ouser.setPasswordHash(passwordEncoder.encode("enavas"));
             List<Client> c = client_repo.findAll();
             if (c != null) {
@@ -264,8 +270,8 @@ public class DataGenerator implements HasLogger {
             ouser.setFirstName("Gleryxa");
             ouser.setLastName("Bandres");
             ouser.setEmail("gbandres@soltextech.com");
-            ouser.setUserType(OUser.OUSER_TYPE.HAS);
-            ouser.setUserTypeOrd(OUser.OUSER_TYPE_ORDINAL.COMERCIAL);
+            ouser.setUserType(User.OUSER_TYPE.HAS);
+            ouser.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
             ouser.setPasswordHash(passwordEncoder.encode("gbandres"));
 
             if (c != null) {
@@ -302,8 +308,8 @@ public class DataGenerator implements HasLogger {
             ouser.setFirstName("Luis");
             ouser.setLastName("Suarez");
             ouser.setEmail("lsuarez@soltextech.com");
-            ouser.setUserType(OUser.OUSER_TYPE.HAS);
-            ouser.setUserTypeOrd(OUser.OUSER_TYPE_ORDINAL.COMERCIAL);
+            ouser.setUserType(User.OUSER_TYPE.HAS);
+            ouser.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
             ouser.setPasswordHash(passwordEncoder.encode("lsuarez"));
 
             if (c != null) {
@@ -340,8 +346,8 @@ public class DataGenerator implements HasLogger {
             ouser.setFirstName("Denny");
             ouser.setLastName("Solorzano");
             ouser.setEmail("dsolorzano@soltextech.com");
-            ouser.setUserType(OUser.OUSER_TYPE.HAS);
-            ouser.setUserTypeOrd(OUser.OUSER_TYPE_ORDINAL.COMERCIAL);
+            ouser.setUserType(User.OUSER_TYPE.HAS);
+            ouser.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
             ouser.setPasswordHash(passwordEncoder.encode("dsolorzano"));
 
             if (c != null) {
@@ -365,11 +371,6 @@ public class DataGenerator implements HasLogger {
             /* Denny fue creada por enavas*/
             ouser.setUserParent(ouser_repo.findByEmailIgnoreCase("enavas@soltextech.com"));
             ouser_repo.saveAndFlush(ouser);
-        }
-        /**/
-        if (ouser_repo.count() != 0L) {
-            getLogger().info("Using existing database");
-            return;
         }
 
         getLogger().info("Generating demo data");

@@ -30,6 +30,7 @@ public class CrudEntityDataProvider<T extends AbstractEntitySequence> extends Fi
 
 	@Override
 	protected Page<T> fetchFromBackEnd(Query<T, String> query, Pageable pageable) {
+		System.out.println("FECHAFROMBACKEND");
 		return crudService.findAnyMatching(query.getFilter(), pageable);
 	}
 
