@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class UserForm extends FormLayout{
@@ -93,25 +94,6 @@ public class UserForm extends FormLayout{
         setColspan(systemidsFormItem, 2);
         setColspan(addFormItem(roles, "Roles"), 2);
         /**/
-        role.setLabel("Role");
-        /**/
-        roles.setItems(allRoles);
-        roles.setItemLabelGenerator(ORole::getRolName);
-        /**/
-        userParent.setItems(allUsers);
-        setUserParentList(User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS);
-        userParent.setItemLabelGenerator(User::getEmail);
-        /**/
-        ListDataProvider<String> roleProvider = DataProvider.ofItems(Role.getAllRoles());
-        role.setItemLabelGenerator(s -> s != null ? s : "");
-        role.setDataProvider(roleProvider);
-        /**/
-        fillUserType(currentUser.getUser().getUserType(),
-                currentUser.getUser().getUserTypeOrd(),
-                userType, userTypeOrd);
-        userTypeOrd.setItems(User.OUSER_TYPE_ORDINAL.values());
-        userType.setItems(User.OUSER_TYPE.values());
-
         binder.bind(first, "firstName");
         binder.bind(last, "lastName");
         binder.forField(userTypeOrd).bind(User::getUserTypeOrd, User::setUserTypeOrd);
@@ -132,6 +114,33 @@ public class UserForm extends FormLayout{
                         user.setPasswordHash(passwordEncoder.encode(pass));
                     }
                 });
+        /**/
+        userTypeOrd.setItems(User.OUSER_TYPE_ORDINAL.values());
+        userType.setItems(User.OUSER_TYPE.values());
+        /**/
+        clients.setItems(parClients);
+        clients.setItemLabelGenerator(Client::getClientName);
+        comboClient.setItems(parClients);
+        comboClient.setItemLabelGenerator(Client::getClientName);
+        comboClient.addValueChangeListener((evt) -> {
+            if (evt.getSource().getValue() == null) {
+                return;
+            }
+            systemids.setItems(evt.getSource().getValue().getSystemids());
+            systemids.setValue(new HashSet<>(evt.getSource().getValue().getSystemids()));
+        });
+        /**/
+        roles.setItems(allRoles);
+        roles.setItemLabelGenerator(ORole::getRolName);
+        /**/
+        userParent.setItems(allUsers);
+        setUserParentList(User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS);
+        userParent.setItemLabelGenerator(User::getEmail);
+        /**/
+        ListDataProvider<String> roleProvider = DataProvider.ofItems(Role.getAllRoles());
+        role.setLabel("Role");
+        role.setItemLabelGenerator(s -> s != null ? s : "");
+        role.setDataProvider(roleProvider);
         /* CHANGE LISTENER */
         userParent.addValueChangeListener(listener -> {
             if (!listener.isFromClient()) {
@@ -184,6 +193,13 @@ public class UserForm extends FormLayout{
             doBinderOrd(evt.getSource().getValue());
             doShowClientOrd(evt.getSource().getValue());
         });
+
+        doBinderOrd(currentUser.getUser().getUserTypeOrd());
+        doShowClientOrd(currentUser.getUser().getUserTypeOrd());
+        /**/
+        fillUserType(currentUser.getUser().getUserType(),
+                currentUser.getUser().getUserTypeOrd(),
+                userType, userTypeOrd);
     }
 
     /**
