@@ -1,5 +1,6 @@
 package com.stt.dash.ui.views.login;
 
+import com.stt.dash.ui.views.dashboard.main.MainDashboardView;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
@@ -26,13 +27,13 @@ public class LoginView extends LoginOverlay
 		i18n.setHeader(new LoginI18n.Header());
 		i18n.getHeader().setTitle("Orinoco Dash");
 		i18n.getHeader().setDescription(
-			"admin@vaadin.com + admin\n" + "barista@vaadin.com + barista");
+			"BIENVENIDOS!!");
 		i18n.setAdditionalInformation(null);
 		i18n.setForm(new LoginI18n.Form());
-		i18n.getForm().setSubmit("Sign in");
-		i18n.getForm().setTitle("Sign in");
-		i18n.getForm().setUsername("Email");
-		i18n.getForm().setPassword("Password");
+		i18n.getForm().setSubmit("Entrar");
+		i18n.getForm().setTitle("Iniciar sesión");
+		i18n.getForm().setUsername("Correo");
+		i18n.getForm().setPassword("Clave");
 		setI18n(i18n);
 		setForgotPasswordButtonVisible(false);
 		setAction("login");
@@ -41,7 +42,7 @@ public class LoginView extends LoginOverlay
 	@Override
 	public void beforeEnter(BeforeEnterEvent event) {
 		if (SecurityUtils.isUserLoggedIn()) {
-			event.forwardTo(StorefrontView.class);
+			event.forwardTo(MainDashboardView.class);
 		} else {
 			setOpened(true);
 		}

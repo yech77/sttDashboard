@@ -1,6 +1,6 @@
 package com.stt.dash.ui;
 
-import com.stt.dash.ui.views.admin.products.ORolesView;
+import com.stt.dash.ui.views.rol.ORolesView;
 import com.stt.dash.ui.views.dashboard.main.MainDashboardView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
@@ -18,7 +18,6 @@ import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.server.VaadinServlet;
 import com.stt.dash.app.security.SecurityUtils;
-import com.stt.dash.ui.components.OfflineBanner;
 import com.stt.dash.ui.views.HasConfirmation;
 import com.stt.dash.ui.views.admin.products.ProductsView;
 import com.stt.dash.ui.views.admin.users.UsersView;
@@ -101,10 +100,10 @@ public class MainView extends AppLayout {
 		tabs.add(createTab(VaadinIcon.CLOCK,TITLE_DASHBOARD, DashboardView.class));
 
 		if (SecurityUtils.isAccessGranted(ORolesView.class)) {
-			tabs.add(createTab(VaadinIcon.USER,"ORoles", ORolesView.class));
+			tabs.add(createTab(VaadinIcon.KEY,"Roles", ORolesView.class));
 		}
-		if (SecurityUtils.isAccessGranted(ORolesView.class)) {
-			tabs.add(createTab(VaadinIcon.USER,TITLE_DASHBOARD_MAIN, MainDashboardView.class));
+		if (SecurityUtils.isAccessGranted(MainDashboardView.class)) {
+			tabs.add(createTab(VaadinIcon.HOME,TITLE_DASHBOARD_MAIN, MainDashboardView.class));
 		}
 		if (SecurityUtils.isAccessGranted(UsersView.class)) {
 			tabs.add(createTab(VaadinIcon.USER,TITLE_USERS, UsersView.class));

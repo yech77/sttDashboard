@@ -46,7 +46,9 @@ public class User extends AbstractEntitySequence {
     @Size(max = 255)
     private String role;
 
-    private boolean locked = false;
+	private boolean locked = false;
+
+	private boolean active = true;
 
 	@CreatedDate
 	private LocalDateTime createdDate;
@@ -65,11 +67,11 @@ public class User extends AbstractEntitySequence {
 
 //	@NotNull
 	@Enumerated(EnumType.ORDINAL)
-	private OUser.OUSER_TYPE userType;
+	private User.OUSER_TYPE userType;
 
 	@Enumerated(EnumType.ORDINAL)
 //	@NotNull
-	private OUser.OUSER_TYPE_ORDINAL userTypeOrd;
+	private User.OUSER_TYPE_ORDINAL userTypeOrd;
 
 	/*Usuario tiene cliente(s) si es de tipo HAS o IS*/
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -130,19 +132,19 @@ public class User extends AbstractEntitySequence {
 		this.roles = roles;
 	}
 
-	public OUser.OUSER_TYPE getUserType() {
+	public User.OUSER_TYPE getUserType() {
 		return userType;
 	}
 
-	public void setUserType(OUser.OUSER_TYPE userType) {
+	public void setUserType(User.OUSER_TYPE userType) {
 		this.userType = userType;
 	}
 
-	public OUser.OUSER_TYPE_ORDINAL getUserTypeOrd() {
+	public User.OUSER_TYPE_ORDINAL getUserTypeOrd() {
 		return userTypeOrd;
 	}
 
-	public void setUserTypeOrd(OUser.OUSER_TYPE_ORDINAL userTypeOrd) {
+	public void setUserTypeOrd(User.OUSER_TYPE_ORDINAL userTypeOrd) {
 		this.userTypeOrd = userTypeOrd;
 	}
 
@@ -153,6 +155,12 @@ public class User extends AbstractEntitySequence {
 		}
 		return cl;
 	}
+
+	public void setClient(Client client) {
+		this.clients.clear();
+		clients.add(client);
+	}
+
 	public Set<Client> getClients() {
 		return clients;
 	}
@@ -233,6 +241,13 @@ public class User extends AbstractEntitySequence {
         this.locked = locked;
     }
 
+    public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
     @Override
     public boolean equals(Object o) {
         if (this == o) {

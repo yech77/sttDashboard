@@ -35,6 +35,8 @@ public class OUser extends AbstractEntitySequence {
     private String passwordHash;
 
     private boolean locked = false;
+    
+    private boolean active = true;
 
     @CreatedDate
     private LocalDateTime createdDate;
@@ -255,6 +257,8 @@ public class OUser extends AbstractEntitySequence {
     public void setLocked(boolean locked) {
         this.locked = locked;
     }
+
+
 
     @Override
     public boolean equals(Object o) {

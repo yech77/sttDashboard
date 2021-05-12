@@ -19,7 +19,7 @@ public interface HasNotifications extends HasElement {
 
 	default void showNotification(String message, boolean persistent) {
 		if (persistent) {
-			Button close = new Button("Close");
+			Button close = new Button("Cerrar");
 			close.getElement().setAttribute("theme", "tertiary small error");
 			Notification notification = new Notification(new Text(message), close);
 			notification.setPosition(Position.BOTTOM_START);
