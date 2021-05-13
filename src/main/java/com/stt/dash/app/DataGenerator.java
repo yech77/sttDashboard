@@ -5,10 +5,15 @@ import com.stt.dash.backend.data.Role;
 import com.stt.dash.backend.data.entity.*;
 import com.stt.dash.backend.repositories.*;
 import com.vaadin.flow.spring.annotation.SpringComponent;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.PostConstruct;
+import java.io.FileReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -91,6 +96,7 @@ public class DataGenerator implements HasLogger {
 
     @PostConstruct
     public void loadData() {
+
         /**/
         if (ouser_repo.count() != 0L) {
             getLogger().info("Using existing database");
@@ -221,6 +227,20 @@ public class DataGenerator implements HasLogger {
             orole.setAuthorities(o);
             orole_repo.save(orole);
         }
+        try (Reader in = new StringReader("43,TEST00,NOMBRE TEST00,ALIADO,corre@test.com\n" +
+                "49,TEST02,RAZON TEST02,ALIADO,itjoye@yahoo.com\n" +
+                "53,TEST03,\"INVERSIONES JLC 20-20, C.A\",EMPRESAS,aarongonzalezv@hotmail.com\n" +
+                "59,TESTGB01,\"GLERYXA J. BANDRES B, FP\",EMPRESAS,gleryxab@gmail.com")) {
+            Iterable<CSVRecord> records = CSVFormat.DEFAULT
+                    .withFirstRecordAsHeader()
+                    .parse(in);
+            for (CSVRecord record : records) {
+                System.out.println("*******************" + record.get(0));
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
         /**
          * ***************
          * LOS USUARIOS LOS VA A CREAR SIEMPRE. SI EXISTEN LOS MODIFICA.

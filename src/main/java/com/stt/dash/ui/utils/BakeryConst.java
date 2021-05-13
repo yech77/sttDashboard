@@ -22,12 +22,14 @@ public class BakeryConst {
 	public static final String PAGE_DASHBOARD = "dashboard";
 	public static final String PAGE_DASHBOARD_MAIN = "dashboard-main";
 	public static final String PAGE_USERS = "users";
+	public static final String PAGE_BULKSMS = "bulk-sms";
 	public static final String PAGE_PRODUCTS = "products";
 
 	public static final String TITLE_STOREFRONT = "Storefront";
 	public static final String TITLE_DASHBOARD = "Dashboard";
 	public static final String TITLE_DASHBOARD_MAIN = "Principal";
 	public static final String TITLE_USERS = "Usuarios";
+	public static final String TITLE_BULKSMS = "Masivos";
 	public static final String TITLE_PRODUCTS = "Products";
 	public static final String TITLE_LOGOUT = "Logout";
 	public static final String TITLE_NOT_FOUND = "Page was not found";

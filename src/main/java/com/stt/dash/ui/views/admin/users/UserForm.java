@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class UserForm extends FormLayout{
     ComboBox<String> role = new ComboBox<>();
     public UserForm(List<ORole> allRoles,
                     List<Client> parClients,
-                    List<SystemId> parSystemids,
+                    Collection<SystemId> parSystemids,
                     List<User> allUsers,
                     CurrentUser currentUser,
                     PasswordEncoder passwordEncoder) {
@@ -129,6 +130,7 @@ public class UserForm extends FormLayout{
             systemids.setItems(evt.getSource().getValue().getSystemids());
             systemids.setValue(new HashSet<>(evt.getSource().getValue().getSystemids()));
         });
+        systemids.setItemLabelGenerator(SystemId::getSystemId);
         /**/
         roles.setItems(allRoles);
         roles.setItemLabelGenerator(ORole::getRolName);
@@ -194,12 +196,12 @@ public class UserForm extends FormLayout{
             doShowClientOrd(evt.getSource().getValue());
         });
 
-        doBinderOrd(currentUser.getUser().getUserTypeOrd());
-        doShowClientOrd(currentUser.getUser().getUserTypeOrd());
         /**/
         fillUserType(currentUser.getUser().getUserType(),
                 currentUser.getUser().getUserTypeOrd(),
                 userType, userTypeOrd);
+        doBinderOrd(currentUser.getUser().getUserTypeOrd());
+        doShowClientOrd(currentUser.getUser().getUserTypeOrd());
     }
 
     /**

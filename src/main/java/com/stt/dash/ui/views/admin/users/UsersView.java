@@ -1,6 +1,8 @@
 package com.stt.dash.ui.views.admin.users;
 
+import com.stt.dash.app.HasLogger;
 import com.stt.dash.app.security.CurrentUser;
+import com.stt.dash.app.session.ComercialUserSystemId;
 import com.stt.dash.backend.data.Role;
 import com.stt.dash.backend.data.entity.ORole;
 import com.stt.dash.backend.data.entity.OUser;
@@ -17,6 +19,8 @@ import com.vaadin.flow.component.crud.BinderCrudEditor;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,20 +35,23 @@ import static com.stt.dash.ui.utils.BakeryConst.PAGE_USERS;
 @Route(value = PAGE_USERS, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_USERS)
 @Secured({Role.ADMIN, "UI_USER"})
-public class UsersView extends AbstractBakeryCrudView<User> {
-
+public class UsersView extends AbstractBakeryCrudView<User> implements HasLogger {
+    private static Logger log = LoggerFactory.getLogger(UsersView.class);
     @Autowired
     public UsersView(UserService service,
                      CurrentUser currentUser,
                      ORoleService roleService,
                      OUserRepository ouser_repo,
-                     PasswordEncoder passwordEncoder) {
+                     PasswordEncoder passwordEncoder,
+                     ComercialUserSystemId comercial) {
         super(User.class, service, new Grid<>(),
                 createForm(roleService.findAll(""),
                         service,
                         currentUser,
+                        comercial,
                         passwordEncoder),
                 currentUser);
+        log.info(comercial.getSystemId().size() + "*************");
     }
 
     @Override
@@ -73,6 +80,7 @@ public class UsersView extends AbstractBakeryCrudView<User> {
     private static BinderCrudEditor<User> createForm(List<ORole> roleList,
                                                      UserService userService,
                                                      CurrentUser currentUser,
+                                                     ComercialUserSystemId comercial,
                                                      PasswordEncoder passwordEncoder) {
         SessionObjectUtils sessionObjectUtils = new SessionObjectUtils(currentUser);
         List<User> allUsers=new ArrayList<>();
@@ -83,7 +91,7 @@ public class UsersView extends AbstractBakeryCrudView<User> {
         }
         UserForm form = new UserForm(roleList,
                 new ArrayList<>(currentUser.getUser().getClients()),
-                null,
+                comercial.getSystemId(),
                 allUsers, currentUser, passwordEncoder);
         return new BinderCrudEditor<User>(form.getBinder(), form);
     }
