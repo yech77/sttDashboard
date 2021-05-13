@@ -1,5 +1,6 @@
 package com.stt.dash.ui;
 
+import com.stt.dash.ui.views.bulksms.bulksmsView;
 import com.stt.dash.ui.views.rol.ORolesView;
 import com.stt.dash.ui.views.dashboard.main.MainDashboardView;
 import com.vaadin.flow.component.Component;
@@ -104,6 +105,9 @@ public class MainView extends AppLayout {
 		}
 		if (SecurityUtils.isAccessGranted(MainDashboardView.class)) {
 			tabs.add(createTab(VaadinIcon.HOME,TITLE_DASHBOARD_MAIN, MainDashboardView.class));
+		}
+		if (SecurityUtils.isAccessGranted(bulksmsView.class)) {
+			tabs.add(createTab(VaadinIcon.USER,TITLE_BULKSMS, bulksmsView.class));
 		}
 		if (SecurityUtils.isAccessGranted(UsersView.class)) {
 			tabs.add(createTab(VaadinIcon.USER,TITLE_USERS, UsersView.class));

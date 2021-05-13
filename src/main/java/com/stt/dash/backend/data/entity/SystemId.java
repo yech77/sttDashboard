@@ -2,13 +2,14 @@ package com.stt.dash.backend.data.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
 public class SystemId extends AbstractEntity{
 
-    public static enum PaymentMode {
+    public enum PaymentMode {
         POSTPAGO, PREPAGO
     }
 
@@ -23,7 +24,8 @@ public class SystemId extends AbstractEntity{
 //    private List<Campaing> campaings = new LinkedList<>();
 //    @OneToOne(mappedBy = "systemid", fetch = FetchType.LAZY)
 //    private SystemIdBalance systemid_balance;
-   @NotBlank
+    @NotEmpty
+    @NotNull
     @Size(min = 3, max = 20)
     @Column(length = 20, unique = true)
     private String systemId = "";
@@ -33,7 +35,7 @@ public class SystemId extends AbstractEntity{
 ////    @Size(min = 3, max = 20)
 //    @Column(length = 10)
 //    private String password = "";
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     @NotNull
     private PaymentMode paymentType;
 

@@ -65,12 +65,10 @@ public class User extends AbstractEntitySequence {
 	private Set<ORole> roles = new HashSet<>();
 
 
-//	@NotNull
 	@Enumerated(EnumType.ORDINAL)
 	private User.OUSER_TYPE userType;
 
 	@Enumerated(EnumType.ORDINAL)
-//	@NotNull
 	private User.OUSER_TYPE_ORDINAL userTypeOrd;
 
 	/*Usuario tiene cliente(s) si es de tipo HAS o IS*/
