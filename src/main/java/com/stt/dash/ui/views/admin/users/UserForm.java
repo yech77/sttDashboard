@@ -102,7 +102,7 @@ public class UserForm extends FormLayout {
         binder.forField(userParent)
                 .asRequired("Seleccione un usuario")
                 .bind(User::getUserParent, User::setUserParent);
-/**/
+        /**/
         binder.forField(clients)
                 .asRequired(new Validator<Set<Client>>() {
                     @Override
@@ -117,6 +117,34 @@ public class UserForm extends FormLayout {
                     }
                 })
                 .bind(User::getClients, User::setClients);
+        binder.forField(systemids)
+                .asRequired(new Validator<Set<SystemId>>() {
+                    @Override
+                    public ValidationResult apply(Set<SystemId> systemIds, ValueContext valueContext) {
+                        if (userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.USUARIO) {
+                            return ValidationResult.ok();
+                        }
+                        if (systemIds != null && systemIds.size() > 0) {
+                            return ValidationResult.ok();
+                        }
+                        return ValidationResult.error("Debe tener al menos una Credencial");
+                    }
+                })
+                .bind(User::getSystemids, User::setSystemids);
+        binder.forField(comboClient)
+                .asRequired(new Validator<Client>() {
+                    @Override
+                    public ValidationResult apply(Client client, ValueContext valueContext) {
+                        if (userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
+                            return ValidationResult.ok();
+                        }
+                        if (client != null) {
+                            return ValidationResult.ok();
+                        }
+                        return ValidationResult.error("Debe escoger un Cliente");
+                    }
+                })
+                .bind(User::getClient, User::setClient);
         binder.forField(password)
                 .withValidator(pass -> pass.matches("^(|(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,})$"),
                         "más de 6 caracteres, combinando dígitos, minúsculas y mayúsculas")
@@ -356,21 +384,29 @@ public class UserForm extends FormLayout {
         if (null != ordinal) {
             switch (ordinal) {
                 case COMERCIAL:
-                    binder.removeBinding(comboClient);
+//                    binder.removeBinding(comboClient);
                     break;
                 case ADMIN_EMPRESAS:
 //                    binder.removeBinding(clients);
-                    binder.forField(comboClient)
-                            .asRequired()
-                            .bind(User::getClient, User::setClient);
                     break;
                 case EMPRESA:
                 case USUARIO:
 //                    binder.removeBinding(clients);
-                    binder.removeBinding(comboClient);
-                    binder.forField(systemids)
-                            .asRequired()
-                            .bind(User::getSystemids, User::setSystemids);
+//                    binder.removeBinding(comboClient);
+//                    binder.forField(systemids)
+//                            .asRequired(new Validator<Set<SystemId>>() {
+//                                @Override
+//                                public ValidationResult apply(Set<SystemId> systemIds, ValueContext valueContext) {
+//                                    if (userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.USUARIO) {
+//                                        return ValidationResult.ok();
+//                                    }
+//                                    if (systemIds != null && systemIds.size() > 0) {
+//                                        return ValidationResult.ok();
+//                                    }
+//                                    return ValidationResult.error("Debe tener al menos una Credencial");
+//                                }
+//                            })
+//                            .bind(User::getSystemids, User::setSystemids);
                     break;
                 default:
                     break;
