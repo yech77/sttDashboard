@@ -230,7 +230,6 @@ public class UserForm extends FormLayout {
                 userParent.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.EMPRESA, User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS));
             }
             userType.setValue(type);
-            doBinderOrd(evt.getSource().getValue());
             doShowClientOrd(evt.getSource().getValue());
         });
 
@@ -238,7 +237,6 @@ public class UserForm extends FormLayout {
         fillUserType(currentUser.getUser().getUserType(),
                 currentUser.getUser().getUserTypeOrd(),
                 userType, userTypeOrd);
-        doBinderOrd(currentUser.getUser().getUserTypeOrd());
         doShowClientOrd(currentUser.getUser().getUserTypeOrd());
     }
 
@@ -306,7 +304,6 @@ public class UserForm extends FormLayout {
         userType.setValue(user.getUserType());
         userTypeOrd.setValue(user.getUserTypeOrd());
         setUserParentList(user.getUserTypeOrd());
-        doBinderOrd(user.getUserTypeOrd());
         doShowClientOrd(user.getUserTypeOrd());
 
         // No permite que el usuario pueda cambiar sus propios datos criticos
@@ -370,47 +367,5 @@ public class UserForm extends FormLayout {
             }
         }
         return values;
-    }
-
-    /**
-     * Realiza el binder al combo o al multi en cliente dependiendo del tipo de
-     * usuario.
-     *
-     * @param ordinal
-     */
-    private void doBinderOrd(User.OUSER_TYPE_ORDINAL ordinal) {
-        //binder.removeBinding(this.userType);
-        System.out.println("el DoBinderORD es: " + ordinal);
-        if (null != ordinal) {
-            switch (ordinal) {
-                case COMERCIAL:
-//                    binder.removeBinding(comboClient);
-                    break;
-                case ADMIN_EMPRESAS:
-//                    binder.removeBinding(clients);
-                    break;
-                case EMPRESA:
-                case USUARIO:
-//                    binder.removeBinding(clients);
-//                    binder.removeBinding(comboClient);
-//                    binder.forField(systemids)
-//                            .asRequired(new Validator<Set<SystemId>>() {
-//                                @Override
-//                                public ValidationResult apply(Set<SystemId> systemIds, ValueContext valueContext) {
-//                                    if (userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.USUARIO) {
-//                                        return ValidationResult.ok();
-//                                    }
-//                                    if (systemIds != null && systemIds.size() > 0) {
-//                                        return ValidationResult.ok();
-//                                    }
-//                                    return ValidationResult.error("Debe tener al menos una Credencial");
-//                                }
-//                            })
-//                            .bind(User::getSystemids, User::setSystemids);
-                    break;
-                default:
-                    break;
-            }
-        }
     }
 }
