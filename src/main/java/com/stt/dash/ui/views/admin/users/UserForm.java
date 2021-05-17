@@ -2,32 +2,27 @@ package com.stt.dash.ui.views.admin.users;
 
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.Role;
-import com.stt.dash.backend.data.entity.*;
-import com.stt.dash.ui.views.HasNotifications;
+import com.stt.dash.backend.data.entity.Client;
+import com.stt.dash.backend.data.entity.ORole;
+import com.stt.dash.backend.data.entity.SystemId;
+import com.stt.dash.backend.data.entity.User;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.*;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
-import com.vaadin.flow.dom.Element;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
-public class UserForm extends FormLayout{
+public class UserForm extends FormLayout {
     private final List<User> allMyUsers;
     private final CurrentUser currentUser;
     /**/
@@ -47,6 +42,7 @@ public class UserForm extends FormLayout{
     ComboBox<User.OUSER_TYPE_ORDINAL> userTypeOrd = new ComboBox<>();
     ComboBox<User.OUSER_TYPE> userType = new ComboBox<>();
     ComboBox<String> role = new ComboBox<>();
+
     public UserForm(List<ORole> allRoles,
                     List<Client> parClients,
                     Collection<SystemId> parSystemids,
@@ -54,7 +50,7 @@ public class UserForm extends FormLayout{
                     CurrentUser currentUser,
                     PasswordEncoder passwordEncoder) {
         this.allMyUsers = allUsers;
-        this.currentUser=currentUser;
+        this.currentUser = currentUser;
         /**/
         EmailField email = new EmailField();
         TextField first = new TextField();
@@ -106,7 +102,21 @@ public class UserForm extends FormLayout{
         binder.forField(userParent)
                 .asRequired("Seleccione un usuario")
                 .bind(User::getUserParent, User::setUserParent);
-
+/**/
+        binder.forField(clients)
+                .asRequired(new Validator<Set<Client>>() {
+                    @Override
+                    public ValidationResult apply(Set<Client> clients, ValueContext valueContext) {
+                        if (userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+                            return ValidationResult.ok();
+                        }
+                        if (clients != null && clients.size() > 0) {
+                            return ValidationResult.ok();
+                        }
+                        return ValidationResult.error("Debe seleccionar al menos un cliente");
+                    }
+                })
+                .bind(User::getClients, User::setClients);
         binder.forField(password)
                 .withValidator(pass -> pass.matches("^(|(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,})$"),
                         "más de 6 caracteres, combinando dígitos, minúsculas y mayúsculas")
@@ -209,7 +219,7 @@ public class UserForm extends FormLayout{
      *
      * @param changeListener
      */
-    public void doShowClientOrd(User.OUSER_TYPE_ORDINAL changeListener){
+    public void doShowClientOrd(User.OUSER_TYPE_ORDINAL changeListener) {
         if (changeListener == User.OUSER_TYPE_ORDINAL.USUARIO ||
                 changeListener == User.OUSER_TYPE_ORDINAL.EMPRESA) {
             /* USUARIO SOLO SELECCIONA CREDENCIALES */
@@ -258,6 +268,7 @@ public class UserForm extends FormLayout{
                 break;
         }
     }
+
     public void setUser(User user) {
 //        binder.removeBean();
         if (user == null) {
@@ -292,6 +303,7 @@ public class UserForm extends FormLayout{
 //        binder.setBean(user);
         //activeStatus.setValue(user.getUserStatus() == OUser.OUSER_STATUS.ACTIVO);
     }
+
     /**
      * Llena el combo de tipo de usuario. Un usuario de Tipo IS solo uede crear
      * user tipo BY. Los tipo BY solo tienen asignados SIDS.
@@ -336,28 +348,25 @@ public class UserForm extends FormLayout{
      * Realiza el binder al combo o al multi en cliente dependiendo del tipo de
      * usuario.
      *
-     * @param userTypeOrd
+     * @param ordinal
      */
-    private void doBinderOrd(User.OUSER_TYPE_ORDINAL userTypeOrd) {
+    private void doBinderOrd(User.OUSER_TYPE_ORDINAL ordinal) {
         //binder.removeBinding(this.userType);
-        System.out.println("el DoBinderORD es: " + userTypeOrd);
-        if (null != userTypeOrd) {
-            switch (userTypeOrd) {
+        System.out.println("el DoBinderORD es: " + ordinal);
+        if (null != ordinal) {
+            switch (ordinal) {
                 case COMERCIAL:
                     binder.removeBinding(comboClient);
-                    binder.forField(clients)
-                            .asRequired()
-                            .bind(User::getClients, User::setClients);
                     break;
                 case ADMIN_EMPRESAS:
-                    binder.removeBinding(clients);
+//                    binder.removeBinding(clients);
                     binder.forField(comboClient)
                             .asRequired()
                             .bind(User::getClient, User::setClient);
                     break;
                 case EMPRESA:
                 case USUARIO:
-                    binder.removeBinding(clients);
+//                    binder.removeBinding(clients);
                     binder.removeBinding(comboClient);
                     binder.forField(systemids)
                             .asRequired()
