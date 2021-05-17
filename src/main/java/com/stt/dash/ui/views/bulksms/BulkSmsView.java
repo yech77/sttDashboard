@@ -35,9 +35,9 @@ import static com.stt.dash.ui.utils.BakeryConst.PAGE_USERS;
 @Route(value = BakeryConst.PAGE_BULKSMS, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_USERS)
 @Secured({Role.ADMIN, "UI_USER"})
-public class bulksmsView extends AbstractBakeryCrudView<Agenda> {
+public class BulkSmsView extends AbstractBakeryCrudView<Agenda> {
     @Autowired
-    public bulksmsView(AgendaService service, CurrentUser currentUser) {
+    public BulkSmsView(AgendaService service, CurrentUser currentUser) {
         super(Agenda.class, service, new Grid<>(), createForm(), currentUser);
     }
     @Override
