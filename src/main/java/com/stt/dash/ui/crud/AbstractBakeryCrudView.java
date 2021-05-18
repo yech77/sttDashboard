@@ -1,12 +1,5 @@
 package com.stt.dash.ui.crud;
 
-import com.vaadin.flow.component.crud.Crud;
-import com.vaadin.flow.component.crud.CrudEditor;
-import com.vaadin.flow.component.crud.CrudI18n;
-import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.OptionalParameter;
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.entity.AbstractEntitySequence;
 import com.stt.dash.backend.data.entity.util.EntityUtil;
@@ -14,6 +7,14 @@ import com.stt.dash.backend.service.FilterableCrudService;
 import com.stt.dash.ui.components.SearchBar;
 import com.stt.dash.ui.utils.TemplateUtil;
 import com.stt.dash.ui.views.HasNotifications;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.crud.Crud;
+import com.vaadin.flow.component.crud.CrudEditor;
+import com.vaadin.flow.component.crud.CrudI18n;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.OptionalParameter;
 
 import java.util.function.Consumer;
 
@@ -21,7 +22,7 @@ public abstract class
 AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         implements HasUrlParameter<Long>, HasNotifications {
 
-//    private static final String DISCARD_MESSAGE = "There are unsaved modifications to the %s. Discard changes?";
+    //    private static final String DISCARD_MESSAGE = "There are unsaved modifications to the %s. Discard changes?";
 //private static final String DELETE_MESSAGE = "Are you sure you want to delete the selected %s? This action cannot be undone.";
     private static final String DISCARD_MESSAGE = "Tiene modificaciones sin guardar en %s. ¿Descartar cambios?";
     private static final String DELETE_MESSAGE = "¿Seguro desea borrar a %s? Esta opción no se puede deshacer.";
