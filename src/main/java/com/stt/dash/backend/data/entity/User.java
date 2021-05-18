@@ -3,6 +3,7 @@ package com.stt.dash.backend.data.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -15,6 +16,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity(name = "UserInfo")
+@EntityListeners(AuditingEntityListener.class)
 public class User extends AbstractEntitySequence {
     public static enum OUSER_TYPE {
         IS, HAS, BY
