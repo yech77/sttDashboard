@@ -4,7 +4,7 @@ import com.stt.dash.backend.data.entity.SystemId;
 
 import java.util.Set;
 
-//@FunctionalInterface
-public interface ComercialUserSystemId {
-    Set<SystemId> getSystemId();
+@FunctionalInterface
+public interface SetGenericBean<E> {
+    Set<E> getSet();
 }

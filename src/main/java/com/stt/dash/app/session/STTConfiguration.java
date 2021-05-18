@@ -1,10 +1,11 @@
 package com.stt.dash.app.session;
 
-import com.stt.dash.app.HasLogger;
 import com.stt.dash.app.security.CurrentUser;
+import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.SystemIdRepository;
+import com.stt.dash.backend.repositories.UserRepository;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,9 +13,10 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.web.context.annotation.SessionScope;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Configuration
@@ -22,15 +24,15 @@ public class STTConfiguration {
     private static Logger log = LoggerFactory.getLogger(STTConfiguration.class);
     /**
      * Devuelve todos los SystemIds de todos los clientes del
-     * Usuario actual.
+     * CurrentUser.
      * @param currentUser
      * @param repo
      * @return
      */
     @Bean
     @VaadinSessionScope
-    public ComercialUserSystemId getComercialUserSystemId(CurrentUser currentUser,
-                                                          SystemIdRepository repo){
+    public SetGenericBean getComercialUserSystemId(CurrentUser currentUser,
+                                                   SystemIdRepository repo){
         Set<SystemId> allSystemId;
         if (currentUser.getUser().getUserType() != User.OUSER_TYPE.BY) {
             log.info("{} ***** {}", currentUser.getUser().getClient(),
@@ -44,5 +46,36 @@ public class STTConfiguration {
                 allSystemId.size(),
                 currentUser.getUser().getUserType().name());
         return ()->allSystemId;
+    }
+    /**
+     * Devuelve todos los User hijos de CurrentUser y el mismo
+     * Usuario actual.
+     * @param currentUser
+     * @return
+     */
+    @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public ListGenericBean getUserMeAndChildren(CurrentUser currentUser){
+        User thisUser = currentUser.getUser();
+        List<User> allUsers = new ArrayList<>();
+        List<User> currentFam = new ArrayList<>();
+        List<User> addingChildren = new ArrayList<>();
+
+        currentFam.add(thisUser);
+        addingChildren.addAll(thisUser.getUserChildren());
+        while (addingChildren.size() > 0) {
+            allUsers.addAll(currentFam);
+            currentFam.clear();
+            currentFam.addAll(addingChildren);
+            addingChildren.clear();
+            for (User user : currentFam) {
+                addingChildren.addAll(user.getUserChildren());
+            }
+        }
+        allUsers.addAll(currentFam);
+        log.info("{} Created ListUser ({}) SCOPE_PROTOTYPE Bean",
+                currentUser.getUser().getEmail(),
+                allUsers.size());
+        return ()->allUsers;
     }
 }
