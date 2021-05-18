@@ -65,14 +65,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 //					.build();
 //			details[count] = thing;
 
-
-
-
-
-
 			return new
-					org.springframework.security.core.userdetails.User(user.getEmail(),
+					org.springframework.security.core.userdetails.User(
+							user.getEmail(),
 					user.getPasswordHash(),
+					user.isActive(),
+					true,
+					true,
+					true,
 					grantedAuthoritySet);
 		}
 	}
