@@ -51,7 +51,7 @@ public class BulkSmsView extends AbstractBakeryCrudView<Agenda> {
         grid.addColumn(Agenda::getDescription).setHeader("Descripción").setWidth("180px").setFlexGrow(5);
         grid.addColumn(role -> {
             return role.getStringStatus();
-        }).setHeader("Roles").setWidth("150px");
+        }).setHeader("Status").setWidth("150px");
     }
 
     private static BinderCrudEditor<Agenda> createForm() {

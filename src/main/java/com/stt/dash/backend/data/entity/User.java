@@ -5,7 +5,10 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
@@ -32,69 +35,69 @@ public class User extends AbstractEntitySequence {
     private String passwordHash;
 
     @NotNull
-	@NotEmpty
-	@Size(max = 100)
-	@Column(length = 100)
+    @NotEmpty
+    @Size(max = 100)
+    @Column(length = 100)
     private String firstName;
 
-//    @NotBlank
-	@Size(max = 100)
-	@Column(length = 100)
+    //    @NotBlank
+    @Size(max = 100)
+    @Column(length = 100)
     private String lastName;
 
-//    @NotBlank
+    //    @NotBlank
     @Size(max = 255)
     private String role;
 
-	private boolean locked = false;
+    private boolean locked = false;
 
-	private boolean active = true;
+    private boolean active = true;
 
-	@CreatedDate
-	private LocalDateTime createdDate;
+    @CreatedDate
+    private LocalDateTime createdDate;
 
-	@CreatedBy
-	private String createdBy;
+    @CreatedBy
+    private String createdBy;
 
-	/* Usuario tiene roles*/
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(
-			name = "user_has_roles",
-			joinColumns = @JoinColumn(name = "ouser_id"),
-			inverseJoinColumns = @JoinColumn(name = "orole_id"))
-	private Set<ORole> roles = new HashSet<>();
-
-
-	@Enumerated(EnumType.ORDINAL)
-	private User.OUSER_TYPE userType;
-
-	@Enumerated(EnumType.ORDINAL)
-	private User.OUSER_TYPE_ORDINAL userTypeOrd;
-
-	/*Usuario tiene cliente(s) si es de tipo HAS o IS*/
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(
-			name = "user_has_clients",
-			joinColumns = @JoinColumn(name = "ouser_id"),
-			inverseJoinColumns = @JoinColumn(name = "client_id"))
-	private Set<Client> clients = new HashSet<>();
+    /* Usuario tiene roles*/
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_has_roles",
+            joinColumns = @JoinColumn(name = "ouser_id"),
+            inverseJoinColumns = @JoinColumn(name = "orole_id"))
+    private Set<ORole> roles = new HashSet<>();
 
 
-	/*Usuario tiene SiD(s) si es de tipo BY*/
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(
-			name = "user_has_sids",
-			joinColumns = @JoinColumn(name = "ouser_id"),
-			inverseJoinColumns = @JoinColumn(name = "systemid_id"))
-	private Set<SystemId> systemids;
+    @Enumerated(EnumType.ORDINAL)
+    private User.OUSER_TYPE userType;
 
-	/*Usuario puede tener un padre*/
-	@ManyToOne(fetch = FetchType.EAGER)
-	private User userParent;
+    @Enumerated(EnumType.ORDINAL)
+    private User.OUSER_TYPE_ORDINAL userTypeOrd;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "userParent")
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	private Set<User> userChildren;
+    /*Usuario tiene cliente(s) si es de tipo HAS o IS*/
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_has_clients",
+            joinColumns = @JoinColumn(name = "ouser_id"),
+            inverseJoinColumns = @JoinColumn(name = "client_id"))
+    private Set<Client> clients = new HashSet<>();
+
+
+    /*Usuario tiene SiD(s) si es de tipo BY*/
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_has_sids",
+            joinColumns = @JoinColumn(name = "ouser_id"),
+            inverseJoinColumns = @JoinColumn(name = "systemid_id"))
+    private Set<SystemId> systemids;
+
+    /*Usuario puede tener un padre*/
+    @ManyToOne(fetch = FetchType.EAGER)
+    private User userParent;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "userParent")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Set<User> userChildren;
 
     @PrePersist
     @PreUpdate
@@ -106,92 +109,93 @@ public class User extends AbstractEntitySequence {
         // An empty constructor is needed for all beans
     }
 
-	public LocalDateTime getCreatedDate() {
-		return createdDate;
-	}
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
 
-	public void setCreatedDate(LocalDateTime createdDate) {
-		this.createdDate = createdDate;
-	}
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
 
-	public String getCreatedBy() {
-		return createdBy;
-	}
+    public String getCreatedBy() {
+        return createdBy;
+    }
 
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 
-	public Set<ORole> getRoles() {
-		return roles;
-	}
+    public Set<ORole> getRoles() {
+        return roles;
+    }
 
-	public void setRoles(Set<ORole> roles) {
-		this.roles = roles;
-	}
+    public void setRoles(Set<ORole> roles) {
+        this.roles = roles;
+    }
 
-	public User.OUSER_TYPE getUserType() {
-		return userType;
-	}
+    public User.OUSER_TYPE getUserType() {
+        return userType;
+    }
 
-	public void setUserType(User.OUSER_TYPE userType) {
-		this.userType = userType;
-	}
+    public void setUserType(User.OUSER_TYPE userType) {
+        this.userType = userType;
+    }
 
-	public User.OUSER_TYPE_ORDINAL getUserTypeOrd() {
-		return userTypeOrd;
-	}
+    public User.OUSER_TYPE_ORDINAL getUserTypeOrd() {
+        return userTypeOrd;
+    }
 
-	public void setUserTypeOrd(User.OUSER_TYPE_ORDINAL userTypeOrd) {
-		this.userTypeOrd = userTypeOrd;
-	}
+    public void setUserTypeOrd(User.OUSER_TYPE_ORDINAL userTypeOrd) {
+        this.userTypeOrd = userTypeOrd;
+    }
 
-	public Client getClient() {
-		Client cl=null;
-		for(Client c: clients){
-			cl=c;
-		}
-		return cl;
-	}
+    public Client getClient() {
+        Client cl = null;
+        for (Client c : clients) {
+            cl = c;
+        }
+        return cl;
+    }
 
-	public void setClient(Client client) {
-		this.clients.clear();
-		clients.add(client);
-	}
+    public void setClient(Client client) {
+        this.clients.clear();
+        if (client == null) return;
+        clients.add(client);
+    }
 
-	public Set<Client> getClients() {
-		return clients;
-	}
+    public Set<Client> getClients() {
+        return clients;
+    }
 
-	public void setClients(Set<Client> clients) {
-		this.clients = clients;
-	}
+    public void setClients(Set<Client> clients) {
+        this.clients = clients;
+    }
 
-	public Set<SystemId> getSystemids() {
-		return systemids;
-	}
+    public Set<SystemId> getSystemids() {
+        return systemids;
+    }
 
-	public void setSystemids(Set<SystemId> systemids) {
-		this.systemids = systemids;
-	}
+    public void setSystemids(Set<SystemId> systemids) {
+        this.systemids = systemids;
+    }
 
-	public User getUserParent() {
-		return userParent;
-	}
+    public User getUserParent() {
+        return userParent;
+    }
 
-	public void setUserParent(User userParent) {
-		this.userParent = userParent;
-	}
+    public void setUserParent(User userParent) {
+        this.userParent = userParent;
+    }
 
-	public Set<User> getUserChildren() {
-		return userChildren;
-	}
+    public Set<User> getUserChildren() {
+        return userChildren;
+    }
 
-	public void setUserChildren(Set<User> userChildren) {
-		this.userChildren = userChildren;
-	}
+    public void setUserChildren(Set<User> userChildren) {
+        this.userChildren = userChildren;
+    }
 
-	public String getPasswordHash() {
+    public String getPasswordHash() {
         return passwordHash;
     }
 
@@ -240,12 +244,13 @@ public class User extends AbstractEntitySequence {
     }
 
     public boolean isActive() {
-		return active;
-	}
+        return active;
+    }
 
-	public void setActive(boolean active) {
-		this.active = active;
-	}
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
