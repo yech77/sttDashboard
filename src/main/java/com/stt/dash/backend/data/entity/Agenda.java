@@ -1,14 +1,15 @@
 package com.stt.dash.backend.data.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import javax.persistence.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Agenda extends AbstractEntitySequence {
 
     public enum Status {
@@ -27,6 +28,7 @@ public class Agenda extends AbstractEntitySequence {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User creator;
+    @CreatedBy
     private String creatorEmail;
     private Status status;
     private String fileName;
