@@ -2,10 +2,10 @@ package com.stt.dash.ui.views.admin.users;
 
 import com.stt.dash.app.HasLogger;
 import com.stt.dash.app.security.CurrentUser;
-import com.stt.dash.app.session.ComercialUserSystemId;
+import com.stt.dash.app.session.SetGenericBean;
 import com.stt.dash.backend.data.Role;
 import com.stt.dash.backend.data.entity.ORole;
-import com.stt.dash.backend.data.entity.OUser;
+import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.OUserRepository;
 import com.stt.dash.backend.service.ORoleService;
@@ -14,7 +14,6 @@ import com.stt.dash.backend.util.SessionObjectUtils;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.crud.AbstractBakeryCrudView;
 import com.stt.dash.ui.utils.BakeryConst;
-import com.stt.dash.ui.views.HasNotifications;
 import com.vaadin.flow.component.crud.BinderCrudEditor;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.router.PageTitle;
@@ -43,7 +42,7 @@ public class UsersView extends AbstractBakeryCrudView<User> implements HasLogger
                      ORoleService roleService,
                      OUserRepository ouser_repo,
                      PasswordEncoder passwordEncoder,
-                     ComercialUserSystemId comercial) {
+                     SetGenericBean<SystemId> comercial) {
         super(User.class, service, new Grid<>(),
                 createForm(roleService.findAll(""),
                         service,
@@ -51,7 +50,7 @@ public class UsersView extends AbstractBakeryCrudView<User> implements HasLogger
                         comercial,
                         passwordEncoder),
                 currentUser);
-        log.info(comercial.getSystemId().size() + "*************");
+        log.info(comercial.getSet().size() + "*************");
     }
 
     @Override
@@ -80,7 +79,7 @@ public class UsersView extends AbstractBakeryCrudView<User> implements HasLogger
     private static BinderCrudEditor<User> createForm(List<ORole> roleList,
                                                      UserService userService,
                                                      CurrentUser currentUser,
-                                                     ComercialUserSystemId comercial,
+                                                     SetGenericBean comercial,
                                                      PasswordEncoder passwordEncoder) {
         SessionObjectUtils sessionObjectUtils = new SessionObjectUtils(currentUser);
         List<User> allUsers=new ArrayList<>();
@@ -91,7 +90,7 @@ public class UsersView extends AbstractBakeryCrudView<User> implements HasLogger
         }
         UserForm form = new UserForm(roleList,
                 new ArrayList<>(currentUser.getUser().getClients()),
-                comercial.getSystemId(),
+                comercial.getSet(),
                 allUsers, currentUser, passwordEncoder);
         return new BinderCrudEditor<User>(form.getBinder(), form);
     }

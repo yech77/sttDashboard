@@ -2,10 +2,16 @@ package com.stt.dash.ui.views.bulksms;
 
 import com.stt.dash.backend.data.OSystemIdSession;
 import com.stt.dash.backend.data.entity.Agenda;
+import com.stt.dash.backend.data.entity.FIlesToSend;
 import com.stt.dash.backend.data.entity.SystemId;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 
@@ -14,24 +20,51 @@ import java.util.Collection;
 import java.util.List;
 
 public class BulkSmsSchedulerForm extends FormLayout {
-    Binder<FormBean> binder = new BeanValidationBinder<>(FormBean.class);
-    List<Agenda> agendaList;
-    Collection<SystemId> systemIdCollection;
+    Binder<FIlesToSend> binder = new BeanValidationBinder<>(FIlesToSend.class);
+    /**/
+    private TextField nameBox = new TextField();
+    private TextField descriptionBox = new TextField();
+    private TextArea messageBox = new TextArea();
+    private Paragraph messageBuilded = new Paragraph();
+    /**/
+    private Checkbox sendNow = new Checkbox("Despachar ahora");
     /**/
     private DateTimePicker dateTimePicker = new DateTimePicker();
     private ComboBox<Agenda> agendaCombo = new ComboBox<>();
     private ComboBox<OSystemIdSession> systemIdCombo = new ComboBox<>();
+    private Span warningSpan = new Span("");
+    private Paragraph charCountSpan = new Paragraph("");
 
     public BulkSmsSchedulerForm(List<Agenda> agendaList, Collection<SystemId> systemIdCollection) {
         setResponsiveSteps(
                 new ResponsiveStep("25em", 1, ResponsiveStep.LabelsPosition.TOP),
-                new ResponsiveStep("32em", 2, ResponsiveStep.LabelsPosition.TOP));
-        this.agendaList = agendaList;
-        this.systemIdCollection = systemIdCollection;
-
+                new ResponsiveStep("32em", 2, ResponsiveStep.LabelsPosition.TOP),
+                new ResponsiveStep("40em", 4, ResponsiveStep.LabelsPosition.TOP));
+        /**/
+        nameBox.setClearButtonVisible(true);
+        descriptionBox.setPlaceholder("(Opcional)...");
+        descriptionBox.setClearButtonVisible(true);
+        /**/
+        charCountSpan.setText("(1)  0/160 caracteres");
+        charCountSpan.getStyle().set("color", "--lumo-tertiary-text-color");
+        charCountSpan.getStyle().set("font-size", "var(--lumo-font-size-s)");
+        /**/
+        setColspan(addFormItem(nameBox, "Nombre del Recado"), 2);
+        setColspan(addFormItem(descriptionBox, "Descripcion del Recado"), 2);
+        setColspan(addFormItem(agendaCombo, "Agenda"), 2);
+        setColspan(warningSpan, 3);
+        setColspan(addFormItem(systemIdCombo, "Pasaporte"), 2);
+        FormItem des = addFormItem(messageBox, "Mensaje a enviar");
+        des.add(charCountSpan);
+        des.add(warningSpan);
+        des.add(messageBuilded);
+        setColspan(des, 2);
+        FormItem despacho = addFormItem(dateTimePicker, "Fecha de Despacho");
+        despacho.add(sendNow);
+        setColspan(despacho, 2);
     }
 
-    public Binder<FormBean> getBinder(){
+    public Binder<FIlesToSend> getBinder() {
         return binder;
     }
 
