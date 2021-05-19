@@ -1,5 +1,6 @@
 package com.stt.dash.ui.views.bulksms;
 
+import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.OSystemIdSession;
 import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.data.entity.FIlesToSend;
@@ -22,8 +23,8 @@ import java.util.List;
 public class BulkSmsSchedulerForm extends FormLayout {
     Binder<FIlesToSend> binder = new BeanValidationBinder<>(FIlesToSend.class);
     /**/
-    private TextField nameBox = new TextField();
-    private TextField descriptionBox = new TextField();
+    private TextField orderName = new TextField();
+    private TextField orderDescription = new TextField();
     private TextArea messageBox = new TextArea();
     private Paragraph messageBuilded = new Paragraph();
     /**/
@@ -31,26 +32,29 @@ public class BulkSmsSchedulerForm extends FormLayout {
     /**/
     private DateTimePicker dateTimePicker = new DateTimePicker();
     private ComboBox<Agenda> agendaCombo = new ComboBox<>();
-    private ComboBox<OSystemIdSession> systemIdCombo = new ComboBox<>();
+    private ComboBox<SystemId> systemIdCombo = new ComboBox<>();
     private Span warningSpan = new Span("");
     private Paragraph charCountSpan = new Paragraph("");
 
-    public BulkSmsSchedulerForm(List<Agenda> agendaList, Collection<SystemId> systemIdCollection) {
+    public BulkSmsSchedulerForm(List<Agenda> agendaList, Collection<SystemId> systemIdCollection, CurrentUser currentUser) {
         setResponsiveSteps(
                 new ResponsiveStep("25em", 1, ResponsiveStep.LabelsPosition.TOP),
                 new ResponsiveStep("32em", 2, ResponsiveStep.LabelsPosition.TOP),
                 new ResponsiveStep("40em", 4, ResponsiveStep.LabelsPosition.TOP));
         /**/
-        nameBox.setClearButtonVisible(true);
-        descriptionBox.setPlaceholder("(Opcional)...");
-        descriptionBox.setClearButtonVisible(true);
+        orderName.setClearButtonVisible(true);
+        orderDescription.setPlaceholder("(Opcional)...");
+        orderDescription.setClearButtonVisible(true);
         /**/
         charCountSpan.setText("(1)  0/160 caracteres");
         charCountSpan.getStyle().set("color", "--lumo-tertiary-text-color");
         charCountSpan.getStyle().set("font-size", "var(--lumo-font-size-s)");
         /**/
-        setColspan(addFormItem(nameBox, "Nombre del Recado"), 2);
-        setColspan(addFormItem(descriptionBox, "Descripcion del Recado"), 2);
+        agendaCombo.setItems(agendaList);
+        systemIdCombo.setItems(systemIdCollection);
+        /**/
+        setColspan(addFormItem(orderName, "Nombre del Recado"), 2);
+        setColspan(addFormItem(orderDescription, "Descripcion del Recado"), 2);
         setColspan(addFormItem(agendaCombo, "Agenda"), 2);
         setColspan(warningSpan, 3);
         setColspan(addFormItem(systemIdCombo, "Pasaporte"), 2);
@@ -62,6 +66,10 @@ public class BulkSmsSchedulerForm extends FormLayout {
         FormItem despacho = addFormItem(dateTimePicker, "Fecha de Despacho");
         despacho.add(sendNow);
         setColspan(despacho, 2);
+    }
+
+    private void doBinder(){
+
     }
 
     public Binder<FIlesToSend> getBinder() {
