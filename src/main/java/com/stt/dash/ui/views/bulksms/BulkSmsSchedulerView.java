@@ -1,9 +1,15 @@
 package com.stt.dash.ui.views.bulksms;
 
 import com.stt.dash.app.security.CurrentUser;
+import com.stt.dash.app.session.ListGenericBean;
+import com.stt.dash.app.session.SetGenericBean;
 import com.stt.dash.backend.data.Role;
 import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.data.entity.FIlesToSend;
+import com.stt.dash.backend.data.entity.SystemId;
+import com.stt.dash.backend.data.entity.User;
+import com.stt.dash.backend.service.AgendaService;
+import com.stt.dash.backend.service.FilesToSendService;
 import com.stt.dash.backend.service.FilterableCrudService;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.crud.AbstractBakeryCrudView;
@@ -18,15 +24,19 @@ import org.springframework.security.access.annotation.Secured;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
-//@Route(value = BakeryConst.PAGE_BULKSMS_SCHEDULER, layout = MainView.class)
-//@PageTitle(BakeryConst.TITLE_BULKSMS_SCHEDULER)
-//@Secured({Role.ADMIN, "UI_USER"})
+@Route(value = BakeryConst.PAGE_BULKSMS_SCHEDULER, layout = MainView.class)
+@PageTitle(BakeryConst.TITLE_BULKSMS_SCHEDULER)
+@Secured({Role.ADMIN, "UI_USER"})
 public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
 
-    public BulkSmsSchedulerView(Class<FIlesToSend> beanType, FilterableCrudService<FIlesToSend> service,
-                                Grid<FIlesToSend> grid, CrudEditor<FIlesToSend> editor, CurrentUser currentUser) {
-        super(beanType, service, grid, editor, currentUser);
+    public BulkSmsSchedulerView(AgendaService agendaService,
+                                FilesToSendService service,
+                                CurrentUser currentUser,
+                                ListGenericBean<User> userChildrenList,
+                                SetGenericBean<SystemId> userSystemIdSet) {
+        super(FIlesToSend.class, service, new Grid<FIlesToSend>(), createForm(currentUser, agendaService, userSystemIdSet, userChildrenList), currentUser);
     }
 
     @Override
@@ -45,9 +55,12 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
                 .setAutoWidth(true);
         grid.addColumn(role -> role.getStatus()).setHeader("Status").setWidth("150px");
     }
-    private static BinderCrudEditor<FIlesToSend> createForm() {
-//        BulkSmsSchedulerForm form = new BulkSmsSchedulerForm();
-//        return new BinderCrudEditor<FIlesToSend>(form.getBinder(), form);
-    return null;
+    private static BinderCrudEditor<FIlesToSend> createForm(CurrentUser currentUser,
+                                                            AgendaService agendaService,
+                                                            SetGenericBean<SystemId> userSystemIdSet,
+                                                            ListGenericBean userChildren) {
+        List<Agenda> agendaList = agendaService.getAllValidAgendasInFamily(userChildren.getSet());
+        BulkSmsSchedulerForm form = new BulkSmsSchedulerForm(agendaList, userSystemIdSet.getSet(), currentUser);
+        return new BinderCrudEditor<FIlesToSend>(form.getBinder(), form);
     }
 }
