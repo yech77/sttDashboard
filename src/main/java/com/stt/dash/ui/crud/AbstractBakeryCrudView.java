@@ -7,7 +7,6 @@ import com.stt.dash.backend.service.FilterableCrudService;
 import com.stt.dash.ui.components.SearchBar;
 import com.stt.dash.ui.utils.TemplateUtil;
 import com.stt.dash.ui.views.HasNotifications;
-import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.crud.Crud;
 import com.vaadin.flow.component.crud.CrudEditor;
 import com.vaadin.flow.component.crud.CrudI18n;
@@ -33,6 +32,32 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
 
     protected abstract String getBasePage();
 
+    protected long idBeforeSave;
+
+    /**
+     * En caso de que se necesite realizar una tarea luego de
+     * Salvar exitosamente el entity, la clase hija puede sobreescribir
+     * este metodo.
+     *
+     * @param idBeforeSave si es 0 es un SAVE. Si es distinto de 0, es un UPDATE
+     */
+    protected void afterSaving(long idBeforeSave, E entity) {
+        if (idBeforeSave != 0) {
+            System.out.println("----------------- Modificando: " + idBeforeSave);
+        } else {
+            System.out.println("--------------------- UN ON SAVED");
+        }
+    }
+    /**
+     * En caso de que se necesite realizar una tarea(ejm.completar datos) antes de
+     * Salvar el entity, la clase hija puede sobreescribir este metodo.
+     *
+     * @param idBeforeSave si es 0 es un SAVE. Si es distinto de 0, es un UPDATE
+     */
+    protected void beforeSaving(long idBeforeSave, E entity) {
+
+    }
+
     protected abstract void setupGrid(Grid<E> grid);
 
     public AbstractBakeryCrudView(Class<E> beanType, FilterableCrudService<E> service,
@@ -40,7 +65,6 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         super(beanType, grid, editor);
         this.grid = grid;
         grid.setSelectionMode(Grid.SelectionMode.NONE);
-
         CrudI18n crudI18n = CrudI18n.createDefault();
         String entityName = EntityUtil.getName(beanType);
         crudI18n.setNewItem("Nuevo " + entityName);
@@ -70,6 +94,10 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
 
     private void setupCrudEventListeners(CrudEntityPresenter<E> entityPresenter) {
         Consumer<E> onSuccess = entity -> navigateToEntity(null);
+        Consumer<E> onSuccessSaved = entity -> {
+            afterSaving(idBeforeSave, entity);
+            navigateToEntity(null);
+        };
         Consumer<E> onFail = entity -> {
 //            throw new RuntimeException("The operation could not be performed.");
             throw new RuntimeException("La operación no pudo ser realizada.");
@@ -80,9 +108,11 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
                         entity -> navigateToEntity(entity.getId().toString())));
 
         addCancelListener(e -> navigateToEntity(null));
-
-        addSaveListener(e ->
-                entityPresenter.save(e.getItem(), onSuccess, onFail));
+        addSaveListener(e -> {
+            idBeforeSave = e.getItem().getId() == null ? 0 : e.getItem().getId();
+            beforeSaving(idBeforeSave, e.getItem());
+            entityPresenter.save(e.getItem(), onSuccessSaved, onFail);
+        });
 
         addDeleteListener(e ->
                 entityPresenter.delete(e.getItem(), onSuccess, onFail));
