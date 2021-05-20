@@ -1,9 +1,11 @@
 package com.stt.dash.backend.data.entity;
 
 import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -20,26 +22,44 @@ public class Agenda extends AbstractEntitySequence {
         CORRUPT_OR_LOST
     }
 
-    @Column(unique = true)
+    @Column(length = 50, unique = true)
+    @Size(min = 3, max = 100)
     private String name;
+
+    @Column(length = 200)
+    @Size(max = 200)
     private String description;
+
+    @CreatedDate
     private Date dateCreated;
     private int itemCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User creator;
+
     @CreatedBy
+    @Column(length = 75)
+    @Size(min = 3, max = 75)
     private String creatorEmail;
     private Status status;
+
+    @Column(length = 255)
+    @Size(max = 255)
     private String fileName;
 
+    @Column(length = 255)
+    @Size(max = 255)
+    private String fileNameOriginal;
+
+    @Column(length = 255)
+    @Size(max = 255)
     private String firstLine;
     private int invalidItemCount;
 
     public Agenda() {
         name = "";
         description = "";
-        dateCreated = Calendar.getInstance().getTime();
+//        dateCreated = Calendar.getInstance().getTime();
         itemCount = 0;
         status = Status.BLANK;
         fileName = "";
@@ -58,6 +78,14 @@ public class Agenda extends AbstractEntitySequence {
         firstLine = "";
         invalidItemCount = 0;
         this.fileName = fileName;
+    }
+
+    public String getFileNameOriginal() {
+        return fileNameOriginal;
+    }
+
+    public void setFileNameOriginal(String fileNameOriginal) {
+        this.fileNameOriginal = fileNameOriginal;
     }
 
     public int getInvalidItemCount() {
@@ -99,9 +127,6 @@ public class Agenda extends AbstractEntitySequence {
     }
 
     public String getName() {
-        if(name == null || name.length() <1){
-            return "-";
-        }
         return name;
     }
 
@@ -110,9 +135,6 @@ public class Agenda extends AbstractEntitySequence {
     }
 
     public String getDescription() {
-        if(description == null || description.length() <1){
-            return "-";
-        }
         return description;
     }
 
@@ -146,7 +168,7 @@ public class Agenda extends AbstractEntitySequence {
     public void setCreator(User creator) {
         if(creator != null){
             this.creator = creator;
-            this.creatorEmail = creator.getEmail();
+//            this.creatorEmail = creator.getEmail();
         }
     }
 
