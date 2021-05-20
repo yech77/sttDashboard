@@ -45,7 +45,7 @@ public class STTConfiguration {
                     currentUser.getUser().getClient().getSystemids());
             allSystemId = repo.findAllSystemId(currentUser.getUser().getEmail());
         } else {
-            allSystemId = new HashSet<>(currentUser.getUser().getClient().getSystemids());
+            allSystemId = new HashSet<>(currentUser.getUser().getSystemids());
         }
         log.info("{} Created SystemId ({}) Session Bean For type [{}] ",
                 currentUser.getUser().getEmail(),
