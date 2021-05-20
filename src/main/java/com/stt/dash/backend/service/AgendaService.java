@@ -1,5 +1,6 @@
 package com.stt.dash.backend.service;
 
+import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.AgendaRepository;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AgendaService implements FilterableCrudService<Agenda>  {
+public class AgendaService implements FilterableCrudService<Agenda> {
 
     public static final String MODIFY_LOCKED_USER_NOT_PERMITTED = "User has been locked and cannot be modified or deleted";
     private static final String DELETING_SELF_NOT_PERMITTED = "You cannot delete your own account";
@@ -61,7 +62,8 @@ public class AgendaService implements FilterableCrudService<Agenda>  {
 
     /**
      * Utilizado por el hilo cuando va Vallidando.
-     *
+     * @deprecated
+     * @see updateState(CurrentUser, Agenda)
      * @param agenda
      */
     public void updateState(Agenda agenda) {
@@ -75,6 +77,18 @@ public class AgendaService implements FilterableCrudService<Agenda>  {
             log.error("{} Error on Save:", getStringLog());
             log.error("", d);
         }
+    }
+    /**
+     * Utilizado por el hilo cuando va Vallidando.
+     *
+     * @param agenda
+     */
+    public Agenda updateState(CurrentUser currentUser, Agenda agenda) {
+        return this.save(null, agenda);
+    }
+
+    public Optional<Agenda> findById(Long agendaId) {
+        return repo.findById(agendaId);
     }
 
     /**
@@ -119,7 +133,7 @@ public class AgendaService implements FilterableCrudService<Agenda>  {
         return repo.getAllValidAgendasInFamily(users, Agenda.Status.READY_TO_USE);
     }
 
-    public List<Agenda> findByName(String name){
+    public List<Agenda> findByName(String name) {
         return repo.findByName(name);
     }
 
