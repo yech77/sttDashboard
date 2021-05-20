@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AgendaRepository extends JpaRepository<Agenda, Long> {
 
@@ -17,6 +18,9 @@ public interface AgendaRepository extends JpaRepository<Agenda, Long> {
     public List<Agenda> getAllAgendasInFamily(List<User> users);
 
     public List<Agenda> findByName(String name);
+
+    @Override
+    Optional<Agenda> findById(Long aLong);
 
     @Query("select a from Agenda a "
             + "WHERE a.creator IN (:users) "
