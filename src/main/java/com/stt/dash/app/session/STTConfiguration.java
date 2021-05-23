@@ -16,6 +16,7 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableJpaAuditing
@@ -51,6 +52,23 @@ public class STTConfiguration {
                 currentUser.getUser().getEmail(),
                 allSystemId.size(),
                 currentUser.getUser().getUserType().name());
+        return () -> allSystemId;
+    }
+
+    /**
+     * Devuelve todos los SystemIds de todos los clientes del
+     * CurrentUser.
+     *
+     * @param currentUser
+     * @param repo
+     * @return List de String
+     */
+    @Bean
+    @VaadinSessionScope
+    public ListGenericBean getUserSystemIdString(CurrentUser currentUser,
+                                                   SystemIdRepository repo) {
+        SetGenericBean<SystemId> s = getComercialUserSystemId(currentUser, repo);
+        List<String> allSystemId = s.getSet().stream().map(SystemId::getSystemId).collect(Collectors.toList());
         return () -> allSystemId;
     }
 

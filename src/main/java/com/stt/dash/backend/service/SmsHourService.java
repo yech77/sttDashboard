@@ -69,7 +69,7 @@ public class SmsHourService {
         List<SmsByYearMonthDayHour> hourList = smshour_repo.groupByYeMoDaHoWhereYeMoDa(yearSms, monthSms, daySms, list_sid);
         Calendar c = Calendar.getInstance();
 
-        /* Completar HOUR faltantes con 0 */
+        /* Completar HOUR faltantes con 0, hasta lal hora actual */
         for (int hourRunner = 0; hourRunner <= c.get(Calendar.HOUR_OF_DAY); hourRunner++) {
             boolean thisHasIt = false;
             for (SmsByYearMonthDay smsByYearMonth : hourList) {

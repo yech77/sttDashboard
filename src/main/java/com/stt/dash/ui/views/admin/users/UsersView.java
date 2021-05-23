@@ -8,6 +8,7 @@ import com.stt.dash.backend.data.entity.ORole;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.OUserRepository;
+import com.stt.dash.backend.service.ClientService;
 import com.stt.dash.backend.service.ORoleService;
 import com.stt.dash.backend.service.UserService;
 import com.stt.dash.backend.util.SessionObjectUtils;
@@ -42,13 +43,14 @@ public class UsersView extends AbstractBakeryCrudView<User> implements HasLogger
                      ORoleService roleService,
                      OUserRepository ouser_repo,
                      PasswordEncoder passwordEncoder,
-                     SetGenericBean<SystemId> comercial) {
+                     SetGenericBean<SystemId> comercial,
+                     ClientService clientService) {
         super(User.class, service, new Grid<>(),
                 createForm(roleService.findAll(""),
                         service,
                         currentUser,
                         comercial,
-                        passwordEncoder),
+                        passwordEncoder, clientService),
                 currentUser);
         log.info(comercial.getSet().size() + "*************");
     }
@@ -80,7 +82,8 @@ public class UsersView extends AbstractBakeryCrudView<User> implements HasLogger
                                                      UserService userService,
                                                      CurrentUser currentUser,
                                                      SetGenericBean comercial,
-                                                     PasswordEncoder passwordEncoder) {
+                                                     PasswordEncoder passwordEncoder,
+                                                     ClientService clientService) {
         SessionObjectUtils sessionObjectUtils = new SessionObjectUtils(currentUser);
         List<User> allUsers=new ArrayList<>();
         if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
@@ -90,6 +93,7 @@ public class UsersView extends AbstractBakeryCrudView<User> implements HasLogger
         }
         UserForm form = new UserForm(roleList,
                 new ArrayList<>(currentUser.getUser().getClients()),
+                clientService.findAll().getContent(),
                 comercial.getSet(),
                 allUsers, currentUser, passwordEncoder);
         return new BinderCrudEditor<User>(form.getBinder(), form);

@@ -20,6 +20,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.annotation.Secured;
 
 import java.time.ZoneId;
@@ -34,7 +35,7 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
     public BulkSmsSchedulerView(AgendaService agendaService,
                                 FilesToSendService service,
                                 CurrentUser currentUser,
-                                ListGenericBean<User> userChildrenList,
+                                @Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
                                 SetGenericBean<SystemId> userSystemIdSet) {
         super(FIlesToSend.class, service, new Grid<FIlesToSend>(), createForm(currentUser, agendaService, userSystemIdSet, userChildrenList), currentUser);
     }

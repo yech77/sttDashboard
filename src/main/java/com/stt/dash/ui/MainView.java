@@ -1,5 +1,6 @@
 package com.stt.dash.ui;
 
+import com.stt.dash.ui.views.bulksms.BulkSmsSchedulerView;
 import com.stt.dash.ui.views.bulksms.BulkSmsView;
 import com.stt.dash.ui.views.rol.ORolesView;
 import com.stt.dash.ui.views.dashboard.main.MainDashboardView;
@@ -108,6 +109,9 @@ public class MainView extends AppLayout {
 		}
 		if (SecurityUtils.isAccessGranted(BulkSmsView.class)) {
 			tabs.add(createTab(VaadinIcon.USER,TITLE_BULKSMS, BulkSmsView.class));
+		}
+		if (SecurityUtils.isAccessGranted(BulkSmsSchedulerView.class)) {
+			tabs.add(createTab(VaadinIcon.USER,TITLE_BULKSMS_SCHEDULER, BulkSmsSchedulerView.class));
 		}
 		if (SecurityUtils.isAccessGranted(UsersView.class)) {
 			tabs.add(createTab(VaadinIcon.USER,TITLE_USERS, UsersView.class));
