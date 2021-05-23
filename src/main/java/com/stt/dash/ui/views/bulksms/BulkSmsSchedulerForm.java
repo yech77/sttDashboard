@@ -51,7 +51,9 @@ public class BulkSmsSchedulerForm extends FormLayout {
         charCountSpan.getStyle().set("font-size", "var(--lumo-font-size-s)");
         /**/
         agendaCombo.setItems(agendaList);
+        agendaCombo.setItemLabelGenerator(Agenda::getName);
         systemIdCombo.setItems(systemIdCollection);
+        systemIdCombo.setItemLabelGenerator(SystemId::getSystemId);
         /**/
         setColspan(addFormItem(orderName, "Nombre del Recado"), 2);
         setColspan(addFormItem(orderDescription, "Descripcion del Recado"), 2);

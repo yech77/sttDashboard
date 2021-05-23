@@ -45,6 +45,7 @@ public class UserForm extends FormLayout {
 
     public UserForm(List<ORole> allRoles,
                     List<Client> parClients,
+                    List<Client> allClient,
                     Collection<SystemId> parSystemids,
                     List<User> allUsers,
                     CurrentUser currentUser,

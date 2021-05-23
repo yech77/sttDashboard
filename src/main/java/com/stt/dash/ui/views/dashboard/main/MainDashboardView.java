@@ -1,5 +1,9 @@
 package com.stt.dash.ui.views.dashboard.main;
 
+import com.stt.dash.app.OMessageType;
+import com.stt.dash.app.OMonths;
+import com.stt.dash.app.security.CurrentUser;
+import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.*;
 import com.stt.dash.backend.data.entity.Order;
 import com.stt.dash.backend.data.entity.OrderSummary;
@@ -14,7 +18,6 @@ import com.stt.dash.ui.views.dashboard.DashboardCounterLabel;
 import com.stt.dash.ui.views.dashboard.DashboardUtils;
 import com.stt.dash.ui.views.dashboard.DataSeriesItemWithRadius;
 import com.stt.dash.ui.views.storefront.OrderCard;
-import com.stt.dash.ui.views.storefront.beans.OrdersCountData;
 import com.stt.dash.ui.views.storefront.beans.OrdersCountDataWithChart;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Tag;
@@ -29,15 +32,16 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.time.LocalDate;
-import java.time.Month;
 import java.time.MonthDay;
 import java.time.Year;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Tag("dashboard-view")
@@ -45,15 +49,23 @@ import java.util.stream.IntStream;
 @Route(value = BakeryConst.PAGE_DASHBOARD_MAIN, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_DASHBOARD_MAIN)
 public class MainDashboardView extends PolymerTemplate<TemplateModel> {
-
-    private static final String[] MONTH_LABELS = new String[]{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
-            "Aug", "Sep", "Oct", "Nov", "Dec"};
+    private Logger log = LoggerFactory.getLogger(MainDashboardView.class);
+    private static final String[] MONTH_LABELS = new String[]{"ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
+            "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"};
 
     private static final String[] MILITARY_HOURS = new String[]{"0:00", "1:00", "2:00", "3:00", "4:00", "5:00", "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"};
 
     private final OrderService orderService;
     private final SmsHourService smsHourService;
-
+    private final ListGenericBean<String> stingListGenericBean;
+    private final CurrentUser currentUser;
+    /**/
+    private static int actualYear;
+    private static int actualMonth;
+    private static int actualDay;
+    private static int actualHour;
+    /**/
+    private final static String UI_CODE = "MDV";
     @Id("todayCount")
     private DashboardCounterLabel todayCount;
 //
@@ -85,10 +97,18 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
     private Chart todayCountChart;
 
     @Autowired
-    public MainDashboardView(OrderService orderService, OrdersGridDataProvider orderDataProvider, SmsHourService smsHourService) {
+    public MainDashboardView(OrderService orderService,
+                             OrdersGridDataProvider orderDataProvider,
+                             SmsHourService smsHourService,
+                             @Qualifier("getUserSystemIdString") ListGenericBean<String> stringListGenericBean,
+                             CurrentUser currentUser) {
         this.orderService = orderService;
         this.smsHourService = smsHourService;
-
+        this.stingListGenericBean = stringListGenericBean;
+        this.currentUser=currentUser;
+        /**/
+        setActualDate();
+        /**/
         grid.addColumn(OrderCard.getTemplate()
                 .withProperty("orderCard", OrderCard::create)
                 .withProperty("header", order -> null)
@@ -129,18 +149,54 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
     private void initProductSplitMonthlyGraph(Map<Product, Integer> productDeliveries) {
 
         LocalDate today = LocalDate.now();
-
+        /**/
+        // The inner pie
+        DataSeries innerSeries = new DataSeries();
+        innerSeries.setName("Browsers");
+        PlotOptionsPie innerPieOptions = new PlotOptionsPie();
+        innerPieOptions.setSize("60%");
+        innerSeries.setPlotOptions(innerPieOptions);
+//        innerSeries.add(new DataSeriesItem("1", 128));
+//        innerSeries.add(new DataSeriesItem("2", 150));
+//        innerSeries.add(new DataSeriesItem("3", 170));
+        /**/
         Configuration conf = monthlyProductSplit.getConfiguration();
         conf.getChart().setType(ChartType.PIE);
         conf.getChart().setBorderRadius(4);
         conf.setTitle("Products delivered in " + FormattingUtils.getFullMonthName(today));
-        DataSeries deliveriesPerProductSeries = new DataSeries(productDeliveries.entrySet().stream()
-                .map(e -> new DataSeriesItem(e.getKey().getName(), e.getValue())).collect(Collectors.toList()));
+//        conf.addSeries(innerSeries);
+        stingListGenericBean.getSet().stream().forEach(System.out::println);
+        List<SmsByYearMonth> groupList = smsHourService.getGroupCarrierByYearMonthMessageType(actualYear, actualMonth, "MT", stingListGenericBean.getSet());
+        System.out.println("Carrier: " + groupList.size());
+        DataSeries series = new DataSeries();
+        ListSeries lMT = new ListSeries(Arrays.asList(12, 13, 14));
+        ListSeries lMO = new ListSeries(Arrays.asList(22, 33, 14));
+        for (SmsByYearMonth smsByYearMonth : groupList) {
+            innerSeries.add(new DataSeriesItem(smsByYearMonth.getSomeCode(), smsByYearMonth.getTotal()));
+        }
+//        DataSeries deliveriesPerProductSeries = new DataSeries(productDeliveries.entrySet().stream()
+//                .map(e -> new DataSeriesItem(e.getKey().getName(), e.getValue())).collect(Collectors.toList()));
         PlotOptionsPie plotOptionsPie = new PlotOptionsPie();
         plotOptionsPie.setInnerSize("60%");
+        plotOptionsPie.getDataLabels().setEnabled(false);
         plotOptionsPie.getDataLabels().setCrop(false);
-        deliveriesPerProductSeries.setPlotOptions(plotOptionsPie);
-        conf.addSeries(deliveriesPerProductSeries);
+//        deliveriesPerProductSeries.setPlotOptions(plotOptionsPie);
+//        conf.addSeries(deliveriesPerProductSeries);
+        series.setPlotOptions(plotOptionsPie);
+        Tooltip tooltip = new Tooltip();
+        tooltip.setValueDecimals(0);
+//        conf.setTooltip(tooltip);
+        lMO.setPlotOptions(plotOptionsPie);
+//        lMT.setPlotOptions(plotOptionsPie);
+        series.add(new DataSeriesItem("MT", 5000));
+        series.add(new DataSeriesItem("MO", 972));
+        series.add(new DataSeriesItem("MT", 12000));
+        series.add(new DataSeriesItem("MO", 178));
+        series.add(new DataSeriesItem("MT", 11000));
+        series.add(new DataSeriesItem("MO", 915));
+        conf.setSeries(innerSeries, series);
+//        conf.addSeries(innerSeries);
+//        conf.addSeries(series);
     }
 
     private void populateOrdersCounts(DeliveryStats deliveryStats) {
@@ -197,7 +253,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
 
         yearConf.setTitle("Mensajes del dia: " + today.getDayOfMonth());
         yearConf.getxAxis().setCategories(MILITARY_HOURS);
-        List<SmsByYearMonthDayHour> smsByHour = smsHourService.getGroupSmsByYearMonthDayHourMessageType(2021, 5, 9, Arrays.asList("C0001", "C000102"));
+        List<SmsByYearMonthDayHour> smsByHour = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actualYear, actualMonth, 21, stingListGenericBean.getSet());
 
         List<Number> mtHour = fillHouList(smsByHour, "MT");
         List<Number> moHour = fillHouList(smsByHour, "MO");
@@ -219,7 +275,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         Configuration monthConf = deliveriesThisMonthChart.getConfiguration();
         configureColumnChart(monthConf);
         /**/
-        List<SmsByYearMonthDay> groupSmsByYearMonthDayMessageType = smsHourService.getGroupSmsByYearMonthDayMessageType(2021, 5, Arrays.asList("C0001", "C000102"));
+        List<SmsByYearMonthDay> groupSmsByYearMonthDayMessageType = smsHourService.getGroupSmsByYearMonthDayMessageType(actualYear, actualMonth, stingListGenericBean.getSet());
         System.out.println("DEVUELTOS: " + groupSmsByYearMonthDayMessageType.size());
         List<Number> mt = fillDays(groupSmsByYearMonthDayMessageType, "MT");
         List<Number> mo = fillDays(groupSmsByYearMonthDayMessageType, "MO");
@@ -238,24 +294,26 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         ListSeries moListSeries = new ListSeries("MO");
         mtListSeries.setData(mt);
         moListSeries.setData(mo);
+        PlotOptionsColumn plotColumn = new PlotOptionsColumn();
+        plotColumn.setStacking(Stacking.NONE);
         Tooltip tooltip2 = new Tooltip();
         tooltip2.setValueDecimals(0);
 //        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">Día: {point.x}</span><br/>");
         tooltip2.setShared(true);
         monthConf.setSeries(mtListSeries, moListSeries);
+        monthConf.setPlotOptions(plotColumn);
         monthConf.setTooltip(tooltip2);
     }
 
     private void configureColumnChart(Configuration conf) {
         conf.getChart().setType(ChartType.COLUMN);
         conf.getChart().setBorderRadius(4);
-
+        /**/
         conf.getxAxis().setTickInterval(1);
         conf.getxAxis().setMinorTickLength(0);
         conf.getxAxis().setTickLength(0);
-
         conf.getyAxis().getTitle().setText(null);
-
+        /**/
         conf.getLegend().setEnabled(false);
     }
 
@@ -266,17 +324,19 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
 
         conf.setTitle("SMS Últimos Tres Meses");
 
-        conf.getxAxis().setVisible(false);
-        String [] ml = new String[]{"Marzo", "Abril", "Mayo"};
-        conf.getxAxis().setCategories(ml);
+//        conf.getxAxis().setVisible(true);
 
         conf.getyAxis().getTitle().setText(null);
+        List<Integer> monthToShowList = monthsIn(2);
+        String[] ml = new String[]{OMonths.valueOf(monthToShowList.get(0)).getMonthName(),
+                OMonths.valueOf(monthToShowList.get(1)).getMonthName(),
+                OMonths.valueOf(monthToShowList.get(2)).getMonthName()};
+        conf.getxAxis().setCategories(ml);
+        List<SmsByYearMonth> monthToShowDataList = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actualYear, monthToShowList, stingListGenericBean.getSet());
 
-        List<SmsByYearMonth> l = smsHourService.getGroupCarrierByYeMoWhMoIn(2021, monthsIn(2), Arrays.asList("C0001", "C000102"));
-        List<Integer> mList = monthsIn(2);
-        for (Integer integer : mList) {
+        for (Integer integer : monthToShowList) {
             boolean thisHasIt = false;
-            for (SmsByYearMonth smsByYearMonth : l) {
+            for (SmsByYearMonth smsByYearMonth : monthToShowDataList) {
                 /* Si tengo el Month me salgo del ciclo. */
                 if (smsByYearMonth.getGroupBy() == integer) {
                     thisHasIt = true;
@@ -285,60 +345,53 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
             }
             /* Agregar el mes faltante a la respuesta. */
             if (!thisHasIt) {
-//                log.info("TRIMESTRE COLUMN DATA - ADDING MONTH({}) WITH 0 ", integer);
-                SmsByYearMonth o = new SmsByYearMonth(0, 2021, integer, "N/A");
-                l.add(o);
+//                System.out.println("TRIMESTRE COLUMN DATA - ADDING MONTH({}) WITH 0 ", integer);
+                SmsByYearMonth o = new SmsByYearMonth(0, actualYear, integer, "N/A");
+                monthToShowDataList.add(o);
             }
         }
-        /* Ordenar la lista por YearMonth */
-        Map<String, SmsByYearMonth> forTriOrderedMap = new HashMap<>();
-        l.forEach(smsByYearMonth -> {
-            forTriOrderedMap.put(smsByYearMonth.forKey(), smsByYearMonth);
-        });
-        SortedSet<String> trikeys = new TreeSet<>(forTriOrderedMap.keySet());
-//        log.info("TRIMESTRE COLUMN DATA - BEFORE CLEARING {}", l);
-        l.clear();
-        trikeys.forEach(key -> {
-            l.add(forTriOrderedMap.get(key));
-        });
-        System.out.println("TRIMESTRE COLUMN DATA - FILLED AND ORDERED: "+ l);
-        for (int i = 0; i < 3; i++) {
-            conf.addSeries(new ListSeries(ml[i], data.getSalesPerMonth(i)));
-        }
         /**/
-//        int year = Year.now().getValue();
-//        for (int i = 0; i < 3; i++) {
-//            conf.addSeries(new ListSeries(Integer.toString(year - i), data.getSalesPerMonth(i)));
-//        }
+        OrderToMonthSeries(monthToShowDataList);
+        /**/
+        List<DataSeries> list_series1 = findDataSeriesLineBase(monthToShowDataList);
+        for (DataSeries list_sery : list_series1) {
+            conf.addSeries(list_sery);
+        }
+
+        Tooltip tooltip = new Tooltip();
+        tooltip.setValueDecimals(0);
+        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.x}</span><br/>");
+        tooltip.setShared(true);
+        conf.setTooltip(tooltip);
     }
 
     /**
      * Agrega los dias sin data con 0.
      *
      * @param dailyList
-     * @param type
+     * @param typeOfMessage
      * @return una sublista desde 0 hasta le dia actual.
      */
-    private List<Number> fillDays(final List<SmsByYearMonthDay> dailyList, String type) {
+    private List<Number> fillDays(final List<SmsByYearMonthDay> dailyList, String typeOfMessage) {
         List<Number> numberList = new ArrayList<>(31 + dailyList.size());
         /* Llenar e iniciaizar los dias hasta hoy en cero. */
         for (int fakeDay = 0; fakeDay < 31; fakeDay++) {
             numberList.add(0l);
         }
-        /* Sustituir en la lista los dias con valores. Solos los tipo 'type' */
+        /* Sustituir en la lista los dias con valores. Solos los tipo 'typeOfMessage' */
         for (SmsByYearMonthDay smsByYearMonthDay : dailyList) {
             /*Valida que no mostrara data mayor al dia de hoy.*/
             if (smsByYearMonthDay.getDaySms() > 31) {
                 continue;
             }
-            if (type.equals(smsByYearMonthDay.getSomeCode())) {
+            if (typeOfMessage.equals(smsByYearMonthDay.getSomeCode())) {
                 System.out.println(smsByYearMonthDay.getSomeCode() + " - DAY: " + smsByYearMonthDay.getDaySms() + " TOTAL: " + smsByYearMonthDay.getTotal());
                 numberList.add(smsByYearMonthDay.getDaySms() - 1, smsByYearMonthDay.getTotal());
             }
         }
         /* Limitar hasta el dia de hoy. */
         numberList = numberList.subList(0, 31);
-//        log.info("{} Day List of {} day[{}-{}]", getStringLog(), type, 1, actual_day);
+//        System.out.println("{} Day List of {} day[{}-{}]", getStringLog(), typeOfMessage, 1, actual_day);
         return numberList;
     }
 
@@ -353,21 +406,22 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         List<Number> numberList = new ArrayList<>(23 + 1);
         /* Llenar e iniciaizar los dias hasta hoy en cero. */
         for (int fakeDay = 0; fakeDay < 23 + 1; fakeDay++) {
-//            log.info("{} FakeHour {}-{}", getStringLog(), fakeDay, actual_hour);
+//            System.out.println("{} FakeHour {}-{}", getStringLog(), fakeDay, actual_hour);
             numberList.add(0l);
         }
         /**/
         for (SmsByYearMonthDayHour smsByYearMonthDayHour : HourList) {
             if (type.equals(smsByYearMonthDayHour.getSomeCode())) {
-//                log.info("{} Setting {}", getStringLog(), smsByYearMonthDayHour.getHourSms());
+//                System.out.println("{} Setting {}", getStringLog(), smsByYearMonthDayHour.getHourSms());
                 numberList.add(smsByYearMonthDayHour.getHourSms(), smsByYearMonthDayHour.getTotal());
             }
         }
-//        log.info("{} Hour List of {}-{}", getStringLog(), type, numberList);
+//        System.out.println("{} Hour List of {}-{}", getStringLog(), type, numberList);
         numberList = numberList.subList(0, 23 + 1);
-//        log.info("{} Hour Sub List of {}-{}", getStringLog(), type, numberList);
+//        System.out.println("{} Hour Sub List of {}-{}", getStringLog(), type, numberList);
         return numberList;
     }
+
     /**
      * Devuelve un listado de los meses atras, segun monthback.
      *
@@ -383,4 +437,203 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         return lm;
     }
 
+    public List<DataSeries> findDataSeriesLineBase(List<? extends SmsByYearMonth> l) {
+
+        Map<Integer, Map<String, Long>> data_monthly = new HashMap<>();
+        List<Integer> monthList = new ArrayList<>(4);
+
+        Map<String, Long> mapMx = new HashMap<>();
+        log.info("findDataSeriesLineBase size [{}]", l.size());
+        for (SmsByYearMonth smsByYearMonth : l) {
+            log.info("findDataSeriesLineBase {}", smsByYearMonth);
+
+            /* Si no esta el Month/day/Hour agregarlos systemid seleccionados en 0l */
+            if (!data_monthly.containsKey(smsByYearMonth.getGroupBy())) {
+                monthList.add(smsByYearMonth.getGroupBy());
+                mapMx = new HashMap<>();
+
+                /* Agragar al map cada uno de los systemid selecionados con 0. */
+                for (OMessageType osystemid : OMessageType.values()) {
+                    log.info("INIC IN 0l systemid {} - {}", osystemid, mapMx);
+                    mapMx.put(osystemid.name(), 0l);
+                }
+                /* Agregar al Month/day/Hour el map con los 0l*/
+                log.info("INIC IN 0l Month/Day/Hour {} - {}", smsByYearMonth.getGroupBy(), mapMx);
+                data_monthly.put(smsByYearMonth.getGroupBy(), mapMx);
+            }
+            /* TODO: Hacer que del repositorio solo vengan las operadoras */
+            if (!mapMx.containsKey(smsByYearMonth.getSomeCode())) {
+                log.info("SOMECODE NOT FOUND: [{}] IN {}", smsByYearMonth.getSomeCode(), mapMx);
+                continue;
+            }
+            /* Como se agregan meses a mano puede venir en vacio el systemid */
+            if (smsByYearMonth.getSomeCode() == null || "".equals(smsByYearMonth.getSomeCode())) {
+                log.info("MONTH AUTO GENERATED WITH AL SYSYEMID WITH 0l", smsByYearMonth.getGroupBy());
+                continue;
+            }
+            log.info("SETTING REAL VALUE: SOMECODE[{}] VALUE[{}]", smsByYearMonth.getSomeCode(), smsByYearMonth.getTotal());
+            /* Agrego en el Month/day/Hour en valor real */
+            mapMx = data_monthly.get(smsByYearMonth.getGroupBy());
+            mapMx.put(smsByYearMonth.getSomeCode(), smsByYearMonth.getTotal());
+        }
+
+        /*Llenar los Meses con number*/
+        Map<String, List<Number>> list = new HashMap<>();
+        for (Integer integer : monthList) {
+            mapMx = data_monthly.get(integer);
+            System.out.println("Month/Day/Hour: " + integer + " " + mapMx);
+
+            /* Agragar al map los carrier selecionados. */
+            for (OMessageType ocarrier : OMessageType.values()) {
+                if (!list.containsKey(ocarrier.name())) {
+                    list.put(ocarrier.name(), new ArrayList<>());
+                }
+                System.out.println("list.get " + ocarrier.name() + " " + mapMx.get(ocarrier.name()));
+                list.get(ocarrier.name()).add(mapMx.get(ocarrier.name()));
+            }
+        }
+
+        List<Number> list_total = new ArrayList<>();
+        list.put("TOTAL", list_total);
+        long total = 0;
+        for (Integer integer : monthList) {
+            mapMx = data_monthly.get(integer);
+            for (OMessageType ocarrier : OMessageType.values()) {
+                total += mapMx.get(ocarrier.name());
+            }
+            list_total.add(total);
+            total = 0;
+        }
+
+        List<DataSeries> list_series = new ArrayList<>();
+        PlotOptionsSpline splinePlotOptions = new PlotOptionsSpline();
+        for (OMessageType ocarrier : OMessageType.values()) {
+            DataSeries series = new DataSeries();
+//            series.setPlotOptions(splinePlotOptions);
+            series.setName(ocarrier.name());
+            System.out.println("list.get(ocarrier.getSystemId()) " + ocarrier.name() + "-" + list.get(ocarrier.name()));
+            List<Number> ln = list.get(ocarrier.name());
+            if (ln == null) {
+                ln = new LinkedList<>();
+            }
+            series.setData(list.get(ocarrier.name()).toArray(new Number[ln.size()]));
+            list_series.add(series);
+//            conf.addSeries(series);
+        }
+        /* Agregaar el TOTAL */
+        DataSeries series = new DataSeries();
+//        series.setPlotOptions(splinePlotOptions);
+        series.setName("TOTAL");
+        series.setData(list_total.toArray(new Number[list_total.size()]));
+        list_series.add(series);
+        return list_series;
+    }
+
+    public List<DataSeries> findDataSeriesColumnsBase(List<? extends SmsByYearMonth> l) {
+        Map<Integer, Map<String, Long>> data_monthly = new HashMap<>();
+        int m = 0;
+        System.out.println("[{}] Colum size [{}] " + l.size());
+        if (l.isEmpty()) {
+            System.out.println("[{}] No data. Return empty DataSeries" + l.size());
+            return new ArrayList<>();
+        }
+        List<Integer> lmonth = new ArrayList<>(4);
+
+        Map<String, Long> mapMx;
+
+        for (SmsByYearMonth smsByYearMonth : l) {
+            System.out.println("columns base-> " + smsByYearMonth);
+
+            /* Si no esta el mes */
+            if (!data_monthly.containsKey(smsByYearMonth.getGroupBy())) {
+                lmonth.add(smsByYearMonth.getGroupBy());
+                mapMx = new HashMap<>();
+                /* Agregar al Map e inicializar a 0 los carrier selecionados. */
+                for (OMessageType selectedItem : OMessageType.values()) {
+                    mapMx.put(selectedItem.name(), 0l);
+                }
+                data_monthly.put(smsByYearMonth.getGroupBy(), mapMx);
+            }
+            mapMx = data_monthly.get(smsByYearMonth.getGroupBy());
+            mapMx.put(smsByYearMonth.getSomeCode(), smsByYearMonth.getTotal());
+        }
+
+        /*Llenar los Meses con number*/
+        Map<String, List<Number>> list = new HashMap<>();
+        for (Integer integer : lmonth) {
+            mapMx = data_monthly.get(integer);
+            System.out.println("Column Month: " + integer + " " + mapMx);
+            /* Agragar al map los Message Type selecionados. */
+            for (OMessageType omessage_type : OMessageType.values()) {
+                if (!list.containsKey(omessage_type.name())) {
+                    list.put(omessage_type.name(), new ArrayList<>());
+                }
+                list.get(omessage_type.name()).add(mapMx.get(omessage_type.name()));
+            }
+        }
+        List<Number> list_total = new ArrayList<>();
+        list.put("TOTAL", list_total);
+        long total = 0;
+        long max_value_y = 0;
+        for (Integer integer : lmonth) {
+            mapMx = data_monthly.get(integer);
+            for (OMessageType omessage_type : OMessageType.values()) {
+                total += mapMx.get(omessage_type.name());
+            }
+            if (total > max_value_y) {
+                max_value_y = total;
+            }
+            list_total.add(total);
+            total = 0;
+        }
+
+        List<DataSeries> list_series = new ArrayList<>();
+        PlotOptionsColumn splinePlotOptions = new PlotOptionsColumn();
+        for (OMessageType omessage_type : OMessageType.values()) {
+            DataSeries series = new DataSeries();
+            series.setPlotOptions(splinePlotOptions);
+            series.setName(omessage_type.name());
+            series.setData(list.get(omessage_type.name()).toArray(new Number[list.get(omessage_type.name()).size()]));
+            list_series.add(series);
+//            conf.addSeries(series);
+        }
+        /* Vaidar si las columnas so mas de una*/
+        if (OMessageType.values().length > 1) {
+            DataSeries series = new DataSeries();
+            series.setPlotOptions(splinePlotOptions);
+            series.setName("TOTAL");
+            series.setData(list_total.toArray(new Number[list_total.size()]));
+            list_series.add(series);
+        }
+//        conf.getyAxis().setMax(max_value_y * 1.30);
+        return list_series;
+    }
+
+    private void OrderToMonthSeries(List<SmsByYearMonth> listToOrder) {
+        /* Ordenar la lista por YearMonth */
+        Map<String, SmsByYearMonth> forTriOrderedMap = new HashMap<>();
+        listToOrder.forEach(smsByYearMonth -> {
+            forTriOrderedMap.put(smsByYearMonth.forKey(), smsByYearMonth);
+        });
+        SortedSet<String> trikeys = new TreeSet<>(forTriOrderedMap.keySet());
+        System.out.println("TRIMESTRE DATA - BEFORE CLEARING {} " + listToOrder);
+        listToOrder.clear();
+        trikeys.forEach(key -> {
+            listToOrder.add(forTriOrderedMap.get(key));
+        });
+        System.out.println("TRIMESTRE DATA - FILLED AND ORDERED: {} " + listToOrder);
+    }
+
+    private void setActualDate() {
+        Calendar c = Calendar.getInstance();
+        actualDay = c.get(Calendar.DAY_OF_MONTH);
+        actualMonth = c.get(Calendar.MONTH) + 1;
+        actualYear = c.get(Calendar.YEAR);
+        log.info("{} HOUR OF DAY {} HOUR {}", getStringLog(), c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.HOUR));
+        actualHour = c.get(Calendar.HOUR_OF_DAY);
+    }
+
+    private String getStringLog() {
+        return "[" + currentUser.getUser().getEmail() + "] [" + UI_CODE + "]";
+    }
 }

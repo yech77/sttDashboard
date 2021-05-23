@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.PostConstruct;
-import java.io.FileReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.time.LocalDate;
@@ -38,13 +37,16 @@ public class DataGenerator implements HasLogger {
         UI_EVOLUTION_CARRIER,
         UI_EVOLUTION_CLIENT,
         UI_EVOLUTION_SYSTEMID;
-        public String [] getAllAuth(){
-            String [] s = new String[AUTH.values().length];
-            for(int i=0; i<AUTH.values().length; i++){
-                s[i]= AUTH.values()[i].name();
+
+        public String[] getAllAuth() {
+            String[] s = new String[AUTH.values().length];
+            for (int i = 0; i < AUTH.values().length; i++) {
+                s[i] = AUTH.values()[i].name();
             }
             return s;
-        };
+        }
+
+        ;
     }
 
 
@@ -104,7 +106,7 @@ public class DataGenerator implements HasLogger {
         }
 
         /**/
-        if (oauth_repo.count() <1) {
+        if (oauth_repo.count() < 1) {
             OAuthority oauth = new OAuthority();
             /* UI */
             oauth = new OAuthority();
@@ -247,9 +249,35 @@ public class DataGenerator implements HasLogger {
          *
          * ***************
          */
-        boolean doUser=true;
+        boolean doUser = true;
         if (doUser) {
-            User ouser = ouser_repo.findByEmailIgnoreCase("enavas@soltextech.com");
+            User ouser = ouser_repo.findByEmailIgnoreCase("admin@soltextech.com");
+            if (ouser == null) {
+                ouser = new User();
+            } else {
+                System.out.println("** FOUNDED " + ouser.getEmail());
+            }
+            ouser.setFirstName("Administrador");
+            ouser.setLastName("");
+            ouser.setEmail("admin@soltextech.com");
+            ouser.setUserType(User.OUSER_TYPE.HAS);
+            ouser.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+            ouser.setPasswordHash(passwordEncoder.encode("4Dm1n$"));
+            ouser.setLocked(true);
+            List<Client> c = client_repo.findAll();
+            if (c != null) {
+                ouser.setClients(new HashSet<>(c));
+            }
+
+            /*Roles*/
+            List<ORole> r1 = orole_repo.findAll();
+            if (r1 != null) {
+                r1 = new ArrayList<>();
+            }
+            ouser.setRoles(new HashSet<>(r1));
+            ouser_repo.saveAndFlush(ouser);
+            /**/
+            ouser = ouser_repo.findByEmailIgnoreCase("enavas@soltextech.com");
             if (ouser == null) {
                 ouser = new User();
             } else {
@@ -261,7 +289,7 @@ public class DataGenerator implements HasLogger {
             ouser.setUserType(User.OUSER_TYPE.HAS);
             ouser.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
             ouser.setPasswordHash(passwordEncoder.encode("enavas"));
-            List<Client> c = client_repo.findAll();
+            c = client_repo.findAll();
             if (c != null) {
                 ouser.setClients(new HashSet<>(c));
             }
@@ -279,7 +307,10 @@ public class DataGenerator implements HasLogger {
             r.add(orole_repo.findByRolName(ROL.TRAFICO_SMS.name()).get(0));
             r.add(orole_repo.findByRolName(ROL.USUARIOS.name()).get(0));
             ouser.setRoles(r);
+            /* Gleryxa fue creada por enavas*/
+            ouser.setUserParent(ouser_repo.findByEmailIgnoreCase("admin@soltextech.com"));
             ouser_repo.saveAndFlush(ouser);
+            /**/
 
             ouser = ouser_repo.findByEmailIgnoreCase("gbandres@soltextech.com");
             if (ouser == null) {
