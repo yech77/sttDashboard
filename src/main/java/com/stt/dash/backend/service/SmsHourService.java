@@ -223,7 +223,9 @@ public class SmsHourService {
     public List<SmsByYearMonth> getGroupCarrierByYearMonthMessageType(int yearSms, int monthSms, String messageType, List<String> list_sid) {
         return smshour_repo.groupCarrierByYeMo(yearSms, monthSms, messageType, list_sid);
     }
-
+    public List<SmsByYearMonth> groupCarrierByYeMoMeWhMoEqMessageTypeIn(int yearSms, int monthSms, List<String> messageType, List<String> list_sid) {
+        return smshour_repo.groupCarrierByYeMoMeWhMoEqMessageTypeIn(yearSms, monthSms, messageType, list_sid);
+    }
     public List<SmsByYearMonthDay> getGroupCarrierByYearMonthDayMessageType(int yearSms, int monthSms, int daySms, String messageType, List<String> list_sid) {
         List<String> lis = new ArrayList<>(1);
         lis.add(messageType);

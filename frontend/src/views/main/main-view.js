@@ -6,9 +6,9 @@ import '@vaadin/vaadin-grid/src/vaadin-grid.js';
 import '../../../styles/shared-styles.js';
 import '../../../styles/bakery-charts-theme.js';
 import '../storefront/order-card.js';
-import './dashboard-counter-label.js';
+import './main-counter-label.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-class DashboardView extends PolymerElement {
+class MainView extends PolymerElement {
   static get template() {
     return html`
     <style include="shared-styles">
@@ -56,12 +56,12 @@ class DashboardView extends PolymerElement {
 
     <vaadin-board>
       <vaadin-board-row>
-        <dashboard-counter-label id="todayCount" class="green">
+        <main-counter-label id="todayCountt" class="green">
           <vaadin-chart id="todayCountChart" class="counter"></vaadin-chart>
-        </dashboard-counter-label>
-        <dashboard-counter-label id="notAvailableCount" class="red"></dashboard-counter-label>
-        <dashboard-counter-label id="newCount" class="blue"></dashboard-counter-label>
-        <dashboard-counter-label id="tomorrowCount" class="gray"></dashboard-counter-label>
+        </main-counter-label>
+<!--        <main-counter-label id="notAvailableCount" class="red"></main-counter-label>-->
+        <main-counter-label id="newCount" class="blue"></main-counter-label>
+        <main-counter-label id="tomorrowCount" class="gray"></main-counter-label>
       </vaadin-board-row>
       <vaadin-board-row>
         <div class="vaadin-board-cell">
@@ -87,7 +87,7 @@ class DashboardView extends PolymerElement {
   }
 
   static get is() {
-    return 'dashboard-view';
+    return 'main-view';
   }
 
   // This method is overridden to measure the page load performance and can be safely removed
@@ -117,4 +117,4 @@ class DashboardView extends PolymerElement {
   }
 }
 
-window.customElements.define(DashboardView.is, DashboardView);
+window.customElements.define(MainView.is, MainView);
