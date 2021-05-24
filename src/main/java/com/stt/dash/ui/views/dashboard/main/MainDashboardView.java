@@ -14,10 +14,10 @@ import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.dataproviders.OrdersGridDataProvider;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.FormattingUtils;
-import com.stt.dash.ui.views.dashboard.DashboardCounterLabel;
 import com.stt.dash.ui.views.dashboard.DashboardUtils;
 import com.stt.dash.ui.views.dashboard.DataSeriesItemWithRadius;
 import com.stt.dash.ui.views.storefront.OrderCard;
+import com.stt.dash.ui.views.storefront.beans.OrdersCountData;
 import com.stt.dash.ui.views.storefront.beans.OrdersCountDataWithChart;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Tag;
@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.MonthDay;
 import java.time.Year;
@@ -44,8 +45,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
-@Tag("dashboard-view")
-@JsModule("./src/views/dashboard/dashboard-view.js")
+@Tag("main-view")
+@JsModule("./src/views/main/main-view.js")
 @Route(value = BakeryConst.PAGE_DASHBOARD_MAIN, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_DASHBOARD_MAIN)
 public class MainDashboardView extends PolymerTemplate<TemplateModel> {
@@ -66,17 +67,17 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
     private static int actualHour;
     /**/
     private final static String UI_CODE = "MDV";
-    @Id("todayCount")
-    private DashboardCounterLabel todayCount;
+    @Id("todayCountt")
+    private MainCounterLabel mtCounterLabel;
 //
 //    @Id("notAvailableCount")
 //    private DashboardCounterLabel notAvailableCount;
 
     @Id("newCount")
-    private DashboardCounterLabel newCount;
+    private MainCounterLabel moCounterLabel;
 
     @Id("tomorrowCount")
-    private DashboardCounterLabel tomorrowCount;
+    private MainCounterLabel totalCounterLabel;
 
     @Id("deliveriesThisMonth")
     private Chart deliveriesThisMonthChart;
@@ -105,7 +106,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         this.orderService = orderService;
         this.smsHourService = smsHourService;
         this.stingListGenericBean = stringListGenericBean;
-        this.currentUser=currentUser;
+        this.currentUser = currentUser;
         /**/
         setActualDate();
         /**/
@@ -154,7 +155,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         DataSeries innerSeries = new DataSeries();
         innerSeries.setName("Browsers");
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
-        innerPieOptions.setSize("60%");
+        innerPieOptions.setSize("70%");
         innerSeries.setPlotOptions(innerPieOptions);
 //        innerSeries.add(new DataSeriesItem("1", 128));
 //        innerSeries.add(new DataSeriesItem("2", 150));
@@ -166,10 +167,10 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         conf.setTitle("Products delivered in " + FormattingUtils.getFullMonthName(today));
 //        conf.addSeries(innerSeries);
         stingListGenericBean.getSet().stream().forEach(System.out::println);
-        List<SmsByYearMonth> groupList = smsHourService.getGroupCarrierByYearMonthMessageType(actualYear, actualMonth, "MT", stingListGenericBean.getSet());
-        System.out.println("Carrier: " + groupList.size());
+        List<SmsByYearMonth> groupList = smsHourService.groupCarrierByYeMoMeWhMoEqMessageTypeIn(actualYear, actualMonth, Arrays.asList("MT", "MO"), stingListGenericBean.getSet());
+        groupList.stream().forEach(System.out::println);
+
         DataSeries series = new DataSeries();
-        ListSeries lMT = new ListSeries(Arrays.asList(12, 13, 14));
         ListSeries lMO = new ListSeries(Arrays.asList(22, 33, 14));
         for (SmsByYearMonth smsByYearMonth : groupList) {
             innerSeries.add(new DataSeriesItem(smsByYearMonth.getSomeCode(), smsByYearMonth.getTotal()));
@@ -177,7 +178,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
 //        DataSeries deliveriesPerProductSeries = new DataSeries(productDeliveries.entrySet().stream()
 //                .map(e -> new DataSeriesItem(e.getKey().getName(), e.getValue())).collect(Collectors.toList()));
         PlotOptionsPie plotOptionsPie = new PlotOptionsPie();
-        plotOptionsPie.setInnerSize("60%");
+        plotOptionsPie.setInnerSize("80%");
         plotOptionsPie.getDataLabels().setEnabled(false);
         plotOptionsPie.getDataLabels().setCrop(false);
 //        deliveriesPerProductSeries.setPlotOptions(plotOptionsPie);
@@ -195,21 +196,44 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         series.add(new DataSeriesItem("MT", 11000));
         series.add(new DataSeriesItem("MO", 915));
         conf.setSeries(innerSeries, series);
+        conf.setTooltip(tooltip);
 //        conf.addSeries(innerSeries);
 //        conf.addSeries(series);
     }
 
     private void populateOrdersCounts(DeliveryStats deliveryStats) {
         List<OrderSummary> orders = orderService.findAnyMatchingStartingToday();
+        /* Buscando totales MT y MO del mes actual para mostrarlo en pantalla principal */
+        List<SmsByYearMonth> groupByYearMonth = smsHourService.getGroupSmsByYearMonthMessageType(actualYear, actualMonth, stingListGenericBean.getSet());
+        long t_mo = 0;
+        long t_mt = 0;
+        System.out.println("Lista devuelta " + groupByYearMonth.size());
+        for (SmsByYearMonth smsByYearMonth : groupByYearMonth) {
+            if (smsByYearMonth.getSomeCode().equals("MT")) {
+                t_mt = smsByYearMonth.getTotal();
+            } else {
+                t_mo = smsByYearMonth.getTotal();
+            }
+        }
 
-        OrdersCountDataWithChart todaysOrdersCountData = DashboardUtils
-                .getTodaysOrdersCountData(deliveryStats, orders.iterator());
-        todayCount.setOrdersCountData(todaysOrdersCountData);
-        initTodayCountSolidgaugeChart(todaysOrdersCountData);
+        OrdersCountData smsCountDataWithChart = new OrdersCountData("Mensajes Eviados (MT)", OMonths.valueOf(actualMonth).getMonthName(), (int) t_mt);
+        mtCounterLabel.setOrdersCountData(smsCountDataWithChart);
+
+        smsCountDataWithChart = new OrdersCountData("Mensajes Recibidos (MO)", OMonths.valueOf(actualMonth).getMonthName(), (int) t_mo);
+        moCounterLabel.setOrdersCountData(smsCountDataWithChart);
+
+        smsCountDataWithChart = new OrdersCountData("Total", OMonths.valueOf(actualMonth).getMonthName(), (int) (t_mo+t_mt));
+        totalCounterLabel.setOrdersCountData(smsCountDataWithChart);
+
+        /**/
+//        OrdersCountDataWithChart todaysOrdersCountData = DashboardUtils
+//                .getTodaysOrdersCountData(deliveryStats, orders.iterator());
+//        mtCounterLabel.setOrdersCountData(todaysOrdersCountData);
+//        initTodayCountSolidgaugeChart(todaysOrdersCountData);
 //        notAvailableCount.setOrdersCountData(DashboardUtils.getNotAvailableOrdersCountData(deliveryStats));
-        Order lastOrder = orderService.load(orders.get(orders.size() - 1).getId());
-        newCount.setOrdersCountData(DashboardUtils.getNewOrdersCountData(deliveryStats, lastOrder));
-        tomorrowCount.setOrdersCountData(DashboardUtils.getTomorrowOrdersCountData(deliveryStats, orders.iterator()));
+//        Order lastOrder = orderService.load(orders.get(orders.size() - 1).getId());
+//        moCounterLabel.setOrdersCountData(DashboardUtils.getNewOrdersCountData(deliveryStats, lastOrder));
+//        totalCounterLabel.setOrdersCountData(DashboardUtils.getTomorrowOrdersCountData(deliveryStats, orders.iterator()));
     }
 
 
