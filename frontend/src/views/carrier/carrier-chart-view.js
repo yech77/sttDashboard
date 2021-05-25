@@ -6,10 +6,10 @@ import '@vaadin/vaadin-grid/src/vaadin-grid.js';
 import '../../../styles/shared-styles.js';
 import '../../../styles/bakery-charts-theme.js';
 import '../storefront/order-card.js';
-import './dashboard-counter-label.js';
+// import './dashboard-counter-label.js';
 import {html} from '@polymer/polymer/lib/utils/html-tag.js';
 
-class DashboardView extends PolymerElement {
+class CarrierChartView extends PolymerElement {
     static get template() {
         return html`
             <style include="shared-styles">
@@ -57,30 +57,16 @@ class DashboardView extends PolymerElement {
 
             <vaadin-board>
                 <vaadin-board-row>
-                    <dashboard-counter-label id="todayCount" class="green">
-                        <vaadin-chart id="todayCountChart" class="counter"></vaadin-chart>
-                    </dashboard-counter-label>
-                    <dashboard-counter-label id="notAvailableCount" class="red"></dashboard-counter-label>
-                    <dashboard-counter-label id="newCount" class="blue"></dashboard-counter-label>
-                    <dashboard-counter-label id="tomorrowCount" class="gray"></dashboard-counter-label>
-                </vaadin-board-row>
-                <vaadin-board-row>
                     <div class="vaadin-board-cell">
                         <vaadin-chart id="deliveriesThisMonth" class="column-chart"></vaadin-chart>
                     </div>
-                    <div class="vaadin-board-cell">
-                        <vaadin-chart id="deliveriesThisYear" class="column-chart"></vaadin-chart>
-                    </div>
                 </vaadin-board-row>
                 <vaadin-board-row>
-                    <vaadin-chart id="yearlySalesGraph" class="yearly-sales"></vaadin-chart>
-                </vaadin-board-row>
-                <vaadin-board-row class="custom-board-row">
                     <div class="vaadin-board-cell">
-                        <vaadin-chart id="monthlyProductSplit" class="product-split-donut"></vaadin-chart>
+                        <vaadin-chart id="carrierTriLineChart" class="column-chart"></vaadin-chart>
                     </div>
                     <div class="vaadin-board-cell">
-                        <vaadin-grid id="ordersGrid" theme="orders dashboard"></vaadin-grid>
+                        <vaadin-chart id="carrierTriPieChart" class="column-chart"></vaadin-chart>
                     </div>
                 </vaadin-board-row>
             </vaadin-board>
@@ -88,7 +74,7 @@ class DashboardView extends PolymerElement {
     }
 
     static get is() {
-        return 'dashboard-view';
+        return 'carrier-chart-view';
     }
 
     // This method is overridden to measure the page load performance and can be safely removed
@@ -118,4 +104,5 @@ class DashboardView extends PolymerElement {
     }
 }
 
-window.customElements.define(DashboardView.is, DashboardView);
+window.customElements.define(CarrierChartView.is, CarrierChartView);
+
