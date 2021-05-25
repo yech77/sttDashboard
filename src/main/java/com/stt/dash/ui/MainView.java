@@ -2,6 +2,7 @@ package com.stt.dash.ui;
 
 import com.stt.dash.ui.views.bulksms.BulkSmsSchedulerView;
 import com.stt.dash.ui.views.bulksms.BulkSmsView;
+import com.stt.dash.ui.views.carrier.CarrierChartView;
 import com.stt.dash.ui.views.rol.ORolesView;
 import com.stt.dash.ui.views.dashboard.main.MainDashboardView;
 import com.vaadin.flow.component.Component;
@@ -103,6 +104,9 @@ public class MainView extends AppLayout {
 
 		if (SecurityUtils.isAccessGranted(ORolesView.class)) {
 			tabs.add(createTab(VaadinIcon.KEY,"Roles", ORolesView.class));
+		}
+		if (SecurityUtils.isAccessGranted(CarrierChartView.class)) {
+			tabs.add(createTab(VaadinIcon.WORKPLACE,"Evolucion Operadoras", CarrierChartView.class));
 		}
 		if (SecurityUtils.isAccessGranted(MainDashboardView.class)) {
 			tabs.add(createTab(VaadinIcon.HOME,TITLE_DASHBOARD_MAIN, MainDashboardView.class));
