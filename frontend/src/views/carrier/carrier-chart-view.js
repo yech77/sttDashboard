@@ -32,7 +32,7 @@ class CarrierChartView extends PolymerElement {
                     box-shadow: 0 2px 5px 0 rgba(23, 68, 128, 0.1);
                     border-radius: 4px;
                     height: calc(20vh - 64px) !important;
-                    min-height: 150px;
+                    min-height: 200px;
                 }
 
                 #yearlySalesGraph {
@@ -55,13 +55,12 @@ class CarrierChartView extends PolymerElement {
 
             </style>
 
+            <search-bar id="search" show-checkbox=""></search-bar>
             <vaadin-board>
                 <vaadin-board-row>
                     <div class="vaadin-board-cell">
                         <vaadin-chart id="deliveriesThisMonth" class="column-chart"></vaadin-chart>
                     </div>
-                </vaadin-board-row>
-                <vaadin-board-row>
                     <div class="vaadin-board-cell">
                         <vaadin-chart id="carrierTriLineChart" class="column-chart"></vaadin-chart>
                     </div>
