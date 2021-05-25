@@ -60,6 +60,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     private final CurrentUser currentUser;
     /* OPERADORAS */
     private MultiselectComboBox<Carrier> multi_carrier = new MultiselectComboBox<>("Operadoras");
+    private final MultiselectComboBox<OMessageType> multi_messagetype = new MultiselectComboBox<>("Mensajes");
 
     public CarrierChartView(SmsHourService smsHourService,
                             CarrierService carrierService,
@@ -70,6 +71,11 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         this.currentUser = currentUser;
         this.stingListGenericBean = stringListGenericBean;
         this.smsHourService = smsHourService;
+        /* Message type */
+        multi_messagetype.setItems(new HashSet<>(Arrays.asList(OMessageType.values())));
+        multi_messagetype.setValue(new HashSet<>(Arrays.asList(OMessageType.values())));
+        multi_messagetype.setItemLabelGenerator(OMessageType::name);
+        /* Carrier */
         Page<Carrier> carrierPage = carrierService.findAll();
         multi_carrier.setItems(carrierPage.getContent());
         multi_carrier.setValue(new HashSet<>(carrierPage.getContent()));
@@ -78,7 +84,9 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         List<SmsByYearMonth> smsGroup = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(2021, Arrays.asList(3, 4, 5), stringListGenericBean.getSet());
         List<SmsByYearMonth> carrierGroup = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(2021, Arrays.asList(3, 4, 5), Arrays.asList("MT", "MO"), stringListGenericBean.getSet());
         populateMonthlyChart(smsGroup, carrierGroup);
-
+        /* PIE */
+        List<SmsByYearMonth> groupCarrier = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(2021, Arrays.asList(3, 4, 5), multi_messagetype.getSelectedItems(), stringListGenericBean.getSet());
+        populatePieChart(groupCarrier);
     }
 
     private void populateMonthlyChart(List<SmsByYearMonth> smsGroup, List<SmsByYearMonth> carrierGroup) {
@@ -116,8 +124,12 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         }
     }
 
-    private void populateDailyChart(SmsByYearMonthDay smsByYearMonthDay) {
-
+    private void populatePieChart(List<SmsByYearMonth> smsByYearMonth) {
+        Configuration confOut = carrierTriPieChart.getConfiguration();
+        List<DataSeries> list_series = findDataSeriesPieBase(smsByYearMonth, "Total");
+        for (DataSeries list_sery : list_series) {
+            confOut.addSeries(list_sery);
+        }
     }
 
     private void populateHourChart(SmsByYearMonthDay smsByYearMonthDay) {
@@ -351,4 +363,42 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         });
         return listToFill;
     }
+
+    private List<DataSeries> findDataSeriesPieBase(List<? extends SmsByYearMonth> l, String serieName) {
+
+        Map<String, Long> mapMx = new HashMap<>();
+
+        /* Agregar al Map e inicializar a 0 los carrier selecionados. */
+        multi_carrier.getValue().forEach(oCarrier -> {
+            mapMx.put(oCarrier.getCarrierCharcode(), 0l);
+        });
+
+        /* Guardar los totales del Mes*/
+        for (SmsByYearMonth smsByYearMonth : l) {
+            /*TODO: El repo debe devolver solo los Carrier Seleccionados*/
+            if (!mapMx.containsKey(smsByYearMonth.getSomeCode())) {
+                continue;
+            }
+            mapMx.put(smsByYearMonth.getSomeCode(), smsByYearMonth.getTotal() + mapMx.get(smsByYearMonth.getSomeCode()));
+        }
+
+        DataSeries series = new DataSeries();
+        series.setName(serieName);
+        mapMx.forEach((cod, ocarrier) -> {
+            DataSeriesItem item = new DataSeriesItem(cod, ocarrier);
+            series.add(item);
+        });
+
+        PlotOptionsPie plotOptionsPie = new PlotOptionsPie();
+//        plotOptionsPie.setSize("100px");
+//        plotOptionsPie.setCenter("100px", "80px");
+        plotOptionsPie.setShowInLegend(true);
+        plotOptionsPie.setDepth(5);
+        series.setPlotOptions(plotOptionsPie);
+        List<DataSeries> list_series = new ArrayList<>(2);
+        list_series.add(series);
+//        conf.addSeries(series);
+        return list_series;
+    }
+
 }
