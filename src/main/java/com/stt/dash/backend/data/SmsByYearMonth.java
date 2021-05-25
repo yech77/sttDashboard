@@ -1,5 +1,7 @@
 package com.stt.dash.backend.data;
 
+import java.util.StringJoiner;
+
 /**
  * Representa la agrupacionde anio y mes.
  *
@@ -12,17 +14,23 @@ public class SmsByYearMonth {
     private int yearSms;
     private int monthSms;
     private String someCode;
+    private String messageType;
 
     public SmsByYearMonth(long total, int yearSms, int monthSms) {
         this.total = total;
         this.yearSms = yearSms;
         this.monthSms = monthSms;
         this.someCode = null;
+        this.messageType="";
     }
 
     public SmsByYearMonth(long total, int yearSms, int monthSms, String someCode) {
         this(total, yearSms, monthSms);
         this.someCode = someCode;
+    }
+    public SmsByYearMonth(long total, int yearSms, int monthSms, String someCode, String messageType) {
+        this(total, yearSms, monthSms, someCode);
+        this.messageType=messageType;
     }
 
     public int getYearSms() {
@@ -53,6 +61,14 @@ public class SmsByYearMonth {
         return someCode;
     }
 
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
+    }
+
     public void setSomeCode(String someCode) {
         this.someCode = someCode;
     }
@@ -76,7 +92,12 @@ public class SmsByYearMonth {
 
     @Override
     public String toString() {
-        return "SmsByYearMonth{" + "total=" + total + ", yearSms=" + yearSms + ", monthSms=" + monthSms + ", someCode=" + someCode + '}';
+        return new StringJoiner(", ", SmsByYearMonth.class.getSimpleName() + "[", "]")
+                .add("total=" + total)
+                .add("yearSms=" + yearSms)
+                .add("monthSms=" + monthSms)
+                .add("someCode='" + someCode + "'")
+                .add("messageType='" + messageType + "'")
+                .toString();
     }
-
 }
