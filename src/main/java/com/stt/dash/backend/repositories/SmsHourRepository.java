@@ -266,7 +266,7 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
      * @return
      */
     @Query("SELECT  new com.stt.dash.backend.data.SmsByYearMonth("
-            + "sum(h.total), h.year, h.month, h.carrierCharCode) "
+            + "sum(h.total), h.year, h.month, h.carrierCharCode, h.messageType) "
             + "FROM  SmsHour h "
             + "WHERE h.year = :yearSms AND "
             + "h.month = :monthSms AND "

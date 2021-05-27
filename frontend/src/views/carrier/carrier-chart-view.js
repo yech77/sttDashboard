@@ -32,6 +32,13 @@ class CarrierChartView extends PolymerElement {
                     box-shadow: 0 2px 5px 0 rgba(23, 68, 128, 0.1);
                     border-radius: 4px;
                     height: calc(20vh - 64px) !important;
+                    min-height: 150px;
+                }
+
+                .pie-chart {
+                    box-shadow: 0 2px 5px 0 rgba(23, 68, 128, 0.1);
+                    border-radius: 4px;
+                    height: calc(20vh - 64px) !important;
                     min-height: 200px;
                 }
 
@@ -55,17 +62,33 @@ class CarrierChartView extends PolymerElement {
 
             </style>
 
-            <search-bar id="search" show-checkbox=""></search-bar>
+            <div class="row">
+                <multi-combo-box></multi-combo-box>
+                <vaadin-combo-box></vaadin-combo-box>
+            </div>
             <vaadin-board>
                 <vaadin-board-row>
                     <div class="vaadin-board-cell">
                         <vaadin-chart id="deliveriesThisMonth" class="column-chart"></vaadin-chart>
                     </div>
-                    <div class="vaadin-board-cell">
+                    <div class="vaadin-board-cell" board-cols="2">
                         <vaadin-chart id="carrierTriLineChart" class="column-chart"></vaadin-chart>
                     </div>
+                </vaadin-board-row>
+                <vaadin-board-row>
+                    <div>
+                        <vaadin-chart id="carrierDailyChart" class="column-chart"></vaadin-chart>
+                    </div>
+                </vaadin-board-row>
+                <vaadin-board-row>
                     <div class="vaadin-board-cell">
-                        <vaadin-chart id="carrierTriPieChart" class="column-chart"></vaadin-chart>
+                        <vaadin-chart id="carrierTriPieChart" class="pie-chart"></vaadin-chart>
+                    </div>
+                    <div class="vaadin-board-cell">
+                        <vaadin-chart id="carrierMonthlyPieChart" class="pie-chart"></vaadin-chart>
+                    </div>
+                    <div class="vaadin-board-cell">
+                        <vaadin-chart id="carrierDailyPieChart" class="pie-chart"></vaadin-chart>
                     </div>
                 </vaadin-board-row>
             </vaadin-board>

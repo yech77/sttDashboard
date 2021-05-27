@@ -14,7 +14,6 @@ import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.dataproviders.OrdersGridDataProvider;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.FormattingUtils;
-import com.stt.dash.ui.views.dashboard.DashboardUtils;
 import com.stt.dash.ui.views.dashboard.DataSeriesItemWithRadius;
 import com.stt.dash.ui.views.storefront.OrderCard;
 import com.stt.dash.ui.views.storefront.beans.OrdersCountData;
@@ -25,6 +24,8 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.events.ChartLoadEvent;
 import com.vaadin.flow.component.charts.model.*;
+import com.vaadin.flow.component.charts.model.style.Color;
+import com.vaadin.flow.component.charts.model.style.SolidColor;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.polymertemplate.Id;
@@ -32,17 +33,19 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
+import com.vaadin.flow.theme.lumo.Lumo;
+import com.vaadin.flow.theme.lumo.LumoThemeDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.MonthDay;
 import java.time.Year;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Tag("main-view")
@@ -148,37 +151,48 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
     }
 
     private void initProductSplitMonthlyGraph(Map<Product, Integer> productDeliveries) {
-
         LocalDate today = LocalDate.now();
         /**/
         // The inner pie
         DataSeries innerSeries = new DataSeries();
-        innerSeries.setName("Browsers");
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
         innerPieOptions.setSize("70%");
         innerSeries.setPlotOptions(innerPieOptions);
-//        innerSeries.add(new DataSeriesItem("1", 128));
-//        innerSeries.add(new DataSeriesItem("2", 150));
-//        innerSeries.add(new DataSeriesItem("3", 170));
         /**/
         Configuration conf = monthlyProductSplit.getConfiguration();
         conf.getChart().setType(ChartType.PIE);
         conf.getChart().setBorderRadius(4);
         conf.setTitle("Products delivered in " + FormattingUtils.getFullMonthName(today));
-//        conf.addSeries(innerSeries);
         stingListGenericBean.getSet().stream().forEach(System.out::println);
         List<SmsByYearMonth> groupList = smsHourService.groupCarrierByYeMoMeWhMoEqMessageTypeIn(actualYear, actualMonth, Arrays.asList("MT", "MO"), stingListGenericBean.getSet());
         groupList.stream().forEach(System.out::println);
-
+        /* Agruar por Carrier */
+        Map<String, List<SmsByYearMonth>> gbc =
+                groupList.stream().collect(Collectors.groupingBy(SmsByYearMonth::getSomeCode));
+        System.out.println("**************** ");
         DataSeries series = new DataSeries();
-        ListSeries lMO = new ListSeries(Arrays.asList(22, 33, 14));
-        for (SmsByYearMonth smsByYearMonth : groupList) {
-            innerSeries.add(new DataSeriesItem(smsByYearMonth.getSomeCode(), smsByYearMonth.getTotal()));
-        }
+        gbc.entrySet().forEach(carrier -> {
+                    long totalCarrier = carrier.getValue()
+                            .stream()
+                            .mapToLong(p -> p.getTotal())
+                            .sum();
+                    innerSeries.add(new DataSeriesItem(carrier.getKey(), totalCarrier));
+
+                    carrier.getValue().forEach(mt -> {
+                        series.add(new DataSeriesItem(mt.getMessageType(), mt.getTotal()));
+
+                    });
+                    System.out.println(carrier.getKey() + " " + carrier.getValue());
+                }
+        );
 //        DataSeries deliveriesPerProductSeries = new DataSeries(productDeliveries.entrySet().stream()
 //                .map(e -> new DataSeriesItem(e.getKey().getName(), e.getValue())).collect(Collectors.toList()));
+        DataLabels dataLabels = new DataLabels();
+        dataLabels.setEnabled(true);
+        dataLabels
+                .setFormatter("'<b>'+ this.point.name +'</b>: '+ this.percentage +' %'");
         PlotOptionsPie plotOptionsPie = new PlotOptionsPie();
-        plotOptionsPie.setInnerSize("80%");
+        plotOptionsPie.setInnerSize("75%");
         plotOptionsPie.getDataLabels().setEnabled(false);
         plotOptionsPie.getDataLabels().setCrop(false);
 //        deliveriesPerProductSeries.setPlotOptions(plotOptionsPie);
@@ -186,20 +200,14 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         series.setPlotOptions(plotOptionsPie);
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
-//        conf.setTooltip(tooltip);
-        lMO.setPlotOptions(plotOptionsPie);
-//        lMT.setPlotOptions(plotOptionsPie);
-        series.add(new DataSeriesItem("MT", 5000));
-        series.add(new DataSeriesItem("MO", 972));
-        series.add(new DataSeriesItem("MT", 12000));
-        series.add(new DataSeriesItem("MO", 178));
-        series.add(new DataSeriesItem("MT", 11000));
-        series.add(new DataSeriesItem("MO", 915));
+        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
+//        tooltip.setPointFormat(" <span style=\"color:{series.color}\">{point.key}{series.name}</span>: <b>{point.y}</b> ");
+        //        series.getConfiguration().setTooltip(tooltip);
+        innerSeries.setName("");
+        series.setName("");
         conf.setSeries(innerSeries, series);
         conf.setTooltip(tooltip);
-//        conf.addSeries(innerSeries);
-//        conf.addSeries(series);
-    }
+        }
 
     private void populateOrdersCounts(DeliveryStats deliveryStats) {
         List<OrderSummary> orders = orderService.findAnyMatchingStartingToday();
@@ -222,7 +230,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         smsCountDataWithChart = new OrdersCountData("Mensajes Recibidos (MO)", OMonths.valueOf(actualMonth).getMonthName(), (int) t_mo);
         moCounterLabel.setOrdersCountData(smsCountDataWithChart);
 
-        smsCountDataWithChart = new OrdersCountData("Total", OMonths.valueOf(actualMonth).getMonthName(), (int) (t_mo+t_mt));
+        smsCountDataWithChart = new OrdersCountData("Total", OMonths.valueOf(actualMonth).getMonthName(), (int) (t_mo + t_mt));
         totalCounterLabel.setOrdersCountData(smsCountDataWithChart);
 
         /**/
@@ -277,7 +285,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
 
         yearConf.setTitle("Mensajes del dia: " + today.getDayOfMonth());
         yearConf.getxAxis().setCategories(MILITARY_HOURS);
-        List<SmsByYearMonthDayHour> smsByHour = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actualYear, actualMonth, 21, stingListGenericBean.getSet());
+        List<SmsByYearMonthDayHour> smsByHour = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actualYear, actualMonth, actualDay, stingListGenericBean.getSet());
 
         List<Number> mtHour = fillHouList(smsByHour, "MT");
         List<Number> moHour = fillHouList(smsByHour, "MO");
