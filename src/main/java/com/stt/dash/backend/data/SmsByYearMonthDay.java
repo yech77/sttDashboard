@@ -14,6 +14,11 @@ public class SmsByYearMonthDay extends SmsByYearMonth{
         this.daySms = daySms;
     }
 
+    public SmsByYearMonthDay(long total, int yearSms, int monthSms, int daySms, String someCode, String messageType) {
+        super(total, yearSms, monthSms, someCode, messageType);
+        this.daySms = daySms;
+    }
+
     @Override
     public int getGroupBy() {
         return getDaySms();

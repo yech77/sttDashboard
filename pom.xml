@@ -201,7 +201,6 @@
             <groupId>org.vaadin.gatanaso</groupId>
             <artifactId>multiselect-combo-box-flow</artifactId>
             <version>3.0.2</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.vaadin.olli</groupId>

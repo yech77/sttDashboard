@@ -89,5 +89,11 @@ public abstract class AbstractSmsByYearMonth {
      * @return
      */
     public abstract String forKey();
+    /**
+     * Usado para colocar como key en el Map previo a realizar el orden.
+     *
+     * @return
+     */
+    public abstract String forKeyWithMessageType();
 
 }

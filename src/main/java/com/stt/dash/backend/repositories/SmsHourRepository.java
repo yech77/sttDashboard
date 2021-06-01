@@ -243,14 +243,14 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
      * @return
      */
     @Query("SELECT  new com.stt.dash.backend.data.SmsByYearMonth("
-            + "sum(h.total), h.year, h.month, h.carrierCharCode) "
+            + "sum(h.total), h.year, h.month, h.carrierCharCode, h.messageType ) "
             + "FROM  SmsHour h "
             + "WHERE h.year = :yearSms AND "
             + "h.month IN (:monthSms) AND "
             + "h.messageType IN (:messageTypeSms) AND "
             + "h.systemId IN (:list_sid) "
-            + "GROUP BY  h.year, h.month, h.carrierCharCode "
-            + "ORDER BY h.year, h.month, h.carrierCharCode ")
+            + "GROUP BY  h.year, h.month, h.carrierCharCode, h.messageType  "
+            + "ORDER BY h.year, h.month, h.carrierCharCode, h.messageType  ")
     List<SmsByYearMonth> groupCarrierByYeMoWhMoInMessageTypeIn(@Param("yearSms") int yearSms,
                                                                @Param("monthSms") List<Integer> monthSms,
                                                                @Param("messageTypeSms") List<String> messageTypeSms,
@@ -334,14 +334,14 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
      * @return
      */
     @Query("SELECT  new com.stt.dash.backend.data.SmsByYearMonthDay("
-            + "SUM(h.total), h.year, h.month, h.day, h.carrierCharCode) "
+            + "SUM(h.total), h.year, h.month, h.day, h.carrierCharCode, h.messageType) "
             + "FROM  SmsHour h "
             + "WHERE h.year = :yearSms AND "
             + "h.month = :monthSms AND "
             + "h.messageType IN (:messageTypeSms) AND "
             + "h.systemId IN (:list_sid) "
-            + "GROUP BY h.year, h.month, h.day, h.carrierCharCode "
-            + "ORDER BY h.year, h.month, h.day, h.carrierCharCode")
+            + "GROUP BY h.year, h.month, h.day, h.carrierCharCode, h.messageType "
+            + "ORDER BY h.year, h.month, h.day, h.carrierCharCode, h.messageType ")
     List<SmsByYearMonthDay> groupCarrierByYeMoDaWhMessageTypeIn(@Param("yearSms") int yearSms,
                                                                 @Param("monthSms") int monthSms,
                                                                 @Param("messageTypeSms") List<String> messageTypeSms,
@@ -437,15 +437,15 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
      * @return
      */
     @Query("SELECT  new com.stt.dash.backend.data.SmsByYearMonthDayHour("
-            + "SUM(h.total), h.year, h.month, h.day, h.hour, h.carrierCharCode) "
+            + "SUM(h.total), h.year, h.month, h.day, h.hour, h.carrierCharCode, h.messageType) "
             + "FROM  SmsHour h "
             + "WHERE h.year = :yearSms AND "
             + "h.month = :monthSms AND "
             + "h.day = :daySms AND "
             + "h.messageType IN (:messageTypeSms) AND "
             + "h.systemId IN (:list_sid) "
-            + "GROUP BY h.year, h.month, h.day, h.hour, h.carrierCharCode "
-            + "ORDER BY h.year, h.month, h.day, h.hour, h.carrierCharCode")
+            + "GROUP BY h.year, h.month, h.day, h.hour, h.carrierCharCode, h.messageType "
+            + "ORDER BY h.year, h.month, h.day, h.hour, h.carrierCharCode, h.messageType")
     List<SmsByYearMonthDayHour> groupCarrierByYeMoDaHoWhMessageTypeIn(@Param("yearSms") int yearSms,
                                                                       @Param("monthSms") int monthSms,
                                                                       @Param("daySms") int daySms,
