@@ -1,11 +1,13 @@
 package com.stt.dash.ui.views.carrier;
 
 import com.stt.dash.app.OMessageType;
+import com.stt.dash.app.OMonths;
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.AbstractSmsByYearMonth;
 import com.stt.dash.backend.data.SmsByYearMonth;
 import com.stt.dash.backend.data.SmsByYearMonthDay;
+import com.stt.dash.backend.data.SmsByYearMonthDayHour;
 import com.stt.dash.backend.data.entity.Carrier;
 import com.stt.dash.backend.service.CarrierService;
 import com.stt.dash.backend.service.SmsHourService;
@@ -15,6 +17,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.PageTitle;
@@ -26,14 +29,17 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
+import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Tag("carrier-chart-view")
 @JsModule("./src/views/carrier/carrier-chart-view.js")
 @Route(value = BakeryConst.PAGE_CARRIER, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_CARRIER)
 public class CarrierChartView extends PolymerTemplate<TemplateModel> {
-
+    @Id("divHeader")
+    Div divHeader;
     @Id("deliveriesThisMonth")
     private Chart carrierTriMixChart;
 
@@ -46,17 +52,11 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     @Id("carrierDailyChart")
     private Chart carrierDailyChart;
 
-    //    @Id("deliveriesThisYear")
-//    private Chart deliveriesThisYearChart;
-//
-//    @Id("yearlySalesGraph")
-//    private Chart yearlySalesGraph;
-//
-//    @Id("ordersGrid")
-//    private Grid<Order> grid;
-//
-//    @Id("monthlyProductSplit")
-//    private Chart monthlyProductSplit;
+    @Id("carrierMonthlyPieChart")
+    private Chart carrierMonthlyPieChart;
+
+    @Id("carrierHourlyPieChart")
+    private Chart carrierHourlyPieChart;
     /**/
     Logger log = LoggerFactory.getLogger(CarrierChartView.class);
     private final SmsHourService smsHourService;
@@ -82,75 +82,179 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         /* Carrier */
         Page<Carrier> carrierPage = carrierService.findAll();
         multi_carrier.setItems(carrierPage.getContent());
+        multi_carrier.setItemLabelGenerator(Carrier::getCarrierCharcode);
         multi_carrier.setValue(new HashSet<>(carrierPage.getContent()));
-        /* TRIMESTRAL: SMS
+        /* HEADER */
+        divHeader.add(multi_carrier, multi_messagetype);
+        /* ------------- TRIMESTRAL: SMS
          * Ejem: SmsByYearMonth{total=2775, yearSms=2021, monthSms=3, someCode=MO}*/
         List<SmsByYearMonth> smsGroup = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(2021, Arrays.asList(3, 4, 5), stringListGenericBean.getSet());
         List<SmsByYearMonth> carrierGroup = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(2021, Arrays.asList(3, 4, 5), multi_messagetype.getSelectedItems(), stringListGenericBean.getSet());
-        populateTriChart(smsGroup, carrierGroup);
+        populateTriColumnLineChart(smsGroup, new ArrayList<>(carrierGroup));
         /* PIE */
-//        List<SmsByYearMonth> groupCarrier = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(2021, Arrays.asList(3, 4, 5), multi_messagetype.getSelectedItems(), stringListGenericBean.getSet());
+        List<SmsByYearMonth> groupCarrier = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(2021, Arrays.asList(3, 4, 5), multi_messagetype.getSelectedItems(), stringListGenericBean.getSet());
         populatePieChart(carrierGroup);
-        /* Mensual*/
+        /* --------------DIARIO */
         List<SmsByYearMonthDay> smsDayGroup = smsHourService.getGroupSmsByYearMonthDayMessageType(2021, 5, stringListGenericBean.getSet());
         List<SmsByYearMonthDay> carrierDayGroup = smsHourService.getGroupCarrierByYeMoDa(2021, 5, multi_messagetype.getSelectedItems(), stringListGenericBean.getSet());
-        populateMonthChart(smsDayGroup, carrierDayGroup);
+        populateMonthChart(smsDayGroup, new ArrayList<>(carrierDayGroup));
+        /* PIE */
+        populateMonthlyPieChart(carrierDayGroup);
+        /* --------------POR HORA */
+        List<SmsByYearMonthDayHour> smsHourGroup = smsHourService.getGroupSmsByYearMonthDayHourMessageType(2021, 5, 27, stringListGenericBean.getSet());
+        List<SmsByYearMonthDayHour> carrierHourGroup = smsHourService.getGroupCarrierByYeMoDaHoWhYeMoDayEqMessageTypeIn(2021, 5, 27, multi_messagetype.getSelectedItems(), stringListGenericBean.getSet());
+        populateHourChart(smsHourGroup, new ArrayList<>(carrierHourGroup));
+        /* PIE */
+        populateHourPieChart(carrierHourGroup);
     }
 
-    private void populateTriChart(List<? extends AbstractSmsByYearMonth> smsGroup, List<SmsByYearMonth> carrierGroup) {
-        Configuration confIn = carrierTriMixChart.getConfiguration();
-        Configuration confOutLine = carrierTriLineChart.getConfiguration();
+    private void populateHourPieChart(List<SmsByYearMonthDayHour> carrierHourGroup) {
+        Configuration confOut = carrierHourlyPieChart.getConfiguration();
         /**/
-        configureColumnChart(confIn);
+        Tooltip tooltip = new Tooltip();
+        tooltip.setValueDecimals(0);
+        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
+        confOut.setTooltip(tooltip);
+        /**/
+        PlotOptionsPie innerPieOptions = new PlotOptionsPie();
+        innerPieOptions.setSize("70%");
+        List<DataSeries> list_series = findDataSeriesPieBase(carrierHourGroup,
+                "Total",
+                innerPieOptions);
+        for (DataSeries list_sery : list_series) {
+            confOut.addSeries(list_sery);
+        }
+        confOut.setTitle("HOY");
+    }
+
+    private void populateHourChart(List<SmsByYearMonthDayHour> smsHourGroup, List<SmsByYearMonthDayHour> carrierHourGroup) {
+
+    }
+
+    private void populateMonthlyPieChart(List<SmsByYearMonthDay> carrierDayGroup) {
+        Configuration confOut = carrierMonthlyPieChart.getConfiguration();
+        PlotOptionsPie innerPieOptions = new PlotOptionsPie();
+        innerPieOptions.setSize("70%");
+        List<DataSeries> list_series =
+                findDataSeriesPieBase(carrierDayGroup,
+                        "Total",
+                        innerPieOptions);
+        for (DataSeries list_sery : list_series) {
+            confOut.addSeries(list_sery);
+        }
+        confOut.setTitle("MAYO");
+    }
+
+    private void populateTriColumnLineChart(List<? extends AbstractSmsByYearMonth> smsGroup, List<SmsByYearMonth> carrierGroup) {
+        Configuration confTriChart = carrierTriMixChart.getConfiguration();
+        /**/
+//        configureColumnChart(confIn);
         /* Averiguar cuales son los tres meses a calular. */
-        List<Integer> monthToShowList = Arrays.asList(3, 4, 5);
-        smsGroup = orderGroup(fillWithCero(smsGroup, monthToShowList));
+        List<Integer> monthToShowList = monthsIn(2);
+        String[] ml = new String[]{OMonths.valueOf(monthToShowList.get(0)).getMonthName(),
+                OMonths.valueOf(monthToShowList.get(1)).getMonthName(),
+                OMonths.valueOf(monthToShowList.get(2)).getMonthName()};
+        confTriChart.getxAxis().setCategories(ml);
         /**/
-        List<DataSeries> list_series1 = findDataSeriesColumnsBase(smsGroup);
-        for (DataSeries list_sery : list_series1) {
-            confIn.addSeries(list_sery);
+        System.out.println("BEFORE FILL AND ORDER ");
+        smsGroup.stream().forEach(System.out::println);
+        smsGroup = orderGroup(fillWithCero(smsGroup, monthToShowList));
+        System.out.println("AFTER FILL AND ORDER ");
+        smsGroup.stream().forEach(System.out::println);
+        /**/
+        Tooltip tooltip = new Tooltip();
+        tooltip.setValueDecimals(0);
+//        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
+        confTriChart.setTooltip(tooltip);
+        /**/
+        List<DataSeries> columnDataSeriesList = findDataSeriesColumnsBase(smsGroup);
+
+        for (DataSeries list_sery : columnDataSeriesList) {
+            confTriChart.addSeries(list_sery);
         }
 //        DataProvider<SmsByYearMonth, ?> dataProvider = new ListDataProvider<>(smsGroup);
 //
 //        DataProviderSeries<SmsByYearMonth> series = new DataProviderSeries<>(dataProvider, SmsByYearMonth::getTotal);
 //        confIn.addSeries(series);
 
+        /**/
+        System.out.println("BEFORE FILL AND ORDER: CARRIER GROUP ");
+        carrierGroup.stream().forEach(System.out::println);
+        smsGroup = orderGroup(fillWithCero(smsGroup, monthToShowList));
+        System.out.println("AFTER FILL AND ORDER: CARRIER GROUP ");
+        carrierGroup.stream().forEach(System.out::println);
+        /**/
         List<? extends AbstractSmsByYearMonth> l = carrierGroup;
-        log.info("TRIMESTRE LINE DATA: {}", l);
+//        log.info("TRIMESTRE LINE DATA: {}", l);
         /* Averiguar cuales son los tres meses a calular. */
         List<Integer> monthList = monthToShowList;
 
+        System.out.println("L ANTES DE");
+        /* AGRUPAR POR  */
+        Map<String, List<SmsByYearMonth>> gbc =
+                carrierGroup.stream().collect(Collectors.groupingBy(s -> s.getSomeCode()+""+s.getGroupBy()));
+
+
+        System.out.println("AGRUPADO ***");
+        gbc.entrySet().stream().forEach(sms->{
+            long totalCarrierPerMonth = sms.getValue()
+                    .stream()
+                    .mapToLong(p -> p.getTotal())
+                    .sum();
+
+        });
+        gbc.entrySet().stream().forEach(System.out::println);
+
+        l.stream().forEach(System.out::println);
         l = orderGroup(fillWithCero(l, monthToShowList));
-        List<DataSeries> list_series2 = findDataSeriesLineBase(l);
-        if (list_series2 == null || list_series2.size() == 0) {
+        List<DataSeries> LineDateSeriesList = paEntender(l);
+        if (LineDateSeriesList == null || LineDateSeriesList.size() == 0) {
             log.info("{} NO DATA FOR CARRIER CHART LINE", getStringLog());
         } else {
-            for (int i = 0; i < list_series2.size() - 1; i++) {
-                confIn.addSeries(list_series2.get(i));
+            for (int i = 0; i < LineDateSeriesList.size() - 1; i++) {
+                confTriChart.addSeries(LineDateSeriesList.get(i));
             }
-            confOutLine.addSeries(list_series2.get(list_series2.size() - 1));
         }
+        confTriChart.setTitle("TRIMESTRE");
     }
 
     private void populatePieChart(List<SmsByYearMonth> smsByYearMonth) {
-        Configuration confOut = carrierTriPieChart.getConfiguration();
-        List<DataSeries> list_series = findDataSeriesPieBase(smsByYearMonth, "Total");
+        Configuration conf = carrierTriPieChart.getConfiguration();
+        PlotOptionsPie innerPieOptions = new PlotOptionsPie();
+        innerPieOptions.setSize("70%");
+        /**/
+        Tooltip tooltip = new Tooltip();
+        tooltip.setValueDecimals(0);
+        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
+        conf.setTooltip(tooltip);
+        /**/
+        List<DataSeries> list_series = findDataSeriesPieBase(smsByYearMonth,
+                "Total",
+                innerPieOptions);
         for (DataSeries list_sery : list_series) {
-            confOut.addSeries(list_sery);
+            conf.addSeries(list_sery);
         }
+        conf.setTitle("Trimestre..");
     }
 
     private void populateMonthChart(List<? extends AbstractSmsByYearMonth> smsGroup, List<SmsByYearMonthDay> carrierGroup) {
         Configuration confIn = carrierDailyChart.getConfiguration();
+
         /**/
-        configureColumnChart(confIn);
+        Tooltip tooltip = new Tooltip();
+        tooltip.setValueDecimals(0);
+        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
+        confIn.setTooltip(tooltip);
+        /**/
+        /**/
+//        configureColumnChart(confIn);
         /* Averiguar cuales son los tres meses a calular. */
         List<Integer> monthToShowList = Arrays.asList(3, 4, 5);
         smsGroup = orderGroup(fillWithCero(smsGroup, monthToShowList));
         /**/
         List<DataSeries> list_series1 = findDataSeriesColumnsBase(smsGroup);
         for (DataSeries list_sery : list_series1) {
-            confIn.addSeries(list_sery);
+//            confIn.addSeries(list_sery);
         }
 //        DataProvider<SmsByYearMonth, ?> dataProvider = new ListDataProvider<>(smsGroup);
 //
@@ -202,7 +306,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
             /* Hasta este momento todos los valores de lso MessageType estan inicializados
              * en 0.*/
             messageTypeToShowMap = monthlyDataToShowMap.get(smsByYearMonth.getGroupBy());
-            /* Sustituyo ne el map el valor real del MessageType  */
+            /* Sustituyo en el map el valor real del MessageType  */
             messageTypeToShowMap.put(smsByYearMonth.getSomeCode(), smsByYearMonth.getTotal());
         }
 
@@ -251,62 +355,68 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
 
         /* Vaidar si las columnas son mas de una
          * para agregar la columna total */
-        if (OMessageType.values().length > 1) {
-            DataSeries series = new DataSeries();
-            series.setPlotOptions(splinePlotOptions);
-            series.setName("TOTAL");
-            series.setData(list_total.toArray(new Number[list_total.size()]));
-            list_series.add(series);
-        }
+//        if (OMessageType.values().length > 1) {
+//            DataSeries series = new DataSeries();
+//            series.setPlotOptions(splinePlotOptions);
+//            series.setName("TOTAL");
+//            series.setData(list_total.toArray(new Number[list_total.size()]));
+//            list_series.add(series);
+//        }
 //        conf.getyAxis().setMax(max_value_y * 1.30);
         return list_series;
     }
 
-    public List<DataSeries> findDataSeriesLineBase(List<? extends AbstractSmsByYearMonth> l) {
-        log.info("{} [{}]", getStringLog(), l);
+    public List<DataSeries> paEntender(List<? extends AbstractSmsByYearMonth> l) {
+        l.stream().forEach(System.out::println);
+
         Map<Integer, Map<String, Long>> data_monthly = new HashMap<>();
         List<Integer> lmonth = new ArrayList<>(4);
 
-        Map<String, Long> mapMx = new HashMap<>();
+        Map<String, Long> carrierTotalMap = new HashMap<>();
+        /* Agrega 0 a todos los carrier en toda la agrupacion (MONTH/DAY) */
         for (AbstractSmsByYearMonth smsByYearMonth : l) {
-            System.out.println("findDataSeriesLineBase : " + smsByYearMonth);
+            log.info("GROUP BY: {}  - SOMECODE: {} ", smsByYearMonth.getSomeCode(), smsByYearMonth.getGroupBy());
 
             /* Si no esta el Month/day/Hour agregarlos carrier seleccionados en 0l */
             if (!data_monthly.containsKey(smsByYearMonth.getGroupBy())) {
-                lmonth.add(smsByYearMonth.getGroupBy());
-                mapMx = new HashMap<>();
+                log.info("GRUPO AGREGADO: {}, {}", smsByYearMonth.getGroupBy(), smsByYearMonth.getSomeCode());
 
+                lmonth.add(smsByYearMonth.getGroupBy());
+                carrierTotalMap = new HashMap<>();
+
+                log.info("GRUPO INIC EN 0: {}, {}", smsByYearMonth.getGroupBy(), smsByYearMonth.getSomeCode());
                 /* Agragar al map cada uno de los carrier selecionados con 0. */
                 for (Carrier ocarrier : multi_carrier.getSelectedItems()) {
-                    mapMx.put(ocarrier.getCarrierCharcode(), 0l);
+                    carrierTotalMap.put(ocarrier.getCarrierCharcode(), 0l);
                 }
                 /* Agregar al Month/day/Hour el map con los 0l*/
-                System.out.println("data_monthly.put " + smsByYearMonth.getGroupBy() + " " + mapMx);
-                data_monthly.put(smsByYearMonth.getGroupBy(), mapMx);
+                data_monthly.put(smsByYearMonth.getGroupBy(), carrierTotalMap);
+            }else{
+                log.info("* NO AGREGADO: {}, {}", smsByYearMonth.getSomeCode(), smsByYearMonth.getGroupBy());
             }
             /* TODO: Hacer que del repositorio solo vengan las operadoras */
-            if (!mapMx.containsKey(smsByYearMonth.getSomeCode())) {
+            if (!carrierTotalMap.containsKey(smsByYearMonth.getSomeCode())) {
+                log.info("* SOMECODE NO VA AL GRAFICO : SOME:{}, GROUP:{}", smsByYearMonth.getSomeCode(), smsByYearMonth.getGroupBy());
                 continue;
             }
             /* Agrego en el Month/day/Hour en valor real */
-            mapMx = data_monthly.get(smsByYearMonth.getGroupBy());
-            System.out.println("mapMx.put " + smsByYearMonth.getSomeCode() + " " + smsByYearMonth.getTotal());
-            mapMx.put(smsByYearMonth.getSomeCode(), smsByYearMonth.getTotal());
+            carrierTotalMap = data_monthly.get(smsByYearMonth.getGroupBy());
+            carrierTotalMap.put(smsByYearMonth.getSomeCode(), smsByYearMonth.getTotal());
         }
 
         /*Llenar los Meses con number*/
         Map<String, List<Number>> list = new HashMap<>();
         for (Integer integer : lmonth) {
-            mapMx = data_monthly.get(integer);
-            System.out.println("Month/Day/Hour: " + integer + " " + mapMx);
+            carrierTotalMap = data_monthly.get(integer);
+            System.out.println("Month/Day/Hour: " + integer + " " + carrierTotalMap);
 
             /* Agragar al map los carrier selecionados. */
             for (Carrier ocarrier : multi_carrier.getSelectedItems()) {
                 if (!list.containsKey(ocarrier.getCarrierCharcode())) {
                     list.put(ocarrier.getCarrierCharcode(), new ArrayList<>());
                 }
-                System.out.println("list.get " + ocarrier.getCarrierCharcode() + " " + mapMx.get(ocarrier.getCarrierCharcode()));
-                list.get(ocarrier.getCarrierCharcode()).add(mapMx.get(ocarrier.getCarrierCharcode()));
+                System.out.println("list.get " + ocarrier.getCarrierCharcode() + " " + carrierTotalMap.get(ocarrier.getCarrierCharcode()));
+                list.get(ocarrier.getCarrierCharcode()).add(carrierTotalMap.get(ocarrier.getCarrierCharcode()));
             }
         }
 
@@ -314,9 +424,100 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         list.put("TOTAL", list_total);
         long total = 0;
         for (Integer integer : lmonth) {
-            mapMx = data_monthly.get(integer);
+            carrierTotalMap = data_monthly.get(integer);
             for (Carrier ocarrier : multi_carrier.getSelectedItems()) {
-                total += mapMx.get(ocarrier.getCarrierCharcode());
+                total += carrierTotalMap.get(ocarrier.getCarrierCharcode());
+            }
+            list_total.add(total);
+            total = 0;
+        }
+
+        List<DataSeries> list_series = new ArrayList<>();
+        PlotOptionsSpline splinePlotOptions = new PlotOptionsSpline();
+        for (Carrier ocarrier : multi_carrier.getSelectedItems()) {
+            DataSeries series = new DataSeries();
+            series.setPlotOptions(splinePlotOptions);
+            series.setName(ocarrier.getCarrierCharcode());
+
+            List<Number> numberList = list.get(ocarrier.getCarrierCharcode());
+            log.info("[{}] Colum size [{}]", getStringLog(), numberList);
+            if (numberList == null || numberList.isEmpty()) {
+                log.info("[{}] No data. Return empty DataSeries", getStringLog());
+                return new ArrayList<>();
+            }
+            series.setData(list.get(ocarrier.getCarrierCharcode()).toArray(new Number[numberList.size()]));
+            list_series.add(series);
+//            conf.addSeries(series);
+        }
+        /* Agregaar el TOTAL */
+        DataSeries series = new DataSeries();
+        series.setPlotOptions(splinePlotOptions);
+        series.setName("TOTAL");
+        series.setData(list_total.toArray(new Number[list_total.size()]));
+        list_series.add(series);
+        return list_series;
+    }
+
+    public List<DataSeries> findDataSeriesLineBase(List<? extends AbstractSmsByYearMonth> l) {
+
+        Map<Integer, Map<String, Long>> data_monthly = new HashMap<>();
+        List<Integer> lmonth = new ArrayList<>(4);
+
+        Map<String, Long> carrierTotalMap = new HashMap<>();
+        /* Agrega 0 a todos los carrier en toda la agrupacion (MONTH/DAY) */
+        for (AbstractSmsByYearMonth smsByYearMonth : l) {
+            log.info("GROUP BY: {}  - SOMECODE: {} ", smsByYearMonth.getSomeCode(), smsByYearMonth.getGroupBy());
+
+            /* Si no esta el Month/day/Hour agregarlos carrier seleccionados en 0l */
+            if (!data_monthly.containsKey(smsByYearMonth.getGroupBy())) {
+                log.info("GRUPO AGREGADO: {}, {}", smsByYearMonth.getGroupBy(), smsByYearMonth.getSomeCode());
+
+                lmonth.add(smsByYearMonth.getGroupBy());
+                carrierTotalMap = new HashMap<>();
+
+                log.info("GRUPO INIC EN 0: {}, {}", smsByYearMonth.getGroupBy(), smsByYearMonth.getSomeCode());
+                /* Agragar al map cada uno de los carrier selecionados con 0. */
+                for (Carrier ocarrier : multi_carrier.getSelectedItems()) {
+                    carrierTotalMap.put(ocarrier.getCarrierCharcode(), 0l);
+                }
+                /* Agregar al Month/day/Hour el map con los 0l*/
+                data_monthly.put(smsByYearMonth.getGroupBy(), carrierTotalMap);
+            }else{
+                log.info("* NO AGREGADO: {}, {}", smsByYearMonth.getSomeCode(), smsByYearMonth.getGroupBy());
+            }
+            /* TODO: Hacer que del repositorio solo vengan las operadoras */
+            if (!carrierTotalMap.containsKey(smsByYearMonth.getSomeCode())) {
+                log.info("* SOMECODE NO VA AL GRAFICO : SOME:{}, GROUP:{}", smsByYearMonth.getSomeCode(), smsByYearMonth.getGroupBy());
+                continue;
+            }
+            /* Agrego en el Month/day/Hour en valor real */
+            carrierTotalMap = data_monthly.get(smsByYearMonth.getGroupBy());
+            carrierTotalMap.put(smsByYearMonth.getSomeCode(), smsByYearMonth.getTotal());
+        }
+
+        /*Llenar los Meses con number*/
+        Map<String, List<Number>> list = new HashMap<>();
+        for (Integer integer : lmonth) {
+            carrierTotalMap = data_monthly.get(integer);
+            System.out.println("Month/Day/Hour: " + integer + " " + carrierTotalMap);
+
+            /* Agragar al map los carrier selecionados. */
+            for (Carrier ocarrier : multi_carrier.getSelectedItems()) {
+                if (!list.containsKey(ocarrier.getCarrierCharcode())) {
+                    list.put(ocarrier.getCarrierCharcode(), new ArrayList<>());
+                }
+                System.out.println("list.get " + ocarrier.getCarrierCharcode() + " " + carrierTotalMap.get(ocarrier.getCarrierCharcode()));
+                list.get(ocarrier.getCarrierCharcode()).add(carrierTotalMap.get(ocarrier.getCarrierCharcode()));
+            }
+        }
+
+        List<Number> list_total = new ArrayList<>();
+        list.put("TOTAL", list_total);
+        long total = 0;
+        for (Integer integer : lmonth) {
+            carrierTotalMap = data_monthly.get(integer);
+            for (Carrier ocarrier : multi_carrier.getSelectedItems()) {
+                total += carrierTotalMap.get(ocarrier.getCarrierCharcode());
             }
             list_total.add(total);
             total = 0;
@@ -394,7 +595,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
             forOrderedMap.put(smsByYearMonth.forKey(), smsByYearMonth);
         }
         SortedSet<String> keys = new TreeSet<>(forOrderedMap.keySet());
-        log.info("TRIMESTRE LINE DATA - BEFORE CLEARING {}", listToFill);
+//        log.info("TRIMESTRE LINE DATA - BEFORE CLEARING {}", listToFill);
         listToFill.clear();
         List<AbstractSmsByYearMonth> l = new ArrayList<>();
         keys.forEach(key -> {
@@ -403,7 +604,9 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         return l;
     }
 
-    private List<DataSeries> findDataSeriesPieBase(List<? extends SmsByYearMonth> l, String serieName) {
+    private List<DataSeries> findDataSeriesPieBase(List<? extends SmsByYearMonth> l,
+                                                   String serieName,
+                                                   PlotOptionsPie plotOptionsPie) {
 
         Map<String, Long> mapMx = new HashMap<>();
 
@@ -411,38 +614,98 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         multi_carrier.getValue().forEach(oCarrier -> {
             mapMx.put(oCarrier.getCarrierCharcode(), 0l);
         });
+        /* Agrupar por Carrier */
+        DataSeries pieSeries = new DataSeries();
 
-        /* Guardar los totales del Mes*/
-        for (SmsByYearMonth smsByYearMonth : l) {
-            /*TODO: El repo debe devolver solo los Carrier Seleccionados*/
-            if (!mapMx.containsKey(smsByYearMonth.getSomeCode())) {
-                continue;
-            }
-            mapMx.put(smsByYearMonth.getSomeCode(), smsByYearMonth.getTotal() + mapMx.get(smsByYearMonth.getSomeCode()));
-        }
+        System.out.println("********************//1///**************************");
+        l.stream().forEach(System.out::println);
+        Map<String, List<SmsByYearMonth>> gbc =
+                l.stream().collect(Collectors.groupingBy(s -> s.getSomeCode()));
+        System.out.println("********************//2///**************************");
+        gbc.entrySet().stream().forEach(System.out::println);
+        DataSeries donutSeries = new DataSeries();
+        gbc.entrySet().forEach(carrier -> {
+                    long totalCarrier = carrier.getValue()
+                            .stream()
+                            .mapToLong(p -> p.getTotal())
+                            .sum();
+                    pieSeries.add(new DataSeriesItem(carrier.getKey(), totalCarrier));
+                    log.info("{} ****** {}", carrier.getKey(), totalCarrier);
 
-        DataSeries series = new DataSeries();
-        series.setName(serieName);
-        mapMx.forEach((cod, ocarrier) -> {
-            DataSeriesItem item = new DataSeriesItem(cod, ocarrier);
-            series.add(item);
-        });
-        PlotOptionsPie plotOptionsPie = new PlotOptionsPie();
-        plotOptionsPie.setInnerSize("60%");
-        plotOptionsPie.getDataLabels().setCrop(false);
-        series.setPlotOptions(plotOptionsPie);
-//        conf.addSeries(deliveriesPerProductSeries);
 
-//        PlotOptionsPie plotOptionsPie = new PlotOptionsPie();
-//        plotOptionsPie.setSize("100px");
-//        plotOptionsPie.setCenter("100px", "80px");
-//        plotOptionsPie.setShowInLegend(false);
-//        plotOptionsPie.setDepth(5);
+                    Map<String, List<SmsByYearMonth>> g =
+                            carrier.getValue().stream().collect(Collectors.groupingBy(s -> s.getMessageType()));
+                    g.entrySet().stream().forEach(System.out::println);
+                    g.entrySet().forEach(c -> {
+                        long tc = c.getValue()
+                                .stream()
+                                .mapToLong(p -> p.getTotal())
+                                .sum();
+                        donutSeries.add(new DataSeriesItem(c.getKey(), tc));
+                        System.out.println("Este " + c.getKey() + " " + tc);
+
+                    });
+//                    carrier.getValue().forEach(mt -> {
+//                        series.add(new DataSeriesItem(mt.getMessageType(), mt.getTotal()));
+//                        log.info("{} **C** {}", mt.getMessageType(), mt.getTotal());
+//                    });
+//                    System.out.println("Este "+carrier.getKey() + " " + carrier.getValue());
+                }
+        );
+        pieSeries.setPlotOptions(plotOptionsPie);
+
+//        /* Guardar los totales del Mes*/
+//        for (SmsByYearMonth smsByYearMonth : l) {
+//            /*TODO: El repo debe devolver solo los Carrier Seleccionados*/
+//            /*if (!mapMx.containsKey(smsByYearMonth.getSomeCode())) {
+//                continue;
+//            }*/
+//            log.info("ELE {}  ************************* ", smsByYearMonth);
+//            mapMx.put(smsByYearMonth.getSomeCode(), smsByYearMonth.getTotal() + mapMx.get(smsByYearMonth.getSomeCode()));
+//        }
+//
+//        DataSeries series = new DataSeries();
+//        series.setName(serieName);
+//        mapMx.forEach((cod, ocarrier) -> {
+//            DataSeriesItem item = new DataSeriesItem(cod, ocarrier);
+//            log.info("Serie:{} Cod: {} Long:{} ************************* ", serieName, cod, ocarrier);
+//            series.add(item);
+//        });
+////        PlotOptionsPie plotOptionsPie = new PlotOptionsPie();
+////        plotOptionsPie.setInnerSize("60%");
+////        plotOptionsPie.getDataLabels().setCrop(false);
 //        series.setPlotOptions(plotOptionsPie);
+////        conf.addSeries(deliveriesPerProductSeries);
+//
+////        PlotOptionsPie plotOptionsPie = new PlotOptionsPie();
+////        plotOptionsPie.setSize("100px");
+////        plotOptionsPie.setCenter("100px", "80px");
+////        plotOptionsPie.setShowInLegend(false);
+////        plotOptionsPie.setDepth(5);
+////        series.setPlotOptions(plotOptionsPie);
+        PlotOptionsPie plotOptionsPie2 = new PlotOptionsPie();
+        plotOptionsPie2.setInnerSize("75%");
+        plotOptionsPie2.getDataLabels().setEnabled(false);
+        plotOptionsPie2.getDataLabels().setCrop(false);
+        donutSeries.setPlotOptions(plotOptionsPie2);
         List<DataSeries> list_series = new ArrayList<>(2);
-        list_series.add(series);
+        list_series.add(pieSeries);
+        list_series.add(donutSeries);
 //        conf.addSeries(series);
         return list_series;
     }
-
+    /**
+     * Devuelve un listado de los meses atras, segun monthback.
+     *
+     * @param monthback
+     * @return
+     */
+    private List<Integer> monthsIn(int monthback) {
+        List<Integer> lm = new ArrayList<>(monthback);
+        for (int i = monthback; i > 0; i--) {
+            lm.add(LocalDate.now().getMonth().minus(i).getValue());
+        }
+        lm.add(LocalDate.now().getMonth().getValue());
+        return lm;
+    }
 }

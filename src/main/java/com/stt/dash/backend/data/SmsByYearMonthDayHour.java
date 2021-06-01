@@ -12,6 +12,11 @@ public class SmsByYearMonthDayHour extends SmsByYearMonthDay {
         this.hourSms = hourSms;
     }
 
+    public SmsByYearMonthDayHour(long total, int yearSms, int monthSms, int daySms, int hourSms, String someCode, String messageType) {
+        super(total, yearSms, monthSms, daySms, someCode, messageType);
+        this.hourSms = hourSms;
+    }
+
     public int getHourSms() {
         return hourSms;
     }

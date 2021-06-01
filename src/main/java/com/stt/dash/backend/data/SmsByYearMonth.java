@@ -44,6 +44,11 @@ public class SmsByYearMonth extends AbstractSmsByYearMonth{
     }
 
     @Override
+    public String forKeyWithMessageType() {
+        return getYearSms() + "" + getMonthSms() + "" + getSomeCode()+getMessageType();
+    }
+
+    @Override
     public String toString() {
         return new StringJoiner(", ", SmsByYearMonth.class.getSimpleName() + "[", "]")
                 .add("total=" + getTotal())

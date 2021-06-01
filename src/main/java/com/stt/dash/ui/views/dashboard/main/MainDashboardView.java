@@ -24,8 +24,6 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.events.ChartLoadEvent;
 import com.vaadin.flow.component.charts.model.*;
-import com.vaadin.flow.component.charts.model.style.Color;
-import com.vaadin.flow.component.charts.model.style.SolidColor;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.polymertemplate.Id;
@@ -33,8 +31,6 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
-import com.vaadin.flow.theme.lumo.Lumo;
-import com.vaadin.flow.theme.lumo.LumoThemeDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,7 +119,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         grid.setDataProvider(orderDataProvider);
 
         DashboardData data = orderService.getDashboardData(MonthDay.now().getMonthValue(), Year.now().getValue());
-        populateYearlySalesChart(data);
+        populateMonthlySmsChart(data);
         populateDeliveriesCharts(data);
         populateOrdersCounts(data.getDeliveryStats());
         initProductSplitMonthlyGraph(data.getProductDeliveries());
@@ -166,7 +162,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         stingListGenericBean.getSet().stream().forEach(System.out::println);
         List<SmsByYearMonth> groupList = smsHourService.groupCarrierByYeMoMeWhMoEqMessageTypeIn(actualYear, actualMonth, Arrays.asList("MT", "MO"), stingListGenericBean.getSet());
         groupList.stream().forEach(System.out::println);
-        /* Agruar por Carrier */
+        /* Agrupar por Carrier */
         Map<String, List<SmsByYearMonth>> gbc =
                 groupList.stream().collect(Collectors.groupingBy(SmsByYearMonth::getSomeCode));
         System.out.println("**************** ");
@@ -349,7 +345,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         conf.getLegend().setEnabled(false);
     }
 
-    private void populateYearlySalesChart(DashboardData data) {
+    private void populateMonthlySmsChart(DashboardData data) {
         Configuration conf = yearlySalesGraph.getConfiguration();
         conf.getChart().setType(ChartType.AREASPLINE);
         conf.getChart().setBorderRadius(4);
