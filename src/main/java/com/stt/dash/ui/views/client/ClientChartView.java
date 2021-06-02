@@ -125,20 +125,27 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         confTriMixChart.addxAxis(x);
         List<SmsByYearMonth> l = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(LocalDate.now().getYear(), monthToShowList, stringListGenericBean.getSet());
         List<ListSeries> LineDateSeriesList = paEntender(l, monthToShowList);
-        if (LineDateSeriesList == null || LineDateSeriesList.size() == 0) {
-            log.info("{} NO DATA FOR CARRIER CHART LINE");
-        } else {
-            for (int i = 0; i < LineDateSeriesList.size(); i++) {
-                System.out.println("ADDING ********" + LineDateSeriesList.get(i).getName());
-                Series series = LineDateSeriesList.get(i);
-                series.setPlotOptions(plotColum);
-                confTriMixChart.addSeries(series);
-            }
-        }
+        addToChart(confTriMixChart, LineDateSeriesList, plotColum);
         /* LINE CHART */
         l = smsHourService.
                 getGroupSystemIdByYeMoWhMoInMessageTypeIn(LocalDate.now().getYear(), monthToShowList, messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getSet());
 
+        PlotOptionsLine plotLine = new PlotOptionsLine();
+        LineDateSeriesList = paEntenderLine(l, monthToShowList);
+        addToChart(confTriMixChart, LineDateSeriesList, plotLine);
+    }
+
+    private void addToChart(Configuration configuration, List<ListSeries> LineDateSeriesList, AbstractPlotOptions plot){
+        if (LineDateSeriesList == null || LineDateSeriesList.size() == 0) {
+            log.info("{} NO DATA FOR CARRIER CHART LINE");
+        } else {
+            for (int i = 0; i < LineDateSeriesList.size(); i++) {
+                System.out.println("ADDING LINE********" + LineDateSeriesList.get(i).getName());
+                Series series = LineDateSeriesList.get(i);
+                series.setPlotOptions(plot);
+                configuration.addSeries(series);
+            }
+        }
     }
 
     public List<ListSeries> paEntender(List<? extends AbstractSmsByYearMonth> l, List<Integer> integerList) {
@@ -183,6 +190,30 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 //        series.setName("MOVISTAR");
 //        series.setData(2795, 22520, 0);
 //        dataSeriesList.add(series);
+        return dataSeriesList;
+    }
+
+    public List<ListSeries> paEntenderLine(List<? extends AbstractSmsByYearMonth> l, List<Integer> integerList) {
+        l.stream().forEach(System.out::println);
+
+        List<ListSeries> dataSeriesList = new ArrayList<>();
+        /*TODO nullpointer*/
+        /* Recorre los Carrier seleccionados. */
+        systemIdMultiCombo.getSelectedItems().forEach(systemId -> {
+            ListSeries series = new ListSeries();
+            series.setName(systemId.getSystemId());
+            /* Recorre los meses del trimestre */
+            integerList.forEach(month -> {
+                /* Total por Month y Carrier*/
+                Long tot = l.stream()
+                        .filter(sms -> sms.getGroupBy() == month
+                                && systemId.getSystemId().equalsIgnoreCase(sms.getSomeCode()))
+                        .mapToLong(sms -> sms.getTotal()).sum();
+                System.out.println("MONTH-> " + month + ". Message Type: " + systemId.getSystemId() + " - TOTAL: " + tot);
+                series.addData(tot);
+            });
+            dataSeriesList.add(series);
+        });
         return dataSeriesList;
     }
 
