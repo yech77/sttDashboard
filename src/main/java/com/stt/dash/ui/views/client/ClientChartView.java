@@ -6,6 +6,7 @@ import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.AbstractSmsByYearMonth;
 import com.stt.dash.backend.data.SmsByYearMonth;
+import com.stt.dash.backend.data.SmsByYearMonthDay;
 import com.stt.dash.backend.data.entity.Client;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
+import javax.xml.crypto.Data;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,6 +49,9 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     @Id("deliveriesThisMonth")
     private Chart clientTriMixChart;
 
+    @Id("carrierDailyChart")
+    private Chart clientMonthlyChart;
+
     /**/
     Logger log = LoggerFactory.getLogger(ClientChartView.class);
     private final SmsHourService smsHourService;
@@ -58,6 +63,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     private final MultiselectComboBox<OMessageType> messageTypeMultiCombo = new MultiselectComboBox<>("Mensajes");
     /* Para Graficos y servicios */
     private List<Integer> monthToShowList;
+    private List<String> systemIdStringList;
     private String[] ml;
     /* Button */
     private Button filterButton = new Button("Actualizar");
@@ -109,33 +115,60 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
     private void updateCharts() {
         updateTriMixChart();
+        updateMonthlyLineChart();
+        updateHourlyChart();
+    }
+
+    private void updateHourlyChart() {
+
+    }
+
+    private void updateMonthlyLineChart() {
+        Configuration confMonthlyLineChart = clientMonthlyChart.getConfiguration();
+        PlotOptionsColumn plotColum = new PlotOptionsColumn();
+        /* Column Chart*/
+        List<SmsByYearMonthDay> l = smsHourService.getGroupSmsByYearMonthDayMessageType(LocalDate.now().getYear(), 5, stringListGenericBean.getSet());
+        List<Series> LineDateSeriesList = paEntender(l,
+                Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17));
+        addToChart(confMonthlyLineChart, LineDateSeriesList, plotColum);
+        /* Line Chart */
+        l = smsHourService.getGroupSystemIdByYeMoDa(LocalDate.now().getYear(), 5, messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getSet());
+        PlotOptionsLine plotLine = new PlotOptionsLine();
+        LineDateSeriesList = paEntenderLine(l,
+                Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17));
+        addToChart(confMonthlyLineChart, LineDateSeriesList, plotLine);
     }
 
     private void updateTriMixChart() {
         Configuration confTriMixChart = clientTriMixChart.getConfiguration();
+
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /* Averiguar cuales son los tres meses a calular. */
         XAxis x = new XAxis();
-        x.setTitle("Trimestre");
         x.setCategories(ml);
         /**/
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
         confTriMixChart.setTooltip(tooltip);
         confTriMixChart.addxAxis(x);
-        List<SmsByYearMonth> l = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(LocalDate.now().getYear(), monthToShowList, stringListGenericBean.getSet());
-        List<ListSeries> LineDateSeriesList = paEntender(l, monthToShowList);
+        systemIdStringList = new ArrayList<>();
+        for (SystemId s:
+                systemIdMultiCombo.getSelectedItems()) {
+            systemIdStringList.add(s.getSystemId());
+        }
+        List<SmsByYearMonth> l = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(LocalDate.now().getYear(), monthToShowList, systemIdStringList);
+        List<Series> LineDateSeriesList = paEntender(l, monthToShowList);
         addToChart(confTriMixChart, LineDateSeriesList, plotColum);
         /* LINE CHART */
         l = smsHourService.
-                getGroupSystemIdByYeMoWhMoInMessageTypeIn(LocalDate.now().getYear(), monthToShowList, messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getSet());
+                getGroupSystemIdByYeMoWhMoInMessageTypeIn(LocalDate.now().getYear(), monthToShowList, messageTypeMultiCombo.getSelectedItems(),systemIdStringList );
 
         PlotOptionsLine plotLine = new PlotOptionsLine();
         LineDateSeriesList = paEntenderLine(l, monthToShowList);
         addToChart(confTriMixChart, LineDateSeriesList, plotLine);
     }
 
-    private void addToChart(Configuration configuration, List<ListSeries> LineDateSeriesList, AbstractPlotOptions plot){
+    private void addToChart(Configuration configuration, List<Series> LineDateSeriesList, AbstractPlotOptions plot){
         if (LineDateSeriesList == null || LineDateSeriesList.size() == 0) {
             log.info("{} NO DATA FOR CARRIER CHART LINE");
         } else {
@@ -148,10 +181,10 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         }
     }
 
-    public List<ListSeries> paEntender(List<? extends AbstractSmsByYearMonth> l, List<Integer> integerList) {
+    public List<Series> paEntender(List<? extends AbstractSmsByYearMonth> l, List<Integer> integerList) {
         l.stream().forEach(System.out::println);
 
-        List<ListSeries> dataSeriesList = new ArrayList<>();
+        List<Series> dataSeriesList = new ArrayList<>();
         /*TODO nullpointer*/
         /* Recorre los Carrier seleccionados. */
         messageTypeMultiCombo.getSelectedItems().forEach(messageType -> {
@@ -193,10 +226,11 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         return dataSeriesList;
     }
 
-    public List<ListSeries> paEntenderLine(List<? extends AbstractSmsByYearMonth> l, List<Integer> integerList) {
+    public List<Series> paEntenderLine(List<? extends AbstractSmsByYearMonth> l,
+                                       List<Integer> integerList) {
         l.stream().forEach(System.out::println);
 
-        List<ListSeries> dataSeriesList = new ArrayList<>();
+        List<Series> dataSeriesList = new ArrayList<>();
         /*TODO nullpointer*/
         /* Recorre los Carrier seleccionados. */
         systemIdMultiCombo.getSelectedItems().forEach(systemId -> {
