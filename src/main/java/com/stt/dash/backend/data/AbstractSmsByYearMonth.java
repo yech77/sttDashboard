@@ -44,7 +44,7 @@ public abstract class AbstractSmsByYearMonth {
         this.yearSms = yearSms;
     }
 
-    public int getMonthSms() {
+    public Integer getMonthSms() {
         return monthSms;
     }
 
