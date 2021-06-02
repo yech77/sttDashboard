@@ -21,6 +21,7 @@ public class BakeryConst {
 			"storefront/%d/edit";
 	public static final String PAGE_DASHBOARD = "dashboard";
 	public static final String PAGE_CARRIER = "carrier";
+	public static final String PAGE_CLIENT = "client";
 	public static final String PAGE_DASHBOARD_MAIN = "dashboard-main";
 	public static final String PAGE_USERS = "users";
 	public static final String PAGE_BULKSMS = "bulk-sms";
@@ -30,6 +31,7 @@ public class BakeryConst {
 	public static final String TITLE_STOREFRONT = "Storefront";
 	public static final String TITLE_DASHBOARD = "Dashboard";
 	public static final String TITLE_CARRIER = "Operadoras-dashboard";
+	public static final String TITLE_CLIENT = "Credenciales-dashboard";
 	public static final String TITLE_DASHBOARD_MAIN = "Principal";
 	public static final String TITLE_USERS = "Usuarios";
 	public static final String TITLE_BULKSMS_SCHEDULER = "Programar Masivos";

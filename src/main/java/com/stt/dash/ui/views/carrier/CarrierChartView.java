@@ -417,6 +417,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
 //        series.setName("MOVISTAR");
 //        series.setData(2795, 22520, 0);
 //        dataSeriesList.add(series);
+//        dataSeriesList.add(series);
         return dataSeriesList;
     }
 
