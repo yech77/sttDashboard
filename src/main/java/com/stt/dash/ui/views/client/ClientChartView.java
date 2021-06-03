@@ -55,6 +55,8 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     @Id("carrierDailyChart")
     private Chart clientMonthlyChart;
 
+    @Id("carrierTriPieChart")
+    private Chart clientTriPieChart;
     /**/
     Logger log = LoggerFactory.getLogger(ClientChartView.class);
     private final SmsHourService smsHourService;
@@ -62,8 +64,8 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     private final CurrentUser currentUser;
     /* OPERADORAS */
     private ComboBox<Client> clientCombobox = new ComboBox<>("Clientes");
-    private MultiselectComboBox<SystemId> systemIdMultiCombo = new MultiselectComboBox<>("Clientes");
-    private final MultiselectComboBox<OMessageType> messageTypeMultiCombo = new MultiselectComboBox<>("Mensajes");
+    private MultiselectComboBox<SystemId> systemIdMultiCombo = new MultiselectComboBox<>("Credenciales");
+    private final MultiselectComboBox<OMessageType> messageTypeMultiCombo = new MultiselectComboBox<>("Tipos de Mensaje");
     /* Para Graficos y servicios */
     private List<Integer> monthToShowList;
     private List<String> systemIdStringList;
@@ -90,6 +92,8 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         messageTypeMultiCombo.setItemLabelGenerator(OMessageType::name);
         /* SystemId */
         systemIdMultiCombo.setItemLabelGenerator(SystemId::getSystemId);
+        /* Client */
+        clientCombobox.setItemLabelGenerator(Client::getClientName);
         /* Client & Systemids*/
         if (currentUser.getUser().getUserType() == User.OUSER_TYPE.HAS) {
             clientCombobox.setItems(currentUser.getUser().getClients());
@@ -120,6 +124,29 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         updateTriMixChart();
         updateMonthlyLineChart();
         updateHourlyChart();
+        /**/
+        updateTrimestrePie();
+    }
+
+    private void updateTrimestrePie() {
+        Configuration confHourlyChart = clientTriPieChart.getConfiguration();
+        PlotOptionsPie innerPieOptions = new PlotOptionsPie();
+//        innerPieOptions.setSize("70%");
+        /* Column Chart*/
+        List<SmsByYearMonth> l = smsHourService.getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(LocalDate.now().getYear(), monthToShowList, messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getSet());
+        List<DataSeries> LineDateSeriesList = paEntenderPie(l,monthToShowList);
+        addToPieChart(confHourlyChart, LineDateSeriesList, innerPieOptions);
+        /* Line Chart */
+//        for (SystemId s : systemIdMultiCombo.getSelectedItems()) {
+//            systemIdStringList.add(s.getSystemId());
+//        }
+//        l = smsHourService.getGroupSystemIdByYeMoDaHoWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), 5, 2, messageTypeMultiCombo.getSelectedItems(), systemIdStringList);
+//        PlotOptionsLine plotLine = new PlotOptionsLine();
+//        LineDateSeriesList = paEntenderLine(l,
+//                Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+//                        13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24));
+//        addToChart(confHourlyChart, LineDateSeriesList, plotLine);
+
     }
 
     private void updateHourlyChart() {
@@ -200,6 +227,18 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
             }
         }
     }
+    private void addToPieChart(Configuration configuration, List<DataSeries> LineDateSeriesList, AbstractPlotOptions plot) {
+        if (LineDateSeriesList == null || LineDateSeriesList.size() == 0) {
+            log.info("{} NO DATA FOR CARRIER CHART LINE");
+        } else {
+            for (int i = 0; i < LineDateSeriesList.size(); i++) {
+                System.out.println("ADDING LINE********" + LineDateSeriesList.get(i).getName());
+                Series series = LineDateSeriesList.get(i);
+//                series.setPlotOptions(plot);
+                configuration.addSeries(series);
+            }
+        }
+    }
 
     public List<Series> paEntender(List<? extends AbstractSmsByYearMonth> l, List<Integer> integerList) {
         l.stream().forEach(System.out::println);
@@ -243,6 +282,46 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 //        series.setName("MOVISTAR");
 //        series.setData(2795, 22520, 0);
 //        dataSeriesList.add(series);
+        return dataSeriesList;
+    }
+
+    public List<DataSeries> paEntenderPie(List<? extends AbstractSmsByYearMonth> l, List<Integer> integerList) {
+        System.out.println("PA ENTENDER PIE ----------------");
+        l.stream().forEach(System.out::println);
+
+        List<DataSeries> dataSeriesList = new ArrayList<>();
+        /*TODO nullpointer*/
+        /* Recorre los Carrier seleccionados. */
+        List<String> carriers = Arrays.asList("DIGITEL", "MOVILNET", "MOVISTAR");
+        DataSeries pieSeries = new DataSeries();
+        DataSeries donutSeries = new DataSeries();
+        carriers.forEach(carrier -> {
+                /* Total por Carrier */
+                Long tot = l.stream()
+                        .filter(sms -> carrier.equalsIgnoreCase(sms.getMessageType()))
+                        .mapToLong(sms -> sms.getTotal()).sum();
+                System.out.println("OPERADORA-> " + carrier + ". - TOTAL: " + tot);
+                pieSeries.add(new DataSeriesItem(carrier, tot));
+                /* Total por S*/
+            systemIdMultiCombo.getValue().forEach(systemId -> {
+                Long totSid = l.stream()
+                        .filter(sms -> sms.getMessageType().equalsIgnoreCase(carrier)
+                                && systemId.getSystemId().equalsIgnoreCase(sms.getSomeCode()))
+                        .mapToLong(sms -> sms.getTotal()).sum();
+                donutSeries.add(new DataSeriesItem(systemId.getSystemId(), totSid));
+            });
+        });
+        PlotOptionsPie plotPie = new PlotOptionsPie();
+        plotPie.setSize("70%");
+        PlotOptionsPie plotDonut = new PlotOptionsPie();
+        plotDonut.setInnerSize("75%");
+        plotDonut.getDataLabels().setEnabled(false);
+        /**/
+        pieSeries.setPlotOptions(plotPie);
+        donutSeries.setPlotOptions(plotDonut);
+        /**/
+        dataSeriesList.add(pieSeries);
+        dataSeriesList.add(donutSeries);
         return dataSeriesList;
     }
 

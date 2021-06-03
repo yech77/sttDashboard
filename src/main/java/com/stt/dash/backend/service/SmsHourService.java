@@ -220,6 +220,31 @@ public class SmsHourService {
         return yearBefore;
     }
 
+    public List<SmsByYearMonth> getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(int yearSms, List<Integer> monthSms, Set<OMessageType> messageTypeSms, List<String> list_sid) {
+        List<String> messagesType = new ArrayList<>(messageTypeSms.size());
+        for (OMessageType messageTypeSm : messageTypeSms) {
+            messagesType.add(messageTypeSm.name());
+        }
+        //return smshour_repo.groupSystemIdByYeMoWhMoInMessageTypeIn(yearSms, monthSms, l, list_sid);
+
+        log.info("Preparing Searching: year[{}] months[{}] Message Type [{}] sids[{}]",
+                yearSms, monthSms, messageTypeSms, list_sid);
+        List<SmsByYearMonth> yearBefore = null;
+        List<Integer> monthsOfPrevYear = findMonthsOfPreviousYear(monthSms);
+
+        if (monthsOfPrevYear != null) {
+            log.info("Month ({}) before actual year detected. Searching year[{}] month[{}] Message Type [{}] sid[{}]",
+                    monthsOfPrevYear, yearSms - 1, monthsOfPrevYear, messageTypeSms, list_sid);
+            yearBefore = smshour_repo.groupSystemIdByYeMoCaWhMoInMessageTypeIn(yearSms - 1, monthsOfPrevYear, messagesType, list_sid);
+        }
+        if (yearBefore == null) {
+            yearBefore = new ArrayList<>();
+        }
+        log.info("Searching: year[{}] months[{}] message type[{}] sids[{}]", yearSms, monthSms, messagesType, list_sid);
+        yearBefore.addAll(smshour_repo.groupSystemIdByYeMoCaWhMoInMessageTypeIn(yearSms, monthSms, messagesType, list_sid));
+        return yearBefore;
+    }
+
     public List<SmsByYearMonth> getGroupCarrierByYearMonthMessageType(int yearSms, int monthSms, String messageType, List<String> list_sid) {
         return smshour_repo.groupCarrierByYeMo(yearSms, monthSms, messageType, list_sid);
     }
