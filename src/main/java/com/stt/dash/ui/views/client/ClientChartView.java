@@ -58,16 +58,18 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     @Id("carrierTriPieChart")
     private Chart clientTriPieChart;
 
-
     @Id("carrierMonthlyPieChart")
     private Chart clientMonthlyPieChart;
+
+    @Id("carrierHourlyPieChart")
+    private Chart carrierHourlyPieChart;
 
     /**/
     Logger log = LoggerFactory.getLogger(ClientChartView.class);
     private final SmsHourService smsHourService;
     private final ListGenericBean<String> stringListGenericBean;
     private final CurrentUser currentUser;
-    /* OPERADORAS */
+    /* CLIENTE */
     private ComboBox<Client> clientCombobox = new ComboBox<>("Clientes");
     private MultiselectComboBox<SystemId> systemIdMultiCombo = new MultiselectComboBox<>("Credenciales");
     private final MultiselectComboBox<OMessageType> messageTypeMultiCombo = new MultiselectComboBox<>("Tipos de Mensaje");
@@ -132,15 +134,29 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         /**/
         updateTrimestrePie();
         updateMonthlyPie();
+        updateDailyPie();
+    }
+
+    private void updateDailyPie() {
+        Configuration confHourlyChart = carrierHourlyPieChart.getConfiguration();
+        PlotOptionsPie innerPieOptions = new PlotOptionsPie();
+        /* Column Chart*/
+        List<SmsByYearMonthDayHour> l = smsHourService.getGroupSystemIdByYeMoDaHoCaWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), 5, 1, messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getSet());
+        List<DataSeries> LineDateSeriesList = paEntenderPie(l,Arrays.asList(1));
+        addToPieChart(confHourlyChart, LineDateSeriesList, innerPieOptions);
+        Tooltip tooltip = new Tooltip();
+        confHourlyChart.setTooltip(tooltip);
     }
 
     private void updateMonthlyPie() {
-        Configuration confHourlyChart = clientMonthlyPieChart.getConfiguration();
+        Configuration confMonthlyChart = clientMonthlyPieChart.getConfiguration();
+        Tooltip tooltip = new Tooltip();
+        confMonthlyChart.setTooltip(tooltip);
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
         /* Column Chart*/
         List<SmsByYearMonth> l = smsHourService.getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(LocalDate.now().getYear(), Arrays.asList(5), messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getSet());
         List<DataSeries> LineDateSeriesList = paEntenderPie(l,Arrays.asList(5));
-        addToPieChart(confHourlyChart, LineDateSeriesList, innerPieOptions);
+        addToPieChart(confMonthlyChart, LineDateSeriesList, innerPieOptions);
     }
 
     private void updateTrimestrePie() {
@@ -187,7 +203,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
     private void updateMonthlyLineChart() {
         Configuration confMonthlyLineChart = clientMonthlyChart.getConfiguration();
-        PlotOptionsLine plotColum = new PlotOptionsLine();
+        PlotOptionsAreaspline plotColum = new PlotOptionsAreaspline();
         /* Column Chart*/
         List<SmsByYearMonthDay> l = smsHourService.getGroupSmsByYearMonthDayMessageType(LocalDate.now().getYear(), 5, stringListGenericBean.getSet());
         List<Series> LineDateSeriesList = paEntender(l,
@@ -195,7 +211,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         addToChart(confMonthlyLineChart, LineDateSeriesList, plotColum);
         /* Line Chart */
         l = smsHourService.getGroupSystemIdByYeMoDa(LocalDate.now().getYear(), 5, messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getSet());
-        PlotOptionsAreaspline plotLine = new PlotOptionsAreaspline();
+        PlotOptionsLine plotLine = new PlotOptionsLine();
         LineDateSeriesList = paEntenderLine(l,
                 Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17));
         addToChart(confMonthlyLineChart, LineDateSeriesList, plotLine);
