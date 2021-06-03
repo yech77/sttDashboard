@@ -48,7 +48,7 @@ class CarrierChartView extends PolymerElement {
                     min-height: 250px;
                 }
 
-                #yearlySalesGraph {
+                #carrierDailyChart {
                     height: calc(30vh - 64px) !important;
                     min-height: 200px;
                 }
@@ -79,9 +79,7 @@ class CarrierChartView extends PolymerElement {
                     </div>
                 </vaadin-board-row>
                 <vaadin-board-row>
-                    <div>
-                        <vaadin-chart id="carrierDailyChart" class="column-daily-chart"></vaadin-chart>
-                    </div>
+                        <vaadin-chart id="carrierDailyChart" class="class="yearly-sales""></vaadin-chart>
                 </vaadin-board-row>
                 <vaadin-board-row>
                     <div class="vaadin-board-cell">

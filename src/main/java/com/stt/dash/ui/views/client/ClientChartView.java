@@ -7,6 +7,7 @@ import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.AbstractSmsByYearMonth;
 import com.stt.dash.backend.data.SmsByYearMonth;
 import com.stt.dash.backend.data.SmsByYearMonthDay;
+import com.stt.dash.backend.data.SmsByYearMonthDayHour;
 import com.stt.dash.backend.data.entity.Client;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
@@ -30,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
-import javax.xml.crypto.Data;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +48,9 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
     @Id("deliveriesThisMonth")
     private Chart clientTriMixChart;
+
+    @Id("carrierTriLineChart")
+    private Chart clientHourlyChart;
 
     @Id("carrierDailyChart")
     private Chart clientMonthlyChart;
@@ -120,12 +123,29 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     }
 
     private void updateHourlyChart() {
-
+        Configuration confHourlyChart = clientHourlyChart.getConfiguration();
+        PlotOptionsColumn plotColum = new PlotOptionsColumn();
+        /* Column Chart*/
+        List<SmsByYearMonthDayHour> l = smsHourService.getGroupSmsByYearMonthDayHourMessageType(LocalDate.now().getYear(), 5, 2, stringListGenericBean.getSet());
+        List<Series> LineDateSeriesList = paEntender(l,
+                Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                        13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24));
+        addToChart(confHourlyChart, LineDateSeriesList, plotColum);
+        /* Line Chart */
+        for (SystemId s : systemIdMultiCombo.getSelectedItems()) {
+            systemIdStringList.add(s.getSystemId());
+        }
+        l = smsHourService.getGroupSystemIdByYeMoDaHoWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), 5, 2, messageTypeMultiCombo.getSelectedItems(), systemIdStringList);
+        PlotOptionsLine plotLine = new PlotOptionsLine();
+        LineDateSeriesList = paEntenderLine(l,
+                Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                        13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24));
+        addToChart(confHourlyChart, LineDateSeriesList, plotLine);
     }
 
     private void updateMonthlyLineChart() {
         Configuration confMonthlyLineChart = clientMonthlyChart.getConfiguration();
-        PlotOptionsColumn plotColum = new PlotOptionsColumn();
+        PlotOptionsAreaspline plotColum = new PlotOptionsAreaspline();
         /* Column Chart*/
         List<SmsByYearMonthDay> l = smsHourService.getGroupSmsByYearMonthDayMessageType(LocalDate.now().getYear(), 5, stringListGenericBean.getSet());
         List<Series> LineDateSeriesList = paEntender(l,
@@ -133,7 +153,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         addToChart(confMonthlyLineChart, LineDateSeriesList, plotColum);
         /* Line Chart */
         l = smsHourService.getGroupSystemIdByYeMoDa(LocalDate.now().getYear(), 5, messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getSet());
-        PlotOptionsLine plotLine = new PlotOptionsLine();
+        PlotOptionsAreaspline plotLine = new PlotOptionsAreaspline();
         LineDateSeriesList = paEntenderLine(l,
                 Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17));
         addToChart(confMonthlyLineChart, LineDateSeriesList, plotLine);
@@ -152,7 +172,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         confTriMixChart.setTooltip(tooltip);
         confTriMixChart.addxAxis(x);
         systemIdStringList = new ArrayList<>();
-        for (SystemId s:
+        for (SystemId s :
                 systemIdMultiCombo.getSelectedItems()) {
             systemIdStringList.add(s.getSystemId());
         }
@@ -161,14 +181,14 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         addToChart(confTriMixChart, LineDateSeriesList, plotColum);
         /* LINE CHART */
         l = smsHourService.
-                getGroupSystemIdByYeMoWhMoInMessageTypeIn(LocalDate.now().getYear(), monthToShowList, messageTypeMultiCombo.getSelectedItems(),systemIdStringList );
+                getGroupSystemIdByYeMoWhMoInMessageTypeIn(LocalDate.now().getYear(), monthToShowList, messageTypeMultiCombo.getSelectedItems(), systemIdStringList);
 
         PlotOptionsLine plotLine = new PlotOptionsLine();
         LineDateSeriesList = paEntenderLine(l, monthToShowList);
         addToChart(confTriMixChart, LineDateSeriesList, plotLine);
     }
 
-    private void addToChart(Configuration configuration, List<Series> LineDateSeriesList, AbstractPlotOptions plot){
+    private void addToChart(Configuration configuration, List<Series> LineDateSeriesList, AbstractPlotOptions plot) {
         if (LineDateSeriesList == null || LineDateSeriesList.size() == 0) {
             log.info("{} NO DATA FOR CARRIER CHART LINE");
         } else {
