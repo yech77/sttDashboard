@@ -587,6 +587,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         System.out.println("********************//2///**************************");
         gbc.entrySet().stream().forEach(System.out::println);
         DataSeries donutSeries = new DataSeries();
+        long startTime = System.currentTimeMillis();
         gbc.entrySet().forEach(carrier -> {
                     long totalCarrier = carrier.getValue()
                             .stream()
@@ -615,6 +616,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
 //                    System.out.println("Este "+carrier.getKey() + " " + carrier.getValue());
                 }
         );
+        System.out.println("SE TARDO: " + (System.currentTimeMillis()-startTime));
         pieSeries.setPlotOptions(plotOptionsPie);
 
 //        /* Guardar los totales del Mes*/

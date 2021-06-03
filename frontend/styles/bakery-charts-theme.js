@@ -62,6 +62,21 @@ $_documentContainer.innerHTML = `<dom-module id="bakery-charts-theme" theme-for=
         stroke: #1bca66;
         fill: #1bca66;
       }
+      /**/
+      :host(.carrierDailyChart) .highcharts-color-0 {
+        stroke: #18ddf2;
+        fill: #18ddf2;
+      }
+
+      :host(.carrierDailyChart) .highcharts-color-1 {
+        stroke: #1877f3;
+        fill: #1877f3;
+      }
+
+      :host(.carrierDailyChart) .highcharts-color-2 {
+        stroke: #1bca66;
+        fill: #1bca66;
+      }
 
       :host(.yearly-sales) .highcharts-grid-line {
         stroke: rgba(23, 68, 128, 0.1);

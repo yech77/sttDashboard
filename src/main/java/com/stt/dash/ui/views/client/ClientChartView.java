@@ -57,6 +57,11 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
     @Id("carrierTriPieChart")
     private Chart clientTriPieChart;
+
+
+    @Id("carrierMonthlyPieChart")
+    private Chart clientMonthlyPieChart;
+
     /**/
     Logger log = LoggerFactory.getLogger(ClientChartView.class);
     private final SmsHourService smsHourService;
@@ -126,6 +131,16 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         updateHourlyChart();
         /**/
         updateTrimestrePie();
+        updateMonthlyPie();
+    }
+
+    private void updateMonthlyPie() {
+        Configuration confHourlyChart = clientMonthlyPieChart.getConfiguration();
+        PlotOptionsPie innerPieOptions = new PlotOptionsPie();
+        /* Column Chart*/
+        List<SmsByYearMonth> l = smsHourService.getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(LocalDate.now().getYear(), Arrays.asList(5), messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getSet());
+        List<DataSeries> LineDateSeriesList = paEntenderPie(l,Arrays.asList(5));
+        addToPieChart(confHourlyChart, LineDateSeriesList, innerPieOptions);
     }
 
     private void updateTrimestrePie() {
@@ -172,7 +187,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
     private void updateMonthlyLineChart() {
         Configuration confMonthlyLineChart = clientMonthlyChart.getConfiguration();
-        PlotOptionsAreaspline plotColum = new PlotOptionsAreaspline();
+        PlotOptionsLine plotColum = new PlotOptionsLine();
         /* Column Chart*/
         List<SmsByYearMonthDay> l = smsHourService.getGroupSmsByYearMonthDayMessageType(LocalDate.now().getYear(), 5, stringListGenericBean.getSet());
         List<Series> LineDateSeriesList = paEntender(l,
@@ -297,14 +312,14 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         DataSeries donutSeries = new DataSeries();
         carriers.forEach(carrier -> {
                 /* Total por Carrier */
-                Long tot = l.stream()
+                Long tot = l.parallelStream()
                         .filter(sms -> carrier.equalsIgnoreCase(sms.getMessageType()))
                         .mapToLong(sms -> sms.getTotal()).sum();
                 System.out.println("OPERADORA-> " + carrier + ". - TOTAL: " + tot);
-                pieSeries.add(new DataSeriesItem(carrier, tot));
+                pieSeries.add(new DataSeriesItem(carrier, tot), false, false);
                 /* Total por S*/
             systemIdMultiCombo.getValue().forEach(systemId -> {
-                Long totSid = l.stream()
+                Long totSid = l.parallelStream()
                         .filter(sms -> sms.getMessageType().equalsIgnoreCase(carrier)
                                 && systemId.getSystemId().equalsIgnoreCase(sms.getSomeCode()))
                         .mapToLong(sms -> sms.getTotal()).sum();
