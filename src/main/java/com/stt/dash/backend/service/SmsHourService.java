@@ -162,6 +162,14 @@ public class SmsHourService {
         return smshour_repo.groupSystemIdByYeMoDaHoWhMessageTypeIn(yearSms, monthSms, daySms, l, list_sid);
     }
 
+    public List<SmsByYearMonthDayHour> getGroupSystemIdByYeMoDaHoCaWhYeMoDayEqMessageTypeIn(int yearSms, int monthSms, int daySms, Set<OMessageType> messageTypeSms, List<String> list_sid) {
+        List<String> l = new ArrayList<>(messageTypeSms.size());
+        for (OMessageType messageTypeSm : messageTypeSms) {
+            l.add(messageTypeSm.name());
+        }
+        return smshour_repo.groupSystemIdByYeMoDaHoCaWhMoEqDaEqMessageTypeIn(yearSms, monthSms, daySms, l, list_sid);
+    }
+
     /**
      * Total por: year, mes y operadora.
      *
