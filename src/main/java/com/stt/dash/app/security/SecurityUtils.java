@@ -39,6 +39,7 @@ public final class SecurityUtils {
 	 *         has not signed in
 	 */
 	public static String getUsername() {
+		System.out.println("-----------------***************************************");
 		SecurityContext context = SecurityContextHolder.getContext();
 		Object principal = context.getAuthentication().getPrincipal();
 		if(principal instanceof UserDetails) {

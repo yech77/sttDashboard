@@ -99,21 +99,21 @@ public class MainView extends AppLayout {
 
 	private static Tab[] getAvailableTabs() {
 		final List<Tab> tabs = new ArrayList<>(4);
-		tabs.add(createTab(VaadinIcon.EDIT, TITLE_STOREFRONT,
-						StorefrontView.class));
-		tabs.add(createTab(VaadinIcon.CLOCK,TITLE_DASHBOARD, DashboardView.class));
+//		tabs.add(createTab(VaadinIcon.EDIT, TITLE_STOREFRONT,
+//						StorefrontView.class));
+//		tabs.add(createTab(VaadinIcon.CLOCK,TITLE_DASHBOARD, DashboardView.class));
 
-		if (SecurityUtils.isAccessGranted(CarrierChartView.class)) {
-			tabs.add(createTab(VaadinIcon.WORKPLACE,TITLE_CLIENT, ClientChartView.class));
+		if (SecurityUtils.isAccessGranted(MainDashboardView.class)) {
+			tabs.add(createTab(VaadinIcon.HOME,TITLE_DASHBOARD_MAIN, MainDashboardView.class));
 		}
 		if (SecurityUtils.isAccessGranted(ORolesView.class)) {
 			tabs.add(createTab(VaadinIcon.KEY,"Roles", ORolesView.class));
 		}
 		if (SecurityUtils.isAccessGranted(CarrierChartView.class)) {
-			tabs.add(createTab(VaadinIcon.WORKPLACE,"Evolucion Operadoras", CarrierChartView.class));
+			tabs.add(createTab(VaadinIcon.CHART_LINE,TITLE_CLIENT, ClientChartView.class));
 		}
-		if (SecurityUtils.isAccessGranted(MainDashboardView.class)) {
-			tabs.add(createTab(VaadinIcon.HOME,TITLE_DASHBOARD_MAIN, MainDashboardView.class));
+		if (SecurityUtils.isAccessGranted(CarrierChartView.class)) {
+			tabs.add(createTab(VaadinIcon.CHART_TIMELINE,TITLE_CARRIER, CarrierChartView.class));
 		}
 		if (SecurityUtils.isAccessGranted(BulkSmsView.class)) {
 			tabs.add(createTab(VaadinIcon.USER,TITLE_BULKSMS, BulkSmsView.class));

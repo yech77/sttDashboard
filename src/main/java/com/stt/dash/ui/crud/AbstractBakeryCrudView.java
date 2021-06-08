@@ -53,9 +53,10 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
      * Salvar el entity, la clase hija puede sobreescribir este metodo.
      *
      * @param idBeforeSave si es 0 es un SAVE. Si es distinto de 0, es un UPDATE
+     * @return true si se desea salvar.
      */
-    protected void beforeSaving(long idBeforeSave, E entity) {
-
+    protected boolean beforeSaving(long idBeforeSave, E entity) {
+        return true;
     }
 
     protected abstract void setupGrid(Grid<E> grid);
@@ -110,8 +111,9 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         addCancelListener(e -> navigateToEntity(null));
         addSaveListener(e -> {
             idBeforeSave = e.getItem().getId() == null ? 0 : e.getItem().getId();
-            beforeSaving(idBeforeSave, e.getItem());
-            entityPresenter.save(e.getItem(), onSuccessSaved, onFail);
+            if (beforeSaving(idBeforeSave, e.getItem())) {
+                entityPresenter.save(e.getItem(), onSuccessSaved, onFail);
+            }
         });
 
         addDeleteListener(e ->

@@ -64,9 +64,10 @@ public class BulkSmsView extends AbstractBakeryCrudView<Agenda> {
     }
 
     @Override
-    protected void beforeSaving(long idBeforeSave, Agenda entity) {
+    protected boolean beforeSaving(long idBeforeSave, Agenda entity) {
         if (idBeforeSave==0l) {
             entity.setCreator(currentUser.getUser());
         }
+        return true;
     }
 }

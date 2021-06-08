@@ -146,8 +146,42 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         confOut.setTitle("Hoy");
     }
 
-    private void populateHourChart(List<SmsByYearMonthDayHour> smsHourGroup, List<SmsByYearMonthDayHour> carrierHourGroup) {
+    private void populateHourChart(List<? extends AbstractSmsByYearMonth> smsHourGroup, List<SmsByYearMonthDayHour> carrierHourGroup) {
+        Configuration confIn = carrierTriLineChart.getConfiguration();
 
+        /**/
+        Tooltip tooltip = new Tooltip();
+        tooltip.setValueDecimals(0);
+        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
+        confIn.setTooltip(tooltip);
+        /**/
+        /**/
+//        configureColumnChart(confIn);
+        smsHourGroup = orderGroup(fillWithCero(smsHourGroup, monthToShowList));
+        /**/
+        List<DataSeries> list_series1 = findDataSeriesColumnsBase(smsHourGroup);
+        for (DataSeries list_sery : list_series1) {
+            confIn.addSeries(list_sery);
+        }
+//        DataProvider<SmsByYearMonth, ?> dataProvider = new ListDataProvider<>(smsGroup);
+//
+//        DataProviderSeries<SmsByYearMonth> series = new DataProviderSeries<>(dataProvider, SmsByYearMonth::getTotal);
+//        confIn.addSeries(series);
+
+        List<? extends AbstractSmsByYearMonth> l = smsHourGroup;
+        log.info("TRIMESTRE LINE DATA: {}", l);
+        /* Averiguar cuales son los tres meses a calular. */
+        List<Integer> monthList = monthToShowList;
+
+        l = orderGroup(fillWithCero(l, monthToShowList));
+        List<DataSeries> list_series2 = findDataSeriesLineBase(l);
+        if (list_series2 == null || list_series2.size() == 0) {
+            log.info("{} NO DATA FOR CARRIER CHART LINE", getStringLog());
+        } else {
+            for (int i = 0; i < list_series2.size() - 1; i++) {
+                confIn.addSeries(list_series2.get(i));
+            }
+        }
     }
 
     private void populateMonthlyPieChart(List<SmsByYearMonthDay> carrierDayGroup) {
