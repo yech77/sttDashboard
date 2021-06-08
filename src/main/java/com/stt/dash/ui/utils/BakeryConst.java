@@ -30,8 +30,8 @@ public class BakeryConst {
 
 	public static final String TITLE_STOREFRONT = "Storefront";
 	public static final String TITLE_DASHBOARD = "Dashboard";
-	public static final String TITLE_CARRIER = "Operadoras-dashboard";
-	public static final String TITLE_CLIENT = "Credenciales-dashboard";
+	public static final String TITLE_CARRIER = "Evolución Operadora";
+	public static final String TITLE_CLIENT = "Evolución Cliente";
 	public static final String TITLE_DASHBOARD_MAIN = "Principal";
 	public static final String TITLE_USERS = "Usuarios";
 	public static final String TITLE_BULKSMS_SCHEDULER = "Programar Masivos";

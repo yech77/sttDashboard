@@ -23,7 +23,7 @@ public class FIlesToSend extends AbstractEntitySequence {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private OUser userCreator;
+    private User userCreator;
     private int numGenerated;
     private int numSent;
     private int smsCount;
@@ -233,11 +233,11 @@ public class FIlesToSend extends AbstractEntitySequence {
         this.filePath = filePath;
     }
 
-    public OUser getUserCreator() {
+    public User getUserCreator() {
         return userCreator;
     }
 
-    public void setUserCreator(OUser userCreator) {
+    public void setUserCreator(User userCreator) {
         this.userCreator = userCreator;
     }
 
