@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.stt.dash.ui.views.storefront.OrderCardHeaderGenerator</OriginalElement>
+  <nodes>
+    <node x="81.75" y="282.5">com.stt.dash.backend.service.FilterableCrudService</node>
+    <node x="310.4569892473118" y="888.0">com.stt.dash.ui.views.bulksms.BulkSmsSchedulerView</node>
+    <node x="393.75" y="242.0">com.stt.dash.ui.crud.CrudEntityPresenter</node>
+    <node x="1124.75" y="501.5">com.stt.dash.ui.crud.PresenterFactory</node>
+    <node x="0.0" y="474.0">com.stt.dash.ui.crud.CrudEntityDataProvider</node>
+    <node x="832.9844086021506" y="229.0">com.stt.dash.ui.crud.EntityPresenter</node>
+    <node x="1000.45" y="0.0">com.stt.dash.ui.crud.EntityPresenterState</node>
+    <node x="784.45" y="66.5">com.stt.dash.ui.views.EntityView</node>
+    <node x="632.75" y="422.0">com.stt.dash.ui.views.storefront.OrderPresenter</node>
+    <node x="290.9569892473118" y="669.0">com.stt.dash.ui.crud.AbstractBakeryCrudView</node>
+    <node x="378.1510752688172" y="66.5">com.stt.dash.backend.service.CrudService</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.stt.dash.ui.views.storefront.OrderPresenter" target="com.stt.dash.ui.crud.EntityPresenter" relationship="TO_ONE">
+      <point x="-118.0" y="-97.5" />
+      <point x="750.75" y="402.0" />
+      <point x="903.2344086021506" y="402.0" />
+      <point x="-70.25" y="71.5" />
+    </edge>
+    <edge source="com.stt.dash.ui.crud.AbstractBakeryCrudView" target="com.stt.dash.ui.crud.CrudEntityPresenter" relationship="TO_ONE">
+      <point x="44.25" y="-84.5" />
+      <point x="512.2069892473119" y="643.0" />
+      <point x="509.98440860215055" y="643.0" />
+      <point x="509.98440860215055" y="402.0" />
+      <point x="464.5" y="402.0" />
+      <point x="-70.75" y="58.5" />
+    </edge>
+    <edge source="com.stt.dash.ui.crud.CrudEntityPresenter" target="com.stt.dash.backend.service.CrudService" relationship="DEPENDENCY">
+      <point x="-70.75" y="-58.5" />
+      <point x="464.5" y="209.0" />
+      <point x="510.48440860215055" y="209.0" />
+      <point x="510.48440860215055" y="199.0" />
+      <point x="481.1510752688172" y="199.0" />
+      <point x="0.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.crud.AbstractBakeryCrudView" target="com.stt.dash.ui.crud.CrudEntityPresenter" relationship="CREATE">
+      <point x="132.75" y="-84.5" />
+      <point x="600.7069892473119" y="643.0" />
+      <point x="520.9844086021506" y="643.0" />
+      <point x="520.9844086021506" y="402.0" />
+      <point x="606.0" y="402.0" />
+      <point x="70.75" y="58.5" />
+    </edge>
+    <edge source="com.stt.dash.ui.crud.PresenterFactory" target="com.stt.dash.ui.crud.EntityPresenter" relationship="CREATE">
+      <point x="0.0" y="-18.0" />
+      <point x="1235.75" y="392.0" />
+      <point x="1043.7344086021506" y="392.0" />
+      <point x="70.25" y="71.5" />
+    </edge>
+    <edge source="com.stt.dash.ui.crud.EntityPresenter" target="com.stt.dash.ui.crud.EntityPresenterState" relationship="TO_ONE">
+      <point x="56.200000000000045" y="-71.5" />
+      <point x="1029.6844086021506" y="209.0" />
+      <point x="1072.45" y="209.0" />
+      <point x="-72.0" y="84.5" />
+    </edge>
+    <edge source="com.stt.dash.ui.crud.EntityPresenter" target="com.stt.dash.backend.service.CrudService" relationship="DEPENDENCY">
+      <point x="-112.39999999999998" y="-71.5" />
+      <point x="861.0844086021506" y="209.0" />
+      <point x="510.48440860215055" y="209.0" />
+      <point x="510.48440860215055" y="199.0" />
+      <point x="481.1510752688172" y="199.0" />
+      <point x="0.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.service.FilterableCrudService" target="com.stt.dash.backend.service.CrudService" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-18.0" />
+      <point x="227.75" y="209.0" />
+      <point x="412.48440860215055" y="209.0" />
+      <point x="-68.66666666666669" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.crud.CrudEntityDataProvider" target="com.stt.dash.backend.service.FilterableCrudService" relationship="TO_ONE">
+      <point x="-89.0" y="-45.5" />
+      <point x="89.0" y="402.0" />
+      <point x="154.75" y="402.0" />
+      <point x="-73.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderPresenter" target="com.stt.dash.ui.crud.EntityPresenter" relationship="DEPENDENCY">
+      <point x="118.0" y="-97.5" />
+      <point x="986.75" y="402.0" />
+      <point x="1235.75" y="402.0" />
+      <point x="1235.75" y="392.0" />
+      <point x="1043.7344086021506" y="392.0" />
+      <point x="70.25" y="71.5" />
+    </edge>
+    <edge source="com.stt.dash.ui.crud.EntityPresenter" target="com.stt.dash.backend.service.CrudService" relationship="TO_ONE">
+      <point x="-56.200000000000045" y="-71.5" />
+      <point x="917.2844086021505" y="199.0" />
+      <point x="561.9569892473119" y="199.0" />
+      <point x="561.9569892473119" y="189.0" />
+      <point x="549.8177419354838" y="189.0" />
+      <point x="68.66666666666663" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.crud.AbstractBakeryCrudView" target="com.stt.dash.ui.crud.CrudEntityDataProvider" relationship="CREATE">
+      <point x="-132.75" y="-84.5" />
+      <point x="335.2069892473118" y="643.0" />
+      <point x="178.0" y="643.0" />
+      <point x="0.0" y="45.5" />
+    </edge>
+    <edge source="com.stt.dash.ui.crud.EntityPresenter" target="com.stt.dash.ui.crud.EntityPresenterState" relationship="CREATE">
+      <point x="112.40000000000009" y="-71.5" />
+      <point x="1085.8844086021506" y="209.0" />
+      <point x="1216.45" y="209.0" />
+      <point x="72.0" y="84.5" />
+    </edge>
+    <edge source="com.stt.dash.ui.crud.CrudEntityPresenter" target="com.stt.dash.backend.service.CrudService" relationship="TO_ONE">
+      <point x="70.75" y="-58.5" />
+      <point x="606.0" y="199.0" />
+      <point x="561.9569892473119" y="199.0" />
+      <point x="561.9569892473119" y="189.0" />
+      <point x="549.8177419354838" y="189.0" />
+      <point x="68.66666666666663" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.crud.EntityPresenter" target="com.stt.dash.ui.views.EntityView" relationship="DEPENDENCY">
+      <point x="0.0" y="-71.5" />
+      <point x="973.4844086021506" y="189.0" />
+      <point x="882.45" y="189.0" />
+      <point x="0.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.crud.CrudEntityDataProvider" target="com.stt.dash.backend.service.FilterableCrudService" relationship="DEPENDENCY">
+      <point x="89.0" y="-45.5" />
+      <point x="267.0" y="402.0" />
+      <point x="366.5" y="402.0" />
+      <point x="366.5" y="392.0" />
+      <point x="300.75" y="392.0" />
+      <point x="73.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.crud.AbstractBakeryCrudView" target="com.stt.dash.backend.service.FilterableCrudService" relationship="DEPENDENCY">
+      <point x="-44.25" y="-84.5" />
+      <point x="423.7069892473118" y="643.0" />
+      <point x="366.5" y="643.0" />
+      <point x="366.5" y="392.0" />
+      <point x="300.75" y="392.0" />
+      <point x="73.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.BulkSmsSchedulerView" target="com.stt.dash.ui.crud.AbstractBakeryCrudView" relationship="GENERALIZATION">
+      <point x="0.0" y="-84.5" />
+      <point x="0.0" y="84.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="0.7" showDependencies="true" x="572.8571428571429" y="519.2857142857143" />
+  <SelectedNodes>
+    <node>com.stt.dash.ui.crud.EntityPresenter</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Fields</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

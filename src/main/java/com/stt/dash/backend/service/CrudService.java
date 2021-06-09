@@ -12,7 +12,14 @@ public interface CrudService<T extends AbstractEntitySequence> {
 	JpaRepository<T, Long> getRepository();
 
 	default T save(User currentUser, T entity) {
-		return getRepository().saveAndFlush(entity);
+		T t;
+		try {
+			t = getRepository().saveAndFlush(entity);
+		}catch (Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+		return t;
 	}
 
 	default void delete(User currentUser, T entity) {
