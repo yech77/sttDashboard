@@ -22,7 +22,7 @@ import com.stt.dash.ui.MainView;
 @EnableJpaRepositories(basePackageClasses = { UserRepository.class })
 @EntityScan(basePackageClasses = { User.class })
 public class Application extends SpringBootServletInitializer {
-
+	private static String APP_NAME = "ODASH";
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
@@ -30,5 +30,9 @@ public class Application extends SpringBootServletInitializer {
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(Application.class);
+	}
+
+	public static String getAPP_NAME(){
+		return APP_NAME;
 	}
 }

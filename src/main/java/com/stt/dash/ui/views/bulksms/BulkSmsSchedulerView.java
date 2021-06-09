@@ -1,5 +1,6 @@
 package com.stt.dash.ui.views.bulksms;
 
+import com.stt.dash.app.OProperties;
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.app.session.SetGenericBean;
@@ -8,6 +9,7 @@ import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.data.entity.FIlesToSend;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
+import com.stt.dash.backend.repositories.SystemIdRepository;
 import com.stt.dash.backend.service.AgendaService;
 import com.stt.dash.backend.service.FilesToSendService;
 import com.stt.dash.backend.thread.SmsGeneratorParserRunnable;
@@ -44,14 +46,22 @@ import java.util.concurrent.ScheduledExecutorService;
 @Secured({Role.ADMIN, "UI_USER"})
 public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
 
-    private ODateUitls date_utils;
-    private int sendTime = 1;
-    public BulkSmsSchedulerView(AgendaService agendaService,
-                                FilesToSendService service,
-                                CurrentUser currentUser,
-                                @Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
-                                SetGenericBean<SystemId> userSystemIdSet) {
+    private static BulkSmsSchedulerForm form;
+    private SystemIdRepository systemid_repo;
+    private final OProperties properties;
+    private final FilesToSendService files_service;
+    private final String userEmail;
+    public BulkSmsSchedulerView(
+            OProperties properties, SystemIdRepository systemid_repo,
+            AgendaService agendaService,
+            FilesToSendService service,
+            CurrentUser currentUser,
+            @Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
+            SetGenericBean<SystemId> userSystemIdSet) {
         super(FIlesToSend.class, service, new Grid<FIlesToSend>(), createForm(currentUser, agendaService, userSystemIdSet, userChildrenList), currentUser);
+        this.files_service = service;
+        this.properties=properties;
+        this.userEmail = currentUser.getUser().getEmail();
     }
 
     @Override
@@ -76,7 +86,37 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
                                                             SetGenericBean<SystemId> userSystemIdSet,
                                                             ListGenericBean userChildren) {
         List<Agenda> agendaList = agendaService.getAllValidAgendasInFamily(userChildren.getSet());
-        BulkSmsSchedulerForm form = new BulkSmsSchedulerForm(agendaList, userSystemIdSet.getSet(), currentUser);
+        form = new BulkSmsSchedulerForm(agendaList, userSystemIdSet.getSet(), currentUser);
         return new BinderCrudEditor<FIlesToSend>(form.getBinder(), form);
     }
+
+    @Override
+    protected void afterSaving(long idBeforeSave, FIlesToSend entity) {
+
+        // Crea Nuevo hilo
+        ScheduledExecutorService localExecutor = Executors.newSingleThreadScheduledExecutor();
+        TaskScheduler scheduler = new ConcurrentTaskScheduler(localExecutor);
+        /**/
+        List<SystemId> ids = systemid_repo.findBySystemId(form.systemIdCombo.getValue());
+        if (ids.size() < 1) {
+            System.out.println("SysId not found!!!");
+        } else {
+
+            String clientCod = ids.get(0).getClient().getClientCod();
+
+            // Valida y Genera mensajes
+            System.out.println("Generando mensajes en 5 segundos...");
+            AgendaFileUtils.setBaseDir(properties.getAgendaFilePathUpload());
+            FIlesToSend fIlesToSend = new FIlesToSend(form.orderName.getValue(), form.orderDescription.getValue(), form.agendaCombo.getValue().getFileName(),
+                    entity.getDateToSend(), form.systemIdCombo.getValue());
+            scheduler.schedule(new SmsGeneratorParserRunnable(properties,
+                            this.files_service,
+                            fIlesToSend, form.agendaCombo.getValue(), form.systemIdCombo.getValue(),
+                            form.messageBox.getValue(), clientCod, userEmail),
+                    ODateUitls.localDateTimeToDate(LocalDateTime.now().plusSeconds(5)));
+
+            getUI().get().navigate("smsOrderView");
+        }
+    }
+
 }

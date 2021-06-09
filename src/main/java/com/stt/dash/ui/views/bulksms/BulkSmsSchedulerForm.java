@@ -34,16 +34,16 @@ import java.util.stream.Collectors;
 public class BulkSmsSchedulerForm extends FormLayout {
     Binder<FIlesToSend> binder = new BeanValidationBinder<>(FIlesToSend.class);
     /**/
-    private TextField orderName = new TextField();
-    private TextField orderDescription = new TextField();
-    private TextArea messageBox = new TextArea();
+    public TextField orderName = new TextField();
+    public TextField orderDescription = new TextField();
+    public TextArea messageBox = new TextArea();
     private Paragraph messageBuilded = new Paragraph();
     /**/
     private Checkbox sendNow = new Checkbox("Despachar ahora");
     /**/
     private DateTimePicker dateTimePicker = new DateTimePicker();
-    private ComboBox<Agenda> agendaCombo = new ComboBox<>();
-    private ComboBox<String> systemIdCombo = new ComboBox<>();
+    public ComboBox<Agenda> agendaCombo = new ComboBox<>();
+    public ComboBox<String> systemIdCombo = new ComboBox<>();
     private Span warningSpan = new Span("");
     private Paragraph charCountSpan = new Paragraph("");
     /**/
@@ -98,6 +98,7 @@ public class BulkSmsSchedulerForm extends FormLayout {
         /**/
         dateTimePicker.setMin(LocalDateTime.now());
         dateTimePicker.setValue(LocalDateTime.now().plusMinutes(10));
+        doBinder();
     }
 
     public Binder<FIlesToSend> getBinder() {
