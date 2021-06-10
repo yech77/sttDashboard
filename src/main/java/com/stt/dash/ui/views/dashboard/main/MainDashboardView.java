@@ -159,8 +159,8 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         conf.getChart().setType(ChartType.PIE);
         conf.getChart().setBorderRadius(4);
         conf.setTitle("Products delivered in " + FormattingUtils.getFullMonthName(today));
-        stingListGenericBean.getSet().stream().forEach(System.out::println);
-        List<SmsByYearMonth> groupList = smsHourService.groupCarrierByYeMoMeWhMoEqMessageTypeIn(actualYear, actualMonth, Arrays.asList("MT", "MO"), stingListGenericBean.getSet());
+        stingListGenericBean.getList().stream().forEach(System.out::println);
+        List<SmsByYearMonth> groupList = smsHourService.groupCarrierByYeMoMeWhMoEqMessageTypeIn(actualYear, actualMonth, Arrays.asList("MT", "MO"), stingListGenericBean.getList());
         groupList.stream().forEach(System.out::println);
         /* Agrupar por Carrier */
         Map<String, List<SmsByYearMonth>> gbc =
@@ -208,7 +208,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
     private void populateOrdersCounts(DeliveryStats deliveryStats) {
         List<OrderSummary> orders = orderService.findAnyMatchingStartingToday();
         /* Buscando totales MT y MO del mes actual para mostrarlo en pantalla principal */
-        List<SmsByYearMonth> groupByYearMonth = smsHourService.getGroupSmsByYearMonthMessageType(actualYear, actualMonth, stingListGenericBean.getSet());
+        List<SmsByYearMonth> groupByYearMonth = smsHourService.getGroupSmsByYearMonthMessageType(actualYear, actualMonth, stingListGenericBean.getList());
         long t_mo = 0;
         long t_mt = 0;
         System.out.println("Lista devuelta " + groupByYearMonth.size());
@@ -281,7 +281,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
 
         yearConf.setTitle("Mensajes del dia: " + today.getDayOfMonth());
         yearConf.getxAxis().setCategories(MILITARY_HOURS);
-        List<SmsByYearMonthDayHour> smsByHour = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actualYear, actualMonth, actualDay, stingListGenericBean.getSet());
+        List<SmsByYearMonthDayHour> smsByHour = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actualYear, actualMonth, actualDay, stingListGenericBean.getList());
 
         List<Number> mtHour = fillHouList(smsByHour, "MT");
         List<Number> moHour = fillHouList(smsByHour, "MO");
@@ -303,7 +303,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         Configuration monthConf = deliveriesThisMonthChart.getConfiguration();
         configureColumnChart(monthConf);
         /**/
-        List<SmsByYearMonthDay> groupSmsByYearMonthDayMessageType = smsHourService.getGroupSmsByYearMonthDayMessageType(actualYear, actualMonth, stingListGenericBean.getSet());
+        List<SmsByYearMonthDay> groupSmsByYearMonthDayMessageType = smsHourService.getGroupSmsByYearMonthDayMessageType(actualYear, actualMonth, stingListGenericBean.getList());
         System.out.println("DEVUELTOS: " + groupSmsByYearMonthDayMessageType.size());
         List<Number> mt = fillDays(groupSmsByYearMonthDayMessageType, "MT");
         List<Number> mo = fillDays(groupSmsByYearMonthDayMessageType, "MO");
@@ -360,7 +360,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
                 OMonths.valueOf(monthToShowList.get(1)).getMonthName(),
                 OMonths.valueOf(monthToShowList.get(2)).getMonthName()};
         conf.getxAxis().setCategories(ml);
-        List<SmsByYearMonth> monthToShowDataList = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actualYear, monthToShowList, stingListGenericBean.getSet());
+        List<SmsByYearMonth> monthToShowDataList = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actualYear, monthToShowList, stingListGenericBean.getList());
 
         for (Integer integer : monthToShowList) {
             boolean thisHasIt = false;

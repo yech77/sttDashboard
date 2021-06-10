@@ -5,5 +5,5 @@ import java.util.Set;
 
 @FunctionalInterface
 public interface ListGenericBean<E> {
-    List<E> getSet();
+    List<E> getList();
 }

@@ -56,7 +56,7 @@ public class STTConfiguration {
     }
 
     /**
-     * Devuelve todos los SystemIds de todos los clientes del
+     * Devuelve todos los SystemIds, en String, de todos los clientes del
      * CurrentUser.
      *
      * @param currentUser

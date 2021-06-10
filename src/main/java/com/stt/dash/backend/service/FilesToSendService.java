@@ -19,7 +19,6 @@ public class FilesToSendService implements FilterableCrudService<FIlesToSend>{
 //    private MyAuditEventComponent auditEvent;
     private static String UI_CODE = "SERV";
     private FilesToSendRepository filesToSendRepository;
-    private FilesToSendRepository files_repo;
 
     private static final Logger log = LoggerFactory.getLogger(FilesToSendService.class.getName());
     public FilesToSendService(FilesToSendRepository filesToSendRepository) {
@@ -36,22 +35,23 @@ public class FilesToSendService implements FilterableCrudService<FIlesToSend>{
         }
     }
 
-    public void save(FIlesToSend files, String user) {
-        if (files == null) {
+    public FIlesToSend save(FIlesToSend fIlesToSend, String user) {
+        FIlesToSend f = null;
+        if (fIlesToSend == null) {
             log.warn("[{}] FilesToSend is null", Application.getAPP_NAME());
-            return;
+            return f;
         }
         try {
-            Long id = files.getId();
-            FIlesToSend f = files_repo.save(files);
+            Long id = fIlesToSend.getId();
+            f = filesToSendRepository.save(fIlesToSend);
 //            ODashAuditEvent.OEVENT_TYPE t = ODashAuditEvent.OEVENT_TYPE.CREATE_RECADO;
             if (id == null) {
                 log.info("[{}] SAVED: ORDER NAME [{}] STATUS [{} - {}] BEING PRO[{}] READY TO SEND[{}]", Application.getAPP_NAME(),
-                        files.getOrderName(),
-                        files.getStatus().name(),
-                        files.getStatusText(),
-                        files.isBeingProcessed(),
-                        files.isReadyToSend());
+                        fIlesToSend.getOrderName(),
+                        fIlesToSend.getStatus().name(),
+                        fIlesToSend.getStatusText(),
+                        fIlesToSend.isBeingProcessed(),
+                        fIlesToSend.isReadyToSend());
 //                t = ODashAuditEvent.OEVENT_TYPE.CREATE_RECADO;
 //                try {
 //                    auditEvent.add(ODashAuditEvent.OEVENT_TYPE.CREATE_RECADO, files);
@@ -60,11 +60,11 @@ public class FilesToSendService implements FilterableCrudService<FIlesToSend>{
 //                }
             } else {
                 log.info("[{}] UPDATED: ORDER NAME [{}] STATUS [{} - {}] BEING PRO[{}] READY TO SEND[{}]", Application.getAPP_NAME(),
-                        files.getOrderName(),
-                        files.getStatus().name(),
-                        files.getStatusText(),
-                        files.isBeingProcessed(),
-                        files.isReadyToSend());
+                        fIlesToSend.getOrderName(),
+                        fIlesToSend.getStatus().name(),
+                        fIlesToSend.getStatusText(),
+                        fIlesToSend.isBeingProcessed(),
+                        fIlesToSend.isReadyToSend());
 //                t = ODashAuditEvent.OEVENT_TYPE.UPDATE_RECADO;
 //                try {
 //                    auditEvent.add(ODashAuditEvent.OEVENT_TYPE.UPDATE_RECADO, files);
@@ -81,6 +81,7 @@ public class FilesToSendService implements FilterableCrudService<FIlesToSend>{
             log.error("[{}] Error on Save:", Application.getAPP_NAME());
             log.error("", d);
         }
+        return f;
     }
 
 

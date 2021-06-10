@@ -82,7 +82,7 @@ public class SmsGeneratorParserRunnable implements Runnable {
         fileToSend.setStatus(FIlesToSend.Status.GENERATING_MESSAGES);
         log.info("[{}] [{}] UPDATING -> GENERATING_MESSAGES", getStringLog(),
                 fileToSend.getFileName());
-        files_service.save(fileToSend, userEmail);
+//        files_service.save(fileToSend, userEmail);
 
         int numLine = 0;
         StringBuilder sbLine = new StringBuilder();
@@ -134,7 +134,7 @@ public class SmsGeneratorParserRunnable implements Runnable {
                     fileToSend.setNumGenerated(numLine);
                     log.info("[{}] [{}] UPDATING -> NUMGENERATED", Application.getAPP_NAME(),
                             fileToSend.getFileName());
-                    files_service.save(fileToSend, userEmail);
+                    fileToSend = files_service.save(fileToSend, userEmail);
                 }
             }
 
@@ -143,7 +143,7 @@ public class SmsGeneratorParserRunnable implements Runnable {
             fileToSend.setStatus(FIlesToSend.Status.PREPARING_SMS);
             log.info("[{}] [{}] UPDATING -> PREPARING_SMS", Application.getAPP_NAME(),
                     fileToSend.getFileName());
-            files_service.save(fileToSend, userEmail);
+            fileToSend = files_service.save(fileToSend, userEmail);
 
             File targetFile = new File(baseDirectory + "/" + client + "/" + systemId + "/http/" + fileToSend.getId() + ".csv");
 
@@ -160,7 +160,7 @@ public class SmsGeneratorParserRunnable implements Runnable {
                 log.info("[{}] [{}] UPDATING -> INVALIDS", Application.getAPP_NAME(),
                         fileToSend.getFileName());
                 fileToSend.setStatus(FIlesToSend.Status.INVALID);
-                files_service.save(fileToSend, userEmail);
+                fileToSend = files_service.save(fileToSend, userEmail);
             }
 
         } catch (FileNotFoundException ex) {
@@ -168,14 +168,14 @@ public class SmsGeneratorParserRunnable implements Runnable {
             log.info("[{}] [{}] UPDATING -> INVALIDS", Application.getAPP_NAME(),
                     fileToSend.getFileName());
             fileToSend.setStatus(FIlesToSend.Status.INVALID);
-            files_service.save(fileToSend, userEmail);
+            fileToSend = files_service.save(fileToSend, userEmail);
             log.error("", ex);
         } catch (IOException ex) {
             log.info("[{}] [{}] UPDATING -> INVALIDS", Application.getAPP_NAME(),
                     fileToSend.getFileName());
             fileToSend.setStatus(FIlesToSend.Status.INVALID);
             fileToSend.setStatus(FIlesToSend.Status.INVALID);
-            files_service.save(fileToSend, userEmail);
+            fileToSend = files_service.save(fileToSend, userEmail);
             log.error("", ex);
         }
     }
