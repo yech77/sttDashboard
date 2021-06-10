@@ -1,5 +1,7 @@
 package com.stt.dash.backend.data.entity;
 
+import com.stt.dash.backend.data.Status;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,15 +15,15 @@ import java.util.Date;
 @Entity
 public class FIlesToSend extends AbstractEntitySequence {
 
-    public enum Status {
-        VALIDATING,
-        GENERATING_MESSAGES,
-        PREPARING_SMS,
-        WAITING_TO_SEND,
-        SENDING,
-        COMPLETED,
-        INVALID
-    }
+//    public enum Status {
+//        VALIDATING,
+//        GENERATING_MESSAGES,
+//        PREPARING_SMS,
+//        WAITING_TO_SEND,
+//        SENDING,
+//        COMPLETED,
+//        INVALID
+//    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User userCreator;

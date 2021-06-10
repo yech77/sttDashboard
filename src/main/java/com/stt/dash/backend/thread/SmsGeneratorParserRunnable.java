@@ -2,6 +2,7 @@ package com.stt.dash.backend.thread;
 
 import com.stt.dash.Application;
 import com.stt.dash.app.OProperties;
+import com.stt.dash.backend.data.Status;
 import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.data.entity.FIlesToSend;
 import com.stt.dash.backend.service.FilesToSendService;
@@ -75,11 +76,11 @@ public class SmsGeneratorParserRunnable implements Runnable {
     public void generateSms() {
         if (stream == null || messagesText.length() == 0) {
             log.info("[{}] [{}] El archivo o el mensaje esta vacio.", getStringLog(), fileToSend.getFileName());
-            fileToSend.setStatus(FIlesToSend.Status.INVALID);
+            fileToSend.setStatus(Status.INVALID);
             files_service.save(fileToSend, userEmail);
             return;
         }
-        fileToSend.setStatus(FIlesToSend.Status.GENERATING_MESSAGES);
+        fileToSend.setStatus(Status.GENERATING_MESSAGES);
         log.info("[{}] [{}] UPDATING -> GENERATING_MESSAGES", getStringLog(),
                 fileToSend.getFileName());
 //        files_service.save(fileToSend, userEmail);
@@ -140,7 +141,7 @@ public class SmsGeneratorParserRunnable implements Runnable {
 
             fileToSend.setNumGenerated(numLine);
             fileToSend.setSmsCount(numLine);
-            fileToSend.setStatus(FIlesToSend.Status.PREPARING_SMS);
+            fileToSend.setStatus(Status.PREPARING_SMS);
             log.info("[{}] [{}] UPDATING -> PREPARING_SMS", Application.getAPP_NAME(),
                     fileToSend.getFileName());
             fileToSend = files_service.save(fileToSend, userEmail);
@@ -159,7 +160,7 @@ public class SmsGeneratorParserRunnable implements Runnable {
                 log.error("[{}] [{}] NOT CREATED!", Application.getAPP_NAME(), targetFile.getAbsolutePath());
                 log.info("[{}] [{}] UPDATING -> INVALIDS", Application.getAPP_NAME(),
                         fileToSend.getFileName());
-                fileToSend.setStatus(FIlesToSend.Status.INVALID);
+                fileToSend.setStatus(Status.INVALID);
                 fileToSend = files_service.save(fileToSend, userEmail);
             }
 
@@ -167,14 +168,14 @@ public class SmsGeneratorParserRunnable implements Runnable {
             System.out.println("Error leyendo archivo. Cancelando proceso...");
             log.info("[{}] [{}] UPDATING -> INVALIDS", Application.getAPP_NAME(),
                     fileToSend.getFileName());
-            fileToSend.setStatus(FIlesToSend.Status.INVALID);
+            fileToSend.setStatus(Status.INVALID);
             fileToSend = files_service.save(fileToSend, userEmail);
             log.error("", ex);
         } catch (IOException ex) {
             log.info("[{}] [{}] UPDATING -> INVALIDS", Application.getAPP_NAME(),
                     fileToSend.getFileName());
-            fileToSend.setStatus(FIlesToSend.Status.INVALID);
-            fileToSend.setStatus(FIlesToSend.Status.INVALID);
+            fileToSend.setStatus(Status.INVALID);
+            fileToSend.setStatus(Status.INVALID);
             fileToSend = files_service.save(fileToSend, userEmail);
             log.error("", ex);
         }
