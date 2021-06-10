@@ -2,6 +2,7 @@ package com.stt.dash.ui;
 
 import com.stt.dash.ui.views.bulksms.BulkSmsSchedulerView;
 import com.stt.dash.ui.views.bulksms.BulkSmsView;
+import com.stt.dash.ui.views.bulksms.FileToSendEditor;
 import com.stt.dash.ui.views.carrier.CarrierChartView;
 import com.stt.dash.ui.views.client.ClientChartView;
 import com.stt.dash.ui.views.rol.ORolesView;
@@ -120,6 +121,9 @@ public class MainView extends AppLayout {
 		}
 		if (SecurityUtils.isAccessGranted(BulkSmsSchedulerView.class)) {
 			tabs.add(createTab(VaadinIcon.USER,TITLE_BULKSMS_SCHEDULER, BulkSmsSchedulerView.class));
+		}
+		if (SecurityUtils.isAccessGranted(BulkSmsSchedulerView.class)) {
+			tabs.add(createTab(VaadinIcon.USER,TITLE_BULKSMS_SCHEDULER+"nuevo", FileToSendEditor.class));
 		}
 		if (SecurityUtils.isAccessGranted(UsersView.class)) {
 			tabs.add(createTab(VaadinIcon.USER,TITLE_USERS, UsersView.class));
