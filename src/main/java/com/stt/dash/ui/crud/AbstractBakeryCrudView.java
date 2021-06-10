@@ -7,6 +7,7 @@ import com.stt.dash.backend.service.FilterableCrudService;
 import com.stt.dash.ui.components.SearchBar;
 import com.stt.dash.ui.utils.TemplateUtil;
 import com.stt.dash.ui.views.HasNotifications;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.crud.Crud;
 import com.vaadin.flow.component.crud.CrudEditor;
 import com.vaadin.flow.component.crud.CrudI18n;
@@ -25,7 +26,11 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
 //private static final String DELETE_MESSAGE = "Are you sure you want to delete the selected %s? This action cannot be undone.";
     private static final String DISCARD_MESSAGE = "Tiene modificaciones sin guardar en %s. ¿Descartar cambios?";
     private static final String DELETE_MESSAGE = "¿Seguro desea borrar a %s? Esta opción no se puede deshacer.";
-
+    /**/
+    private static String headerDialog = "Programación SMS";
+    private static String textDialog = "¿Desea confirmar su programación?";
+    private static String confirmTextDialog = "Confirmar";
+    private static String cancelTextDialog = "Volver";
     private final Grid<E> grid;
 
     private final CrudEntityPresenter<E> entityPresenter;
@@ -48,6 +53,7 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
             System.out.println("--------------------- UN ON SAVED");
         }
     }
+
     /**
      * En caso de que se necesite realizar una tarea(ejm.completar datos) antes de
      * Salvar el entity, la clase hija puede sobreescribir este metodo.
@@ -100,8 +106,7 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
             navigateToEntity(null);
         };
         Consumer<E> onFail = entity -> {
-//            throw new RuntimeException("The operation could not be performed.");
-            throw new RuntimeException("La operación no pudo ser realizada.");
+            throw new RuntimeException("The operation could not be performed.");
         };
 
         addEditListener(e ->
@@ -111,9 +116,14 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         addCancelListener(e -> navigateToEntity(null));
         addSaveListener(e -> {
             idBeforeSave = e.getItem().getId() == null ? 0 : e.getItem().getId();
-            if (beforeSaving(idBeforeSave, e.getItem())) {
-                entityPresenter.save(e.getItem(), onSuccessSaved, onFail);
-            }
+            beforeSaving(idBeforeSave, e.getItem());
+
+            ConfirmDialog dialog = new ConfirmDialog(headerDialog, textDialog, confirmTextDialog,
+                    confirmEvent -> entityPresenter.save(e.getItem(), onSuccessSaved, onFail),
+                    cancelTextDialog, cancelEvent -> System.out.println("Cancelado"));
+            dialog.open();
+//            entityPresenter.save(e.getItem(), onSuccessSaved, onFail);
+
         });
 
         addDeleteListener(e ->

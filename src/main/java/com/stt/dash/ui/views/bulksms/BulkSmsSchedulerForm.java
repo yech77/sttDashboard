@@ -5,6 +5,7 @@ import com.stt.dash.backend.data.OSystemIdSession;
 import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.data.entity.FIlesToSend;
 import com.stt.dash.backend.data.entity.SystemId;
+import com.stt.dash.ui.utils.ODateUitls;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
@@ -15,6 +16,9 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.binder.ValueContext;
+import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
@@ -26,6 +30,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -164,18 +169,33 @@ public class BulkSmsSchedulerForm extends FormLayout {
             hasMessageAllParameter = !hasEnougharmeters;
             messageBox.setEnabled(hasEnougharmeters);
         });
+        sendNow.addValueChangeListener(changeEvent->{
+            dateTimePicker.setValue(LocalDateTime.now());
+        });
+
     }
 
     private void doBinder() {
-        binder.forField(orderName)
-                .asRequired("Debe incluir un nombre")
-                .bind(FIlesToSend::getOrderName, FIlesToSend::setOrderName);
-        binder.forField(orderDescription)
-                .bind(FIlesToSend::getOrderDescription, FIlesToSend::setOrderDescription);
-
-        binder.forField(systemIdCombo)
+        binder.bind(orderName, "orderName");
+        binder.bind(orderDescription, "orderDescription");
+        binder.bind(systemIdCombo, "systemId");
+        binder.forField(dateTimePicker)
                 .asRequired("Seleccione una credencial")
-                .bind(FIlesToSend::getSystemId, FIlesToSend::setSystemId);
+                .withConverter(new Converter<LocalDateTime, Date>() {
+                    @Override
+                    public Result<Date> convertToModel(LocalDateTime localDateTime, ValueContext valueContext) {
+                        return Result.ok(ODateUitls.localDateTimeToDate(localDateTime));
+                    }
+
+                    @Override
+                    public LocalDateTime convertToPresentation(Date date, ValueContext valueContext) {
+                       if(date==null){
+                           return LocalDateTime.now();
+                       }
+                        return ODateUitls.valueOf(date);
+                    }
+                })
+                .bind(FIlesToSend::getDateToSend, FIlesToSend::setDateToSend);
     }
 
     /**
@@ -207,6 +227,10 @@ public class BulkSmsSchedulerForm extends FormLayout {
             Logger.getLogger(BulkSmsSchedulerForm.class.getName()).log(Level.SEVERE, null, ex);
         }
         return lineByValues;
+    }
+
+    public boolean isValidData() {
+        return binder.isValid() && hasMessageAllParameter;
     }
     /**
      * Clase para este form

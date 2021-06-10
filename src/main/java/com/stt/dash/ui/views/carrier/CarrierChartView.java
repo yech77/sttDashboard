@@ -107,21 +107,21 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         divHeader.add(multi_carrier, multi_messagetype, filterButton);
         /* ------------- TRIMESTRAL: SMS
          * Ejem: SmsByYearMonth{total=2775, yearSms=2021, monthSms=3, someCode=MO}*/
-        List<SmsByYearMonth> smsGroup = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actual_year, monthToShowList, stringListGenericBean.getSet());
-        List<SmsByYearMonth> carrierGroup = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(actual_year, monthToShowList, multi_messagetype.getSelectedItems(), stringListGenericBean.getSet());
+        List<SmsByYearMonth> smsGroup = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actual_year, monthToShowList, stringListGenericBean.getList());
+        List<SmsByYearMonth> carrierGroup = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(actual_year, monthToShowList, multi_messagetype.getSelectedItems(), stringListGenericBean.getList());
         populateTriColumnLineChart(smsGroup, new ArrayList<>(carrierGroup));
         /* PIE */
-        List<SmsByYearMonth> groupCarrier = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(actual_year, monthToShowList, multi_messagetype.getSelectedItems(), stringListGenericBean.getSet());
+        List<SmsByYearMonth> groupCarrier = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(actual_year, monthToShowList, multi_messagetype.getSelectedItems(), stringListGenericBean.getList());
         populatePieChart(carrierGroup);
         /* --------------DIARIO */
-        List<SmsByYearMonthDay> smsDayGroup = smsHourService.getGroupSmsByYearMonthDayMessageType(actual_year, actual_month, stringListGenericBean.getSet());
-        List<SmsByYearMonthDay> carrierDayGroup = smsHourService.getGroupCarrierByYeMoDa(actual_year, actual_month, multi_messagetype.getSelectedItems(), stringListGenericBean.getSet());
+        List<SmsByYearMonthDay> smsDayGroup = smsHourService.getGroupSmsByYearMonthDayMessageType(actual_year, actual_month, stringListGenericBean.getList());
+        List<SmsByYearMonthDay> carrierDayGroup = smsHourService.getGroupCarrierByYeMoDa(actual_year, actual_month, multi_messagetype.getSelectedItems(), stringListGenericBean.getList());
         populateMonthChart(smsDayGroup, new ArrayList<>(carrierDayGroup));
         /* PIE */
         populateMonthlyPieChart(carrierDayGroup);
         /* --------------POR HORA */
-        List<SmsByYearMonthDayHour> smsHourGroup = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actual_year, actual_month, 27, stringListGenericBean.getSet());
-        List<SmsByYearMonthDayHour> carrierHourGroup = smsHourService.getGroupCarrierByYeMoDaHoWhYeMoDayEqMessageTypeIn(actual_year, actual_month, 27, multi_messagetype.getSelectedItems(), stringListGenericBean.getSet());
+        List<SmsByYearMonthDayHour> smsHourGroup = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actual_year, actual_month, 27, stringListGenericBean.getList());
+        List<SmsByYearMonthDayHour> carrierHourGroup = smsHourService.getGroupCarrierByYeMoDaHoWhYeMoDayEqMessageTypeIn(actual_year, actual_month, 27, multi_messagetype.getSelectedItems(), stringListGenericBean.getList());
         populateHourChart(smsHourGroup, new ArrayList<>(carrierHourGroup));
         /* PIE */
         populateHourPieChart(carrierHourGroup);

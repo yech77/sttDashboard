@@ -18,13 +18,8 @@ import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.crud.AbstractBakeryCrudView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.ODateUitls;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.crud.BinderCrudEditor;
-import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -36,7 +31,6 @@ import org.springframework.security.access.annotation.Secured;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -62,6 +56,7 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
         this.files_service = service;
         this.properties=properties;
         this.userEmail = currentUser.getUser().getEmail();
+        this.systemid_repo=systemid_repo;
     }
 
     @Override
@@ -85,9 +80,17 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
                                                             AgendaService agendaService,
                                                             SetGenericBean<SystemId> userSystemIdSet,
                                                             ListGenericBean userChildren) {
-        List<Agenda> agendaList = agendaService.getAllValidAgendasInFamily(userChildren.getSet());
+        List<Agenda> agendaList = agendaService.getAllValidAgendasInFamily(userChildren.getList());
         form = new BulkSmsSchedulerForm(agendaList, userSystemIdSet.getSet(), currentUser);
         return new BinderCrudEditor<FIlesToSend>(form.getBinder(), form);
+    }
+
+    @Override
+    protected boolean beforeSaving(long idBeforeSave, FIlesToSend entity) {
+        if (idBeforeSave==0){
+            entity.setFileName(form.agendaCombo.getValue().getFileName());
+        }
+        return true;
     }
 
     @Override
@@ -101,17 +104,15 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
         if (ids.size() < 1) {
             System.out.println("SysId not found!!!");
         } else {
-
             String clientCod = ids.get(0).getClient().getClientCod();
-
             // Valida y Genera mensajes
             System.out.println("Generando mensajes en 5 segundos...");
             AgendaFileUtils.setBaseDir(properties.getAgendaFilePathUpload());
-            FIlesToSend fIlesToSend = new FIlesToSend(form.orderName.getValue(), form.orderDescription.getValue(), form.agendaCombo.getValue().getFileName(),
-                    entity.getDateToSend(), form.systemIdCombo.getValue());
+//            FIlesToSend fIlesToSend = new FIlesToSend(form.orderName.getValue(), form.orderDescription.getValue(), form.agendaCombo.getValue().getFileName(),
+//                    entity.getDateToSend(), form.systemIdCombo.getValue());
             scheduler.schedule(new SmsGeneratorParserRunnable(properties,
                             this.files_service,
-                            fIlesToSend, form.agendaCombo.getValue(), form.systemIdCombo.getValue(),
+                            entity, form.agendaCombo.getValue(), form.systemIdCombo.getValue(),
                             form.messageBox.getValue(), clientCod, userEmail),
                     ODateUitls.localDateTimeToDate(LocalDateTime.now().plusSeconds(5)));
 
