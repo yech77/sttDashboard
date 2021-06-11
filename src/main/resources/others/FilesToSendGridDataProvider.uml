@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider</OriginalElement>
+  <nodes>
+    <node x="380.5625" y="360.0">com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider</node>
+    <node x="670.0" y="86.0">com.stt.dash.backend.data.entity.FileToSendSummary</node>
+    <node x="0.0" y="272.0">com.stt.dash.ui.views.bulksms.FileToSendEditor</node>
+    <node x="425.75" y="0.0">com.stt.dash.backend.data.Status</node>
+    <node x="345.0" y="86.0">com.stt.dash.ui.views.bulksms.FileToSendStateConverter</node>
+    <node x="469.4870495495495" y="272.0">com.stt.dash.backend.service.FilesToSendService</node>
+    <node x="110.59909909909908" y="174.0">com.stt.dash.backend.data.entity.FIlesToSend</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.stt.dash.backend.service.FilesToSendService" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="CREATE">
+      <point x="-89.625" y="-18.0" />
+      <point x="499.3620495495495" y="241.0" />
+      <point x="242.49999999999997" y="241.0" />
+      <point x="242.49999999999997" y="231.0" />
+      <point x="241.09909909909908" y="231.0" />
+      <point x="43.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendEditor" target="com.stt.dash.backend.data.Status" relationship="TO_ONE">
+      <point x="-73.66666666666669" y="-18.0" />
+      <point x="36.833333333333314" y="251.0" />
+      <point x="56.36711711711706" y="251.0" />
+      <point x="56.36711711711706" y="66.0" />
+      <point x="256.75" y="66.0" />
+      <point x="256.75" y="56.0" />
+      <point x="456.25" y="56.0" />
+      <point x="-30.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.data.entity.FileToSendSummary" target="com.stt.dash.backend.data.Status" relationship="DEPENDENCY">
+      <point x="0.0" y="-18.0" />
+      <point x="794.5" y="66.0" />
+      <point x="727.0" y="66.0" />
+      <point x="727.0" y="56.0" />
+      <point x="517.25" y="56.0" />
+      <point x="30.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="DEPENDENCY">
+      <point x="-41.5" y="-18.0" />
+      <point x="505.0625" y="329.0" />
+      <point x="242.49999999999997" y="329.0" />
+      <point x="242.49999999999997" y="231.0" />
+      <point x="241.09909909909908" y="231.0" />
+      <point x="43.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.service.FilesToSendService" target="com.stt.dash.backend.data.Status" relationship="TO_MANY">
+      <point x="-29.875" y="-18.0" />
+      <point x="559.1120495495495" y="231.0" />
+      <point x="334.5" y="231.0" />
+      <point x="334.5" y="66.0" />
+      <point x="256.75" y="66.0" />
+      <point x="256.75" y="56.0" />
+      <point x="456.25" y="56.0" />
+      <point x="-30.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider" target="com.stt.dash.backend.service.FilesToSendService" relationship="TO_ONE">
+      <point x="124.5" y="-18.0" />
+      <point x="671.0625" y="339.0" />
+      <point x="648.7370495495495" y="339.0" />
+      <point x="59.75" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider" target="com.stt.dash.backend.service.FilesToSendService" relationship="DEPENDENCY">
+      <point x="41.5" y="-18.0" />
+      <point x="588.0625" y="339.0" />
+      <point x="529.2370495495495" y="339.0" />
+      <point x="-59.75" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.service.FilesToSendService" target="com.stt.dash.backend.data.entity.FileToSendSummary" relationship="DEPENDENCY">
+      <point x="29.875" y="-18.0" />
+      <point x="618.8620495495495" y="241.0" />
+      <point x="799.5" y="241.0" />
+      <point x="799.5" y="153.0" />
+      <point x="856.75" y="153.0" />
+      <point x="62.25" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="TO_MANY">
+      <point x="-124.5" y="-18.0" />
+      <point x="422.0625" y="339.0" />
+      <point x="231.49999999999997" y="339.0" />
+      <point x="231.49999999999997" y="251.0" />
+      <point x="199.38119369369366" y="251.0" />
+      <point x="199.38119369369366" y="231.0" />
+      <point x="154.09909909909908" y="231.0" />
+      <point x="-43.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.data.entity.FIlesToSend" target="com.stt.dash.backend.data.Status" relationship="DEPENDENCY">
+      <point x="0.0" y="-18.0" />
+      <point x="197.59909909909908" y="143.0" />
+      <point x="659.5" y="143.0" />
+      <point x="659.5" y="66.0" />
+      <point x="727.0" y="66.0" />
+      <point x="727.0" y="56.0" />
+      <point x="517.25" y="56.0" />
+      <point x="30.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendStateConverter" target="com.stt.dash.backend.data.Status" relationship="TO_MANY">
+      <point x="-76.0" y="-18.0" />
+      <point x="421.0" y="66.0" />
+      <point x="256.75" y="66.0" />
+      <point x="256.75" y="56.0" />
+      <point x="456.25" y="56.0" />
+      <point x="-30.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.data.entity.FIlesToSend" target="com.stt.dash.backend.data.Status" relationship="TO_ONE">
+      <point x="-58.0" y="-18.0" />
+      <point x="139.59909909909908" y="153.0" />
+      <point x="179.0" y="153.0" />
+      <point x="179.0" y="66.0" />
+      <point x="256.75" y="66.0" />
+      <point x="256.75" y="56.0" />
+      <point x="456.25" y="56.0" />
+      <point x="-30.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendEditor" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="TO_ONE">
+      <point x="-1.4210854715202004E-14" y="-18.0" />
+      <point x="110.5" y="251.0" />
+      <point x="199.38119369369366" y="251.0" />
+      <point x="199.38119369369366" y="231.0" />
+      <point x="154.09909909909908" y="231.0" />
+      <point x="-43.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.data.entity.FIlesToSend" target="com.stt.dash.backend.data.entity.FileToSendSummary" relationship="REALIZATION">
+      <point x="58.0" y="-18.0" />
+      <point x="255.59909909909908" y="153.0" />
+      <point x="732.25" y="153.0" />
+      <point x="-62.25" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendStateConverter" target="com.stt.dash.backend.data.Status" relationship="DEPENDENCY">
+      <point x="76.0" y="-18.0" />
+      <point x="573.0" y="66.0" />
+      <point x="727.0" y="66.0" />
+      <point x="727.0" y="56.0" />
+      <point x="517.25" y="56.0" />
+      <point x="30.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.service.FilesToSendService" target="com.stt.dash.backend.data.Status" relationship="DEPENDENCY">
+      <point x="89.625" y="-18.0" />
+      <point x="678.6120495495495" y="251.0" />
+      <point x="929.5" y="251.0" />
+      <point x="929.5" y="66.0" />
+      <point x="727.0" y="66.0" />
+      <point x="727.0" y="56.0" />
+      <point x="517.25" y="56.0" />
+      <point x="30.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendEditor" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="DEPENDENCY">
+      <point x="73.66666666666669" y="-18.0" />
+      <point x="184.16666666666669" y="241.0" />
+      <point x="242.49999999999997" y="241.0" />
+      <point x="242.49999999999997" y="231.0" />
+      <point x="241.09909909909908" y="231.0" />
+      <point x="43.5" y="18.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="0.916083916083916" showDependencies="true" x="471.0" y="266.0" />
+  <SelectedNodes>
+    <node>com.stt.dash.ui.views.bulksms.FileToSendEditor</node>
+  </SelectedNodes>
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

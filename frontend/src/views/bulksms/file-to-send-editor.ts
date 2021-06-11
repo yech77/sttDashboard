@@ -54,9 +54,9 @@ export class FileToSendEditor extends LitElement {
                             <iron-icon slot="prefix" icon="vaadin:user"></iron-icon>
                         </vaadin-text-field>
 
-                        <multi-select-combo-box id="systemId" label="Credencial">
+                        <multiselect-combo-box id="systemId" label="Credencial">
                             <iron-icon slot="prefix" icon="vaadin:phone"></iron-icon>
-                        </multi-select-combo-box>
+                        </multiselect-combo-box>
 
                         <vaadin-text-field id="orderDescription" label="Descripcion" colspan="3"></vaadin-text-field>
                         <vaadin-text-area id="message" label="Escriba su mensaje"colspan="3"></vaadin-text-area>

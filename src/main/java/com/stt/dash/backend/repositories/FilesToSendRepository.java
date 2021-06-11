@@ -1,7 +1,10 @@
 package com.stt.dash.backend.repositories;
 
 import com.stt.dash.backend.data.entity.FIlesToSend;
+import com.stt.dash.backend.data.entity.FileToSendSummary;
 import com.stt.dash.backend.data.entity.OUser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -43,4 +46,20 @@ public interface FilesToSendRepository extends JpaRepository<FIlesToSend, Long> 
     List<FIlesToSend> getUnsentOrders(@Param("now") Date now);
 
     public List<FIlesToSend> findByOrderName(String name);
+
+    //    @EntityGraph(value = Order.ENTITY_GRAPTH_BRIEF, type = EntityGraphType.LOAD)
+    Page<FIlesToSend> findFIlesToSendByOrderNameContainingIgnoreCaseAndDateToSendAfter(String searchQuery, Date dueDate, Pageable pageable);
+
+    long countAllByOrderNameContainingIgnoreCaseAndDateToSendAfter(String searchQuery, Date dueDate);
+
+    //    @EntityGraph(value = Order.ENTITY_GRAPTH_BRIEF, type = EntityGraphType.LOAD)
+    Page<FIlesToSend> findFIlesToSendByOrderNameContainingIgnoreCase(String searchQuery, Pageable pageable);
+    long countAllByOrderNameContainingIgnoreCase(String searchQuery);
+
+
+    //    @EntityGraph(value = Order.ENTITY_GRAPTH_BRIEF, type = EntityGraphType.LOAD)
+    Page<FIlesToSend> findFIlesToSendByDateToSendAfter(Date filterDate, Pageable pageable);
+    long countAllByDateToSendAfter(Date filterDate);
+//    //    @EntityGraph(value = Order.ENTITY_GRAPTH_BRIEF, type = EntityGraphType.LOAD)
+    List<FileToSendSummary> findFIlesToSendByDateToSendGreaterThanEqual(Date dueDate);
 }
