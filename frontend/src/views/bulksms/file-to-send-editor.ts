@@ -50,16 +50,19 @@ export class FileToSendEditor extends LitElement {
                     </vaadin-form-layout>
 
                     <vaadin-form-layout id="form3" colspan="3">
-                        <vaadin-text-field id="orderName" label="Nombre de Agenda" colspan="2">
+                        <vaadin-text-field id="orderName" label="Nombre de Agenda" colspan="2" error-message="Coloque un nombre a la Programacion"  required clear-button-visible>
                             <iron-icon slot="prefix" icon="vaadin:user"></iron-icon>
                         </vaadin-text-field>
 
-                        <multiselect-combo-box id="systemId" label="Credencial">
+                        <vaadin-combo-box id="systemId" label="Credencial">
                             <iron-icon slot="prefix" icon="vaadin:phone"></iron-icon>
-                        </multiselect-combo-box>
+                        </vaadin-combo-box>
+<!--                        <multiselect-combo-box id="systemId" label="Credencial">-->
+<!--                            <iron-icon slot="prefix" icon="vaadin:phone"></iron-icon>-->
+<!--                        </multiselect-combo-box>-->
 
-                        <vaadin-text-field id="orderDescription" label="Descripcion" colspan="3"></vaadin-text-field>
-                        <vaadin-text-area id="message" label="Escriba su mensaje"colspan="3"></vaadin-text-area>
+                        <vaadin-text-field id="orderDescription" label="Descripcion" colspan="3" clear-button-visible ></vaadin-text-field>
+                        <vaadin-text-area  id="message" label="Escriba su mensaje" colspan="3" required clear-button-visible></vaadin-text-area>
 
                         <vaadin-form-item colspan="3">
                             <p id="charCounter"></p>
