@@ -1,13 +1,17 @@
 package com.stt.dash.ui.views.bulksms;
 
+import com.stt.dash.app.session.ListGenericBean;
+import com.stt.dash.app.session.SetGenericBean;
 import com.stt.dash.backend.data.OrderState;
 import com.stt.dash.backend.data.Role;
 import com.stt.dash.backend.data.Status;
 import com.stt.dash.backend.data.entity.*;
 import com.stt.dash.ui.MainView;
+import com.stt.dash.ui.events.CancelEvent;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.converters.LocalTimeConverter;
 import com.stt.dash.ui.views.orderedit.OrderItemsEditor;
+import com.stt.dash.ui.views.storefront.events.ReviewEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -27,6 +31,7 @@ import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.annotation.Secured;
@@ -88,19 +93,18 @@ public class FileToSendEditor extends LitTemplate {
     @Id("review")
     private Button review;
 
-//    @Id("itemsContainer")
-//    private Div itemsContainer;
-
     private FileToSendEditor fileToSendEditor;
 
     private User currentUser;
 
     private BeanValidationBinder<FIlesToSend> binder = new BeanValidationBinder<>(FIlesToSend.class);
 
-//    private final LocalTimeConverter localTimeConverter = new LocalTimeConverter();
-
-
-    public FileToSendEditor(){
-
+    public FileToSendEditor(@Qualifier("getComercialUserSystemId") SetGenericBean<SystemId> systemIdList){
+        /* El pickup Locations es el systemid*/
+        systemIdMulti.setItems(systemIdList.getSet());
+        systemIdMulti.setItemLabelGenerator(SystemId::getSystemId);
+        /**/
+        cancel.addClickListener(e -> fireEvent(new CancelEvent(this, false)));
+        review.addClickListener(e -> fireEvent(new BulkSmsReviewEvent(this)));
     }
 }
