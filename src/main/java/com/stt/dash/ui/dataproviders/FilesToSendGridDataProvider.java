@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
- * A pageable order data provider.
+ * A pageable FileToSend data provider.
  */
 @SpringComponent
 @UIScope
@@ -110,4 +110,5 @@ public class FilesToSendGridDataProvider extends FilterablePageableDataProvider<
 
         return Optional.of(ODateUitls.valueOf(ld));
     }
+
 }
