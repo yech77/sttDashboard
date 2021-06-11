@@ -17,6 +17,11 @@ public class ODateUitls {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
     }
+    public static synchronized LocalDate valueOf2(Date dateToConvert) {
+        return dateToConvert.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+    }
 
     public static synchronized Date valueOf(LocalDate localDateToConvert) {
         return Date.from(localDateToConvert.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
