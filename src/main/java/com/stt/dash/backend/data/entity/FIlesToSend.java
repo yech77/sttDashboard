@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-public class FIlesToSend extends AbstractEntitySequence {
+public class FIlesToSend extends AbstractEntitySequence implements FileToSendSummary{
 
 //    public enum Status {
 //        VALIDATING,

@@ -37,7 +37,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 	@EntityGraph(value = Order.ENTITY_GRAPTH_BRIEF, type = EntityGraphType.LOAD)
 	List<OrderSummary> findByDueDateGreaterThanEqual(LocalDate dueDate);
-
 	@Override
 	@EntityGraph(value = Order.ENTITY_GRAPTH_FULL, type = EntityGraphType.LOAD)
 	Optional<Order> findById(Long id);

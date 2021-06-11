@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.stt.dash.ui.views.storefront.OrderCard</OriginalElement>
+  <nodes>
+    <node x="774.5931005127026" y="400.0">com.stt.dash.ui.dataproviders.OrdersGridDataProvider</node>
+    <node x="958.0" y="729.0">com.stt.dash.testbench.elements.components.OrderCardElement</node>
+    <node x="46.0" y="729.0">com.stt.dash.ui.views.storefront.beans.OrdersCountData</node>
+    <node x="0.0" y="815.0">com.stt.dash.ui.views.storefront.beans.OrdersCountDataWithChart</node>
+    <node x="644.5931005127026" y="648.0">com.stt.dash.ui.views.storefront.StorefrontView</node>
+    <node x="1106.2222222222222" y="292.0">com.stt.dash.backend.service.OrderService</node>
+    <node x="479.68441995714784" y="184.0">com.stt.dash.backend.data.entity.Order</node>
+    <node x="362.0" y="729.0">com.stt.dash.testbench.elements.components.OrderDetailsElement</node>
+    <node x="197.0" y="292.0">com.stt.dash.ui.views.orderedit.OrderDetails</node>
+    <node x="663.0" y="729.0">com.stt.dash.testbench.elements.components.OrderEditorElement</node>
+    <node x="1437.0931005127027" y="96.0">com.stt.dash.ui.utils.converters.OrderStateConverter</node>
+    <node x="1374.8847222222223" y="292.0">com.stt.dash.ui.views.storefront.OrderCard</node>
+    <node x="592.1149755127034" y="0.0">com.stt.dash.backend.data.OrderState</node>
+    <node x="0.0" y="292.0">com.stt.dash.ui.views.orderedit.OrderEditor</node>
+    <node x="422.59310051270256" y="400.0">com.stt.dash.ui.views.storefront.OrderCardHeaderGenerator</node>
+    <node x="399.00000000000006" y="292.0">com.stt.dash.ui.views.storefront.beans.OrderCardHeader</node>
+    <node x="1213.0931005127027" y="96.0">com.stt.dash.backend.data.entity.OrderSummary</node>
+    <node x="659.5931005127026" y="508.0">com.stt.dash.ui.views.storefront.OrderPresenter</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.stt.dash.ui.views.storefront.OrderCardHeaderGenerator" target="com.stt.dash.ui.views.storefront.beans.OrderCardHeader" relationship="TO_MANY">
+      <point x="0.0" y="-18.0" />
+      <point x="582.5931005127026" y="379.0" />
+      <point x="570.0" y="379.0" />
+      <point x="57.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.StorefrontView" target="com.stt.dash.backend.data.entity.Order" relationship="DEPENDENCY">
+      <point x="75.27272727272725" y="-18.0" />
+      <point x="823.3658277854298" y="616.0" />
+      <point x="1095.7222222222222" y="616.0" />
+      <point x="1095.7222222222222" y="261.0" />
+      <point x="822.4344199571478" y="261.0" />
+      <point x="822.4344199571478" y="251.0" />
+      <point x="569.6844199571478" y="251.0" />
+      <point x="30.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.orderedit.OrderDetails" target="com.stt.dash.backend.data.entity.Order" relationship="TO_ONE">
+      <point x="-45.5" y="-18.0" />
+      <point x="242.5" y="271.0" />
+      <point x="249.23632728803216" y="271.0" />
+      <point x="249.23632728803216" y="251.0" />
+      <point x="509.68441995714784" y="251.0" />
+      <point x="-30.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.data.entity.OrderSummary" target="com.stt.dash.backend.data.OrderState" relationship="DEPENDENCY">
+      <point x="0.0" y="-18.0" />
+      <point x="1315.0931005127027" y="66.0" />
+      <point x="1174.3024755127035" y="66.0" />
+      <point x="1174.3024755127035" y="56.0" />
+      <point x="718.1149755127035" y="56.0" />
+      <point x="42.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.service.OrderService" target="com.stt.dash.backend.data.entity.OrderSummary" relationship="DEPENDENCY">
+      <point x="69.375" y="-18.0" />
+      <point x="1268.0972222222222" y="251.0" />
+      <point x="1343.5931005127027" y="251.0" />
+      <point x="1343.5931005127027" y="158.0" />
+      <point x="1315.0931005127027" y="158.0" />
+      <point x="0.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.data.entity.Order" target="com.stt.dash.backend.data.OrderState" relationship="TO_ONE">
+      <point x="-40.0" y="-18.0" />
+      <point x="499.68441995714784" y="158.0" />
+      <point x="528.9344199571478" y="158.0" />
+      <point x="528.9344199571478" y="76.0" />
+      <point x="670.6149755127034" y="76.0" />
+      <point x="670.6149755127034" y="56.0" />
+      <point x="634.1149755127034" y="56.0" />
+      <point x="-42.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.dataproviders.OrdersGridDataProvider" target="com.stt.dash.backend.data.entity.Order" relationship="TO_MANY">
+      <point x="-107.625" y="-18.0" />
+      <point x="810.4681005127026" y="379.0" />
+      <point x="823.1556005127026" y="379.0" />
+      <point x="823.1556005127026" y="271.0" />
+      <point x="249.23632728803216" y="271.0" />
+      <point x="249.23632728803216" y="251.0" />
+      <point x="509.68441995714784" y="251.0" />
+      <point x="-30.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderCardHeaderGenerator" target="com.stt.dash.backend.data.entity.Order" relationship="DEPENDENCY">
+      <point x="106.66666666666669" y="-18.0" />
+      <point x="689.2597671793692" y="379.0" />
+      <point x="667.8431005127026" y="379.0" />
+      <point x="667.8431005127026" y="261.0" />
+      <point x="822.4344199571478" y="261.0" />
+      <point x="822.4344199571478" y="251.0" />
+      <point x="569.6844199571478" y="251.0" />
+      <point x="30.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderCard" target="com.stt.dash.backend.data.entity.OrderSummary" relationship="TO_ONE">
+      <point x="0.0" y="-18.0" />
+      <point x="1455.8847222222223" y="271.0" />
+      <point x="1458.5363272880322" y="271.0" />
+      <point x="1458.5363272880322" y="158.0" />
+      <point x="1383.0931005127027" y="158.0" />
+      <point x="68.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.dataproviders.OrdersGridDataProvider" target="com.stt.dash.backend.service.OrderService" relationship="DEPENDENCY">
+      <point x="35.875" y="-18.0" />
+      <point x="953.9681005127026" y="369.0" />
+      <point x="1072.0931005127027" y="369.0" />
+      <point x="1072.0931005127027" y="359.0" />
+      <point x="1152.4722222222222" y="359.0" />
+      <point x="-46.25" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.beans.OrdersCountDataWithChart" target="com.stt.dash.ui.views.storefront.beans.OrdersCountData" relationship="GENERALIZATION">
+      <point x="0.0" y="-18.0" />
+      <point x="0.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.StorefrontView" target="com.stt.dash.ui.views.orderedit.OrderEditor" relationship="TO_ONE">
+      <point x="-94.09090909090907" y="-18.0" />
+      <point x="654.0021914217934" y="626.0" />
+      <point x="78.73632728803227" y="626.0" />
+      <point x="78.73632728803227" y="379.0" />
+      <point x="44.0" y="379.0" />
+      <point x="-44.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderCardHeaderGenerator" target="com.stt.dash.ui.views.storefront.beans.OrderCardHeader" relationship="CREATE">
+      <point x="-106.66666666666669" y="-18.0" />
+      <point x="475.9264338460359" y="379.0" />
+      <point x="412.09310051270256" y="379.0" />
+      <point x="412.09310051270256" y="369.0" />
+      <point x="456.00000000000006" y="369.0" />
+      <point x="-57.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderPresenter" target="com.stt.dash.backend.data.entity.Order" relationship="DEPENDENCY">
+      <point x="0.0" y="-18.0" />
+      <point x="764.0931005127026" y="261.0" />
+      <point x="822.4344199571478" y="261.0" />
+      <point x="822.4344199571478" y="251.0" />
+      <point x="569.6844199571478" y="251.0" />
+      <point x="30.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.orderedit.OrderEditor" target="com.stt.dash.backend.data.entity.Order" relationship="TO_ONE">
+      <point x="22.0" y="-18.0" />
+      <point x="110.0" y="271.0" />
+      <point x="249.23632728803216" y="271.0" />
+      <point x="249.23632728803216" y="251.0" />
+      <point x="509.68441995714784" y="251.0" />
+      <point x="-30.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderPresenter" target="com.stt.dash.ui.dataproviders.OrdersGridDataProvider" relationship="TO_ONE">
+      <point x="23.222222222222285" y="-18.0" />
+      <point x="787.3153227349248" y="457.0" />
+      <point x="846.3431005127026" y="457.0" />
+      <point x="-71.75" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderPresenter" target="com.stt.dash.ui.views.storefront.StorefrontView" relationship="DEPENDENCY">
+      <point x="-26.125" y="18.0" />
+      <point x="737.9681005127026" y="566.0" />
+      <point x="766.9112823308844" y="566.0" />
+      <point x="18.81818181818187" y="-18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderPresenter" target="com.stt.dash.backend.service.OrderService" relationship="DEPENDENCY">
+      <point x="69.66666666666663" y="-18.0" />
+      <point x="833.7597671793692" y="477.0" />
+      <point x="1072.0931005127027" y="477.0" />
+      <point x="1072.0931005127027" y="359.0" />
+      <point x="1152.4722222222222" y="359.0" />
+      <point x="-46.25" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.StorefrontView" target="com.stt.dash.ui.views.storefront.OrderPresenter" relationship="DEPENDENCY">
+      <point x="0.0" y="-18.0" />
+      <point x="748.0931005127026" y="576.0" />
+      <point x="685.7181005127026" y="576.0" />
+      <point x="-78.375" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderCard" target="com.stt.dash.backend.data.entity.Order" relationship="DEPENDENCY">
+      <point x="-64.79999999999995" y="-18.0" />
+      <point x="1391.0847222222224" y="261.0" />
+      <point x="822.4344199571478" y="261.0" />
+      <point x="822.4344199571478" y="251.0" />
+      <point x="569.6844199571478" y="251.0" />
+      <point x="30.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.utils.converters.OrderStateConverter" target="com.stt.dash.backend.data.OrderState" relationship="TO_MANY">
+      <point x="-64.75" y="-18.0" />
+      <point x="1501.8431005127027" y="76.0" />
+      <point x="670.6149755127034" y="76.0" />
+      <point x="670.6149755127034" y="56.0" />
+      <point x="634.1149755127034" y="56.0" />
+      <point x="-42.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderPresenter" target="com.stt.dash.ui.dataproviders.OrdersGridDataProvider" relationship="DEPENDENCY">
+      <point x="46.44444444444446" y="-18.0" />
+      <point x="810.537544957147" y="467.0" />
+      <point x="989.8431005127026" y="467.0" />
+      <point x="71.75" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.data.entity.Order" target="com.stt.dash.backend.data.OrderState" relationship="DEPENDENCY">
+      <point x="0.0" y="-18.0" />
+      <point x="539.9344199571478" y="66.0" />
+      <point x="1174.3024755127035" y="66.0" />
+      <point x="1174.3024755127035" y="56.0" />
+      <point x="718.1149755127035" y="56.0" />
+      <point x="42.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderCard" target="com.stt.dash.backend.data.entity.OrderSummary" relationship="DEPENDENCY">
+      <point x="-32.39999999999998" y="-18.0" />
+      <point x="1423.4847222222224" y="241.0" />
+      <point x="1343.5931005127027" y="241.0" />
+      <point x="1343.5931005127027" y="158.0" />
+      <point x="1315.0931005127027" y="158.0" />
+      <point x="0.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.service.OrderService" target="com.stt.dash.backend.data.OrderState" relationship="TO_MANY">
+      <point x="-23.125" y="-18.0" />
+      <point x="1175.5972222222222" y="251.0" />
+      <point x="1191.5931005127027" y="251.0" />
+      <point x="1191.5931005127027" y="76.0" />
+      <point x="670.6149755127034" y="76.0" />
+      <point x="670.6149755127034" y="56.0" />
+      <point x="634.1149755127034" y="56.0" />
+      <point x="-42.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.orderedit.OrderEditor" target="com.stt.dash.backend.data.OrderState" relationship="DEPENDENCY">
+      <point x="-22.0" y="-18.0" />
+      <point x="66.0" y="271.0" />
+      <point x="52.70525329048121" y="271.0" />
+      <point x="52.70525329048121" y="66.0" />
+      <point x="1174.3024755127035" y="66.0" />
+      <point x="1174.3024755127035" y="56.0" />
+      <point x="718.1149755127035" y="56.0" />
+      <point x="42.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.orderedit.OrderEditor" target="com.stt.dash.backend.data.entity.Order" relationship="DEPENDENCY">
+      <point x="66.0" y="-18.0" />
+      <point x="154.0" y="261.0" />
+      <point x="822.4344199571478" y="261.0" />
+      <point x="822.4344199571478" y="251.0" />
+      <point x="569.6844199571478" y="251.0" />
+      <point x="30.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.data.entity.Order" target="com.stt.dash.backend.data.entity.OrderSummary" relationship="REALIZATION">
+      <point x="40.0" y="-18.0" />
+      <point x="579.6844199571478" y="158.0" />
+      <point x="1247.0931005127027" y="158.0" />
+      <point x="-68.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.dataproviders.OrdersGridDataProvider" target="com.stt.dash.backend.service.OrderService" relationship="TO_ONE">
+      <point x="107.625" y="-18.0" />
+      <point x="1025.7181005127027" y="379.0" />
+      <point x="1083.0931005127027" y="379.0" />
+      <point x="1083.0931005127027" y="349.0" />
+      <point x="1244.9722222222222" y="349.0" />
+      <point x="46.25" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.StorefrontView" target="com.stt.dash.ui.views.storefront.OrderCard" relationship="DEPENDENCY">
+      <point x="94.09090909090912" y="-18.0" />
+      <point x="842.1840096036117" y="626.0" />
+      <point x="1455.8847222222223" y="626.0" />
+      <point x="0.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.orderedit.OrderDetails" target="com.stt.dash.backend.data.entity.Order" relationship="DEPENDENCY">
+      <point x="45.5" y="-18.0" />
+      <point x="333.5" y="261.0" />
+      <point x="822.4344199571478" y="261.0" />
+      <point x="822.4344199571478" y="251.0" />
+      <point x="569.6844199571478" y="251.0" />
+      <point x="30.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.StorefrontView" target="com.stt.dash.backend.data.entity.Order" relationship="TO_ONE">
+      <point x="-56.454545454545496" y="-18.0" />
+      <point x="691.6385550581571" y="606.0" />
+      <point x="186.5" y="606.0" />
+      <point x="186.5" y="271.0" />
+      <point x="249.23632728803216" y="271.0" />
+      <point x="249.23632728803216" y="251.0" />
+      <point x="509.68441995714784" y="251.0" />
+      <point x="-30.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.service.OrderService" target="com.stt.dash.backend.data.OrderState" relationship="DEPENDENCY">
+      <point x="23.125" y="-18.0" />
+      <point x="1221.8472222222222" y="251.0" />
+      <point x="1202.5931005127027" y="251.0" />
+      <point x="1202.5931005127027" y="66.0" />
+      <point x="1174.3024755127035" y="66.0" />
+      <point x="1174.3024755127035" y="56.0" />
+      <point x="718.1149755127035" y="56.0" />
+      <point x="42.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderPresenter" target="com.stt.dash.ui.views.storefront.StorefrontView" relationship="TO_ONE">
+      <point x="26.125" y="18.0" />
+      <point x="790.2181005127026" y="626.0" />
+      <point x="785.7294641490662" y="626.0" />
+      <point x="37.636363636363626" y="-18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.StorefrontView" target="com.stt.dash.ui.views.storefront.OrderPresenter" relationship="TO_ONE">
+      <point x="56.454545454545496" y="-18.0" />
+      <point x="804.5476459672481" y="606.0" />
+      <point x="842.4681005127026" y="606.0" />
+      <point x="78.375" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderPresenter" target="com.stt.dash.backend.data.entity.Order" relationship="TO_ONE">
+      <point x="-23.222222222222285" y="-18.0" />
+      <point x="740.8708782904803" y="487.0" />
+      <point x="753.0931005127026" y="487.0" />
+      <point x="753.0931005127026" y="271.0" />
+      <point x="249.23632728803216" y="271.0" />
+      <point x="249.23632728803216" y="251.0" />
+      <point x="509.68441995714784" y="251.0" />
+      <point x="-30.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderPresenter" target="com.stt.dash.backend.service.OrderService" relationship="TO_ONE">
+      <point x="92.88888888888891" y="-18.0" />
+      <point x="856.9819894015915" y="487.0" />
+      <point x="1083.0931005127027" y="487.0" />
+      <point x="1083.0931005127027" y="349.0" />
+      <point x="1244.9722222222222" y="349.0" />
+      <point x="46.25" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.StorefrontView" target="com.stt.dash.ui.views.orderedit.OrderDetails" relationship="CREATE">
+      <point x="-18.818181818181756" y="-18.0" />
+      <point x="729.2749186945208" y="586.0" />
+      <point x="288.23632728803216" y="586.0" />
+      <point x="288.23632728803216" y="379.0" />
+      <point x="333.5" y="379.0" />
+      <point x="45.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderCard" target="com.stt.dash.ui.utils.converters.OrderStateConverter" relationship="CREATE">
+      <point x="32.39999999999998" y="-18.0" />
+      <point x="1488.2847222222222" y="261.0" />
+      <point x="1561.0931005127027" y="261.0" />
+      <point x="1561.0931005127027" y="158.0" />
+      <point x="1501.8431005127027" y="158.0" />
+      <point x="-64.75" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.orderedit.OrderEditor" target="com.stt.dash.backend.data.OrderState" relationship="TO_ONE">
+      <point x="-66.0" y="-18.0" />
+      <point x="22.0" y="271.0" />
+      <point x="41.70525329048121" y="271.0" />
+      <point x="41.70525329048121" y="76.0" />
+      <point x="670.6149755127034" y="76.0" />
+      <point x="670.6149755127034" y="56.0" />
+      <point x="634.1149755127034" y="56.0" />
+      <point x="-42.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderPresenter" target="com.stt.dash.ui.views.storefront.OrderCardHeaderGenerator" relationship="CREATE">
+      <point x="-69.66666666666663" y="-18.0" />
+      <point x="694.4264338460359" y="477.0" />
+      <point x="502.59310051270256" y="477.0" />
+      <point x="-80.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderPresenter" target="com.stt.dash.ui.views.storefront.OrderCardHeaderGenerator" relationship="TO_ONE">
+      <point x="-46.44444444444446" y="-18.0" />
+      <point x="717.6486560682581" y="467.0" />
+      <point x="662.5931005127026" y="467.0" />
+      <point x="80.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.StorefrontView" target="com.stt.dash.ui.views.orderedit.OrderEditor" relationship="DEPENDENCY">
+      <point x="-75.27272727272725" y="-18.0" />
+      <point x="672.8203732399753" y="616.0" />
+      <point x="89.73632728803227" y="616.0" />
+      <point x="89.73632728803227" y="379.0" />
+      <point x="132.0" y="379.0" />
+      <point x="44.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.utils.converters.OrderStateConverter" target="com.stt.dash.backend.data.OrderState" relationship="DEPENDENCY">
+      <point x="64.75" y="-18.0" />
+      <point x="1631.3431005127027" y="66.0" />
+      <point x="1174.3024755127035" y="66.0" />
+      <point x="1174.3024755127035" y="56.0" />
+      <point x="718.1149755127035" y="56.0" />
+      <point x="42.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.service.OrderService" target="com.stt.dash.backend.data.entity.Order" relationship="CREATE">
+      <point x="-69.375" y="-18.0" />
+      <point x="1129.3472222222222" y="261.0" />
+      <point x="822.4344199571478" y="261.0" />
+      <point x="822.4344199571478" y="251.0" />
+      <point x="569.6844199571478" y="251.0" />
+      <point x="30.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.dataproviders.OrdersGridDataProvider" target="com.stt.dash.backend.data.entity.Order" relationship="DEPENDENCY">
+      <point x="-35.875" y="-18.0" />
+      <point x="882.2181005127026" y="379.0" />
+      <point x="855.0483538031838" y="379.0" />
+      <point x="855.0483538031838" y="261.0" />
+      <point x="822.4344199571478" y="261.0" />
+      <point x="822.4344199571478" y="251.0" />
+      <point x="569.6844199571478" y="251.0" />
+      <point x="30.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.StorefrontView" target="com.stt.dash.ui.views.orderedit.OrderDetails" relationship="TO_ONE">
+      <point x="-37.636363636363626" y="-18.0" />
+      <point x="710.4567368763389" y="596.0" />
+      <point x="277.23632728803216" y="596.0" />
+      <point x="277.23632728803216" y="379.0" />
+      <point x="242.5" y="379.0" />
+      <point x="-45.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderCard" target="com.stt.dash.ui.utils.converters.OrderStateConverter" relationship="TO_ONE">
+      <point x="64.79999999999995" y="-18.0" />
+      <point x="1520.6847222222223" y="271.0" />
+      <point x="1572.0931005127027" y="271.0" />
+      <point x="1572.0931005127027" y="158.0" />
+      <point x="1631.3431005127027" y="158.0" />
+      <point x="64.75" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.storefront.OrderPresenter" target="com.stt.dash.ui.views.storefront.beans.OrderCardHeader" relationship="DEPENDENCY">
+      <point x="-92.88888888888891" y="-18.0" />
+      <point x="671.2042116238136" y="487.0" />
+      <point x="412.09310051270256" y="487.0" />
+      <point x="412.09310051270256" y="369.0" />
+      <point x="456.00000000000006" y="369.0" />
+      <point x="-57.0" y="18.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="0.819833729216152" showDependencies="true" x="827.0957554686368" y="322.2464146023468" />
+  <SelectedNodes>
+    <node>com.stt.dash.ui.views.orderedit.OrderEditor</node>
+  </SelectedNodes>
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

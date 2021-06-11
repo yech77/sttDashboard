@@ -52,7 +52,7 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
             CurrentUser currentUser,
             @Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
             SetGenericBean<SystemId> userSystemIdSet) {
-        super(FIlesToSend.class, service, new Grid<FIlesToSend>(), createForm(currentUser, agendaService, userSystemIdSet, userChildrenList), currentUser);
+        super(FIlesToSend.class, null, new Grid<FIlesToSend>(), createForm(currentUser, agendaService, userSystemIdSet, userChildrenList), currentUser);
         this.files_service = service;
         this.properties=properties;
         this.userEmail = currentUser.getUser().getEmail();
