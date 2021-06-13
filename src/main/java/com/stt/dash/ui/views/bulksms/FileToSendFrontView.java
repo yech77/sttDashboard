@@ -7,10 +7,12 @@ import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.components.SearchBar;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.views.EntityView;
+import com.stt.dash.ui.views.orderedit.OrderDetails;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.littemplate.LitTemplate;
@@ -45,7 +47,7 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
 
     private final FileToSendEditor fileToSendEditor;
 
-//    private final OrderDetails orderDetails = new OrderDetails();
+    private final FileToSendDetails orderDetails = new FileToSendDetails();
 
     private final FileToSendPresenter presenter;
 
@@ -53,7 +55,7 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
         this.fileToSendEditor = fileToSendEditor;
         this.presenter = presenter;
 
-        searchBar.setActionText("Progrmar nuevo envio");
+        searchBar.setActionText("Programar nuevo envio");
         searchBar.setCheckboxText("Ver envios anteriores");
         searchBar.setPlaceHolder("Buscar");
 
@@ -78,12 +80,12 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
 
     @Override
     public boolean isDirty() {
-        return fileToSendEditor.hasChanges() /*|| orderDetails.isDirty()*/;
+        return fileToSendEditor.hasChanges() || orderDetails.isDirty();
     }
 
     @Override
     public void clear() {
-//        orderDetails.setDirty(false);
+        orderDetails.setDirty(false);
         fileToSendEditor.clear();
     }
 
@@ -106,9 +108,9 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
         return fileToSendEditor;
     }
 
-//    OrderDetails getOpenedOrderDetails() {
-//        return orderDetails;
-//    }
+    FileToSendDetails getOpenedOrderDetails() {
+        return orderDetails;
+    }
 
     Grid<FIlesToSend> getGrid() {
         return grid;
@@ -142,9 +144,10 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
     }
 
     void setDialogElementsVisibility(boolean editing) {
-        dialog.add(editing ? fileToSendEditor : fileToSendEditor);
+        System.out.println("SET_DIALOG_ELEMETN: EDITING " + editing);
+        dialog.add(editing ? fileToSendEditor : orderDetails);
         fileToSendEditor.setVisible(editing);
-//        orderDetails.setVisible(!editing);
+        orderDetails.setVisible(!editing);
     }
 
 //    public Stream<HasValue<?, ?>> validate() {

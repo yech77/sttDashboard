@@ -1,5 +1,6 @@
 package com.stt.dash.ui.views.bulksms;
 
+import com.stt.dash.backend.data.entity.FIlesToSend;
 import com.stt.dash.backend.data.entity.Order;
 import com.stt.dash.ui.events.CancelEvent;
 import com.stt.dash.ui.events.SaveEvent;
@@ -9,7 +10,9 @@ import com.stt.dash.ui.views.storefront.events.CommentEvent;
 import com.stt.dash.ui.views.storefront.events.EditEvent;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.textfield.TextField;
@@ -19,9 +22,11 @@ import com.vaadin.flow.templatemodel.Encode;
 import com.vaadin.flow.templatemodel.Include;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
+@Tag("file-to-send-details")
+@JsModule("./src/views/bulksms/file-to-send-details.ts")
 public class FileToSendDetails extends LitTemplate {
 
-    private Order order;
+    private FIlesToSend order;
 
     @Id("back")
     private Button back;
@@ -35,40 +40,41 @@ public class FileToSendDetails extends LitTemplate {
     @Id("edit")
     private Button edit;
 
-    @Id("history")
-    private Element history;
-
-    @Id("comment")
-    private Element comment;
-
-    @Id("sendComment")
-    private Button sendComment;
-
-    @Id("commentField")
-    private TextField commentField;
+//    @Id("history")
+//    private Element history;
+//
+//    @Id("comment")
+//    private Element comment;
+//
+//    @Id("sendComment")
+//    private Button sendComment;
+//
+//    @Id("commentField")
+//    private TextField commentField;
 
     private boolean isDirty;
 
     public FileToSendDetails() {
-        sendComment.addClickListener(e -> {
-            String message = commentField.getValue();
-            message = message == null ? "" : message.trim();
+//        sendComment.addClickListener(e -> {
+//            String message = commentField.getValue();
+//            message = message == null ? "" : message.trim();
 //            if (!message.isEmpty()) {
 //                commentField.clear();
 //                fireEvent(new CommentEvent(this, order.getId(), message));
 //            }
-        });
+//        });
         save.addClickListener(e -> fireEvent(new SaveEvent(this, false)));
         cancel.addClickListener(e -> fireEvent(new CancelEvent(this, false)));
         edit.addClickListener(e -> fireEvent(new EditEvent(this)));
     }
 
-    public void display(Order order, boolean review) {
+    public void display(FIlesToSend order, boolean review) {
 //        getModel().setReview(review);
         this.order = order;
 //        getModel().setItem(order);
         if (!review) {
-            commentField.clear();
+            System.out.println(" REVIEW FALSE");
+//            commentField.clear();
         }
         this.isDirty = review;
     }

@@ -54,6 +54,7 @@ public class FilesToSendGridDataProvider extends FilterablePageableDataProvider<
         FileToSendFilter filter = query.getFilter().orElse(FileToSendFilter.getEmptyFilter());
         Page<FIlesToSend> page = filesToSendService.findAnyMatchingAfterDateToSend(Optional.ofNullable(filter.getFilter()),
                 getFilterDate(filter.isShowPrevious()), pageable);
+        System.out.println("******* "+ page.getTotalElements() +"/"+page.getTotalPages()+"********");
         if (pageObserver != null) {
             pageObserver.accept(page);
         }
