@@ -3,6 +3,9 @@
  */
 package com.stt.dash.ui.crud;
 
+import com.stt.dash.backend.data.entity.FIlesToSend;
+import com.stt.dash.backend.service.FilesToSendService;
+import com.stt.dash.ui.views.bulksms.FileToSendFrontView;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,4 +25,9 @@ public class PresenterFactory {
 		return new EntityPresenter<>(crudService, currentUser);
 	}
 
+	@Bean
+	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+	public EntityPresenter<FIlesToSend, FileToSendFrontView> fileToSendEntityPresenter(FilesToSendService crudService, CurrentUser currentUser) {
+		return new EntityPresenter<>(crudService, currentUser);
+	}
 }

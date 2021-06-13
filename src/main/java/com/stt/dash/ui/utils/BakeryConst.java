@@ -19,6 +19,14 @@ public class BakeryConst {
 			PAGE_STOREFRONT + "/:" + ORDER_ID + "/" + EDIT_SEGMENT;
 	public static final String PAGE_STOREFRONT_ORDER_EDIT =
 			"storefront/%d/edit";
+
+	public static final String PAGE_BULK_STOREFRONT = "bulksmsfront";
+	public static final String PAGE_BULK_STOREFRONT_ORDER_TEMPLATE =
+			PAGE_BULK_STOREFRONT + "/:" + ORDER_ID + "?";
+	public static final String PAGE_BULK_STOREFRONT_ORDER_EDIT_TEMPLATE =
+			PAGE_BULK_STOREFRONT + "/:" + ORDER_ID + "/" + EDIT_SEGMENT;
+	public static final String PAGE_BULK_STOREFRONT_ORDER_EDIT =
+			"bulksmsfront/%d/edit";
 	public static final String PAGE_DASHBOARD = "dashboard";
 	public static final String PAGE_CARRIER = "carrier";
 	public static final String PAGE_CLIENT = "client";
@@ -42,6 +50,7 @@ public class BakeryConst {
 	public static final String TITLE_ACCESS_DENIED = "Access denied";
 
 	public static final String[] ORDER_SORT_FIELDS = {"dueDate", "dueTime", "id"};
+	public static final String[] BULK_SORT_FIELDS = {"dateToSend", "id"};
 	public static final Sort.Direction DEFAULT_SORT_DIRECTION = Sort.Direction.ASC;
 
 	public static final String VIEWPORT = "width=device-	width, minimum-scale=1, initial-scale=1, user-scalable=yes, viewport-fit=cover";

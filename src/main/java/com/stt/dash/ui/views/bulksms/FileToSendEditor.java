@@ -12,6 +12,9 @@ import com.stt.dash.ui.crud.CrudEntityDataProvider;
 import com.stt.dash.ui.events.CancelEvent;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.ODateUitls;
+import com.stt.dash.ui.views.storefront.events.ReviewEvent;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -26,13 +29,12 @@ import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.Result;
-import com.vaadin.flow.data.binder.ValueContext;
+import com.vaadin.flow.data.binder.*;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.shared.Registration;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -52,14 +54,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 @Tag("file-to-send-editor")
 @JsModule("./src/views/bulksms/file-to-send-editor.ts")
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-@Route(value = BakeryConst.PAGE_BULKSMS_SCHEDULER + "nuevo", layout = MainView.class)
-@PageTitle(BakeryConst.TITLE_BULKSMS_SCHEDULER)
-@Secured({Role.ADMIN, "UI_USER"})
 public class FileToSendEditor extends LitTemplate {
 
 
@@ -119,8 +119,7 @@ public class FileToSendEditor extends LitTemplate {
     /**/
     private boolean hasEnougharmeters = false;
 
-    public FileToSendEditor(CurrentUser currentUser,
-                            @Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
+    public FileToSendEditor(@Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
                             AgendaService agendaService, @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList) {
         /*No existen Items*/
         /**/
@@ -251,4 +250,48 @@ public class FileToSendEditor extends LitTemplate {
         return lineByValues;
     }
 
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
+    }
+
+//    public Stream<HasValue<?, ?>> validate() {
+//        Stream<HasValue<?, ?>> errorFields = binder.validate().getFieldValidationErrors().stream()
+//                .map(BindingValidationStatus::getField);
+//
+//        return Stream.concat(errorFields, itemsEditor.validate());
+//    }
+
+    public void read(FIlesToSend order, boolean isNew) {
+        binder.readBean(order);
+
+        this.orderNumber.setText(isNew ? "" : order.getId().toString());
+        title.setVisible(isNew);
+        metaContainer.setVisible(!isNew);
+
+        if (order.getStatus() != null) {
+//            getModel().setStatus(order.getState().name());
+        }
+
+        review.setEnabled(false);
+    }
+
+    public boolean hasChanges() {
+        return binder.hasChanges() /*|| itemsEditor.hasChanges()*/;
+    }
+
+    public void clear() {
+        binder.readBean(null);
+//        itemsEditor.setValue(null);
+    }
+    public void write(FIlesToSend fIlesToSend) throws ValidationException {
+        binder.writeBean(fIlesToSend);
+    }
+
+    public Registration addReviewListener(ComponentEventListener<ReviewEvent> listener) {
+        return addListener(ReviewEvent.class, listener);
+    }
+
+    public Registration addCancelListener(ComponentEventListener<CancelEvent> listener) {
+        return addListener(CancelEvent.class, listener);
+    }
 }

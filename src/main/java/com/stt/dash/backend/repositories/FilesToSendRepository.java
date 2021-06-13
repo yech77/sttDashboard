@@ -48,9 +48,9 @@ public interface FilesToSendRepository extends JpaRepository<FIlesToSend, Long> 
     public List<FIlesToSend> findByOrderName(String name);
 
     //    @EntityGraph(value = Order.ENTITY_GRAPTH_BRIEF, type = EntityGraphType.LOAD)
-    Page<FIlesToSend> findFIlesToSendByOrderNameContainingIgnoreCaseAndDateToSendAfter(String searchQuery, Date dueDate, Pageable pageable);
+    Page<FIlesToSend> findFIlesToSendByOrderNameContainingIgnoreCaseAndDateToSendAfter(String searchQuery, Date dateToSend, Pageable pageable);
 
-    long countAllByOrderNameContainingIgnoreCaseAndDateToSendAfter(String searchQuery, Date dueDate);
+    long countAllByOrderNameContainingIgnoreCaseAndDateToSendAfter(String searchQuery, Date dateToSend);
 
     //    @EntityGraph(value = Order.ENTITY_GRAPTH_BRIEF, type = EntityGraphType.LOAD)
     Page<FIlesToSend> findFIlesToSendByOrderNameContainingIgnoreCase(String searchQuery, Pageable pageable);
@@ -61,5 +61,5 @@ public interface FilesToSendRepository extends JpaRepository<FIlesToSend, Long> 
     Page<FIlesToSend> findFIlesToSendByDateToSendAfter(Date filterDate, Pageable pageable);
     long countAllByDateToSendAfter(Date filterDate);
 //    //    @EntityGraph(value = Order.ENTITY_GRAPTH_BRIEF, type = EntityGraphType.LOAD)
-    List<FileToSendSummary> findFIlesToSendByDateToSendGreaterThanEqual(Date dueDate);
+    List<FileToSendSummary> findFIlesToSendByDateToSendGreaterThanEqual(Date dateToSend);
 }
