@@ -1,20 +1,16 @@
 package com.stt.dash.ui.views.bulksms;
 
-import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.ListGenericBean;
-import com.stt.dash.app.session.SetGenericBean;
-import com.stt.dash.backend.data.Role;
-import com.stt.dash.backend.data.Status;
 import com.stt.dash.backend.data.entity.*;
 import com.stt.dash.backend.service.AgendaService;
-import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.crud.CrudEntityDataProvider;
 import com.stt.dash.ui.events.CancelEvent;
-import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.ODateUitls;
+import com.stt.dash.ui.views.bulksms.events.BulkSmsReviewEvent;
 import com.stt.dash.ui.views.storefront.events.ReviewEvent;
+import com.stt.dash.ui.views.storefront.events.ValueChangeEvent;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -33,17 +29,13 @@ import com.vaadin.flow.data.binder.*;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
 import com.vaadin.flow.shared.Registration;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Component;
-import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -52,10 +44,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 
 @Tag("file-to-send-editor")
 @JsModule("./src/views/bulksms/file-to-send-editor.ts")
@@ -136,7 +126,7 @@ public class FileToSendEditor extends LitTemplate {
         agendaComboBox.setDataProvider(agendaDataProvider);
         agendaComboBox.setItemLabelGenerator(Agenda::getName);
         binder.forField(dueDate)
-                .asRequired("Seleccione una credencial")
+                .asRequired("Seleccione fechay hora")
                 .withConverter(new Converter<LocalDateTime, Date>() {
                     @Override
                     public Result<Date> convertToModel(LocalDateTime localDateTime, ValueContext valueContext) {
@@ -220,7 +210,12 @@ public class FileToSendEditor extends LitTemplate {
         sendNow.addValueChangeListener(changeEvent->{
             dueDate.setValue(LocalDateTime.now());
         });
-
+//        ComponentUtil.addListener(itemsEditor, ValueChangeEvent.class, e -> review.setEnabled(hasChanges()));
+        binder.addValueChangeListener(e -> {
+            if (e.getOldValue() != null) {
+                review.setEnabled(hasChanges() & binder.isValid());
+            }
+        });
     }
     /**
      * Obtiene por separado todos los valores de a primera linea. Num de cel
@@ -274,7 +269,6 @@ public class FileToSendEditor extends LitTemplate {
         if (order.getStatus() != null) {
 //            getModel().setStatus(order.getState().name());
         }
-
         review.setEnabled(false);
     }
 
