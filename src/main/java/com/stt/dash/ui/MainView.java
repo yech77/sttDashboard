@@ -3,6 +3,7 @@ package com.stt.dash.ui;
 import com.stt.dash.ui.views.bulksms.BulkSmsSchedulerView;
 import com.stt.dash.ui.views.bulksms.BulkSmsView;
 import com.stt.dash.ui.views.bulksms.FileToSendEditor;
+import com.stt.dash.ui.views.bulksms.FileToSendFrontView;
 import com.stt.dash.ui.views.carrier.CarrierChartView;
 import com.stt.dash.ui.views.client.ClientChartView;
 import com.stt.dash.ui.views.rol.ORolesView;
@@ -102,8 +103,9 @@ public class MainView extends AppLayout {
 		final List<Tab> tabs = new ArrayList<>(4);
 //		tabs.add(createTab(VaadinIcon.EDIT, TITLE_STOREFRONT,
 //						StorefrontView.class));
+		tabs.add(createTab(VaadinIcon.EDIT, "Veremos",
+						FileToSendFrontView.class));
 //		tabs.add(createTab(VaadinIcon.CLOCK,TITLE_DASHBOARD, DashboardView.class));
-
 		if (SecurityUtils.isAccessGranted(MainDashboardView.class)) {
 			tabs.add(createTab(VaadinIcon.HOME,TITLE_DASHBOARD_MAIN, MainDashboardView.class));
 		}
@@ -123,7 +125,7 @@ public class MainView extends AppLayout {
 			tabs.add(createTab(VaadinIcon.USER,TITLE_BULKSMS_SCHEDULER, BulkSmsSchedulerView.class));
 		}
 		if (SecurityUtils.isAccessGranted(BulkSmsSchedulerView.class)) {
-			tabs.add(createTab(VaadinIcon.USER,TITLE_BULKSMS_SCHEDULER+"nuevo", FileToSendEditor.class));
+			tabs.add(createTab(VaadinIcon.USER,TITLE_BULKSMS_SCHEDULER+"nuevo", FileToSendFrontView.class));
 		}
 		if (SecurityUtils.isAccessGranted(UsersView.class)) {
 			tabs.add(createTab(VaadinIcon.USER,TITLE_USERS, UsersView.class));

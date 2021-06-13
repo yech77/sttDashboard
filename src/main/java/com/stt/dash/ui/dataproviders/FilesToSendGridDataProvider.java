@@ -35,7 +35,7 @@ public class FilesToSendGridDataProvider extends FilterablePageableDataProvider<
 
     public FilesToSendGridDataProvider(FilesToSendService filesToSendService) {
         this.filesToSendService = filesToSendService;
-        setSortOrders(BakeryConst.DEFAULT_SORT_DIRECTION, BakeryConst.ORDER_SORT_FIELDS);
+        setSortOrders(BakeryConst.DEFAULT_SORT_DIRECTION, BakeryConst.BULK_SORT_FIELDS);
     }
 
     private void setSortOrders(Sort.Direction direction, String[] properties) {

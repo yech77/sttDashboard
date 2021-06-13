@@ -1,16 +1,14 @@
 package com.stt.dash.backend.service;
 
 import com.stt.dash.Application;
-import com.stt.dash.backend.data.OrderState;
 import com.stt.dash.backend.data.Status;
 import com.stt.dash.backend.data.entity.FIlesToSend;
 import com.stt.dash.backend.data.entity.FileToSendSummary;
-import com.stt.dash.backend.data.entity.Order;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.FilesToSendRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,12 +27,13 @@ public class FilesToSendService implements CrudService<FIlesToSend> {
 
     private static final Logger log = LoggerFactory.getLogger(FilesToSendService.class.getName());
 
+    @Autowired
     public FilesToSendService(FilesToSendRepository filesToSendRepository) {
         super();
         this.filesToSendRepository = filesToSendRepository;
     }
 
-        private static final Set<Status> notAvailableStates = Collections.unmodifiableSet(
+    private static final Set<Status> notAvailableStates = Collections.unmodifiableSet(
             EnumSet.complementOf(EnumSet.of(Status.INVALID, Status.WAITING_TO_SEND)));
 
     //    private static final Set<OrderState> notAvailableStates = Collections.unmodifiableSet(
@@ -116,7 +115,7 @@ public class FilesToSendService implements CrudService<FIlesToSend> {
     }
 
     public Page<FIlesToSend> findAnyMatchingAfterDateToSend(Optional<String> optionalFilter,
-                                                         Optional<Date> optionalFilterDate, Pageable pageable) {
+                                                            Optional<Date> optionalFilterDate, Pageable pageable) {
         if (optionalFilter.isPresent() && !optionalFilter.get().isEmpty()) {
             if (optionalFilterDate.isPresent()) {
                 return filesToSendRepository.findFIlesToSendByOrderNameContainingIgnoreCaseAndDateToSendAfter(
