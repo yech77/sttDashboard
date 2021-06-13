@@ -32,6 +32,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.*;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.shared.Registration;
@@ -127,6 +128,8 @@ public class FileToSendEditor extends LitTemplate {
         review.addClickListener(e -> fireEvent(new BulkSmsReviewEvent(this)));
         /* El pickup Locations es el systemid*/
         systemIdMulti.setItems(systemIdList.getList());
+        /**/
+        message.setValueChangeMode(ValueChangeMode.EAGER);
         /*No necesito el binder a status */
         /**/
         DataProvider<Agenda, String> agendaDataProvider = new CrudEntityDataProvider<>(agendaService);

@@ -1,4 +1,5 @@
 import {customElement, html, LitElement} from 'lit-element';
+import {FormLayoutResponsiveStep} from "@vaadin/vaadin-form-layout";
 
 // @ts-ignore
 @customElement('file-to-send-editor')
@@ -7,6 +8,19 @@ export class FileToSendEditor extends LitElement {
         // Do not use a shadow root
         return this;
     }
+
+    private responsiveSteps: FormLayoutResponsiveStep[] = [
+        {columns: 1, labelsPosition: 'top'},
+        {minWidth: '600px', columns: 4, labelsPosition: 'top'}
+    ];
+    private form2: FormLayoutResponsiveStep[] = [
+        {columns: 1, labelsPosition: 'top'},
+        {minWidth: '360px', columns: 2, labelsPosition: 'top'}
+    ];
+    private form3: FormLayoutResponsiveStep[] = [
+        {columns: 1, labelsPosition: 'top'},
+        {minWidth: '500px', columns: 3, labelsPosition: 'top'}
+    ];
 
     render() {
         return html`
@@ -36,35 +50,36 @@ export class FileToSendEditor extends LitElement {
                 }
             </style>
             <div class="scrollable flex1" id="main">
-                <h2 id="title">New order</h2>
+                <h2 id="title">Nueva Programacion</h2>
 
                 <div class="meta-row" id="metaContainer">
-                    <vaadin-combo-box class="status" id="status"></vaadin-combo-box>
                     <span class="dim">Order #<span id="orderNumber"></span></span>
                 </div>
 
-                <vaadin-form-layout id="form1">
-                    <vaadin-form-layout id="form2">
+                <vaadin-form-layout id="form1" .responsiveSteps="${this.responsiveSteps}">
+                    <vaadin-form-layout id="form2" .responsiveSteps="${this.form2}">
                         <vaadin-date-time-picker label="Due" id="dueDate"></vaadin-date-time-picker>
                         <vaadin-checkbox id="sendNow">Enviar Ya</vaadin-checkbox>
                     </vaadin-form-layout>
 
-                    <vaadin-form-layout id="form3" colspan="3">
-                        <vaadin-text-field id="orderName" label="Nombre de Agenda" colspan="2" error-message="Coloque un nombre a la Programacion"  required clear-button-visible>
-                            <iron-icon slot="prefix" icon="vaadin:user"></iron-icon>
-                        </vaadin-text-field>
-
-                        <vaadin-combo-box id="systemId" label="Credencial">
-                            <iron-icon slot="prefix" icon="vaadin:phone"></iron-icon>
+                    <vaadin-form-layout id="form3" colspan="3" .responsiveSteps="${this.form3}">
+                        <vaadin-combo-box id="status" label="Agenda" class="status" colspan="2"></vaadin-combo-box>
+                        <iron-icon slot="prefix" icon="vaadin:phone"></iron-icon>
                         </vaadin-combo-box>
-<!--                        <multiselect-combo-box id="systemId" label="Credencial">-->
-<!--                            <iron-icon slot="prefix" icon="vaadin:phone"></iron-icon>-->
-<!--                        </multiselect-combo-box>-->
+                        <vaadin-combo-box id="systemId" label="Credencial"></vaadin-combo-box>
+                        <vaadin-text-field id="orderName" label="Nombre de Programacion" colspan="2"
+                                           clear-button-visible></vaadin-text-field>
 
-                        <vaadin-text-field id="orderDescription" label="Descripcion" colspan="3" clear-button-visible ></vaadin-text-field>
-                        <vaadin-text-area  id="message" label="Escriba su mensaje" colspan="3" required clear-button-visible></vaadin-text-area>
+                        <!--                        <multiselect-combo-box id="systemId" label="Credencial">-->
+                        <!--                            <iron-icon slot="prefix" icon="vaadin:phone"></iron-icon>-->
+                        <!--                        </multiselect-combo-box>-->
 
-                        <vaadin-form-item colspan="3">
+                        <vaadin-text-field id="orderDescription" label="Descripcion" colspan="2"
+                                           clear-button-visible></vaadin-text-field>
+                        <vaadin-text-area id="message" label="Escriba su mensaje" colspan="2" required
+                                          clear-button-visible></vaadin-text-area>
+
+                        <vaadin-form-item colspan="2">
                             <p id="charCounter"></p>
                             <span id="warningSpan"></span>
                             <p id="messageBuilded"></p>
@@ -75,13 +90,41 @@ export class FileToSendEditor extends LitElement {
 
             <buttons-bar id="footer" no-scroll\\$="[[noScroll]]">
                 <vaadin-button slot="left" id="cancel">Cancel</vaadin-button>
-                <div slot="info" class="total">Total [[totalPrice]]</div>
                 <vaadin-button slot="right" id="review" theme="primary">
-                    Review order
+                    Confirmar Programacion
                     <iron-icon icon="vaadin:arrow-right" slot="suffix"></iron-icon>
                 </vaadin-button>
             </buttons-bar>
 
         `;
     }
+
+    static get is() {
+        return 'file-to-send-editor';
+    }
+
+    static get properties() {
+        return {
+            status: {
+                type: String,
+                observer: '_onStatusChange'
+            }
+        };
+    }
+
+    // ready() {
+    //     // super.ready();
+    //
+    //     // Not using attributes since Designer does not suppor single-quote attributes
+    //     this.form1.responsiveSteps = [
+    //     ];
+    //     this.$.form2.responsiveSteps = [
+    //         {columns: 1, labelsPosition: 'top'},
+    //         {minWidth: '360px', columns: 2, labelsPosition: 'top'}
+    //     ];
+    //     this.$.form3.responsiveSteps = [
+    //         {columns: 1, labelsPosition: 'top'},
+    //         {minWidth: '500px', columns: 3, labelsPosition: 'top'}
+    //     ];
+    // }
 }
