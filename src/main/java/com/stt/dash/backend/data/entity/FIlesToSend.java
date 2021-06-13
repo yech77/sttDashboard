@@ -32,6 +32,8 @@ public class FIlesToSend extends AbstractEntitySequence implements FileToSendSum
     private int smsCount;
     private Status status;
 
+    @NotNull
+    @NotEmpty
     @Size(max = 100)
     @Column(length = 100, unique = true)
     private String orderName;
@@ -41,6 +43,8 @@ public class FIlesToSend extends AbstractEntitySequence implements FileToSendSum
 
     @Size(max = 255)
     private String fileName;
+
+    @NotNull
     private Date dateToSend;
 
     @Size(max = 255)
