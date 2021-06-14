@@ -7,5 +7,6 @@ public class ReviewEvent extends ComponentEvent<OrderEditor> {
 
 	public ReviewEvent(OrderEditor component) {
 		super(component, false);
+		System.out.println("REVIEW EVENT ORDER");
 	}
 }

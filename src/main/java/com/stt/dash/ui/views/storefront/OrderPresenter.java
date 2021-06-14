@@ -86,35 +86,45 @@ public class OrderPresenter {
 	}
 
 	void edit() {
+		System.out.println("Llegue a P- EDIT...");
         UI.getCurrent()
                 .navigate(String.format(PAGE_STOREFRONT_ORDER_EDIT,
                         entityPresenter.getEntity().getId()));
 	}
 
 	void back() {
+
+		System.out.println("Llegue a P- BACK...");
 		view.setDialogElementsVisibility(true);
 	}
 
 	void review() {
+		System.out.println("Llegue a P- REVIEW...");
 		// Using collect instead of findFirst to assure all streams are
 		// traversed, and every validation updates its view
 		List<HasValue<?, ?>> fields = view.validate().collect(Collectors.toList());
 		if (fields.isEmpty()) {
+			System.out.println("Llegue a P- REVIEW - ISEMPTY...");
 			if (entityPresenter.writeEntity()) {
 				view.setDialogElementsVisibility(false);
 				view.getOpenedOrderDetails().display(entityPresenter.getEntity(), true);
 			}
 		} else if (fields.get(0) instanceof Focusable) {
+			System.out.println("Llegue a P- REVIEW...");
 			((Focusable<?>) fields.get(0)).focus();
 		}
 	}
 
 	void save() {
+		System.out.println("Llegue a P- SAVE...");
 		entityPresenter.save(e -> {
 			if (entityPresenter.isNew()) {
+
+				System.out.println("Llegue a P- SAVE - ISNEW...");
 				view.showCreatedNotification();
 				dataProvider.refreshAll();
 			} else {
+				System.out.println("Llegue a P- SAVE - !ISNEW...");
 				view.showUpdatedNotification();
 				dataProvider.refreshItem(e);
 			}
@@ -131,17 +141,21 @@ public class OrderPresenter {
 	}
 
 	private void open(Order order, boolean edit) {
+		System.out.println("Llegue a P- OPEN...");
 		view.setDialogElementsVisibility(edit);
 		view.setOpened(true);
 
 		if (edit) {
+			System.out.println("Llegue a P- OPEN...TRUE");
 			view.getOpenedOrderEditor().read(order, entityPresenter.isNew());
 		} else {
+			System.out.println("Llegue a P- OPEN...FALSE");
 			view.getOpenedOrderDetails().display(order, false);
 		}
 	}
 
 	private void close() {
+		System.out.println("Llegue a P- CLOSE...");
 		view.getOpenedOrderEditor().close();
 		view.setOpened(false);
 		view.navigateToMainView();

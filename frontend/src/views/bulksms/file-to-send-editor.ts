@@ -98,19 +98,19 @@ export class FileToSendEditor extends LitElement {
 
         `;
     }
-
-    static get is() {
-        return 'file-to-send-editor';
-    }
-
-    static get properties() {
-        return {
-            status: {
-                type: String,
-                observer: '_onStatusChange'
-            }
-        };
-    }
+    //
+    // static get is() {
+    //     return 'file-to-send-editor';
+    // }
+    //
+    // static get properties() {
+    //     return {
+    //         status: {
+    //             type: String,
+    //             observer: '_onStatusChange'
+    //         }
+    //     };
+    // }
 
     // ready() {
     //     // super.ready();

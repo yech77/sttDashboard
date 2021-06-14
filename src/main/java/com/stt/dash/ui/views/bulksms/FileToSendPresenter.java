@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Scope;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.stt.dash.ui.utils.BakeryConst.PAGE_BULK_STOREFRONT_ORDER_EDIT;
 import static com.stt.dash.ui.utils.BakeryConst.PAGE_STOREFRONT_ORDER_EDIT;
 
 @SpringComponent
@@ -51,10 +52,10 @@ public class FileToSendPresenter {
         view.getOpenedOrderEditor().setCurrentUser(currentUser.getUser());
         view.getOpenedOrderEditor().addCancelListener(e -> cancel());
         view.getOpenedOrderEditor().addReviewListener(e -> review());
-//        view.getOpenedOrderDetails().addSaveListenter(e -> save());
-//        view.getOpenedOrderDetails().addCancelListener(e -> cancel());
-//        view.getOpenedOrderDetails().addBackListener(e -> back());
-//        view.getOpenedOrderDetails().addEditListener(e -> edit());
+        view.getOpenedOrderDetails().addSaveListenter(e -> save());
+        view.getOpenedOrderDetails().addCancelListener(e -> cancel());
+        view.getOpenedOrderDetails().addBackListener(e -> back());
+        view.getOpenedOrderDetails().addEditListener(e -> edit());
 //        view.getOpenedOrderDetails().addCommentListener(e -> addComment(e.getMessage()));
     }
 
@@ -72,6 +73,7 @@ public class FileToSendPresenter {
     }
 
     void createNewOrder() {
+        System.out.println("Llegue a crearNewOrder...");
         open(entityPresenter.createNew(), true);
     }
 
@@ -80,28 +82,32 @@ public class FileToSendPresenter {
     }
 
     void closeSilently() {
+        System.out.println("Llegue a closeSilently...");
         entityPresenter.close();
         view.setOpened(false);
     }
     void edit() {
+        System.out.println("Llegue edit...");
         UI.getCurrent()
-                .navigate(String.format(PAGE_STOREFRONT_ORDER_EDIT,
+                .navigate(String.format(PAGE_BULK_STOREFRONT_ORDER_EDIT,
                         entityPresenter.getEntity().getId()));
     }
 
     void back() {
+        System.out.println("Llegue a back...");
         view.setDialogElementsVisibility(true);
     }
 
     void review() {
-        // Using collect instead of findFirst to assure all streams are
-        // traversed, and every validation updates its view
+        System.out.println("Llegue a Review...");
+//         Using collect instead of findFirst to assure all streams are
+//         traversed, and every validation updates its view
 //        List<HasValue<?, ?>> fields = view.validate().collect(Collectors.toList());
 //        if (fields.isEmpty()) {
-//            if (entityPresenter.writeEntity()) {
-//                view.setDialogElementsVisibility(false);
-//                view.getOpenedOrderDetails().display(entityPresenter.getEntity(), true);
-//            }
+            if (entityPresenter.writeEntity()) {
+                view.setDialogElementsVisibility(false);
+                view.getOpenedOrderDetails().display(entityPresenter.getEntity(), true);
+            }
 //        } else if (fields.get(0) instanceof Focusable) {
 //            ((Focusable<?>) fields.get(0)).focus();
 //        }
@@ -109,9 +115,11 @@ public class FileToSendPresenter {
     void save() {
         entityPresenter.save(e -> {
             if (entityPresenter.isNew()) {
+                System.out.println("Llegue a save is New...");
                 view.showCreatedNotification();
                 dataProvider.refreshAll();
             } else {
+                System.out.println("Llegue a save not is New...");
                 view.showUpdatedNotification();
                 dataProvider.refreshItem(e);
             }
@@ -128,18 +136,21 @@ public class FileToSendPresenter {
 //    }
 
     private void open(FIlesToSend order, boolean edit) {
+        System.out.println("Llegue a Open...");
         view.setDialogElementsVisibility(edit);
         view.setOpened(true);
-
         if (edit) {
             view.getOpenedOrderEditor().read(order, entityPresenter.isNew());
+            System.out.println("Llegue a Open...TRUE");
         } else {
-//            view.getOpenedOrderDetails().display(order, false);
+            view.getOpenedOrderDetails().display(order, false);
+            System.out.println("Llegue a Open...FALSE");
         }
     }
 
     private void close() {
-//        view.getOpenedOrderEditor().close();
+        System.out.println("Llegue a Close...");
+        view.getOpenedOrderEditor().close();
         view.setOpened(false);
         view.navigateToMainView();
         entityPresenter.close();
