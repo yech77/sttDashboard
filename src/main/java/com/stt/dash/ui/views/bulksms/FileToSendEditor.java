@@ -97,7 +97,7 @@ public class FileToSendEditor extends LitTemplate {
     @Id("review")
     private Button review;
 
-    private FileToSendEditor fileToSendEditor;
+//    private FileToSendEditor fileToSendEditor;
 
     private User currentUser;
 
@@ -277,6 +277,7 @@ public class FileToSendEditor extends LitTemplate {
     }
 
     public void clear() {
+        System.out.println("llegue a CLEAR");
         binder.readBean(null);
 //        itemsEditor.setValue(null);
     }
@@ -284,11 +285,15 @@ public class FileToSendEditor extends LitTemplate {
         binder.writeBean(fIlesToSend);
     }
 
-    public Registration addReviewListener(ComponentEventListener<ReviewEvent> listener) {
-        return addListener(ReviewEvent.class, listener);
+    public Registration addReviewListener(ComponentEventListener<BulkSmsReviewEvent> listener) {
+        System.out.println("ADDREVIEWLISTENER");
+        return addListener(BulkSmsReviewEvent.class, listener);
     }
 
     public Registration addCancelListener(ComponentEventListener<CancelEvent> listener) {
         return addListener(CancelEvent.class, listener);
+    }
+    public void close() {
+//        setTotalPrice(0);
     }
 }

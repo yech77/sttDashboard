@@ -170,6 +170,7 @@ public class OrderEditor extends PolymerTemplate<OrderEditor.Model> {
 	}
 
 	public void clear() {
+		System.out.println("llegue a CLEAR");
 		binder.readBean(null);
 		itemsEditor.setValue(null);
 	}
@@ -204,6 +205,7 @@ public class OrderEditor extends PolymerTemplate<OrderEditor.Model> {
 	}
 
 	public Registration addReviewListener(ComponentEventListener<ReviewEvent> listener) {
+		System.out.println("ADDREVIEWLISTENER ORDER");
 		return addListener(ReviewEvent.class, listener);
 	}
 

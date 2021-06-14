@@ -112,6 +112,7 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
         return orderDetails;
     }
 
+
     Grid<FIlesToSend> getGrid() {
         return grid;
     }
