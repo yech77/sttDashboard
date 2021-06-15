@@ -1,10 +1,18 @@
 package com.stt.dash.backend.service;
 
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import com.stt.dash.app.security.CurrentUser;
+import com.stt.dash.backend.data.entity.OUser;
+import com.stt.dash.backend.repositories.OUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.trace.http.HttpTrace;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +26,6 @@ public class UserService implements FilterableCrudService<User> {
 	private static final String DELETING_SELF_NOT_PERMITTED = "You cannot delete your own account";
 	private final UserRepository userRepository;
 
-	@Autowired
 	public UserService(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
@@ -31,6 +38,18 @@ public class UserService implements FilterableCrudService<User> {
 							repositoryFilter, repositoryFilter, repositoryFilter, repositoryFilter, pageable);
 		} else {
 			return find(pageable);
+		}
+	}
+
+	@Override
+	public Page<User> findAnyMatching(CurrentUser currentUser, Optional<String> filter, Pageable pageable) {
+		if (filter.isPresent()) {
+			String repositoryFilter = "%" + filter.get() + "%";
+			return getRepository()
+					.findByEmailLikeIgnoreCaseOrFirstNameLikeIgnoreCaseOrLastNameLikeIgnoreCaseOrRoleLikeIgnoreCase(
+							repositoryFilter, repositoryFilter, repositoryFilter, repositoryFilter, pageable);
+		} else {
+			return find(currentUser, pageable);
 		}
 	}
 
@@ -52,6 +71,9 @@ public class UserService implements FilterableCrudService<User> {
 
 	public Page<User> find(Pageable pageable) {
 		return getRepository().findBy(pageable);
+	}
+	public Page<User> find(CurrentUser currentUser, Pageable pageable) {
+		return getRepository().findDescent(currentUser.getUser().getId(), pageable);
 	}
 
 	@Override
@@ -84,5 +106,25 @@ public class UserService implements FilterableCrudService<User> {
 	public User createNew(User currentUser) {
 		return new User();
 	}
-
+//
+//	private List<User> getUserFamily() {
+//		List<User> allUsers = new ArrayList<>();
+//		List<User> currentFam = new ArrayList<>();
+//		List<User> addingChildren = new ArrayList<>();
+//
+//		currentFam.add(currentUser.getUser());
+//		addingChildren.addAll(currentUser.getUser().getUserChildren());
+//		while (addingChildren.size() > 0) {
+//			allUsers.addAll(currentFam);
+//			currentFam.clear();
+//			currentFam.addAll(addingChildren);
+//			addingChildren.clear();
+//			for (User user : currentFam) {
+//				addingChildren.addAll(user.getUserChildren());
+//			}
+//		}
+//		allUsers.addAll(currentFam);
+//		System.out.println("Usuarios en la familia de " + currentUser.getUser().getEmail() + ": " + allUsers);
+//		return allUsers;
+//	}
 }
