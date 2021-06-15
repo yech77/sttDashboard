@@ -1,6 +1,7 @@
 package com.stt.dash.app.security;
 
 import com.stt.dash.app.DataGenerator;
+import com.stt.dash.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -16,9 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
-import com.stt.dash.backend.data.Role;
 import com.stt.dash.backend.data.entity.User;
-import com.stt.dash.backend.repositories.UserRepository;
 import com.stt.dash.ui.utils.BakeryConst;
 
 /**

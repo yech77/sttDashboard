@@ -82,7 +82,7 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         crudI18n.setDeleteItem("Borrar");
         setI18n(crudI18n);
 
-        CrudEntityDataProvider<E> dataProvider = new CrudEntityDataProvider<>(service);
+        CrudEntityDataProvider<E> dataProvider = new CrudEntityDataProvider<>(service, currentUser);
         grid.setDataProvider(dataProvider);
         setupGrid(grid);
         Crud.addEditColumn(grid);
@@ -125,7 +125,6 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
 //            entityPresenter.save(e.getItem(), onSuccessSaved, onFail);
 
         });
-
         addDeleteListener(e ->
                 entityPresenter.delete(e.getItem(), onSuccess, onFail));
     }

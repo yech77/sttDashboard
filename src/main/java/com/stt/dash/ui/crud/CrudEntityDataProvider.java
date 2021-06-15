@@ -2,6 +2,7 @@ package com.stt.dash.ui.crud;
 
 import java.util.List;
 
+import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.entity.AbstractEntitySequence;
 import com.stt.dash.backend.service.FilterableCrudService;
 import org.springframework.data.domain.Page;
@@ -16,10 +17,15 @@ public class CrudEntityDataProvider<T extends AbstractEntitySequence> extends Fi
 
 	private final FilterableCrudService<T> crudService;
 	private List<QuerySortOrder> defaultSortOrders;
+	private  CurrentUser currentUser;
 
 	public CrudEntityDataProvider(FilterableCrudService<T> crudService) {
 		this.crudService = crudService;
 		setSortOrders();
+	}
+	public CrudEntityDataProvider(FilterableCrudService<T> crudService, CurrentUser currentUser) {
+		this(crudService);
+		this.currentUser = currentUser;
 	}
 
 	private void setSortOrders() {
@@ -31,7 +37,7 @@ public class CrudEntityDataProvider<T extends AbstractEntitySequence> extends Fi
 	@Override
 	protected Page<T> fetchFromBackEnd(Query<T, String> query, Pageable pageable) {
 		System.out.println("FECHAFROMBACKEND");
-		return crudService.findAnyMatching(query.getFilter(), pageable);
+		return crudService.findAnyMatching(currentUser, query.getFilter(), pageable);
 	}
 
 	@Override
