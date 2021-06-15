@@ -9,6 +9,7 @@ import '../../components/buttons-bar.js';
 import '../../components/utils-mixin.js';
 import '../storefront/order-status-badge.js';
 import '../../../styles/shared-styles.js';
+import {FormLayoutResponsiveStep} from "@vaadin/vaadin-form-layout";
 // import {html} from '@polymer/polymer/lib/utils/html-tag.js';
 
 // class OrderDetails extends window.ScrollShadowMixin(PolymerElement) {
@@ -20,6 +21,18 @@ export class FileToSendDetails extends LitElement {
         return this;
     }
 
+    private form1: FormLayoutResponsiveStep[] = [
+        {columns: 1, labelsPosition: 'top'},
+        {minWidth: '600px', columns: 4, labelsPosition: 'top'}
+    ];
+    //
+    // private form2: FormLayoutResponsiveStep[] = [
+    //     {columns: 1}, {minWidth: '180px', columns: 2}
+    // ];
+    //
+    // private form4: FormLayoutResponsiveStep[] = [
+    //     {columns: 1, labelsPosition: 'top'}
+    // ];
     render() {
         return html`
             <style include="shared-styles">
@@ -131,26 +144,67 @@ export class FileToSendDetails extends LitElement {
                     }
                 }
             </style>
+            
+            <div class="scrollable main-row" id="main">
 
-            <div class="scrollable main-row" id="main"></div>
+                <vaadin-form-layout id="form1" .responsiveSteps="${this.form1}">
+                    <vaadin-form-item>
+                        <label slot="label">Fecha Programada</label>
+                        <vaadin-form-layout id="form2">
+                            <div class="date">
+                                <h3 id="bulkday"></h3>
+                                <span id="bulkweekday" class="dim"></span>
+                            </div>
+                            <div class="time">
+                                <h3 id="bulktime"></h3>
+                            </div>
+                        </vaadin-form-layout>
+                    </vaadin-form-item>
+
+                    <vaadin-form-item colspan="2">
+                        <label slot="label">Programacion</label>
+                        <h3 id="orderName"></h3>
+                        <p id="orderDescription"></p>
+                    </vaadin-form-item>
+
+                    <vaadin-form-item>
+                        <label slot="label">Credencial</label>
+                        <h3 id="systemid"></h3id>
+                    </vaadin-form-item>
+                </vaadin-form-layout>
+
+<!--                <vaadin-form-layout id="form3">-->
+<!--                    <div></div>-->
+
+<!--                    <vaadin-form-layout id="form4" colspan="2">-->
+<!--                        <template is="dom-if" if="[[item.customer.details]]">-->
+<!--                            <vaadin-form-item label-position="top">-->
+<!--                                <label slot="label">Additional details</label>-->
+<!--                                <span>[[item.customer.details]]</span>-->
+<!--                            </vaadin-form-item>-->
+<!--                        </template>-->
+
+<!--                    </vaadin-form-layout>-->
+            </div>
 
             <buttons-bar id="footer" no-scroll\$="[[noScroll]]">
-                <vaadin-button slot="left" id="back" hidden="[[!review]]">Back</vaadin-button>
-                <vaadin-button slot="left" id="cancel" hidden="[[review]]">Cancel</vaadin-button>
+                <vaadin-button slot="left" id="back" >Atras</vaadin-button>
+                <vaadin-button slot="left" id="cancel" >Cancelar</vaadin-button>
 
-                <div slot="info" class="total">Total 0/div>
+                <div slot="info" class="total">
 
-                <vaadin-button slot="right" id="save" theme="primary success" hidden="[[!review]]">
-                    <iron-icon icon="vaadin:check" slot="suffix"></iron-icon>
-                    Place Program
-                </vaadin-button>
-                <vaadin-button slot="right" id="edit" theme="primary" hidden="[[review]]">
-                    Edit Program
-                    <iron-icon icon="vaadin:edit" slot="suffix"></iron-icon>
-                </vaadin-button>
+                    <vaadin-button slot="right" id="save" theme="primary success" >
+                        <iron-icon icon="vaadin:check" slot="suffix"></iron-icon>
+                        Programar
+                    </vaadin-button>
+                    <vaadin-button slot="right" id="edit" theme="primary" >
+                        Editar Programacion
+                        <iron-icon icon="vaadin:edit" slot="suffix"></iron-icon>
+                    </vaadin-button>
             </buttons-bar>
         `;
     }
+
     //
     // static get is() {
     //     return 'order-details';
@@ -189,5 +243,6 @@ export class FileToSendDetails extends LitElement {
     //     }
     // }
 }
+
 //
 // window.customElements.define(OrderDetails.is, OrderDetails);

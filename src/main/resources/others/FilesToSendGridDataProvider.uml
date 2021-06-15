@@ -3,162 +3,400 @@
   <ID>JAVA</ID>
   <OriginalElement>com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider</OriginalElement>
   <nodes>
-    <node x="380.5625" y="360.0">com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider</node>
-    <node x="670.0" y="86.0">com.stt.dash.backend.data.entity.FileToSendSummary</node>
-    <node x="0.0" y="272.0">com.stt.dash.ui.views.bulksms.FileToSendEditor</node>
-    <node x="425.75" y="0.0">com.stt.dash.backend.data.Status</node>
-    <node x="345.0" y="86.0">com.stt.dash.ui.views.bulksms.FileToSendStateConverter</node>
-    <node x="469.4870495495495" y="272.0">com.stt.dash.backend.service.FilesToSendService</node>
-    <node x="110.59909909909908" y="174.0">com.stt.dash.backend.data.entity.FIlesToSend</node>
+    <node x="995.3433507549362" y="548.0">com.stt.dash.ui.views.bulksms.FileToSendCardHeaderGenerator</node>
+    <node x="643.3433507549362" y="548.0">com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider</node>
+    <node x="239.96001742160297" y="0.0">com.stt.dash.backend.data.Status</node>
+    <node x="10.5" y="96.0">com.stt.dash.ui.views.bulksms.FileToSendStateConverter</node>
+    <node x="336.83333333333326" y="440.0">com.stt.dash.backend.service.FilesToSendService</node>
+    <node x="1102.625" y="688.0">com.stt.dash.ui.views.bulksms.FileToSendPresenter</node>
+    <node x="281.1864595431671" y="312.0">com.stt.dash.ui.views.bulksms.FileToSendCard</node>
+    <node x="795.69154084398" y="96.0">com.stt.dash.backend.data.entity.FileToSendSummary</node>
+    <node x="1661.450493612079" y="312.0">com.stt.dash.ui.views.bulksms.FileToSendEditor</node>
+    <node x="1440.94154084398" y="440.0">com.stt.dash.ui.views.bulksms.FileToSendFrontView</node>
+    <node x="1414.450493612079" y="312.0">com.stt.dash.ui.views.bulksms.FileToSendDetails</node>
+    <node x="508.18645954316713" y="312.0">com.stt.dash.backend.repositories.FilesToSendRepository</node>
+    <node x="1373.686459543167" y="214.0">com.stt.dash.backend.data.entity.FIlesToSend</node>
   </nodes>
   <notes />
   <edges>
     <edge source="com.stt.dash.backend.service.FilesToSendService" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="CREATE">
-      <point x="-89.625" y="-18.0" />
-      <point x="499.3620495495495" y="241.0" />
-      <point x="242.49999999999997" y="241.0" />
-      <point x="242.49999999999997" y="231.0" />
-      <point x="241.09909909909908" y="231.0" />
-      <point x="43.5" y="18.0" />
-    </edge>
-    <edge source="com.stt.dash.ui.views.bulksms.FileToSendEditor" target="com.stt.dash.backend.data.Status" relationship="TO_ONE">
-      <point x="-73.66666666666669" y="-18.0" />
-      <point x="36.833333333333314" y="251.0" />
-      <point x="56.36711711711706" y="251.0" />
-      <point x="56.36711711711706" y="66.0" />
-      <point x="256.75" y="66.0" />
-      <point x="256.75" y="56.0" />
-      <point x="456.25" y="56.0" />
-      <point x="-30.5" y="18.0" />
+      <point x="99.58333333333337" y="-18.0" />
+      <point x="555.9166666666666" y="419.0" />
+      <point x="792.6864595431671" y="419.0" />
+      <point x="792.6864595431671" y="291.0" />
+      <point x="1177.8433507549362" y="291.0" />
+      <point x="1177.8433507549362" y="281.0" />
+      <point x="1417.186459543167" y="281.0" />
+      <point x="-43.5" y="18.0" />
     </edge>
     <edge source="com.stt.dash.backend.data.entity.FileToSendSummary" target="com.stt.dash.backend.data.Status" relationship="DEPENDENCY">
       <point x="0.0" y="-18.0" />
-      <point x="794.5" y="66.0" />
-      <point x="727.0" y="66.0" />
-      <point x="727.0" y="56.0" />
-      <point x="517.25" y="56.0" />
+      <point x="920.19154084398" y="66.0" />
+      <point x="740.210017421603" y="66.0" />
+      <point x="740.210017421603" y="56.0" />
+      <point x="331.46001742160297" y="56.0" />
       <point x="30.5" y="18.0" />
     </edge>
-    <edge source="com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="DEPENDENCY">
-      <point x="-41.5" y="-18.0" />
-      <point x="505.0625" y="329.0" />
-      <point x="242.49999999999997" y="329.0" />
-      <point x="242.49999999999997" y="231.0" />
-      <point x="241.09909909909908" y="231.0" />
-      <point x="43.5" y="18.0" />
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendFrontView" target="com.stt.dash.ui.views.bulksms.FileToSendEditor" relationship="TO_ONE">
+      <point x="74.28571428571422" y="-18.0" />
+      <point x="1645.2272551296942" y="409.0" />
+      <point x="1827.200493612079" y="409.0" />
+      <point x="55.25" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.service.FilesToSendService" target="com.stt.dash.backend.repositories.FilesToSendRepository" relationship="DEPENDENCY">
+      <point x="19.91666666666663" y="-18.0" />
+      <point x="476.2499999999999" y="399.0" />
+      <point x="576.6864595431671" y="399.0" />
+      <point x="-68.5" y="18.0" />
     </edge>
     <edge source="com.stt.dash.backend.service.FilesToSendService" target="com.stt.dash.backend.data.Status" relationship="TO_MANY">
-      <point x="-29.875" y="-18.0" />
-      <point x="559.1120495495495" y="231.0" />
-      <point x="334.5" y="231.0" />
-      <point x="334.5" y="66.0" />
-      <point x="256.75" y="66.0" />
-      <point x="256.75" y="56.0" />
-      <point x="456.25" y="56.0" />
+      <point x="-99.58333333333337" y="-18.0" />
+      <point x="356.7499999999999" y="419.0" />
+      <point x="0.0" y="419.0" />
+      <point x="0.0" y="76.0" />
+      <point x="177.94154084397996" y="76.0" />
+      <point x="177.94154084397996" y="56.0" />
+      <point x="270.46001742160297" y="56.0" />
       <point x="-30.5" y="18.0" />
     </edge>
     <edge source="com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider" target="com.stt.dash.backend.service.FilesToSendService" relationship="TO_ONE">
-      <point x="124.5" y="-18.0" />
-      <point x="671.0625" y="339.0" />
-      <point x="648.7370495495495" y="339.0" />
-      <point x="59.75" y="18.0" />
-    </edge>
-    <edge source="com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider" target="com.stt.dash.backend.service.FilesToSendService" relationship="DEPENDENCY">
-      <point x="41.5" y="-18.0" />
-      <point x="588.0625" y="339.0" />
-      <point x="529.2370495495495" y="339.0" />
+      <point x="-124.5" y="-18.0" />
+      <point x="684.8433507549362" y="527.0" />
+      <point x="450.83333333333326" y="527.0" />
+      <point x="450.83333333333326" y="517.0" />
+      <point x="396.58333333333326" y="517.0" />
       <point x="-59.75" y="18.0" />
     </edge>
-    <edge source="com.stt.dash.backend.service.FilesToSendService" target="com.stt.dash.backend.data.entity.FileToSendSummary" relationship="DEPENDENCY">
-      <point x="29.875" y="-18.0" />
-      <point x="618.8620495495495" y="241.0" />
-      <point x="799.5" y="241.0" />
-      <point x="799.5" y="153.0" />
-      <point x="856.75" y="153.0" />
-      <point x="62.25" y="18.0" />
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendFrontView" target="com.stt.dash.ui.views.bulksms.FileToSendPresenter" relationship="TO_ONE">
+      <point x="-97.5" y="18.0" />
+      <point x="1473.44154084398" y="517.0" />
+      <point x="1510.375" y="517.0" />
+      <point x="1510.375" y="626.0" />
+      <point x="1261.375" y="626.0" />
+      <point x="31.750000000000114" y="-18.0" />
     </edge>
-    <edge source="com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="TO_MANY">
-      <point x="-124.5" y="-18.0" />
-      <point x="422.0625" y="339.0" />
-      <point x="231.49999999999997" y="339.0" />
-      <point x="231.49999999999997" y="251.0" />
-      <point x="199.38119369369366" y="251.0" />
-      <point x="199.38119369369366" y="231.0" />
-      <point x="154.09909909909908" y="231.0" />
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendPresenter" target="com.stt.dash.ui.views.bulksms.FileToSendFrontView" relationship="TO_ONE">
+      <point x="52.916666666666856" y="-18.0" />
+      <point x="1282.5416666666667" y="636.0" />
+      <point x="1521.375" y="636.0" />
+      <point x="1521.375" y="497.0" />
+      <point x="1538.44154084398" y="497.0" />
+      <point x="-32.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendCard" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="DEPENDENCY">
+      <point x="82.80000000000001" y="-18.0" />
+      <point x="467.48645954316703" y="291.0" />
+      <point x="1177.8433507549362" y="291.0" />
+      <point x="1177.8433507549362" y="281.0" />
+      <point x="1417.186459543167" y="281.0" />
       <point x="-43.5" y="18.0" />
     </edge>
-    <edge source="com.stt.dash.backend.data.entity.FIlesToSend" target="com.stt.dash.backend.data.Status" relationship="DEPENDENCY">
-      <point x="0.0" y="-18.0" />
-      <point x="197.59909909909908" y="143.0" />
-      <point x="659.5" y="143.0" />
-      <point x="659.5" y="66.0" />
-      <point x="727.0" y="66.0" />
-      <point x="727.0" y="56.0" />
-      <point x="517.25" y="56.0" />
-      <point x="30.5" y="18.0" />
+    <edge source="com.stt.dash.backend.service.FilesToSendService" target="com.stt.dash.backend.data.entity.FileToSendSummary" relationship="DEPENDENCY">
+      <point x="-19.91666666666663" y="-18.0" />
+      <point x="436.41666666666663" y="399.0" />
+      <point x="270.6864595431671" y="399.0" />
+      <point x="270.6864595431671" y="193.0" />
+      <point x="445.44154084397996" y="193.0" />
+      <point x="445.44154084397996" y="153.0" />
+      <point x="837.19154084398" y="153.0" />
+      <point x="-83.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider" target="com.stt.dash.backend.service.FilesToSendService" relationship="DEPENDENCY">
+      <point x="-41.5" y="-18.0" />
+      <point x="767.8433507549362" y="517.0" />
+      <point x="461.83333333333326" y="517.0" />
+      <point x="461.83333333333326" y="507.0" />
+      <point x="516.0833333333333" y="507.0" />
+      <point x="59.75" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendFrontView" target="com.stt.dash.ui.views.bulksms.FileToSendPresenter" relationship="DEPENDENCY">
+      <point x="97.5" y="18.0" />
+      <point x="1668.44154084398" y="517.0" />
+      <point x="1543.375" y="517.0" />
+      <point x="1543.375" y="656.0" />
+      <point x="1324.875" y="656.0" />
+      <point x="95.25000000000011" y="-18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendPresenter" target="com.stt.dash.ui.views.bulksms.FileToSendFrontView" relationship="DEPENDENCY">
+      <point x="74.08333333333337" y="-18.0" />
+      <point x="1303.7083333333333" y="646.0" />
+      <point x="1532.375" y="646.0" />
+      <point x="1532.375" y="507.0" />
+      <point x="1603.44154084398" y="507.0" />
+      <point x="32.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.service.FilesToSendService" target="com.stt.dash.backend.repositories.FilesToSendRepository" relationship="TO_ONE">
+      <point x="59.75" y="-18.0" />
+      <point x="516.0833333333333" y="409.0" />
+      <point x="713.6864595431671" y="409.0" />
+      <point x="68.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendCard" target="com.stt.dash.ui.views.bulksms.FileToSendStateConverter" relationship="CREATE">
+      <point x="-41.40000000000009" y="-18.0" />
+      <point x="343.286459543167" y="281.0" />
+      <point x="168.0" y="281.0" />
+      <point x="168.0" y="163.0" />
+      <point x="238.5" y="163.0" />
+      <point x="76.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendPresenter" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="DEPENDENCY">
+      <point x="10.583333333333371" y="-18.0" />
+      <point x="1240.2083333333333" y="616.0" />
+      <point x="1370.8433507549362" y="616.0" />
+      <point x="1370.8433507549362" y="291.0" />
+      <point x="1177.8433507549362" y="291.0" />
+      <point x="1177.8433507549362" y="281.0" />
+      <point x="1417.186459543167" y="281.0" />
+      <point x="-43.5" y="18.0" />
     </edge>
     <edge source="com.stt.dash.ui.views.bulksms.FileToSendStateConverter" target="com.stt.dash.backend.data.Status" relationship="TO_MANY">
       <point x="-76.0" y="-18.0" />
-      <point x="421.0" y="66.0" />
-      <point x="256.75" y="66.0" />
-      <point x="256.75" y="56.0" />
-      <point x="456.25" y="56.0" />
+      <point x="86.5" y="76.0" />
+      <point x="177.94154084397996" y="76.0" />
+      <point x="177.94154084397996" y="56.0" />
+      <point x="270.46001742160297" y="56.0" />
       <point x="-30.5" y="18.0" />
     </edge>
-    <edge source="com.stt.dash.backend.data.entity.FIlesToSend" target="com.stt.dash.backend.data.Status" relationship="TO_ONE">
-      <point x="-58.0" y="-18.0" />
-      <point x="139.59909909909908" y="153.0" />
-      <point x="179.0" y="153.0" />
-      <point x="179.0" y="66.0" />
-      <point x="256.75" y="66.0" />
-      <point x="256.75" y="56.0" />
-      <point x="456.25" y="56.0" />
-      <point x="-30.5" y="18.0" />
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendFrontView" target="com.stt.dash.ui.views.bulksms.FileToSendDetails" relationship="CREATE">
+      <point x="-37.14285714285711" y="-18.0" />
+      <point x="1533.7986837011229" y="369.0" />
+      <point x="1471.200493612079" y="369.0" />
+      <point x="-56.75" y="18.0" />
     </edge>
-    <edge source="com.stt.dash.ui.views.bulksms.FileToSendEditor" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="TO_ONE">
-      <point x="-1.4210854715202004E-14" y="-18.0" />
-      <point x="110.5" y="251.0" />
-      <point x="199.38119369369366" y="251.0" />
-      <point x="199.38119369369366" y="231.0" />
-      <point x="154.09909909909908" y="231.0" />
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendDetails" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="DEPENDENCY">
+      <point x="-56.75" y="-18.0" />
+      <point x="1471.200493612079" y="291.0" />
+      <point x="1177.8433507549362" y="291.0" />
+      <point x="1177.8433507549362" y="281.0" />
+      <point x="1417.186459543167" y="281.0" />
       <point x="-43.5" y="18.0" />
     </edge>
+    <edge source="com.stt.dash.backend.repositories.FilesToSendRepository" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="DEPENDENCY">
+      <point x="68.5" y="-18.0" />
+      <point x="713.6864595431671" y="291.0" />
+      <point x="1177.8433507549362" y="291.0" />
+      <point x="1177.8433507549362" y="281.0" />
+      <point x="1417.186459543167" y="281.0" />
+      <point x="-43.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendCard" target="com.stt.dash.ui.views.bulksms.FileToSendStateConverter" relationship="TO_ONE">
+      <point x="-82.80000000000007" y="-18.0" />
+      <point x="301.886459543167" y="291.0" />
+      <point x="157.0" y="291.0" />
+      <point x="157.0" y="193.0" />
+      <point x="86.5" y="193.0" />
+      <point x="-76.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendEditor" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="TO_ONE">
+      <point x="55.25" y="-18.0" />
+      <point x="1827.200493612079" y="281.0" />
+      <point x="1795.6518099109562" y="281.0" />
+      <point x="1795.6518099109562" y="271.0" />
+      <point x="1504.186459543167" y="271.0" />
+      <point x="43.5" y="18.0" />
+    </edge>
     <edge source="com.stt.dash.backend.data.entity.FIlesToSend" target="com.stt.dash.backend.data.entity.FileToSendSummary" relationship="REALIZATION">
-      <point x="58.0" y="-18.0" />
-      <point x="255.59909909909908" y="153.0" />
-      <point x="732.25" y="153.0" />
-      <point x="-62.25" y="18.0" />
+      <point x="0.0" y="-18.0" />
+      <point x="1460.686459543167" y="153.0" />
+      <point x="1003.19154084398" y="153.0" />
+      <point x="83.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendPresenter" target="com.stt.dash.ui.views.bulksms.FileToSendCardHeaderGenerator" relationship="TO_ONE">
+      <point x="-10.583333333333258" y="-18.0" />
+      <point x="1219.0416666666667" y="606.0" />
+      <point x="1269.0933507549362" y="606.0" />
+      <point x="91.25" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.repositories.FilesToSendRepository" target="com.stt.dash.backend.data.entity.FileToSendSummary" relationship="DEPENDENCY">
+      <point x="-68.5" y="-18.0" />
+      <point x="576.6864595431671" y="193.0" />
+      <point x="445.44154084397996" y="193.0" />
+      <point x="445.44154084397996" y="153.0" />
+      <point x="837.19154084398" y="153.0" />
+      <point x="-83.0" y="18.0" />
     </edge>
     <edge source="com.stt.dash.ui.views.bulksms.FileToSendStateConverter" target="com.stt.dash.backend.data.Status" relationship="DEPENDENCY">
       <point x="76.0" y="-18.0" />
-      <point x="573.0" y="66.0" />
-      <point x="727.0" y="66.0" />
-      <point x="727.0" y="56.0" />
-      <point x="517.25" y="56.0" />
+      <point x="238.5" y="66.0" />
+      <point x="740.210017421603" y="66.0" />
+      <point x="740.210017421603" y="56.0" />
+      <point x="331.46001742160297" y="56.0" />
       <point x="30.5" y="18.0" />
     </edge>
     <edge source="com.stt.dash.backend.service.FilesToSendService" target="com.stt.dash.backend.data.Status" relationship="DEPENDENCY">
-      <point x="89.625" y="-18.0" />
-      <point x="678.6120495495495" y="251.0" />
-      <point x="929.5" y="251.0" />
-      <point x="929.5" y="66.0" />
-      <point x="727.0" y="66.0" />
-      <point x="727.0" y="56.0" />
-      <point x="517.25" y="56.0" />
+      <point x="-59.75" y="-18.0" />
+      <point x="396.58333333333326" y="409.0" />
+      <point x="179.0" y="409.0" />
+      <point x="179.0" y="173.0" />
+      <point x="785.19154084398" y="173.0" />
+      <point x="785.19154084398" y="66.0" />
+      <point x="740.210017421603" y="66.0" />
+      <point x="740.210017421603" y="56.0" />
+      <point x="331.46001742160297" y="56.0" />
       <point x="30.5" y="18.0" />
     </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendDetails" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="TO_ONE">
+      <point x="56.75" y="-18.0" />
+      <point x="1584.700493612079" y="281.0" />
+      <point x="1795.6518099109562" y="281.0" />
+      <point x="1795.6518099109562" y="271.0" />
+      <point x="1504.186459543167" y="271.0" />
+      <point x="43.5" y="18.0" />
+    </edge>
     <edge source="com.stt.dash.ui.views.bulksms.FileToSendEditor" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="DEPENDENCY">
-      <point x="73.66666666666669" y="-18.0" />
-      <point x="184.16666666666669" y="241.0" />
-      <point x="242.49999999999997" y="241.0" />
-      <point x="242.49999999999997" y="231.0" />
-      <point x="241.09909909909908" y="231.0" />
+      <point x="-55.25" y="-18.0" />
+      <point x="1716.700493612079" y="291.0" />
+      <point x="1177.8433507549362" y="291.0" />
+      <point x="1177.8433507549362" y="281.0" />
+      <point x="1417.186459543167" y="281.0" />
+      <point x="-43.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendFrontView" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="DEPENDENCY">
+      <point x="-74.28571428571422" y="-18.0" />
+      <point x="1496.6558265582657" y="379.0" />
+      <point x="1403.950493612079" y="379.0" />
+      <point x="1403.950493612079" y="291.0" />
+      <point x="1177.8433507549362" y="291.0" />
+      <point x="1177.8433507549362" y="281.0" />
+      <point x="1417.186459543167" y="281.0" />
+      <point x="-43.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendPresenter" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="TO_ONE">
+      <point x="116.41666666666686" y="-18.0" />
+      <point x="1346.0416666666667" y="666.0" />
+      <point x="1907.4862078977933" y="666.0" />
+      <point x="1907.4862078977933" y="281.0" />
+      <point x="1795.6518099109562" y="281.0" />
+      <point x="1795.6518099109562" y="271.0" />
+      <point x="1504.186459543167" y="271.0" />
+      <point x="43.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendCard" target="com.stt.dash.backend.data.entity.FileToSendSummary" relationship="TO_ONE">
+      <point x="41.39999999999998" y="-18.0" />
+      <point x="426.08645954316705" y="281.0" />
+      <point x="480.6864595431671" y="281.0" />
+      <point x="480.6864595431671" y="183.0" />
+      <point x="920.19154084398" y="183.0" />
+      <point x="0.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="DEPENDENCY">
+      <point x="41.5" y="-18.0" />
+      <point x="850.8433507549362" y="291.0" />
+      <point x="1177.8433507549362" y="291.0" />
+      <point x="1177.8433507549362" y="281.0" />
+      <point x="1417.186459543167" y="281.0" />
+      <point x="-43.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendCardHeaderGenerator" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="DEPENDENCY">
+      <point x="0.0" y="-18.0" />
+      <point x="1177.8433507549362" y="281.0" />
+      <point x="1417.186459543167" y="281.0" />
+      <point x="-43.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendCard" target="com.stt.dash.backend.data.entity.FileToSendSummary" relationship="DEPENDENCY">
+      <point x="0.0" y="-18.0" />
+      <point x="384.6864595431671" y="193.0" />
+      <point x="445.44154084397996" y="193.0" />
+      <point x="445.44154084397996" y="153.0" />
+      <point x="837.19154084398" y="153.0" />
+      <point x="-83.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendFrontView" target="com.stt.dash.ui.views.bulksms.FileToSendCard" relationship="DEPENDENCY">
+      <point x="-111.42857142857133" y="-18.0" />
+      <point x="1459.5129694154086" y="389.0" />
+      <point x="384.6864595431671" y="389.0" />
+      <point x="0.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="TO_MANY">
+      <point x="124.5" y="-18.0" />
+      <point x="933.8433507549362" y="527.0" />
+      <point x="1907.4862078977933" y="527.0" />
+      <point x="1907.4862078977933" y="281.0" />
+      <point x="1795.6518099109562" y="281.0" />
+      <point x="1795.6518099109562" y="271.0" />
+      <point x="1504.186459543167" y="271.0" />
+      <point x="43.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.data.entity.FIlesToSend" target="com.stt.dash.backend.data.Status" relationship="DEPENDENCY">
+      <point x="57.99999999999994" y="-18.0" />
+      <point x="1518.686459543167" y="193.0" />
+      <point x="1598.186459543167" y="193.0" />
+      <point x="1598.186459543167" y="66.0" />
+      <point x="740.210017421603" y="66.0" />
+      <point x="740.210017421603" y="56.0" />
+      <point x="331.46001742160297" y="56.0" />
+      <point x="30.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendPresenter" target="com.stt.dash.ui.views.bulksms.FileToSendCardHeaderGenerator" relationship="CREATE">
+      <point x="-31.749999999999886" y="-18.0" />
+      <point x="1197.875" y="626.0" />
+      <point x="1086.5933507549362" y="626.0" />
+      <point x="-91.25" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.backend.data.entity.FIlesToSend" target="com.stt.dash.backend.data.Status" relationship="TO_ONE">
+      <point x="-58.0" y="-18.0" />
+      <point x="1402.686459543167" y="163.0" />
+      <point x="774.19154084398" y="163.0" />
+      <point x="774.19154084398" y="76.0" />
+      <point x="177.94154084397996" y="76.0" />
+      <point x="177.94154084397996" y="56.0" />
+      <point x="270.46001742160297" y="56.0" />
+      <point x="-30.5" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendPresenter" target="com.stt.dash.backend.service.FilesToSendService" relationship="TO_ONE">
+      <point x="-116.41666666666663" y="-18.0" />
+      <point x="1113.2083333333333" y="666.0" />
+      <point x="450.83333333333326" y="666.0" />
+      <point x="450.83333333333326" y="517.0" />
+      <point x="396.58333333333326" y="517.0" />
+      <point x="-59.75" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendPresenter" target="com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider" relationship="DEPENDENCY">
+      <point x="-52.91666666666663" y="-18.0" />
+      <point x="1176.7083333333333" y="636.0" />
+      <point x="892.3433507549362" y="636.0" />
+      <point x="83.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendPresenter" target="com.stt.dash.backend.service.FilesToSendService" relationship="DEPENDENCY">
+      <point x="-95.25" y="-18.0" />
+      <point x="1134.375" y="656.0" />
+      <point x="461.83333333333326" y="656.0" />
+      <point x="461.83333333333326" y="507.0" />
+      <point x="516.0833333333333" y="507.0" />
+      <point x="59.75" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendFrontView" target="com.stt.dash.ui.views.bulksms.FileToSendDetails" relationship="TO_ONE">
+      <point x="0.0" y="-18.0" />
+      <point x="1570.94154084398" y="419.0" />
+      <point x="1584.700493612079" y="419.0" />
+      <point x="56.75" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendFrontView" target="com.stt.dash.ui.views.bulksms.FileToSendEditor" relationship="DEPENDENCY">
+      <point x="37.14285714285711" y="-18.0" />
+      <point x="1608.084397986837" y="399.0" />
+      <point x="1716.700493612079" y="399.0" />
+      <point x="-55.25" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendPresenter" target="com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider" relationship="TO_ONE">
+      <point x="-74.08333333333337" y="-18.0" />
+      <point x="1155.5416666666665" y="646.0" />
+      <point x="726.3433507549362" y="646.0" />
+      <point x="-83.0" y="18.0" />
+    </edge>
+    <edge source="com.stt.dash.ui.views.bulksms.FileToSendFrontView" target="com.stt.dash.backend.data.entity.FIlesToSend" relationship="TO_ONE">
+      <point x="111.42857142857156" y="-18.0" />
+      <point x="1682.3701122725515" y="419.0" />
+      <point x="1892.950493612079" y="419.0" />
+      <point x="1892.950493612079" y="281.0" />
+      <point x="1795.6518099109562" y="281.0" />
+      <point x="1795.6518099109562" y="271.0" />
+      <point x="1504.186459543167" y="271.0" />
       <point x="43.5" y="18.0" />
     </edge>
   </edges>
-  <settings layout="Hierarchic" zoom="0.916083916083916" showDependencies="true" x="471.0" y="266.0" />
+  <settings layout="Hierarchic" zoom="0.6836099585062241" showDependencies="true" x="954.0" y="362.0" />
   <SelectedNodes>
-    <node>com.stt.dash.ui.views.bulksms.FileToSendEditor</node>
+    <node>com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider</node>
   </SelectedNodes>
   <Categories />
   <SCOPE>All</SCOPE>

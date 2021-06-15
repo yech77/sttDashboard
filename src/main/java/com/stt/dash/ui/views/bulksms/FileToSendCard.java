@@ -21,11 +21,15 @@ import static com.stt.dash.ui.utils.FormattingUtils.*;
 public class FileToSendCard {
     public static TemplateRenderer<FIlesToSend> getTemplate() {
         return TemplateRenderer.of(
-                "<order-card"
+                "<file-to-send-card"
                         + "  header='[[item.header]]'"
-                        + "  order-card='[[item.orderCard]]'"
+                        + "  file-to-send-card='[[item.orderCard]]'"
                         + "  on-card-click='cardClick'>"
-                        + "</order-card>");
+                        + "</file-to-send-card>");
+    }
+
+    public static FileToSendCard create(FileToSendSummary order) {
+        return new FileToSendCard(order);
     }
 
     private static FileToSendStateConverter stateConverter = new FileToSendStateConverter();
@@ -42,9 +46,6 @@ public class FileToSendCard {
         inWeek = !recent && now.getYear() == date.getYear() && now.get(WEEK_OF_YEAR_FIELD) == date.get(WEEK_OF_YEAR_FIELD);
     }
 
-    public static FileToSendCard create(FileToSendSummary order) {
-        return new FileToSendCard(order);
-    }
 
 //    public String getPlace() {
 //        return recent || inWeek ? order.getPickupLocation().getName() : null;
@@ -56,6 +57,10 @@ public class FileToSendCard {
 
     public String getShortDay() {
         return inWeek ? SHORT_DAY_FORMATTER.format(ODateUitls.valueOf(order.getDateToSend())) : null;
+    }
+
+    public String getSystemId() {
+        return order.getSystemId();
     }
 
     public String getSecondaryTime() {

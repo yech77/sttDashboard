@@ -4,7 +4,7 @@ import com.vaadin.flow.component.html.testbench.DivElement;
 import com.vaadin.flow.component.html.testbench.SpanElement;
 import com.vaadin.testbench.elementsbase.Element;
 
-@Element("order-card")
+@Element("`order-card")
 public class OrderCardElement extends DivElement {
 
 	public String getGoodsCount(int index) {

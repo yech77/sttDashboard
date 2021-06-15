@@ -58,7 +58,7 @@ export class FileToSendEditor extends LitElement {
 
                 <vaadin-form-layout id="form1" .responsiveSteps="${this.responsiveSteps}">
                     <vaadin-form-layout id="form2" .responsiveSteps="${this.form2}">
-                        <vaadin-date-time-picker label="Due" id="dueDate"></vaadin-date-time-picker>
+                        <vaadin-date-time-picker label="Fecha de envio" id="dueDate"></vaadin-date-time-picker>
                         <vaadin-checkbox id="sendNow">Enviar Ya</vaadin-checkbox>
                     </vaadin-form-layout>
 
