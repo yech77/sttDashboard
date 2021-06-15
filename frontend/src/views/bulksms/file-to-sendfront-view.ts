@@ -3,7 +3,7 @@ import {customElement, html, LitElement} from 'lit-element';
 // import '@vaadin/vaadin-dialog/src/vaadin-dialog.js';
 // import '../../components/search-bar.js';
 // import '../../components/utils-mixin.js';
-// import './order-card.js';
+import './file-to-send-card.ts';
 // import '../../../styles/shared-styles.js';
 
 @customElement('file-to-sendfront-view')

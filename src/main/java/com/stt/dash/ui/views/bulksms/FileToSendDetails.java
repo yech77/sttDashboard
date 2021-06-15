@@ -4,6 +4,8 @@ import com.stt.dash.backend.data.entity.FIlesToSend;
 import com.stt.dash.backend.data.entity.Order;
 import com.stt.dash.ui.events.CancelEvent;
 import com.stt.dash.ui.events.SaveEvent;
+import com.stt.dash.ui.utils.FormattingUtils;
+import com.stt.dash.ui.utils.ODateUitls;
 import com.stt.dash.ui.utils.converters.*;
 import com.stt.dash.ui.views.storefront.converters.StorefrontLocalDateConverter;
 import com.stt.dash.ui.views.storefront.events.CommentEvent;
@@ -13,6 +15,8 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.textfield.TextField;
@@ -39,6 +43,21 @@ public class FileToSendDetails extends LitTemplate {
 
     @Id("edit")
     private Button edit;
+
+    @Id("bulkday")
+    private H3 bulkday;
+
+    @Id("bulktime")
+    private H3 bulktime;
+
+    @Id("orderName")
+    private H3 orderName;
+
+    @Id("systemid")
+    private H3 systemid;
+
+    @Id("orderDescription")
+    private Paragraph orderDescription;
 
 //    @Id("history")
 //    private Element history;
@@ -71,12 +90,22 @@ public class FileToSendDetails extends LitTemplate {
     public void display(FIlesToSend order, boolean review) {
 //        getModel().setReview(review);
         this.order = order;
+        showData();
+        edit.setVisible(!review);
 //        getModel().setItem(order);
         if (!review) {
             System.out.println(" REVIEW FALSE");
 //            commentField.clear();
         }
         this.isDirty = review;
+    }
+
+    private void showData(){
+        bulkday.setText(FormattingUtils.MONTH_AND_DAY_FORMATTER.format(ODateUitls.valueOf(order.getDateToSend())));
+        bulktime.setText(FormattingUtils.HOUR_FORMATTER.format(ODateUitls.valueOf(order.getDateToSend())));
+        orderName.setText(order.getOrderName());
+        orderDescription.setText(order.getOrderDescription());
+        systemid.setText(order.getSystemId());
     }
 
     public boolean isDirty() {
