@@ -1,12 +1,9 @@
-import {customElement, html, LitElement} from 'lit-element';
-@customElement('file-to-send-card')
-export class FileToSendCard extends LitElement {
-    createRenderRoot() {
-        // Do not use a shadow root
-        return this;
-    }
-
-    render() {
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '../../../styles/shared-styles.js';
+import './filetosend-status-badge.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+class FileToSendCard  extends PolymerElement {
+    static get template() {
         return html`
             <style include="shared-styles">
                 :host {
@@ -139,36 +136,30 @@ export class FileToSendCard extends LitElement {
                     <span class="main">[header.main]</span>
                     <span class="secondary">[[header.secondary]]</span>
                 </div>
-                <p>PRUEBA IV</p>
                 <div class="wrapper" on-click="_cardClick">
                     <div class="info-wrapper">
-                        <order-status-badge class="badge" status="[[orderCard.state]]"></order-status-badge>
+                        <filetosend-status-badge class="badge" status="[[orderCard.state]]"></filetosend-status-badge>
                         <div class="time-place">
                             <h3 class="time">[[orderCard.time]]</h3>
                             <h3 class="short-day">[[orderCard.shortDay]]</h3>
                             <h3 class="month">[[orderCard.month]]</h3>
                             <div class="secondary-time">[[orderCard.secondaryTime]]</div>
-                            <div class="full-day">[[item.systemId]]</div>
                             <div class="place">[[orderCard.systemId]]</div>
-                            <div class="place">[[item.systemId]]</div>
-                        </div>
-                    </div>
-                    <div class="name-items">
-                        <h3 class="name">[[orderCard.fullName]]</h3>
-                        <div class="goods">
-                            <template is="dom-repeat" items="[[orderCard.items]]">
-                                <div class="goods-item">
-                                    <span class="count">[[item.quantity]]</span>
-                                    <div>[[item.product.name]]</div>
-                                </div>
-                            </template>
+                            <div class="place">[[orderCard.fileName]]</div>
                         </div>
                     </div>
                 </div>
             </div>
         `;
     }
+
+    static get is() {
+        return 'filetosend-card';
+    }
+
     _cardClick() {
         this.dispatchEvent(new CustomEvent('card-click'));
     }
 }
+
+window.customElements.define(FileToSendCard.is, FileToSendCard);

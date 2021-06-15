@@ -21,11 +21,11 @@ import static com.stt.dash.ui.utils.FormattingUtils.*;
 public class FileToSendCard {
     public static TemplateRenderer<FIlesToSend> getTemplate() {
         return TemplateRenderer.of(
-                "<file-to-send-card"
+                "<filetosend-card"
                         + "  header='[[item.header]]'"
-                        + "  file-to-send-card='[[item.orderCard]]'"
+                        + "  order-card='[[item.orderCard]]'"
                         + "  on-card-click='cardClick'>"
-                        + "</file-to-send-card>");
+                        + "</filetosend-card>");
     }
 
     public static FileToSendCard create(FileToSendSummary order) {
@@ -76,7 +76,12 @@ public class FileToSendCard {
     }
 
     public String getState() {
-        return stateConverter.encode(order.getStatus());
+        System.out.println("STATUS: " + order.getStatus().name());
+        return order.getStatus().name();
+    }
+    public String getFileName() {
+        System.out.println("STATUS: " + order.getFileName());
+        return order.getFileName();
     }
 
 //    public String getFullName() {

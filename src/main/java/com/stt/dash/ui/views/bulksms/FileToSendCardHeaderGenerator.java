@@ -47,24 +47,24 @@ public class FileToSendCardHeaderGenerator {
     private List<FileToSendCardHeaderGenerator.HeaderWrapper> headerChain = new ArrayList<>();
 
     private OrderCardHeader getRecentHeader() {
-        return new OrderCardHeader("Recent", "Before this week");
+        return new OrderCardHeader("Recent", "Antes de esta semana");
     }
 
     private OrderCardHeader getYesterdayHeader() {
         LocalDate yesterday = LocalDate.now().minusDays(1);
-        return new OrderCardHeader("Yesterday", secondaryHeaderFor(yesterday));
+        return new OrderCardHeader("Ayer", secondaryHeaderFor(yesterday));
     }
 
     private OrderCardHeader getTodayHeader() {
         LocalDate today = LocalDate.now();
-        return new OrderCardHeader("Today", secondaryHeaderFor(today));
+        return new OrderCardHeader("Hoy", secondaryHeaderFor(today));
     }
 
     private OrderCardHeader getThisWeekBeforeYesterdayHeader() {
         LocalDate today = LocalDate.now();
         LocalDate yesterday = today.minusDays(1);
         LocalDate thisWeekStart = today.minusDays(today.getDayOfWeek().getValue() - 1);
-        return new OrderCardHeader("This week before yesterday", secondaryHeaderFor(thisWeekStart, yesterday));
+        return new OrderCardHeader("Esta semana antes de ayer", secondaryHeaderFor(thisWeekStart, yesterday));
     }
 
     private OrderCardHeader getThisWeekStartingTomorrow(boolean showPrevious) {
