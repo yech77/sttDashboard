@@ -64,7 +64,7 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
 
         grid.addColumn(FileToSendCard.getTemplate()
                 .withProperty("orderCard", FileToSendCard::create)
-                .withProperty("header", order -> presenter.getHeaderByOrderId(order.getId()))
+                .withProperty("header", fileToSend -> presenter.getHeaderByOrderId(fileToSend.getId()))
                 .withEventHandler("cardClick",
                         order -> UI.getCurrent().navigate(BakeryConst.PAGE_BULK_STOREFRONT + "/" + order.getId())));
 

@@ -47,7 +47,7 @@ public class FileToSendCardHeaderGenerator {
     private List<FileToSendCardHeaderGenerator.HeaderWrapper> headerChain = new ArrayList<>();
 
     private OrderCardHeader getRecentHeader() {
-        return new OrderCardHeader("Recent", "Antes de esta semana");
+        return new OrderCardHeader("Reciente", "Antes de esta semana");
     }
 
     private OrderCardHeader getYesterdayHeader() {
@@ -76,7 +76,7 @@ public class FileToSendCardHeaderGenerator {
     }
 
     private OrderCardHeader getUpcomingHeader() {
-        return new OrderCardHeader("Upcoming", "After this week");
+        return new OrderCardHeader("Próximos", "After this week");
     }
 
     private String secondaryHeaderFor(LocalDate date) {
@@ -96,7 +96,7 @@ public class FileToSendCardHeaderGenerator {
         ordersWithHeaders.clear();
     }
 
-    public void ordersRead(List<FIlesToSend> orders) {
+    public void filesToSendRead(List<FIlesToSend> orders) {
         Iterator<FileToSendCardHeaderGenerator.HeaderWrapper> headerIterator = headerChain.stream().filter(h -> h.getSelected() == null).iterator();
         if (!headerIterator.hasNext()) {
             return;

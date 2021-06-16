@@ -1,8 +1,9 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import {PolymerElement} from '@polymer/polymer/polymer-element.js';
 import '../../../styles/shared-styles.js';
 import './filetosend-status-badge.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-class FileToSendCard  extends PolymerElement {
+import {html} from '@polymer/polymer/lib/utils/html-tag.js';
+
+class FileToSendCard extends PolymerElement {
     static get template() {
         return html`
             <style include="shared-styles">
@@ -133,7 +134,7 @@ class FileToSendCard  extends PolymerElement {
             </style>
             <div class="content">
                 <div class="group-heading" hidden\\$="[[!header]]">
-                    <span class="main">[header.main]</span>
+                    <span class="main">[[header.main]]</span>
                     <span class="secondary">[[header.secondary]]</span>
                 </div>
                 <div class="wrapper" on-click="_cardClick">
@@ -146,6 +147,14 @@ class FileToSendCard  extends PolymerElement {
                             <div class="secondary-time">[[orderCard.secondaryTime]]</div>
                             <div class="place">[[orderCard.systemId]]</div>
                             <div class="place">[[orderCard.fileName]]</div>
+                        </div>
+                    </div>
+                    <div class="name-items">
+                        <h3 class="name">[[orderCard.orderName]]</h3>
+                        <div class="goods">
+                            <div class="goods-item">
+                                <div>[[orderCard.orderDescription]]</div>
+                            </div>
                         </div>
                     </div>
                 </div>

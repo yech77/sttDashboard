@@ -2,24 +2,17 @@ package com.stt.dash.ui.views.bulksms;
 
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.entity.FIlesToSend;
-import com.stt.dash.backend.data.entity.Order;
 import com.stt.dash.backend.service.FilesToSendService;
 import com.stt.dash.ui.crud.EntityPresenter;
 import com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider;
 import com.stt.dash.ui.views.storefront.beans.OrderCardHeader;
-import com.vaadin.flow.component.Focusable;
-import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static com.stt.dash.ui.utils.BakeryConst.PAGE_BULK_STOREFRONT_ORDER_EDIT;
-import static com.stt.dash.ui.utils.BakeryConst.PAGE_STOREFRONT_ORDER_EDIT;
 
 @SpringComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -42,7 +35,7 @@ public class FileToSendPresenter {
         this.service = service;
         headersGenerator = new FileToSendCardHeaderGenerator();
         headersGenerator.resetHeaderChain(false);
-        dataProvider.setPageObserver(p->headersGenerator.ordersRead(p.getContent()));
+        dataProvider.setPageObserver(p->headersGenerator.filesToSendRead(p.getContent()));
     }
 
     void init(FileToSendFrontView view) {

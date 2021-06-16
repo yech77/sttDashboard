@@ -16,13 +16,13 @@ class FiletosendStatusBadge extends PolymerElement {
         text-transform: capitalize;
       }
 
-      :host([status="VALIDATING"]) #wrapper {
+      :host([status="validating"]) #wrapper {
         color: var(--lumo-success-color);
         background: var(--lumo-success-color-10pct);
       }
 
-      :host([status="GENERATING_MESSAGES"]) #wrapper {
-        color: var(--lumo-primary-color);
+      :host([status="generating_messages"]) #wrapper {
+        color: var(--lumo-success-color);
         background: var(--lumo-primary-color-10pct);
       }
 

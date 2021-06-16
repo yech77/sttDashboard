@@ -84,12 +84,16 @@ public class FileToSendCard {
         return order.getFileName();
     }
 
-//    public String getFullName() {
-//        return order.getCustomer().getFullName();
-//    }
+    public String getOrderName(){
+        return order.getOrderName();
+    }
 
-//    public List<OrderItem> getItems() {
-//        return order.getItems();
-//    }
+    public String getOrderDescription(){
+        return order.getOrderDescription();
+    }
+
+    public String getCreatedBy(){
+        return "Creador";
+    }
 
 }
