@@ -7,7 +7,7 @@ import '@vaadin/vaadin-form-layout/src/vaadin-form-layout.js';
 import '@vaadin/vaadin-text-field/src/vaadin-text-field.js';
 import '../../components/buttons-bar.js';
 import '../../components/utils-mixin.js';
-import '../storefront/order-status-badge.js';
+import './filetosend-status-badge.js';
 import '../../../styles/shared-styles.js';
 import {FormLayoutResponsiveStep} from "@vaadin/vaadin-form-layout";
 // import {html} from '@polymer/polymer/lib/utils/html-tag.js';
