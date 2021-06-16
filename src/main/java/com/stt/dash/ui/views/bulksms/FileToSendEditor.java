@@ -7,10 +7,7 @@ import com.stt.dash.ui.crud.CrudEntityDataProvider;
 import com.stt.dash.ui.events.CancelEvent;
 import com.stt.dash.ui.utils.ODateUitls;
 import com.stt.dash.ui.views.bulksms.events.BulkSmsReviewEvent;
-import com.stt.dash.ui.views.storefront.events.ReviewEvent;
-import com.stt.dash.ui.views.storefront.events.ValueChangeEvent;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -96,12 +93,12 @@ public class FileToSendEditor extends LitTemplate {
 
     @Id("review")
     private Button review;
-
+    private final String SMS_MESSAGE_WITH_PARAMETER = "Mensajes en esta Agenda necesitan %s  parámetros; Tienes 0.";
 //    private FileToSendEditor fileToSendEditor;
 
     private User currentUser;
 
-    private BeanValidationBinder<FIlesToSend> binder = new BeanValidationBinder<>(FIlesToSend.class);
+    private Binder<FIlesToSend> binder = new BeanValidationBinder<>(FIlesToSend.class);
     /**/
     private int varCount;
     String[] firstLineValue;
@@ -125,6 +122,12 @@ public class FileToSendEditor extends LitTemplate {
         DataProvider<Agenda, String> agendaDataProvider = new CrudEntityDataProvider<>(agendaService);
         agendaComboBox.setDataProvider(agendaDataProvider);
         agendaComboBox.setItemLabelGenerator(Agenda::getName);
+        /* contador de caracteres  */
+        charCounter.setText("(1) 0/160 caracteres");
+        /**/
+        dueDate.addValueChangeListener(change->{
+            System.out.println("Cambie de lciente " + change.isFromClient());
+        });
         binder.forField(dueDate)
                 .asRequired("Seleccione fechay hora")
                 .withConverter(new Converter<LocalDateTime, Date>() {
@@ -146,6 +149,9 @@ public class FileToSendEditor extends LitTemplate {
         binder.bind(orderName, "orderName");
         binder.bind(orderDescription, "orderDescription");
         addListeners();
+        /* date-to-send */
+        dueDate.setMin(LocalDateTime.now());
+        dueDate.setValue(LocalDateTime.now().plusMinutes(10));
     }
 
     private void addListeners() {
@@ -190,6 +196,8 @@ public class FileToSendEditor extends LitTemplate {
         });
         agendaComboBox.addValueChangeListener(event -> {
             hasEnougharmeters = false;
+            /* clear cada vez que se cambia de agenda. */
+            message.setValue("");
             if (agendaComboBox.getValue() != null) {
                 firstLineValue = getVariable(agendaComboBox.getValue().getFirstLine());
                 /* El total sin la columna numero del celular.  */
@@ -197,8 +205,10 @@ public class FileToSendEditor extends LitTemplate {
                 /* Si tiene solo un parametro ese valor se coloca en el mensaje */
                 if (varCount == 1) {
                     message.setValue(firstLineValue[1]);
+                    warningSpan.setText("");
                 } else {
                     hasEnougharmeters = true;
+                    warningSpan.setText(String.format(SMS_MESSAGE_WITH_PARAMETER, varCount));
                 }
             } else {
                 firstLineValue = new String[1];
@@ -206,15 +216,21 @@ public class FileToSendEditor extends LitTemplate {
             }
             hasMessageAllParameter = !hasEnougharmeters;
             message.setEnabled(hasEnougharmeters);
+            /**/
+            binder.validate();
         });
+        systemIdMulti.addValueChangeListener(changeListener -> binder.validate());
         sendNow.addValueChangeListener(changeEvent->{
+            if (changeEvent.isFromClient()){
+                return;
+            }
             dueDate.setValue(LocalDateTime.now());
         });
 //        ComponentUtil.addListener(itemsEditor, ValueChangeEvent.class, e -> review.setEnabled(hasChanges()));
         binder.addValueChangeListener(e -> {
-            if (e.getOldValue() != null) {
-                review.setEnabled(hasChanges() & binder.isValid());
-            }
+//            if (e.getOldValue() != null) {
+                review.setEnabled(binder.isValid());
+//            }
         });
     }
     /**
