@@ -78,11 +78,11 @@ export class FileToSendEditor extends LitElement {
                                            clear-button-visible></vaadin-text-field>
                         <vaadin-text-area id="message" label="Escriba su mensaje" colspan="2" required
                                           clear-button-visible></vaadin-text-area>
+                        <vaadin-text-area id="messageBuilded" label="Mensaje" readonly="true"></vaadin-text-area>
 
                         <vaadin-form-item colspan="2">
                             <p id="charCounter"></p>
                             <span id="warningSpan"></span>
-                            <p id="messageBuilded"></p>
                         </vaadin-form-item>
                     </vaadin-form-layout>
                 </vaadin-form-layout>
