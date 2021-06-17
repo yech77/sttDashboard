@@ -145,6 +145,9 @@ public class FileToSendEditor extends LitTemplate {
                     }
                 })
                 .bind(FIlesToSend::getDateToSend, FIlesToSend::setDateToSend);
+
+        binder.bind(message, "messageWithParam");
+        binder.bind(agendaComboBox, "agenda");
         binder.bind(systemIdMulti, "systemId");
         binder.bind(orderName, "orderName");
         binder.bind(orderDescription, "orderDescription");
