@@ -86,7 +86,7 @@ public class FileToSendEditor extends LitTemplate {
     @Id("warningSpan")
     private Span warningSpan;
     @Id("messageBuilded")
-    private Paragraph messageBuilded;
+    private TextArea messageBuilded;
 
     @Id("cancel")
     private Button cancel;
@@ -192,7 +192,7 @@ public class FileToSendEditor extends LitTemplate {
                     System.out.println("FIRST VALUE: '" + firstLineValue[i] + "'");
                     newMsg = newMsg.replace("$" + i, firstLineValue[i]);
                 }
-                messageBuilded.setText("Mensaje: " + newMsg);
+                messageBuilded.setValue("Mensaje: " + newMsg);
                 messageBuilded.getStyle().set("color", "var(--lumo-success-text-color)");
                 messageBuilded.getStyle().set("font-size", "var(--lumo-font-size-s)");
             }
