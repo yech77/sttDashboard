@@ -24,7 +24,7 @@ public class FileToSendPresenter {
     private final EntityPresenter<FIlesToSend, FileToSendFrontView> entityPresenter;
     private final FilesToSendGridDataProvider dataProvider;
     private final CurrentUser currentUser;
-    private final FilesToSendService service;
+//    private final FilesToSendService service;
 
     @Autowired
     FileToSendPresenter(FilesToSendService service, FilesToSendGridDataProvider dataProvider,
@@ -32,7 +32,7 @@ public class FileToSendPresenter {
         this.entityPresenter = entityPresenter;
         this.dataProvider = dataProvider;
         this.currentUser = currentUser;
-        this.service = service;
+//        this.service = service;
         headersGenerator = new FileToSendCardHeaderGenerator();
         headersGenerator.resetHeaderChain(false);
         dataProvider.setPageObserver(p->headersGenerator.filesToSendRead(p.getContent()));
@@ -107,6 +107,7 @@ public class FileToSendPresenter {
     }
     void save() {
         entityPresenter.save(e -> {
+            /* Si se salva correctamente se ejecuta este codigo. */
             if (entityPresenter.isNew()) {
                 System.out.println("Llegue a save is New...");
                 view.showCreatedNotification();
