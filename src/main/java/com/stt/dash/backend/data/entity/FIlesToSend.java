@@ -2,10 +2,7 @@ package com.stt.dash.backend.data.entity;
 
 import com.stt.dash.backend.data.Status;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -60,6 +57,16 @@ public class FIlesToSend extends AbstractEntitySequence implements FileToSendSum
     @Size(max = 255)
     private String filePath;
 
+    @NotEmpty
+    @NotNull
+    @Size(min = 5, max = 255)
+    @Size(max = 255)
+    private String messageWithParam;
+
+    @ManyToOne
+    @JoinColumn(name="agenda_id")
+    private Agenda agenda;
+
     public FIlesToSend() {
         initDefaultValues();
     }
@@ -80,6 +87,22 @@ public class FIlesToSend extends AbstractEntitySequence implements FileToSendSum
         numGenerated = 0;
         numSent = 0;
         status = Status.GENERATING_MESSAGES;
+    }
+
+    public String getMessageWithParam() {
+        return messageWithParam;
+    }
+
+    public void setMessageWithParam(String messageWithParam) {
+        this.messageWithParam = messageWithParam;
+    }
+
+    public Agenda getAgenda() {
+        return agenda;
+    }
+
+    public void setAgenda(Agenda agenda) {
+        this.agenda = agenda;
     }
 
     public String getGeneratedProgress(){
