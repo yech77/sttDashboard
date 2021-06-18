@@ -163,13 +163,13 @@ export class FileToSendDetails extends LitElement {
                     </vaadin-form-item>
 
                     <vaadin-form-item colspan="2">
-                        <label slot="label">Programacion</label>
+                        <label slot="label">Programación</label>
                         <h3 id="orderName"></h3>
                         <p id="orderDescription"></p>
                     </vaadin-form-item>
 
                     <vaadin-form-item>
-                        <label slot="label">Credenciallllll</label>
+                        <label slot="label">Credencial</label>
                         <h3 id="systemid"></h3>
                         <label> este es ${this.showing}</label>
                     </vaadin-form-item>
@@ -191,7 +191,7 @@ export class FileToSendDetails extends LitElement {
 
             <buttons-bar id="footer" no-scroll\$="[[noScroll]]">
                 <vaadin-button slot="left" id="back" >Atras</vaadin-button>
-                <vaadin-button slot="left" id="cancel" >Cancelarrr</vaadin-button>
+                <vaadin-button slot="left" id="cancel" >Cancelar</vaadin-button>
 
                 <div slot="info" class="total">
 
@@ -200,8 +200,12 @@ export class FileToSendDetails extends LitElement {
                         Programar
                     </vaadin-button>
                     <vaadin-button slot="right" id="edit" theme="primary" >
-                        Editar Programacion
+                        Editar Programación
                         <iron-icon icon="vaadin:edit" slot="suffix"></iron-icon>
+                    </vaadin-button>
+                    <vaadin-button slot="right" id="delete" theme="primary error" >
+                        Borrar Programación
+                        <iron-icon icon="vaadin:trash" slot="suffix"></iron-icon>
                     </vaadin-button>
             </buttons-bar>
         `;

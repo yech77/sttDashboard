@@ -35,6 +35,8 @@ public class FileToSendDetails extends LitTemplate {
     Logger log = LoggerFactory.getLogger(FileToSendDetails.class);
 
     private FIlesToSend order;
+    @Id("delete")
+    private Button delete;
 
     @Id("back")
     private Button back;
@@ -97,14 +99,19 @@ public class FileToSendDetails extends LitTemplate {
 //        getElement().setProperty("showing", true);
         this.order = order;
         showData();
-        save.setVisible(review);
-        edit.setVisible(!review);
-        cancel.setVisible(!review);
-        back.setVisible(review);
 //        getModel().setItem(order);
-        if (!review) {
-            System.out.println(" REVIEW FALSE");
-//            commentField.clear();
+        if (review) {
+            save.setVisible(review);
+            edit.setVisible(!review);
+            cancel.setVisible(!review);
+            back.setVisible(review);
+            delete.setVisible(!review);
+        }else{
+            save.setVisible(review);
+            edit.setVisible(review);
+            cancel.setVisible(!review);
+            back.setVisible(review);
+            delete.setVisible(!review);
         }
         this.isDirty = review;
     }
