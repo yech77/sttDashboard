@@ -133,7 +133,7 @@ class FileToSendCard extends PolymerElement {
                 }
             </style>
             <div class="content">
-                <div class="group-heading" hidden\\$="[[!header]]">
+                <div class="group-heading" hidden\$="[[!header]]">
                     <span class="main">[[header.main]]</span>
                     <span class="secondary">[[header.secondary]]</span>
                 </div>
