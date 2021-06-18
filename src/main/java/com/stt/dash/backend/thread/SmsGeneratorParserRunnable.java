@@ -77,14 +77,13 @@ public class SmsGeneratorParserRunnable implements Runnable {
         if (stream == null || messagesText.length() == 0) {
             log.info("[{}] [{}] El archivo o el mensaje esta vacio.", getStringLog(), fileToSend.getFileName());
             fileToSend.setStatus(Status.INVALID);
-            files_service.save(fileToSend, userEmail);
+            fileToSend = files_service.save(fileToSend, userEmail);
             return;
         }
         fileToSend.setStatus(Status.GENERATING_MESSAGES);
         log.info("[{}] [{}] UPDATING -> GENERATING_MESSAGES", getStringLog(),
                 fileToSend.getFileName());
-//        files_service.save(fileToSend, userEmail);
-
+        fileToSend = files_service.save(fileToSend, userEmail);
         int numLine = 0;
         StringBuilder sbLine = new StringBuilder();
         try {

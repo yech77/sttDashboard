@@ -32,6 +32,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -100,11 +101,11 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
         ScheduledExecutorService localExecutor = Executors.newSingleThreadScheduledExecutor();
         TaskScheduler scheduler = new ConcurrentTaskScheduler(localExecutor);
         /**/
-        List<SystemId> ids = systemid_repo.findBySystemId(form.systemIdCombo.getValue());
-        if (ids.size() < 1) {
+        Optional<SystemId> bySystemId = systemid_repo.findBySystemId(form.systemIdCombo.getValue());
+        if (!bySystemId.isPresent()) {
             System.out.println("SysId not found!!!");
         } else {
-            String clientCod = ids.get(0).getClient().getClientCod();
+            String clientCod = bySystemId.get().getClient().getClientCod();
             // Valida y Genera mensajes
             System.out.println("Generando mensajes en 5 segundos...");
             AgendaFileUtils.setBaseDir(properties.getAgendaFilePathUpload());
