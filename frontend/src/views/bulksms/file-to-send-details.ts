@@ -16,6 +16,7 @@ import {FormLayoutResponsiveStep} from "@vaadin/vaadin-form-layout";
 
 @customElement('file-to-send-details')
 export class FileToSendDetails extends LitElement {
+    showing = true;
     createRenderRoot() {
         // Do not use a shadow root
         return this;
@@ -168,8 +169,9 @@ export class FileToSendDetails extends LitElement {
                     </vaadin-form-item>
 
                     <vaadin-form-item>
-                        <label slot="label">Credencial</label>
-                        <h3 id="systemid"></h3id>
+                        <label slot="label">Credenciallllll</label>
+                        <h3 id="systemid"></h3>
+                        <label> este es ${this.showing}</label>
                     </vaadin-form-item>
                 </vaadin-form-layout>
 
@@ -189,12 +191,12 @@ export class FileToSendDetails extends LitElement {
 
             <buttons-bar id="footer" no-scroll\$="[[noScroll]]">
                 <vaadin-button slot="left" id="back" >Atras</vaadin-button>
-                <vaadin-button slot="left" id="cancel" >Cancelar</vaadin-button>
+                <vaadin-button slot="left" id="cancel" >Cancelarrr</vaadin-button>
 
                 <div slot="info" class="total">
 
                     <vaadin-button slot="right" id="save" theme="primary success" >
-                        <iron-icon icon="vaadin:check" slot="suffix"></iron-icon>
+                        <iron-icon icon="vaadin:check"  slot="suffix"></iron-icon>
                         Programar
                     </vaadin-button>
                     <vaadin-button slot="right" id="edit" theme="primary" >

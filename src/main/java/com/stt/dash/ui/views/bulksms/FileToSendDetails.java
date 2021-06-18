@@ -26,10 +26,13 @@ import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.templatemodel.Encode;
 import com.vaadin.flow.templatemodel.Include;
 import com.vaadin.flow.templatemodel.TemplateModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Tag("file-to-send-details")
 @JsModule("./src/views/bulksms/file-to-send-details.ts")
 public class FileToSendDetails extends LitTemplate {
+    Logger log = LoggerFactory.getLogger(FileToSendDetails.class);
 
     private FIlesToSend order;
 
@@ -43,7 +46,7 @@ public class FileToSendDetails extends LitTemplate {
     private Button save;
 
     @Id("edit")
-    private Button delete;
+    private Button edit;
 
     @Id("bulkday")
     private H3 bulkday;
@@ -89,10 +92,15 @@ public class FileToSendDetails extends LitTemplate {
     }
 
     public void display(FIlesToSend order, boolean review) {
+        log.info("DISPLLAY: {}", review);
 //        getModel().setReview(review);
+//        getElement().setProperty("showing", true);
         this.order = order;
         showData();
-//        edit.setVisible(!review);
+        save.setVisible(review);
+        edit.setVisible(!review);
+        cancel.setVisible(!review);
+        back.setVisible(review);
 //        getModel().setItem(order);
         if (!review) {
             System.out.println(" REVIEW FALSE");
