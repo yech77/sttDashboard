@@ -1,7 +1,9 @@
 package com.stt.dash.ui.views.bulksms;
 
 import com.stt.dash.app.session.ListGenericBean;
-import com.stt.dash.backend.data.entity.*;
+import com.stt.dash.backend.data.entity.Agenda;
+import com.stt.dash.backend.data.entity.FIlesToSend;
+import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.AgendaService;
 import com.stt.dash.ui.crud.CrudEntityDataProvider;
 import com.stt.dash.ui.events.CancelEvent;
@@ -83,8 +85,11 @@ public class FileToSendEditor extends LitTemplate {
 
     @Id("charCounter")
     private Paragraph charCounter;
-    @Id("warningSpan")
-    private Span warningSpan;
+
+//    @Id("warningSpan")
+//    private Span warningSpan;
+
+
     @Id("messageBuilded")
     private TextArea messageBuilded;
 
@@ -93,7 +98,8 @@ public class FileToSendEditor extends LitTemplate {
 
     @Id("review")
     private Button review;
-    private final String SMS_MESSAGE_WITH_PARAMETER = "Mensajes en esta Agenda necesitan %s  parámetros; Tienes 0.";
+    private final String SMS_MESSAGE_WITHOUT_PARAMETER = "Escriba directamente su mensaje";
+    private final String SMS_MESSAGE_WITH_PARAMETER = "Mensaje contiene %s  parámetros; Tienes usados %s.";
 //    private FileToSendEditor fileToSendEditor;
 
     private User currentUser;
@@ -125,7 +131,7 @@ public class FileToSendEditor extends LitTemplate {
         /* contador de caracteres  */
         charCounter.setText("(1) 0/160 caracteres");
         /**/
-        dueDate.addValueChangeListener(change->{
+        dueDate.addValueChangeListener(change -> {
             System.out.println("Cambie de lciente " + change.isFromClient());
         });
         binder.forField(dueDate)
@@ -138,7 +144,7 @@ public class FileToSendEditor extends LitTemplate {
 
                     @Override
                     public LocalDateTime convertToPresentation(Date date, ValueContext valueContext) {
-                        if(date==null){
+                        if (date == null) {
                             return LocalDateTime.now();
                         }
                         return ODateUitls.valueOf(date);
@@ -175,15 +181,16 @@ public class FileToSendEditor extends LitTemplate {
             }
             /* al comenzar desde $1 se debe restar uno para que tenga la cantidad correcta de variables*/
             vars--;
+            message.setHelperText(String.format(SMS_MESSAGE_WITH_PARAMETER, varCount, vars));
             if (varCount != vars) {
-                warningSpan.setText("Mensajes en esta Agenda necesitan "
-                        + varCount
-                        + " parámetros; Tienes "
-                        + vars
-                        + ".");
+//                warningSpan.setText("Mensajes en esta Agenda necesitan "
+//                        + varCount
+//                        + " parámetros; Tienes "
+//                        + vars
+//                        + ".");
                 hasMessageAllParameter = false;
             } else {
-                warningSpan.setText("");
+//                warningSpan.setText("");
                 hasMessageAllParameter = true;
             }
             String newMsg = message.getValue() == null ? "" : message.getValue();
@@ -192,7 +199,7 @@ public class FileToSendEditor extends LitTemplate {
                     System.out.println("FIRST VALUE: '" + firstLineValue[i] + "'");
                     newMsg = newMsg.replace("$" + i, firstLineValue[i]);
                 }
-                messageBuilded.setValue("Mensaje: " + newMsg);
+                messageBuilded.setValue(newMsg);
                 messageBuilded.getStyle().set("color", "var(--lumo-success-text-color)");
                 messageBuilded.getStyle().set("font-size", "var(--lumo-font-size-s)");
             }
@@ -203,28 +210,59 @@ public class FileToSendEditor extends LitTemplate {
             message.setValue("");
             if (agendaComboBox.getValue() != null) {
                 firstLineValue = getVariable(agendaComboBox.getValue().getFirstLine());
-                /* El total sin la columna numero del celular.  */
+                /* El total de parametros sin la columna numero del celular.  */
                 varCount = firstLineValue.length - 1;
                 /* Si tiene solo un parametro ese valor se coloca en el mensaje */
-                if (varCount == 1) {
-                    message.setValue(firstLineValue[1]);
-                    warningSpan.setText("");
-                } else {
-                    hasEnougharmeters = true;
-                    warningSpan.setText(String.format(SMS_MESSAGE_WITH_PARAMETER, varCount));
+                if (varCount==0){
+                    messageBuilded.setVisible(false);
+                    message.setEnabled(true);
+                    message.setHelperText(SMS_MESSAGE_WITHOUT_PARAMETER);
+//                    warningSpan.setText(SMS_MESSAGE_WITHOUT_PARAMETER);
+                    /* Invisible messageBuilder*/
+                    /* Habilitado message */
                 }
+                if (varCount==1){
+                    messageBuilded.setVisible(false);
+                    message.setEnabled(false);
+                    message.setValue(firstLineValue[1]);
+                    message.setHelperText(SMS_MESSAGE_WITHOUT_PARAMETER);
+                    /* Invisible messageBuilder*/
+                    /* Deshabilitado message */
+                    /* Escribir el unico parametro en message */
+                }
+                if (varCount>1){
+                    messageBuilded.setVisible(true);
+                    message.setEnabled(true);
+                    message.setHelperText(String.format(SMS_MESSAGE_WITH_PARAMETER, varCount, "0"));
+//                    warningSpan.setText(String.format(SMS_MESSAGE_WITH_PARAMETER, varCount));
+                    /* Visible messageBuilder */
+                    /* Habilitado message */
+                }
+//                if (varCount == 1) {
+//                    message.setValue(firstLineValue[1]);
+//                    warningSpan.setText("");
+//                } else if (varCount == 0) {
+//                    message.setValue(SMS_MESSAGE_WITHOUT_PARAMETER);
+//                } else if (varCount !=1 ){
+//                    hasEnougharmeters = true;
+//                    warningSpan.setText(String.format(SMS_MESSAGE_WITH_PARAMETER, varCount));
+//                }
+//                if (varCount < 2) {
+//                    messageBuilded.setVisible(false);
+//                    messageBuilded.setValue("");
+//                }
             } else {
                 firstLineValue = new String[1];
                 varCount = 0;
             }
             hasMessageAllParameter = !hasEnougharmeters;
-            message.setEnabled(hasEnougharmeters);
+//            message.setEnabled(hasEnougharmeters);
             /**/
             binder.validate();
         });
         systemIdMulti.addValueChangeListener(changeListener -> binder.validate());
-        sendNow.addValueChangeListener(changeEvent->{
-            if (changeEvent.isFromClient()){
+        sendNow.addValueChangeListener(changeEvent -> {
+            if (changeEvent.isFromClient()) {
                 return;
             }
             dueDate.setValue(LocalDateTime.now());
@@ -232,10 +270,11 @@ public class FileToSendEditor extends LitTemplate {
 //        ComponentUtil.addListener(itemsEditor, ValueChangeEvent.class, e -> review.setEnabled(hasChanges()));
         binder.addValueChangeListener(e -> {
 //            if (e.getOldValue() != null) {
-                review.setEnabled(binder.isValid());
+            review.setEnabled(binder.isValid());
 //            }
         });
     }
+
     /**
      * Obtiene por separado todos los valores de a primera linea. Num de cel
      * inclusive.
@@ -300,6 +339,7 @@ public class FileToSendEditor extends LitTemplate {
         binder.readBean(null);
 //        itemsEditor.setValue(null);
     }
+
     public void write(FIlesToSend fIlesToSend) throws ValidationException {
         binder.writeBean(fIlesToSend);
     }
@@ -312,6 +352,7 @@ public class FileToSendEditor extends LitTemplate {
     public Registration addCancelListener(ComponentEventListener<CancelEvent> listener) {
         return addListener(CancelEvent.class, listener);
     }
+
     public void close() {
 //        setTotalPrice(0);
     }
