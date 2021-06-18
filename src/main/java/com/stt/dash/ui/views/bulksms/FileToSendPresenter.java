@@ -1,16 +1,29 @@
 package com.stt.dash.ui.views.bulksms;
 
+import com.stt.dash.app.OProperties;
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.entity.FIlesToSend;
+import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.service.FilesToSendService;
+import com.stt.dash.backend.service.SystemIdService;
+import com.stt.dash.backend.thread.SmsGeneratorParserRunnable;
+import com.stt.dash.backend.util.AgendaFileUtils;
 import com.stt.dash.ui.crud.EntityPresenter;
 import com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider;
+import com.stt.dash.ui.utils.ODateUitls;
 import com.stt.dash.ui.views.storefront.beans.OrderCardHeader;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import static com.stt.dash.ui.utils.BakeryConst.PAGE_BULK_STOREFRONT_ORDER_EDIT;
 
@@ -24,18 +37,25 @@ public class FileToSendPresenter {
     private final EntityPresenter<FIlesToSend, FileToSendFrontView> entityPresenter;
     private final FilesToSendGridDataProvider dataProvider;
     private final CurrentUser currentUser;
-//    private final FilesToSendService service;
+    private final FilesToSendService service;
+    private final SystemIdService systemIdService;
+    private final OProperties properties;
 
     @Autowired
-    FileToSendPresenter(FilesToSendService service, FilesToSendGridDataProvider dataProvider,
+    FileToSendPresenter(FilesToSendService service,
+                        SystemIdService systemIdService,
+                        OProperties properties,
+                        FilesToSendGridDataProvider dataProvider,
                         EntityPresenter<FIlesToSend, FileToSendFrontView> entityPresenter, CurrentUser currentUser) {
         this.entityPresenter = entityPresenter;
         this.dataProvider = dataProvider;
         this.currentUser = currentUser;
-//        this.service = service;
+        this.service = service;
+        this.systemIdService = systemIdService;
         headersGenerator = new FileToSendCardHeaderGenerator();
         headersGenerator.resetHeaderChain(false);
-        dataProvider.setPageObserver(p->headersGenerator.filesToSendRead(p.getContent()));
+        dataProvider.setPageObserver(p -> headersGenerator.filesToSendRead(p.getContent()));
+        this.properties = properties;
     }
 
     void init(FileToSendFrontView view) {
@@ -79,6 +99,7 @@ public class FileToSendPresenter {
         entityPresenter.close();
         view.setOpened(false);
     }
+
     void edit() {
         System.out.println("Llegue edit...");
         UI.getCurrent()
@@ -97,21 +118,43 @@ public class FileToSendPresenter {
 //         traversed, and every validation updates its view
 //        List<HasValue<?, ?>> fields = view.validate().collect(Collectors.toList());
 //        if (fields.isEmpty()) {
-            if (entityPresenter.writeEntity()) {
-                view.setDialogElementsVisibility(false);
-                view.getOpenedOrderDetails().display(entityPresenter.getEntity(), true);
-            }
+        if (entityPresenter.writeEntity()) {
+            view.setDialogElementsVisibility(false);
+            view.getOpenedOrderDetails().display(entityPresenter.getEntity(), true);
+        }
 //        } else if (fields.get(0) instanceof Focusable) {
 //            ((Focusable<?>) fields.get(0)).focus();
 //        }
     }
+
     void save() {
+        Optional<SystemId> bySystemId = systemIdService.findBySystemId(entityPresenter.getEntity().getSystemId());
+        /* Solo llama a salvar si encuentra el cliente del system id */
+        if (!bySystemId.isPresent()) {
+            view.showNotification("No se puedo crear la programacion. Si el problema persiste llame a su Administrador", true);
+            return;
+        }
         entityPresenter.save(e -> {
             /* Si se salva correctamente se ejecuta este codigo. */
             if (entityPresenter.isNew()) {
                 System.out.println("Llegue a save is New...");
                 view.showCreatedNotification();
                 dataProvider.refreshAll();
+                /**/
+                // Crea Nuevo hilo
+                ScheduledExecutorService localExecutor = Executors.newSingleThreadScheduledExecutor();
+                TaskScheduler scheduler = new ConcurrentTaskScheduler(localExecutor);
+                /**/
+                String clientCod = bySystemId.get().getSystemId();
+                // Valida y Genera mensajes
+                System.out.println("Generando mensajes en 5 segundos...");
+                AgendaFileUtils.setBaseDir(properties.getAgendaFilePathUpload());
+                scheduler.schedule(new SmsGeneratorParserRunnable(properties,
+                                service,
+                                e, e.getAgenda(), e.getSystemId(),
+                                e.getMessageWithParam(), clientCod, currentUser.getUser().getEmail()),
+                        ODateUitls.localDateTimeToDate(LocalDateTime.now().plusSeconds(5)));
+                /**/
             } else {
                 System.out.println("Llegue a save not is New...");
                 view.showUpdatedNotification();
@@ -119,7 +162,6 @@ public class FileToSendPresenter {
             }
             close();
         });
-
     }
 
 //    void addComment(String comment) {

@@ -9,6 +9,7 @@ import com.stt.dash.ui.utils.ODateUitls;
 import com.stt.dash.ui.utils.converters.*;
 import com.stt.dash.ui.views.storefront.converters.StorefrontLocalDateConverter;
 import com.stt.dash.ui.views.storefront.events.CommentEvent;
+import com.stt.dash.ui.views.storefront.events.DeleteEvent;
 import com.stt.dash.ui.views.storefront.events.EditEvent;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -42,7 +43,7 @@ public class FileToSendDetails extends LitTemplate {
     private Button save;
 
     @Id("edit")
-    private Button edit;
+    private Button delete;
 
     @Id("bulkday")
     private H3 bulkday;
@@ -84,14 +85,14 @@ public class FileToSendDetails extends LitTemplate {
 //        });
         save.addClickListener(e -> fireEvent(new SaveEvent(this, false)));
         cancel.addClickListener(e -> fireEvent(new CancelEvent(this, false)));
-        edit.addClickListener(e -> fireEvent(new EditEvent(this)));
+//        delete.addClickListener(e -> fireEvent(new DeleteEvent(this)));
     }
 
     public void display(FIlesToSend order, boolean review) {
 //        getModel().setReview(review);
         this.order = order;
         showData();
-        edit.setVisible(!review);
+//        edit.setVisible(!review);
 //        getModel().setItem(order);
         if (!review) {
             System.out.println(" REVIEW FALSE");

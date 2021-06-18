@@ -5,11 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface SystemIdRepository extends JpaRepository<SystemId, Long> {
-
-    public List<SystemId> findBySystemId(String systemId);
 
     /**
      * Busca todos los SystemId de todos los clientes que pertenezcan al usuario
@@ -21,4 +20,6 @@ public interface SystemIdRepository extends JpaRepository<SystemId, Long> {
             "select client_id from user_has_clients us, user_info ui " +
             "where us.ouser_id = ui.id and ui.email = :email)", nativeQuery = true)
     public Set<SystemId> findAllSystemId(String email);
+
+    Optional<SystemId> findBySystemId(String systemid);
 }
