@@ -8,9 +8,11 @@ import com.stt.dash.backend.data.AbstractSmsByYearMonth;
 import com.stt.dash.backend.data.SmsByYearMonth;
 import com.stt.dash.backend.data.SmsByYearMonthDay;
 import com.stt.dash.backend.data.SmsByYearMonthDayHour;
+import com.stt.dash.backend.data.entity.Carrier;
 import com.stt.dash.backend.data.entity.Client;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
+import com.stt.dash.backend.service.CarrierService;
 import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.utils.BakeryConst;
@@ -33,6 +35,7 @@ import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Tag("carrier-chart-view")
 @JsModule("./src/views/carrier/carrier-chart-view.js")
@@ -83,14 +86,17 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     private Button filterButton = new Button("Actualizar");
     private List<Integer> hourList = new ArrayList<>();
     private List<Integer> dayList = new ArrayList<>();
+    private List<Carrier> carrierList;
 
     public ClientChartView(SmsHourService smsHourService,
+                           CarrierService carrierService,
                            @Qualifier("getUserSystemIdString") ListGenericBean<String> stringListGenericBean,
                            CurrentUser currentUser) {
         this.smsHourService = smsHourService;
         this.stringListGenericBean = stringListGenericBean;
         this.currentUser = currentUser;
         setActualDate();
+        this.carrierList = carrierService.findAll().toList();
         /* Nombre de los Meses */
         monthToShowList = monthsIn(2);
         ml = new String[]{OMonths.valueOf(monthToShowList.get(0)).getMonthName(),
@@ -155,13 +161,14 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
     private void updateMonthlyPie() {
         Configuration confMonthlyChart = clientMonthlyPieChart.getConfiguration();
-        Tooltip tooltip = new Tooltip();
-        confMonthlyChart.setTooltip(tooltip);
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
         /* Column Chart*/
         List<SmsByYearMonth> l = smsHourService.getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(LocalDate.now().getYear(), Arrays.asList(actual_month), messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getList());
         List<DataSeries> LineDateSeriesList = paEntenderPie(l,Arrays.asList(actual_month));
         addToPieChart(confMonthlyChart, LineDateSeriesList, innerPieOptions);
+        /**/
+        Tooltip tooltip = new Tooltip();
+        confMonthlyChart.setTooltip(tooltip);
     }
 
     private void updateTrimestrePie() {
@@ -322,7 +329,8 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         List<DataSeries> dataSeriesList = new ArrayList<>();
         /*TODO nullpointer*/
         /* Recorre los Carrier seleccionados. */
-        List<String> carriers = Arrays.asList("DIGITEL", "MOVILNET", "MOVISTAR");
+        List<String> carriers =
+                carrierList.stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
         DataSeries pieSeries = new DataSeries();
         DataSeries donutSeries = new DataSeries();
         carriers.forEach(carrier -> {
