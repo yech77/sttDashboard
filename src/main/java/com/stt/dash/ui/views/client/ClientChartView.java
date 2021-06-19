@@ -17,6 +17,7 @@ import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
@@ -134,11 +135,13 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         }
         op = getCurrentSessionAttributeAndNullIt(CLIENT_VIEW_SELECTED_CLIENT);
         op.ifPresent(o -> {
-            clientCombobox.setValue((Client) VaadinSession.getCurrent().getAttribute(CLIENT_VIEW_SELECTED_CLIENT));
+            clientCombobox.setValue((Client) o);
         });
         /* ******* */
         /* HEADER */
         divHeader.add(clientCombobox, systemIdMultiCombo, messageTypeMultiCombo, filterButton);
+        updateCharts();
+        filterButton.setEnabled(true);
     }
 
     /**
@@ -156,18 +159,20 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
     private void addValueChangeListener() {
         clientCombobox.addValueChangeListener(clientListener -> {
+            systemIdMultiCombo.setItems(clientListener.getValue().getSystemids());
             Optional<Object> op = getCurrentSessionAttributeAndNullIt(CLIENT_VIEW_SELECTED_SYSTEMID);
             op.ifPresentOrElse(o -> {
-                systemIdMultiCombo.setValue((Set<SystemId>) op.get());
+                systemIdMultiCombo.setValue((Set<SystemId>) o);
             }, () -> {
-                systemIdMultiCombo.setValue(null);
-                systemIdMultiCombo.setItems(clientListener.getValue().getSystemids());
+//                systemIdMultiCombo.setValue(null);
                 systemIdMultiCombo.setValue(new HashSet<>(clientListener.getValue().getSystemids()));
             });
         });
         filterButton.addClickListener(clickEvent -> {
+            filterButton.setEnabled(false);
             /* TODO: Validar si tien todos los datos */
-            updateCharts();
+            keepParametersInSession();
+            UI.getCurrent().getPage().reload();
         });
     }
 
