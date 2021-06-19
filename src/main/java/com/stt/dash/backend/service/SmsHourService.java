@@ -4,6 +4,7 @@ import com.stt.dash.app.OMessageType;
 import com.stt.dash.backend.data.SmsByYearMonth;
 import com.stt.dash.backend.data.SmsByYearMonthDay;
 import com.stt.dash.backend.data.SmsByYearMonthDayHour;
+import com.stt.dash.backend.data.entity.Carrier;
 import com.stt.dash.backend.data.entity.SmsHour;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.SmsHourRepository;
@@ -16,6 +17,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SmsHourService {
@@ -199,6 +201,36 @@ public class SmsHourService {
         }
         log.info("Searching: year[{}] months[{}] message type[{}] sids[{}]", yearSms, monthSms, messagesType, list_sid);
         yearBefore.addAll(smshour_repo.groupCarrierByYeMoWhMoInMessageTypeIn(yearSms, monthSms, messagesType, list_sid));
+        return yearBefore;
+    }
+
+    /**
+     * Total por: year, mes y operadora.
+     *
+     * @param yearSms
+     * @param monthSms
+     * @param messageTypeSms
+     * @param list_sid
+     * @return
+     */
+    public List<SmsByYearMonth> getGroupCarrierByYeMoWhMoInMessageTypeIn(int yearSms, List<Integer> monthSms, Set<Carrier> carrierSet, Set<OMessageType> messageTypeSms, List<String> list_sid) {
+        List<String> messagesTypeList = messageTypeSms.stream().map(OMessageType::name).collect(Collectors.toList());
+        List<String> carrierList = carrierSet.stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
+        log.info("Preparing Searching: year[{}] months[{}] Message Type [{}] sids[{}]",
+                yearSms, monthSms, messageTypeSms, list_sid);
+        List<SmsByYearMonth> yearBefore = null;
+        List<Integer> monthsOfPrevYear = findMonthsOfPreviousYear(monthSms);
+
+        if (monthsOfPrevYear != null) {
+            log.info("Month ({}) before actual year detected. Searching year[{}] month[{}] Message Type [{}] sid[{}]",
+                    monthsOfPrevYear, yearSms - 1, monthsOfPrevYear, messageTypeSms, list_sid);
+            yearBefore = smshour_repo.groupCarrierByYeMoWhMoInMessageTypeIn(yearSms - 1, monthsOfPrevYear, carrierList, messagesTypeList, list_sid);
+        }
+        if (yearBefore == null) {
+            yearBefore = new ArrayList<>();
+        }
+        log.info("Searching: year[{}] months[{}] carrier [{}] message type[{}] sids[{}]", yearSms, monthSms, carrierList, messagesTypeList, list_sid);
+        yearBefore.addAll(smshour_repo.groupCarrierByYeMoWhMoInMessageTypeIn(yearSms, monthSms, carrierList, messagesTypeList, list_sid));
         return yearBefore;
     }
 
