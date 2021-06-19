@@ -7,6 +7,7 @@ import com.stt.dash.ui.events.SaveEvent;
 import com.stt.dash.ui.utils.FormattingUtils;
 import com.stt.dash.ui.utils.ODateUitls;
 import com.stt.dash.ui.utils.converters.*;
+import com.stt.dash.ui.views.bulksms.events.DeleteEventFileToSend;
 import com.stt.dash.ui.views.storefront.converters.StorefrontLocalDateConverter;
 import com.stt.dash.ui.views.storefront.events.CommentEvent;
 import com.stt.dash.ui.views.storefront.events.DeleteEvent;
@@ -90,7 +91,7 @@ public class FileToSendDetails extends LitTemplate {
 //        });
         save.addClickListener(e -> fireEvent(new SaveEvent(this, false)));
         cancel.addClickListener(e -> fireEvent(new CancelEvent(this, false)));
-//        delete.addClickListener(e -> fireEvent(new DeleteEvent(this)));
+        delete.addClickListener(e -> fireEvent(new DeleteEventFileToSend(this)));
     }
 
     public void display(FIlesToSend order, boolean review) {
@@ -152,6 +153,10 @@ public class FileToSendDetails extends LitTemplate {
 
     public Registration addSaveListenter(ComponentEventListener<SaveEvent> listener) {
         return addListener(SaveEvent.class, listener);
+    }
+
+    public Registration addDeleteListenter(ComponentEventListener<DeleteEventFileToSend> listener) {
+        return addListener(DeleteEventFileToSend.class, listener);
     }
 
     public Registration addEditListener(ComponentEventListener<EditEvent> listener) {

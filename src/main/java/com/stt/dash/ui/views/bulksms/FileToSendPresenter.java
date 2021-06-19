@@ -69,6 +69,7 @@ public class FileToSendPresenter {
         view.getOpenedOrderDetails().addCancelListener(e -> cancel());
         view.getOpenedOrderDetails().addBackListener(e -> back());
         view.getOpenedOrderDetails().addEditListener(e -> edit());
+        view.getOpenedOrderDetails().addDeleteListenter(e -> delete());
 //        view.getOpenedOrderDetails().addCommentListener(e -> addComment(e.getMessage()));
     }
 
@@ -164,6 +165,13 @@ public class FileToSendPresenter {
         });
     }
 
+    void delete() {
+        entityPresenter.delete(entity -> {
+            dataProvider.refreshAll();
+            view.showUpdatedNotification();
+            close();
+        });
+    }
 //    void addComment(String comment) {
 //        if (entityPresenter.executeUpdate(e -> orderService.addComment(currentUser.getUser(), e, comment))) {
 //            // You can only add comments when in view mode, so reopening in that state.
