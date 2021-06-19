@@ -37,8 +37,8 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Tag("carrier-chart-view")
-@JsModule("./src/views/carrier/carrier-chart-view.js")
+@Tag("client-chart-view")
+@JsModule("./src/views/client/client-chart-view.js")
 @Route(value = BakeryConst.PAGE_CLIENT, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_CLIENT)
 public class ClientChartView extends PolymerTemplate<TemplateModel> {
@@ -174,7 +174,12 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     private void updateTrimestrePie() {
         Configuration confHourlyChart = clientTriPieChart.getConfiguration();
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
-//        innerPieOptions.setSize("70%");
+//        innerPieOptions.setSize("70%")
+//
+        Tooltip tooltip = new Tooltip();
+        tooltip.setValueDecimals(0);
+        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
+        confHourlyChart.setTooltip(tooltip);;
         /* Column Chart*/
         List<SmsByYearMonth> l = smsHourService.getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(LocalDate.now().getYear(), monthToShowList, messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getList());
         List<DataSeries> LineDateSeriesList = paEntenderPie(l,monthToShowList);
@@ -228,18 +233,18 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /* Averiguar cuales son los tres meses a calular. */
-        XAxis x = new XAxis();
-        x.setCategories(ml);
+//        XAxis x = new XAxis();
+//        x.setCategories(ml);
         /**/
+        confTriMixChart.getxAxis().setCategories(ml);
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
         confTriMixChart.setTooltip(tooltip);
-        confTriMixChart.addxAxis(x);
-        systemIdStringList = new ArrayList<>();
-        for (SystemId s :
-                systemIdMultiCombo.getSelectedItems()) {
-            systemIdStringList.add(s.getSystemId());
-        }
+        systemIdStringList = systemIdMultiCombo.getSelectedItems().stream().map(SystemId::getSystemId).collect(Collectors.toList());
+//        for (SystemId s :
+//                systemIdMultiCombo.getSelectedItems()) {
+//            systemIdStringList.add(s.getSystemId());
+//        }
         List<SmsByYearMonth> l = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(LocalDate.now().getYear(), monthToShowList, systemIdStringList);
         List<Series> LineDateSeriesList = paEntender(l, monthToShowList);
         addToChart(confTriMixChart, LineDateSeriesList, plotColum);
@@ -259,6 +264,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
             for (int i = 0; i < LineDateSeriesList.size(); i++) {
                 System.out.println("ADDING LINE********" + LineDateSeriesList.get(i).getName());
                 Series series = LineDateSeriesList.get(i);
+                System.out.println("ADDING LINE COPY********" + series.getName());
                 series.setPlotOptions(plot);
                 configuration.addSeries(series);
             }
@@ -269,7 +275,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
             log.info("{} NO DATA FOR CARRIER CHART LINE");
         } else {
             for (int i = 0; i < LineDateSeriesList.size(); i++) {
-                System.out.println("ADDING LINE********" + LineDateSeriesList.get(i).getName());
+                System.out.println("ADDING LINE PIE********" + LineDateSeriesList.get(i).getName());
                 Series series = LineDateSeriesList.get(i);
 //                series.setPlotOptions(plot);
                 configuration.addSeries(series);
@@ -283,6 +289,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         List<Series> dataSeriesList = new ArrayList<>();
         /*TODO nullpointer*/
         /* Recorre los Carrier seleccionados. */
+        PlotOptionsColumn splinePlotOptions = new PlotOptionsColumn();
         messageTypeMultiCombo.getSelectedItems().forEach(messageType -> {
             ListSeries series = new ListSeries();
             series.setName(messageType.name());
@@ -295,6 +302,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
                         .mapToLong(sms -> sms.getTotal()).sum();
                 System.out.println("MONTH-> " + month + ". Message Type: " + messageType + " - TOTAL: " + tot);
                 series.addData(tot);
+                series.setPlotOptions(splinePlotOptions);
             });
             dataSeriesList.add(series);
         });

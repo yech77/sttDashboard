@@ -14,6 +14,7 @@ import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
@@ -23,6 +24,7 @@ import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +61,12 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     @Id("carrierHourlyPieChart")
     private Chart carrierHourlyPieChart;
     /**/
+    private static String CLIENT_VIEW_SELECTED_CARRIER = "client_view_selected_carrier";
+    private static String CLIENT_VIEW_SELECTED_MESSAGETYPE = "client_view_selected_messageType";
+    /**/
     Logger log = LoggerFactory.getLogger(CarrierChartView.class);
     private final SmsHourService smsHourService;
-    private final ListGenericBean<String> stingListGenericBean;
+    private final ListGenericBean<String> userSystemIdList;
     private final CurrentUser currentUser;
     /* OPERADORAS */
     private MultiselectComboBox<Carrier> multi_carrier = new MultiselectComboBox<>("Operadoras");
@@ -86,7 +91,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
                             CurrentUser currentUser) {
 
         this.currentUser = currentUser;
-        this.stingListGenericBean = stringListGenericBean;
+        this.userSystemIdList = stringListGenericBean;
         this.smsHourService = smsHourService;
         setActualDate();
         /* Nombre de los Meses */
@@ -96,23 +101,28 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
                 OMonths.valueOf(monthToShowList.get(2)).getMonthName()};
         /* Message type */
         multi_messagetype.setItems(new HashSet<>(Arrays.asList(OMessageType.values())));
-        multi_messagetype.setValue(new HashSet<>(Arrays.asList(OMessageType.values())));
+        if (VaadinSession.getCurrent().getAttribute(CLIENT_VIEW_SELECTED_MESSAGETYPE) != null) {
+            multi_messagetype.setValue((Set<OMessageType>) VaadinSession.getCurrent().getAttribute(CLIENT_VIEW_SELECTED_MESSAGETYPE));
+            VaadinSession.getCurrent().setAttribute(CLIENT_VIEW_SELECTED_MESSAGETYPE, null);
+        } else {
+            multi_messagetype.setValue(new HashSet<>(Arrays.asList(OMessageType.values())));
+        }
         multi_messagetype.setItemLabelGenerator(OMessageType::name);
         /* Carrier */
         Page<Carrier> carrierPage = carrierService.findAll();
         multi_carrier.setItems(carrierPage.getContent());
         multi_carrier.setItemLabelGenerator(Carrier::getCarrierCharcode);
-        multi_carrier.setValue(new HashSet<>(carrierPage.getContent()));
+        if (VaadinSession.getCurrent().getAttribute(CLIENT_VIEW_SELECTED_CARRIER) != null) {
+            multi_carrier.setValue((Set<Carrier>) VaadinSession.getCurrent().getAttribute(CLIENT_VIEW_SELECTED_CARRIER));
+            VaadinSession.getCurrent().setAttribute(CLIENT_VIEW_SELECTED_CARRIER, null);
+        } else {
+            multi_carrier.setValue(new HashSet<>(carrierPage.getContent()));
+        }
+
         /* HEADER */
         divHeader.add(multi_carrier, multi_messagetype, filterButton);
-        /* ------------- TRIMESTRAL: SMS
-         * Ejem: SmsByYearMonth{total=2775, yearSms=2021, monthSms=3, someCode=MO}*/
-        List<SmsByYearMonth> smsGroup = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actual_year, monthToShowList, stringListGenericBean.getList());
-        List<SmsByYearMonth> carrierGroup = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(actual_year, monthToShowList, multi_messagetype.getSelectedItems(), stringListGenericBean.getList());
-        populateTriColumnLineChart(smsGroup, new ArrayList<>(carrierGroup));
-        /* PIE */
-        List<SmsByYearMonth> groupCarrier = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(actual_year, monthToShowList, multi_messagetype.getSelectedItems(), stringListGenericBean.getList());
-        populatePieChart(carrierGroup);
+        /*Actualiza trimestra al entrar en la pantalla. */
+        updateTrimestral(userSystemIdList.getList());
         /* --------------DIARIO */
         List<SmsByYearMonthDay> smsDayGroup = smsHourService.getGroupSmsByYearMonthDayMessageType(actual_year, actual_month, stringListGenericBean.getList());
         List<SmsByYearMonthDay> carrierDayGroup = smsHourService.getGroupCarrierByYeMoDa(actual_year, actual_month, multi_messagetype.getSelectedItems(), stringListGenericBean.getList());
@@ -120,11 +130,35 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         /* PIE */
         populateMonthlyPieChart(carrierDayGroup);
         /* --------------POR HORA */
-        List<SmsByYearMonthDayHour> smsHourGroup = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actual_year, actual_month, 27, stringListGenericBean.getList());
-        List<SmsByYearMonthDayHour> carrierHourGroup = smsHourService.getGroupCarrierByYeMoDaHoWhYeMoDayEqMessageTypeIn(actual_year, actual_month, 27, multi_messagetype.getSelectedItems(), stringListGenericBean.getList());
+        List<SmsByYearMonthDayHour> smsHourGroup = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actual_year, actual_month, actual_day, stringListGenericBean.getList());
+        List<SmsByYearMonthDayHour> carrierHourGroup = smsHourService.getGroupCarrierByYeMoDaHoWhYeMoDayEqMessageTypeIn(actual_year, actual_month, actual_day, multi_messagetype.getSelectedItems(), stringListGenericBean.getList());
         populateHourChart(smsHourGroup, new ArrayList<>(carrierHourGroup));
         /* PIE */
         populateHourPieChart(carrierHourGroup);
+        filterButton.addClickListener(click -> {
+            VaadinSession.getCurrent().setAttribute(CLIENT_VIEW_SELECTED_CARRIER, multi_carrier.getSelectedItems());
+            VaadinSession.getCurrent().setAttribute(CLIENT_VIEW_SELECTED_MESSAGETYPE, multi_messagetype.getSelectedItems());
+            UI.getCurrent().getPage().reload();
+        });
+    }
+
+    private void updateTrimestral(List<String> sids) {
+        /* ------------- TRIMESTRAL: SMS
+         * Ejem: SmsByYearMonth{total=2775, yearSms=2021, monthSms=3, someCode=MO}*/
+        List<SmsByYearMonth> smsGroup = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actual_year, monthToShowList, sids);
+        List<SmsByYearMonth> carrierGroup = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(actual_year,
+                monthToShowList,
+                multi_carrier.getSelectedItems(),
+                multi_messagetype.getSelectedItems(),
+                sids);
+        populateTriColumnLineChart(smsGroup, new ArrayList<>(carrierGroup));
+        /* PIE */
+        List<SmsByYearMonth> groupCarrier = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(actual_year,
+                monthToShowList,
+                multi_carrier.getSelectedItems(),
+                multi_messagetype.getSelectedItems(),
+                sids);
+        populatePieChart(carrierGroup);
     }
 
     private void populateHourPieChart(List<SmsByYearMonthDayHour> carrierHourGroup) {
@@ -434,7 +468,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         List<ListSeries> dataSeriesList = new ArrayList<>();
 
         /* Recorre los Carrier seleccionados. */
-        c.forEach(carrier->{
+        c.forEach(carrier -> {
             ListSeries series = new ListSeries();
             series.setName(carrier);
             /* Recorre los meses del trimestre */
@@ -442,7 +476,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
                 /* Total por Month y Carrier*/
                 Long tot = l.stream().filter(filter -> filter.getGroupBy() == month && carrier.equalsIgnoreCase(filter.getSomeCode()))
                         .mapToLong(filter -> filter.getTotal()).sum();
-                System.out.println("MONTH-> " + month +". OPERADORA: "+carrier+ " - TOTAL: " + tot);
+                System.out.println("MONTH-> " + month + ". OPERADORA: " + carrier + " - TOTAL: " + tot);
                 series.addData(tot);
             });
             dataSeriesList.add(series);
@@ -454,7 +488,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
 //        dataSeriesList.add(digitelSerie);
 //        dataSeriesList.add(movilnetSerie);
 //        dataSeriesList.add(movistarSerie);
-          /* FORMA 2 */
+        /* FORMA 2 */
 //        List<DataSeries> dataSeriesList = new ArrayList<>();
 //        DataSeries series = new DataSeries();
 //        series.setName("DIGITEL");
@@ -667,7 +701,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
 //                    System.out.println("Este "+carrier.getKey() + " " + carrier.getValue());
                 }
         );
-        System.out.println("SE TARDO: " + (System.currentTimeMillis()-startTime));
+        System.out.println("SE TARDO: " + (System.currentTimeMillis() - startTime));
         pieSeries.setPlotOptions(plotOptionsPie);
 
 //        /* Guardar los totales del Mes*/
@@ -733,10 +767,10 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         actual_year = c.get(Calendar.YEAR);
         log.info("{} HOUR OF DAY {} HOUR {}", getStringLog(), c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.HOUR));
         actual_hour = c.get(Calendar.HOUR_OF_DAY);
-        for(int i=0; i<=actual_hour; i++){
+        for (int i = 0; i <= actual_hour; i++) {
             hourList.add(i);
         }
-        for(int i=1; i<=actual_day; i++){
+        for (int i = 1; i <= actual_day; i++) {
             dayList.add(i);
         }
     }
