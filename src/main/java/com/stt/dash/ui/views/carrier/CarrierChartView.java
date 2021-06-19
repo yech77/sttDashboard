@@ -61,8 +61,8 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     @Id("carrierHourlyPieChart")
     private Chart carrierHourlyPieChart;
     /**/
-    private static String CLIENT_VIEW_SELECTED_CARRIER = "client_view_selected_carrier";
-    private static String CLIENT_VIEW_SELECTED_MESSAGETYPE = "client_view_selected_messageType";
+    private static String CARRIER_VIEW_SELECTED_CARRIER = "carrier_view_selected_carrier";
+    private static String CARRIER_VIEW_SELECTED_MESSAGETYPE = "carrier_view_selected_messageType";
     /**/
     Logger log = LoggerFactory.getLogger(CarrierChartView.class);
     private final SmsHourService smsHourService;
@@ -101,9 +101,9 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
                 OMonths.valueOf(monthToShowList.get(2)).getMonthName()};
         /* Message type */
         multi_messagetype.setItems(new HashSet<>(Arrays.asList(OMessageType.values())));
-        if (VaadinSession.getCurrent().getAttribute(CLIENT_VIEW_SELECTED_MESSAGETYPE) != null) {
-            multi_messagetype.setValue((Set<OMessageType>) VaadinSession.getCurrent().getAttribute(CLIENT_VIEW_SELECTED_MESSAGETYPE));
-            VaadinSession.getCurrent().setAttribute(CLIENT_VIEW_SELECTED_MESSAGETYPE, null);
+        if (VaadinSession.getCurrent().getAttribute(CARRIER_VIEW_SELECTED_MESSAGETYPE) != null) {
+            multi_messagetype.setValue((Set<OMessageType>) VaadinSession.getCurrent().getAttribute(CARRIER_VIEW_SELECTED_MESSAGETYPE));
+            VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_MESSAGETYPE, null);
         } else {
             multi_messagetype.setValue(new HashSet<>(Arrays.asList(OMessageType.values())));
         }
@@ -112,9 +112,9 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         Page<Carrier> carrierPage = carrierService.findAll();
         multi_carrier.setItems(carrierPage.getContent());
         multi_carrier.setItemLabelGenerator(Carrier::getCarrierCharcode);
-        if (VaadinSession.getCurrent().getAttribute(CLIENT_VIEW_SELECTED_CARRIER) != null) {
-            multi_carrier.setValue((Set<Carrier>) VaadinSession.getCurrent().getAttribute(CLIENT_VIEW_SELECTED_CARRIER));
-            VaadinSession.getCurrent().setAttribute(CLIENT_VIEW_SELECTED_CARRIER, null);
+        if (VaadinSession.getCurrent().getAttribute(CARRIER_VIEW_SELECTED_CARRIER) != null) {
+            multi_carrier.setValue((Set<Carrier>) VaadinSession.getCurrent().getAttribute(CARRIER_VIEW_SELECTED_CARRIER));
+            VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_CARRIER, null);
         } else {
             multi_carrier.setValue(new HashSet<>(carrierPage.getContent()));
         }
@@ -136,8 +136,8 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         /* PIE */
         populateHourPieChart(carrierHourGroup);
         filterButton.addClickListener(click -> {
-            VaadinSession.getCurrent().setAttribute(CLIENT_VIEW_SELECTED_CARRIER, multi_carrier.getSelectedItems());
-            VaadinSession.getCurrent().setAttribute(CLIENT_VIEW_SELECTED_MESSAGETYPE, multi_messagetype.getSelectedItems());
+            VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_CARRIER, multi_carrier.getSelectedItems());
+            VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_MESSAGETYPE, multi_messagetype.getSelectedItems());
             UI.getCurrent().getPage().reload();
         });
     }

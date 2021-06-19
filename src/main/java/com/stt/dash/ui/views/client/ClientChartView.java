@@ -27,6 +27,7 @@ import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,9 @@ import java.util.stream.Collectors;
 @PageTitle(BakeryConst.TITLE_CLIENT)
 public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
+    private static final String CLIENT_VIEW_SELECTED_SYSTEMID = "client_view_selected_systemid";
+    private static final String CLIENT_VIEW_SELECTED_MESSAGETYPE = "client_view_selected_messageType";
+    private static final String CLIENT_VIEW_SELECTED_CLIENT = "client_view_selected_client";
     @Id("divHeader")
     Div divHeader;
 
@@ -104,13 +108,20 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
                 OMonths.valueOf(monthToShowList.get(2)).getMonthName()};
         /* Listener */
         addValueChangeListener();
-        /* Message type */
+        /* ******* Message type */
         messageTypeMultiCombo.setItems(new HashSet<>(Arrays.asList(OMessageType.values())));
-        messageTypeMultiCombo.setValue(new HashSet<>(Arrays.asList(OMessageType.values())));
+        Optional<Object> op = getCurrentSessionAttributeAndNullIt(CLIENT_VIEW_SELECTED_MESSAGETYPE);
+        op.ifPresentOrElse(o -> {
+            messageTypeMultiCombo.setValue((Set<OMessageType>) o);
+        }, () -> {
+            messageTypeMultiCombo.setValue(new HashSet<>(Arrays.asList(OMessageType.values())));
+        });
         messageTypeMultiCombo.setItemLabelGenerator(OMessageType::name);
-        /* SystemId */
+        /* ******* */
+        /* ******* SystemId */
         systemIdMultiCombo.setItemLabelGenerator(SystemId::getSystemId);
-        /* Client */
+        /* ******* */
+        /* ******* Client */
         clientCombobox.setItemLabelGenerator(Client::getClientName);
         /* Client & Systemids*/
         if (currentUser.getUser().getUserType() == User.OUSER_TYPE.HAS) {
@@ -121,21 +132,49 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
             clientCombobox.setReadOnly(true);
             systemIdMultiCombo.setItems(currentUser.getUser().getClient().getSystemids());
         }
-
+        op = getCurrentSessionAttributeAndNullIt(CLIENT_VIEW_SELECTED_CLIENT);
+        op.ifPresent(o -> {
+            clientCombobox.setValue((Client) VaadinSession.getCurrent().getAttribute(CLIENT_VIEW_SELECTED_CLIENT));
+        });
+        /* ******* */
         /* HEADER */
         divHeader.add(clientCombobox, systemIdMultiCombo, messageTypeMultiCombo, filterButton);
     }
 
+    /**
+     * Devuelve el valor  del atributo de la session actual y coloca el atributo en la sesion como null;
+     *
+     * @param attributeName
+     * @return
+     */
+    private Optional<Object> getCurrentSessionAttributeAndNullIt(String attributeName) {
+        Object o = VaadinSession.getCurrent().getAttribute(attributeName);
+        VaadinSession.getCurrent().setAttribute(attributeName, null);
+        Optional<Object> op = Optional.ofNullable(o);
+        return op;
+    }
+
     private void addValueChangeListener() {
         clientCombobox.addValueChangeListener(clientListener -> {
-            systemIdMultiCombo.setValue(null);
-            systemIdMultiCombo.setItems(clientListener.getValue().getSystemids());
-            systemIdMultiCombo.setValue(new HashSet<>(clientListener.getValue().getSystemids()));
+            Optional<Object> op = getCurrentSessionAttributeAndNullIt(CLIENT_VIEW_SELECTED_SYSTEMID);
+            op.ifPresentOrElse(o -> {
+                systemIdMultiCombo.setValue((Set<SystemId>) op.get());
+            }, () -> {
+                systemIdMultiCombo.setValue(null);
+                systemIdMultiCombo.setItems(clientListener.getValue().getSystemids());
+                systemIdMultiCombo.setValue(new HashSet<>(clientListener.getValue().getSystemids()));
+            });
         });
         filterButton.addClickListener(clickEvent -> {
             /* TODO: Validar si tien todos los datos */
             updateCharts();
         });
+    }
+
+    private void keepParametersInSession() {
+        VaadinSession.getCurrent().setAttribute(CLIENT_VIEW_SELECTED_CLIENT, clientCombobox.getValue());
+        VaadinSession.getCurrent().setAttribute(CLIENT_VIEW_SELECTED_SYSTEMID, systemIdMultiCombo.getSelectedItems());
+        VaadinSession.getCurrent().setAttribute(CLIENT_VIEW_SELECTED_MESSAGETYPE, messageTypeMultiCombo.getSelectedItems());
     }
 
     private void updateCharts() {
@@ -153,7 +192,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
         /* Column Chart*/
         List<SmsByYearMonthDayHour> l = smsHourService.getGroupSystemIdByYeMoDaHoCaWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), actual_month, actual_day, messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getList());
-        List<DataSeries> LineDateSeriesList = paEntenderPie(l,Arrays.asList(actual_day));
+        List<DataSeries> LineDateSeriesList = paEntenderPie(l, Arrays.asList(actual_day));
         addToPieChart(confHourlyChart, LineDateSeriesList, innerPieOptions);
         Tooltip tooltip = new Tooltip();
         confHourlyChart.setTooltip(tooltip);
@@ -164,7 +203,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
         /* Column Chart*/
         List<SmsByYearMonth> l = smsHourService.getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(LocalDate.now().getYear(), Arrays.asList(actual_month), messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getList());
-        List<DataSeries> LineDateSeriesList = paEntenderPie(l,Arrays.asList(actual_month));
+        List<DataSeries> LineDateSeriesList = paEntenderPie(l, Arrays.asList(actual_month));
         addToPieChart(confMonthlyChart, LineDateSeriesList, innerPieOptions);
         /**/
         Tooltip tooltip = new Tooltip();
@@ -179,10 +218,11 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
-        confHourlyChart.setTooltip(tooltip);;
+        confHourlyChart.setTooltip(tooltip);
+        ;
         /* Column Chart*/
         List<SmsByYearMonth> l = smsHourService.getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(LocalDate.now().getYear(), monthToShowList, messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getList());
-        List<DataSeries> LineDateSeriesList = paEntenderPie(l,monthToShowList);
+        List<DataSeries> LineDateSeriesList = paEntenderPie(l, monthToShowList);
         addToPieChart(confHourlyChart, LineDateSeriesList, innerPieOptions);
         /* Line Chart */
 //        for (SystemId s : systemIdMultiCombo.getSelectedItems()) {
@@ -270,6 +310,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
             }
         }
     }
+
     private void addToPieChart(Configuration configuration, List<DataSeries> LineDateSeriesList, AbstractPlotOptions plot) {
         if (LineDateSeriesList == null || LineDateSeriesList.size() == 0) {
             log.info("{} NO DATA FOR CARRIER CHART LINE");
@@ -342,13 +383,13 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         DataSeries pieSeries = new DataSeries();
         DataSeries donutSeries = new DataSeries();
         carriers.forEach(carrier -> {
-                /* Total por Carrier */
-                Long tot = l.parallelStream()
-                        .filter(sms -> carrier.equalsIgnoreCase(sms.getMessageType()))
-                        .mapToLong(sms -> sms.getTotal()).sum();
-                System.out.println("OPERADORA-> " + carrier + ". - TOTAL: " + tot);
-                pieSeries.add(new DataSeriesItem(carrier, tot), false, false);
-                /* Total por S*/
+            /* Total por Carrier */
+            Long tot = l.parallelStream()
+                    .filter(sms -> carrier.equalsIgnoreCase(sms.getMessageType()))
+                    .mapToLong(sms -> sms.getTotal()).sum();
+            System.out.println("OPERADORA-> " + carrier + ". - TOTAL: " + tot);
+            pieSeries.add(new DataSeriesItem(carrier, tot), false, false);
+            /* Total por S*/
             systemIdMultiCombo.getValue().forEach(systemId -> {
                 Long totSid = l.parallelStream()
                         .filter(sms -> sms.getMessageType().equalsIgnoreCase(carrier)
@@ -410,6 +451,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         lm.add(LocalDate.now().getMonth().getValue());
         return lm;
     }
+
     private void setActualDate() {
         Calendar c = Calendar.getInstance();
         actual_day = c.get(Calendar.DAY_OF_MONTH);
@@ -417,13 +459,14 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         actual_year = c.get(Calendar.YEAR);
         log.info("{} HOUR OF DAY {} HOUR {}", getStringLog(), c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.HOUR));
         actual_hour = c.get(Calendar.HOUR_OF_DAY);
-        for(int i=0; i<=actual_hour; i++){
+        for (int i = 0; i <= actual_hour; i++) {
             hourList.add(i);
         }
-        for(int i=1; i<=actual_day; i++){
+        for (int i = 1; i <= actual_day; i++) {
             dayList.add(i);
         }
     }
+
     private String getStringLog() {
         return "[" + currentUser.getUser().getEmail() + "]";
     }
