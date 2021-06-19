@@ -18,11 +18,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     long countByEmailLikeIgnoreCaseOrFirstNameLikeIgnoreCaseOrLastNameLikeIgnoreCaseOrRoleLikeIgnoreCase(
             String emailLike, String firstNameLike, String lastNameLike, String roleLike);
 
-    @Query(value = "WITH RECURSIVE subordinates AS ( SELECT * " +
-            "FROM user_info	u WHERE u.id = :keyid " +
-            "UNION " +
-            "SELECT e.* FROM user_info e " +
-            "INNER JOIN subordinates s ON s.id = e.user_parent_id " +
-            ") SELECT * FROM subordinates where id !=:keyid", nativeQuery = true)
-            Page<User> findDescent(Long keyid, Pageable pageable);
+//    @Query(value = "WITH RECURSIVE subordinates AS ( SELECT * " +
+//            "FROM user_info	u WHERE u.id = :keyid " +
+//            "UNION " +
+//            "SELECT e.* FROM user_info e " +
+//            "INNER JOIN subordinates s ON s.id = e.user_parent_id " +
+//            ") SELECT * FROM subordinates where id !=:keyid", nativeQuery = true)
+//            Page<User> findDescent(Long keyid, Pageable pageable);
 }
