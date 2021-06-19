@@ -26,7 +26,7 @@ class FiletosendStatusBadge extends PolymerElement {
         background: var(--lumo-primary-color-10pct);
       }
 
-      :host([status="problem"]) #wrapper {
+      :host([status="preparing_sms"]) #wrapper {
         color: var(--lumo-error-color);
         background: var(--lumo-error-color-10pct);
       }
