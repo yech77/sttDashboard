@@ -72,7 +72,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     /**/
     Logger log = LoggerFactory.getLogger(ClientChartView.class);
     private final SmsHourService smsHourService;
-    private final ListGenericBean<String> stringListGenericBean;
+    private final ListGenericBean<String> allUserStringSystemId;
     private final CurrentUser currentUser;
     /*Fechas */
     private int actual_month;
@@ -85,7 +85,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     private final MultiselectComboBox<OMessageType> messageTypeMultiCombo = new MultiselectComboBox<>("Tipos de Mensaje");
     /* Para Graficos y servicios */
     private List<Integer> monthToShowList;
-    private List<String> systemIdStringList;
+    private List<String> selectedSystemIdList;
     private String[] ml;
     /* Button */
     private Button filterButton = new Button("Actualizar");
@@ -95,10 +95,10 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
     public ClientChartView(SmsHourService smsHourService,
                            CarrierService carrierService,
-                           @Qualifier("getUserSystemIdString") ListGenericBean<String> stringListGenericBean,
+                           @Qualifier("getUserSystemIdString") ListGenericBean<String> allUserStringSystemId,
                            CurrentUser currentUser) {
         this.smsHourService = smsHourService;
-        this.stringListGenericBean = stringListGenericBean;
+        this.allUserStringSystemId = allUserStringSystemId;
         this.currentUser = currentUser;
         setActualDate();
         this.carrierList = carrierService.findAll().toList();
@@ -184,19 +184,19 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
     private void updateCharts() {
         updateTriMixChart();
-        updateMonthlyLineChart();
-        updateHourlyChart();
+//        updateMonthlyLineChart();
+//        updateHourlyChart();
         /**/
-        updateTrimestrePie();
-        updateMonthlyPie();
-        updateDailyPie();
+//        updateTrimestrePie();
+//        updateMonthlyPie();
+//        updateDailyPie();
     }
 
     private void updateDailyPie() {
         Configuration confHourlyChart = carrierHourlyPieChart.getConfiguration();
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
         /* Column Chart*/
-        List<SmsByYearMonthDayHour> l = smsHourService.getGroupSystemIdByYeMoDaHoCaWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), actual_month, actual_day, messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getList());
+        List<SmsByYearMonthDayHour> l = smsHourService.getGroupSystemIdByYeMoDaHoCaWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), actual_month, actual_day, messageTypeMultiCombo.getSelectedItems(), allUserStringSystemId.getList());
         List<DataSeries> LineDateSeriesList = paEntenderPie(l, Arrays.asList(actual_day));
         addToPieChart(confHourlyChart, LineDateSeriesList, innerPieOptions);
         Tooltip tooltip = new Tooltip();
@@ -207,7 +207,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         Configuration confMonthlyChart = clientMonthlyPieChart.getConfiguration();
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
         /* Column Chart*/
-        List<SmsByYearMonth> l = smsHourService.getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(LocalDate.now().getYear(), Arrays.asList(actual_month), messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getList());
+        List<SmsByYearMonth> l = smsHourService.getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(LocalDate.now().getYear(), Arrays.asList(actual_month), messageTypeMultiCombo.getSelectedItems(), allUserStringSystemId.getList());
         List<DataSeries> LineDateSeriesList = paEntenderPie(l, Arrays.asList(actual_month));
         addToPieChart(confMonthlyChart, LineDateSeriesList, innerPieOptions);
         /**/
@@ -226,7 +226,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         confHourlyChart.setTooltip(tooltip);
         ;
         /* Column Chart*/
-        List<SmsByYearMonth> l = smsHourService.getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(LocalDate.now().getYear(), monthToShowList, messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getList());
+        List<SmsByYearMonth> l = smsHourService.getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(LocalDate.now().getYear(), monthToShowList, messageTypeMultiCombo.getSelectedItems(), allUserStringSystemId.getList());
         List<DataSeries> LineDateSeriesList = paEntenderPie(l, monthToShowList);
         addToPieChart(confHourlyChart, LineDateSeriesList, innerPieOptions);
         /* Line Chart */
@@ -251,14 +251,14 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         tooltip.setShared(true);
         confHourlyChart.setTooltip(tooltip);
         /* Column Chart*/
-        List<SmsByYearMonthDayHour> l = smsHourService.getGroupSmsByYearMonthDayHourMessageType(LocalDate.now().getYear(), actual_month, actual_day, stringListGenericBean.getList());
+        List<SmsByYearMonthDayHour> l = smsHourService.getGroupSmsByYearMonthDayHourMessageType(LocalDate.now().getYear(), actual_month, actual_day, allUserStringSystemId.getList());
         List<Series> LineDateSeriesList = paEntender(l, hourList);
         addToChart(confHourlyChart, LineDateSeriesList, plotColum);
         /* Line Chart */
         for (SystemId s : systemIdMultiCombo.getSelectedItems()) {
-            systemIdStringList.add(s.getSystemId());
+            selectedSystemIdList.add(s.getSystemId());
         }
-        l = smsHourService.getGroupSystemIdByYeMoDaHoWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), 5, 2, messageTypeMultiCombo.getSelectedItems(), systemIdStringList);
+        l = smsHourService.getGroupSystemIdByYeMoDaHoWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), 5, 2, messageTypeMultiCombo.getSelectedItems(), selectedSystemIdList);
         PlotOptionsLine plotLine = new PlotOptionsLine();
         LineDateSeriesList = paEntenderLine(l, hourList);
         addToChart(confHourlyChart, LineDateSeriesList, plotLine);
@@ -273,11 +273,11 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         tooltip.setShared(true);
         confMonthlyLineChart.setTooltip(tooltip);
         /* Column Chart*/
-        List<SmsByYearMonthDay> l = smsHourService.getGroupSmsByYearMonthDayMessageType(LocalDate.now().getYear(), actual_month, stringListGenericBean.getList());
+        List<SmsByYearMonthDay> l = smsHourService.getGroupSmsByYearMonthDayMessageType(LocalDate.now().getYear(), actual_month, allUserStringSystemId.getList());
         List<Series> LineDateSeriesList = paEntender(l, dayList);
         addToChart(confMonthlyLineChart, LineDateSeriesList, plotColum);
         /* Line Chart */
-        l = smsHourService.getGroupSystemIdByYeMoDa(LocalDate.now().getYear(), actual_month, messageTypeMultiCombo.getSelectedItems(), stringListGenericBean.getList());
+        l = smsHourService.getGroupSystemIdByYeMoDa(LocalDate.now().getYear(), actual_month, messageTypeMultiCombo.getSelectedItems(), allUserStringSystemId.getList());
         PlotOptionsLine plotLine = new PlotOptionsLine();
         LineDateSeriesList = paEntenderLine(l, dayList);
         addToChart(confMonthlyLineChart, LineDateSeriesList, plotLine);
@@ -288,25 +288,21 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /* Averiguar cuales son los tres meses a calular. */
-//        XAxis x = new XAxis();
-//        x.setCategories(ml);
         /**/
         confTriMixChart.getxAxis().setCategories(ml);
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
         tooltip.setShared(true);
         confTriMixChart.setTooltip(tooltip);
-        systemIdStringList = systemIdMultiCombo.getSelectedItems().stream().map(SystemId::getSystemId).collect(Collectors.toList());
-//        for (SystemId s :
-//                systemIdMultiCombo.getSelectedItems()) {
-//            systemIdStringList.add(s.getSystemId());
-//        }
-        List<SmsByYearMonth> l = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(LocalDate.now().getYear(), monthToShowList, systemIdStringList);
+        /* Convertir Set<SystemId> seleccionados en un List<String>*/
+        selectedSystemIdList = systemIdMultiCombo.getSelectedItems().stream().map(SystemId::getSystemId).collect(Collectors.toList());
+        /* Buscar con todos los systemids del usuario. */
+        List<SmsByYearMonth> l = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actual_year, monthToShowList, allUserStringSystemId.getList());
         List<Series> LineDateSeriesList = paEntender(l, monthToShowList);
         addToChart(confTriMixChart, LineDateSeriesList, plotColum);
         /* LINE CHART */
         l = smsHourService.
-                getGroupSystemIdByYeMoWhMoInMessageTypeIn(LocalDate.now().getYear(), monthToShowList, messageTypeMultiCombo.getSelectedItems(), systemIdStringList);
+                getGroupSystemIdByYeMoWhMoInMessageTypeIn(LocalDate.now().getYear(), monthToShowList, messageTypeMultiCombo.getSelectedItems(), selectedSystemIdList);
 
         PlotOptionsLine plotLine = new PlotOptionsLine();
         LineDateSeriesList = paEntenderLine(l, monthToShowList);
