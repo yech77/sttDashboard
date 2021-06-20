@@ -245,6 +245,11 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     private void updateHourlyChart() {
         Configuration confHourlyChart = clientHourlyChart.getConfiguration();
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
+        /**/
+        Tooltip tooltip = new Tooltip();
+        tooltip.setValueDecimals(0);
+        tooltip.setShared(true);
+        confHourlyChart.setTooltip(tooltip);
         /* Column Chart*/
         List<SmsByYearMonthDayHour> l = smsHourService.getGroupSmsByYearMonthDayHourMessageType(LocalDate.now().getYear(), actual_month, actual_day, stringListGenericBean.getList());
         List<Series> LineDateSeriesList = paEntender(l, hourList);
@@ -262,6 +267,11 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     private void updateMonthlyLineChart() {
         Configuration confMonthlyLineChart = clientMonthlyChart.getConfiguration();
         PlotOptionsLine plotColum = new PlotOptionsLine();
+        /**/
+        Tooltip tooltip = new Tooltip();
+        tooltip.setValueDecimals(0);
+        tooltip.setShared(true);
+        confMonthlyLineChart.setTooltip(tooltip);
         /* Column Chart*/
         List<SmsByYearMonthDay> l = smsHourService.getGroupSmsByYearMonthDayMessageType(LocalDate.now().getYear(), actual_month, stringListGenericBean.getList());
         List<Series> LineDateSeriesList = paEntender(l, dayList);
@@ -284,6 +294,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         confTriMixChart.getxAxis().setCategories(ml);
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
+        tooltip.setShared(true);
         confTriMixChart.setTooltip(tooltip);
         systemIdStringList = systemIdMultiCombo.getSelectedItems().stream().map(SystemId::getSystemId).collect(Collectors.toList());
 //        for (SystemId s :
