@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -183,9 +184,9 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     }
 
     private void updateCharts() {
-//        updateTriMixChart();
+        updateTriMixChart();
         updateMonthlyLineChart();
-//        updateHourlyChart();
+        updateHourlyChart();
         /**/
 //        updateTrimestrePie();
 //        updateMonthlyPie();
@@ -244,21 +245,35 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
     private void updateHourlyChart() {
         Configuration confHourlyChart = clientHourlyChart.getConfiguration();
+        confHourlyChart.setTitle("JUNIO - dia de hoy");
+        confHourlyChart.setSubTitle("por hora");
         confHourlyChart.getyAxis().setTitle("SMS");
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
+        /**/
+        confHourlyChart.getxAxis().setTitle("Hora");
+//        String[] da = new String[LocalDateTime.now().getHour())];
+//        for (int i = 0; i <= LocalDateTime.now().getHour(); i++) {
+//            da[i] = i + ":";
+//        }
+//        confHourlyChart.getxAxis().setCategories(da);
         /**/
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
         tooltip.setShared(true);
+        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">Hora: {point.key}</span><br/>");
         confHourlyChart.setTooltip(tooltip);
+        /**/
+        if(systemIdMultiCombo.getSelectedItems()==null){
+            log.info("No systemids selected");
+            return;
+        }
         /* Column Chart*/
         List<SmsByYearMonthDayHour> l = smsHourService.getGroupSmsByYearMonthDayHourMessageType(LocalDate.now().getYear(), actual_month, actual_day, allUserStringSystemId.getList());
         List<Series> LineDateSeriesList = paEntender(l, hourList);
         addToChart(confHourlyChart, LineDateSeriesList, plotColum);
+        /* Convertir Set<SystemId> seleccionados en un List<String>*/
+        List<String> selectedSystemIdList = systemIdMultiCombo.getSelectedItems().stream().map(SystemId::getSystemId).collect(Collectors.toList());
         /* Line Chart */
-        for (SystemId s : systemIdMultiCombo.getSelectedItems()) {
-            selectedSystemIdList.add(s.getSystemId());
-        }
         l = smsHourService.getGroupSystemIdByYeMoDaHoWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), 5, 2, messageTypeMultiCombo.getSelectedItems(), selectedSystemIdList);
         PlotOptionsLine plotLine = new PlotOptionsLine();
         LineDateSeriesList = paEntenderLine(l, hourList);
@@ -270,6 +285,8 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         /**/
         confMonthlyLineChart.getyAxis().setTitle("SMS");
         confMonthlyLineChart.getxAxis().setTitle("Dia");
+        confMonthlyLineChart.setTitle("JUNIO - 2021");
+        confMonthlyLineChart.setSubTitle("por dia");
         String[] da = new String[LocalDate.now().getMonth().maxLength()];
         for (int i = 1; i <= LocalDate.now().getMonth().maxLength(); i++) {
             da[i - 1] = i + "";
@@ -298,6 +315,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         Configuration confTriMixChart = clientTriMixChart.getConfiguration();
         /**/
         confTriMixChart.getyAxis().setTitle("SMS");
+        confTriMixChart.setTitle("Trimestral - 2021");
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /* Averiguar cuales son los tres meses a calular. */
         /**/
