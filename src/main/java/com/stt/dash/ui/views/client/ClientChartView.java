@@ -183,8 +183,8 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     }
 
     private void updateCharts() {
-        updateTriMixChart();
-//        updateMonthlyLineChart();
+//        updateTriMixChart();
+        updateMonthlyLineChart();
 //        updateHourlyChart();
         /**/
 //        updateTrimestrePie();
@@ -244,6 +244,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
     private void updateHourlyChart() {
         Configuration confHourlyChart = clientHourlyChart.getConfiguration();
+        confHourlyChart.getyAxis().setTitle("SMS");
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /**/
         Tooltip tooltip = new Tooltip();
@@ -266,11 +267,21 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
     private void updateMonthlyLineChart() {
         Configuration confMonthlyLineChart = clientMonthlyChart.getConfiguration();
+        /**/
+        confMonthlyLineChart.getyAxis().setTitle("SMS");
+        confMonthlyLineChart.getxAxis().setTitle("Dia");
+        String[] da = new String[LocalDate.now().getMonth().maxLength()];
+        for (int i = 1; i <= LocalDate.now().getMonth().maxLength(); i++) {
+            da[i - 1] = i + "";
+        }
+        confMonthlyLineChart.getxAxis().setCategories(da);
+        /**/
         PlotOptionsLine plotColum = new PlotOptionsLine();
         /**/
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
         tooltip.setShared(true);
+        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">Dia: {point.key}</span><br/>");
         confMonthlyLineChart.setTooltip(tooltip);
         /* Column Chart*/
         List<SmsByYearMonthDay> l = smsHourService.getGroupSmsByYearMonthDayMessageType(LocalDate.now().getYear(), actual_month, allUserStringSystemId.getList());
@@ -285,7 +296,8 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
     private void updateTriMixChart() {
         Configuration confTriMixChart = clientTriMixChart.getConfiguration();
-
+        /**/
+        confTriMixChart.getyAxis().setTitle("SMS");
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /* Averiguar cuales son los tres meses a calular. */
         /**/
