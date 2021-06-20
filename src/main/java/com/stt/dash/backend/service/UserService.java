@@ -1,8 +1,6 @@
 package com.stt.dash.backend.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.ListGenericBean;
@@ -26,6 +24,7 @@ public class UserService implements FilterableCrudService<User> {
 	public UserService(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
+	private long isotherCounter =-1;
 
 	public Page<User> findAnyMatching(Optional<String> filter, Pageable pageable) {
 		if (filter.isPresent()) {
@@ -57,6 +56,11 @@ public class UserService implements FilterableCrudService<User> {
 			return userRepository.countByEmailLikeIgnoreCaseOrFirstNameLikeIgnoreCaseOrLastNameLikeIgnoreCaseOrRoleLikeIgnoreCase(
 					repositoryFilter, repositoryFilter, repositoryFilter, repositoryFilter);
 		} else {
+			if(isotherCounter>-1){
+				long d = isotherCounter;
+				isotherCounter=-1;
+				return d;
+			}
 			return count();
 		}
 	}
@@ -71,10 +75,14 @@ public class UserService implements FilterableCrudService<User> {
 	}
 
 	public Page<User> find(CurrentUser currentUser, Pageable pageable) {
-		return getRepository().findAll(pageable);
-//		List<User> lu = getUserFamily(currentUser);
-//		Page<User> u = new PageImpl<>(lu, Pageable.unpaged(), lu.size());
-//		return u;
+		/* es para indicar que el counter debe contar este*/
+		if (currentUser.getUser().getUserType() == User.OUSER_TYPE.HAS){
+			return getRepository().findAll(pageable);
+		}
+		List<User> lu = getUserFamily(currentUser);
+		isotherCounter=lu.size();
+		Page<User> u = new PageImpl<>(lu);
+		return u;
 	}
 
 	@Override
