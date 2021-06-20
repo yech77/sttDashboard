@@ -13,6 +13,13 @@ public interface FilterableCrudService<T extends AbstractEntitySequence> extends
 
 	long countAnyMatching(Optional<String> filter);
 
+	/**
+	 * Usada para el caso de User que no debe devolverlos todos.
+	 * @param currentUser
+	 * @param filter
+	 * @param pageable
+	 * @return
+	 */
 	default Page<T> findAnyMatching(CurrentUser currentUser, Optional<String> filter, Pageable pageable){
 		return findAnyMatching(filter, pageable);
 	}
