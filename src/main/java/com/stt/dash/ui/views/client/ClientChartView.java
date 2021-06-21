@@ -113,11 +113,16 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         /* ******* Message type */
         messageTypeMultiCombo.setItems(new HashSet<>(Arrays.asList(OMessageType.values())));
         Optional<Object> op = getCurrentSessionAttributeAndNullIt(CLIENT_VIEW_SELECTED_MESSAGETYPE);
-        op.ifPresentOrElse(o -> {
-            messageTypeMultiCombo.setValue((Set<OMessageType>) o);
-        }, () -> {
+        if (op.isPresent()){
+            messageTypeMultiCombo.setValue((Set<OMessageType>) op.get());
+        }else{
             messageTypeMultiCombo.setValue(new HashSet<>(Arrays.asList(OMessageType.values())));
-        });
+        }
+//        op.ifPresentOrElse(o -> {
+//            messageTypeMultiCombo.setValue((Set<OMessageType>) o);
+//        }, () -> {
+//            messageTypeMultiCombo.setValue(new HashSet<>(Arrays.asList(OMessageType.values())));
+//        });
         messageTypeMultiCombo.setItemLabelGenerator(OMessageType::name);
         /* ******* */
         /* ******* SystemId */
@@ -162,12 +167,18 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         clientCombobox.addValueChangeListener(clientListener -> {
             systemIdMultiCombo.setItems(clientListener.getValue().getSystemids());
             Optional<Object> op = getCurrentSessionAttributeAndNullIt(CLIENT_VIEW_SELECTED_SYSTEMID);
-            op.ifPresentOrElse(o -> {
-                systemIdMultiCombo.setValue((Set<SystemId>) o);
-            }, () -> {
+            if(op.isPresent()) {
+                systemIdMultiCombo.setValue((Set<SystemId>) op.get());
+            }else {
 //                systemIdMultiCombo.setValue(null);
                 systemIdMultiCombo.setValue(new HashSet<>(clientListener.getValue().getSystemids()));
-            });
+            }
+//            op.ifPresentOrElse(o -> {
+//                systemIdMultiCombo.setValue((Set<SystemId>) o);
+//            }, () -> {
+////                systemIdMultiCombo.setValue(null);
+//                systemIdMultiCombo.setValue(new HashSet<>(clientListener.getValue().getSystemids()));
+//            });
         });
         filterButton.addClickListener(clickEvent -> {
             filterButton.setEnabled(false);
@@ -188,32 +199,40 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         updateMonthlyLineChart();
         updateHourlyChart();
         /**/
-//        updateTrimestrePie();
-//        updateMonthlyPie();
-//        updateDailyPie();
+        updateTrimestrePie();
+        updateMonthlyPie();
+        updateDailyPie();
     }
 
     private void updateDailyPie() {
         Configuration confHourlyChart = carrierHourlyPieChart.getConfiguration();
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
+        confHourlyChart.setTitle("Hoy");
+        confHourlyChart.setSubTitle("por operadoras");
+        Tooltip tooltip = new Tooltip();
+        tooltip.setValueDecimals(0);
+        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
+        confHourlyChart.setTooltip(tooltip);
         /* Column Chart*/
         List<SmsByYearMonthDayHour> l = smsHourService.getGroupSystemIdByYeMoDaHoCaWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), actual_month, actual_day, messageTypeMultiCombo.getSelectedItems(), allUserStringSystemId.getList());
         List<DataSeries> LineDateSeriesList = paEntenderPie(l, Arrays.asList(actual_day));
         addToPieChart(confHourlyChart, LineDateSeriesList, innerPieOptions);
-        Tooltip tooltip = new Tooltip();
-        confHourlyChart.setTooltip(tooltip);
     }
 
     private void updateMonthlyPie() {
         Configuration confMonthlyChart = clientMonthlyPieChart.getConfiguration();
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
+
+        confMonthlyChart.setTitle("Este Mes");
+        confMonthlyChart.setSubTitle("por operadoras");
+        Tooltip tooltip = new Tooltip();
+        tooltip.setValueDecimals(0);
+        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
+        confMonthlyChart.setTooltip(tooltip);
         /* Column Chart*/
         List<SmsByYearMonth> l = smsHourService.getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(LocalDate.now().getYear(), Arrays.asList(actual_month), messageTypeMultiCombo.getSelectedItems(), allUserStringSystemId.getList());
         List<DataSeries> LineDateSeriesList = paEntenderPie(l, Arrays.asList(actual_month));
         addToPieChart(confMonthlyChart, LineDateSeriesList, innerPieOptions);
-        /**/
-        Tooltip tooltip = new Tooltip();
-        confMonthlyChart.setTooltip(tooltip);
     }
 
     private void updateTrimestrePie() {
@@ -221,6 +240,8 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
 //        innerPieOptions.setSize("70%")
 //
+        confHourlyChart.setTitle("Trimestral");
+        confHourlyChart.setSubTitle("por operadoras");
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
@@ -451,6 +472,9 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         /**/
         dataSeriesList.add(pieSeries);
         dataSeriesList.add(donutSeries);
+        /**/
+        pieSeries.setName("SMS");
+        donutSeries.setName("SMS");
         return dataSeriesList;
     }
 
