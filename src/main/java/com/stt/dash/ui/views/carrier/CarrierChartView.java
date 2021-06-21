@@ -122,8 +122,8 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         /* HEADER */
         divHeader.add(multi_carrier, multi_messagetype, filterButton);
         /*Actualiza trimestra al entrar en la pantalla. */
-        updateTrimestral(userSystemIdList.getList());
-//        updateDaily(userSystemIdList.getList());
+//        updateTrimestral(userSystemIdList.getList());
+        updateDaily(userSystemIdList.getList());
 //        updateHourly(userSystemIdList.getList());
         filterButton.addClickListener(click -> {
             VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_CARRIER, multi_carrier.getSelectedItems());
@@ -142,9 +142,14 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     }
 
     private void updateDaily(List<String> sids) {
+        List<String> carrier_list = multi_carrier.getSelectedItems().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
         /* --------------DIARIO */
         List<SmsByYearMonthDay> smsDayGroup = smsHourService.getGroupSmsByYearMonthDayMessageType(actual_year, actual_month, sids);
-        List<SmsByYearMonthDay> carrierDayGroup = smsHourService.getGroupCarrierByYeMoDa(actual_year, actual_month, multi_messagetype.getSelectedItems(), sids);
+        List<SmsByYearMonthDay> carrierDayGroup = smsHourService.getGroupCarrierByYeMoMe(actual_year,
+                actual_month,
+                carrier_list,
+                multi_messagetype.getSelectedItems(),
+                sids);
         populateMonthChart(smsDayGroup, new ArrayList<>(carrierDayGroup));
         /* PIE */
         populateMonthlyPieChart(carrierDayGroup);
@@ -364,7 +369,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
 //        confIn.addSeries(series);
 
         List<? extends AbstractSmsByYearMonth> l = carrierGroup;
-        log.info("TRIMESTRE LINE DATA: {}", l);
+        log.info("MONTH CHART: {}", l);
         /* Averiguar cuales son los tres meses a calular. */
         List<Integer> monthList = monthToShowList;
 
@@ -666,7 +671,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         Map<String, Long> mapMx = new HashMap<>();
 
         /* Agregar al Map e inicializar a 0 los carrier selecionados. */
-        multi_carrier.getValue().forEach(oCarrier -> {
+        multi_carrier.getSelectedItems().forEach(oCarrier -> {
             mapMx.put(oCarrier.getCarrierCharcode(), 0l);
         });
         DataSeries pieSeries = new DataSeries();
