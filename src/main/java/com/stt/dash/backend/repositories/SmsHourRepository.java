@@ -540,8 +540,36 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
     List<SmsByYearMonthDayHour> groupCarrierByYeMoDaHoWhMessageTypeIn(@Param("yearSms") int yearSms,
                                                                       @Param("monthSms") int monthSms,
                                                                       @Param("daySms") int daySms,
-                                                                      @Param("messageTypeSms") List<String> messageTypeSms,
+                                                                      @Param("messageTypeSms") Collection<String> messageTypeSms,
                                                                       @Param("list_sid") List<String> list_sid);
+    /**
+     * GROUP: YEAR, MONTH, DAY, HOUR, CARRIER WHERE: YEAR, MONTH, DAY,
+     * LIST - CARRIER, LIST-MESSAGETYPE, LIST-SID
+     *
+     * @param yearSms
+     * @param monthSms
+     * @param daySms
+     * @param messageTypeSms
+     * @param list_sid
+     * @return
+     */
+    @Query("SELECT  new com.stt.dash.backend.data.SmsByYearMonthDayHour("
+            + "SUM(h.total), h.year, h.month, h.day, h.hour, h.carrierCharCode, h.messageType) "
+            + "FROM  SmsHour h "
+            + "WHERE h.year = :yearSms AND "
+            + "h.month = :monthSms AND "
+            + "h.day = :daySms AND "
+            + "h.carrierCharCode IN (:carrier_list) AND "
+            + "h.messageType IN (:messageTypeSms) AND "
+            + "h.systemId IN (:list_sid) "
+            + "GROUP BY h.year, h.month, h.day, h.hour, h.carrierCharCode, h.messageType "
+            + "ORDER BY h.year, h.month, h.day, h.hour, h.carrierCharCode, h.messageType")
+    List<SmsByYearMonthDayHour> groupCarrierByYeMoDaHoWhCaInMessageTypeIn(@Param("yearSms") int yearSms,
+                                                                      @Param("monthSms") int monthSms,
+                                                                      @Param("daySms") int daySms,
+                                                                      @Param("carrier_list") Collection<String> carrier_list,
+                                                                      @Param("messageTypeSms") Collection<String> messageTypeSms,
+                                                                      @Param("list_sid") Collection<String> list_sid);
 
     /**
      * GROUP: YEAR, MONTH, DAY, HOUR, SYSTEMID WHERE: YEAR, MONTH, DAY,
