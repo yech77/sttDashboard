@@ -306,11 +306,13 @@ public class SmsHourService {
     }
 
     public List<SmsByYearMonthDay> getGroupCarrierByYeMoDa(int yearSms, int monthSms, Set<OMessageType> messageTypeSms, List<String> list_sid) {
-        List<String> l = new ArrayList<>(messageTypeSms.size());
-        messageTypeSms.forEach(messageTypeSm -> {
-            l.add(messageTypeSm.name());
-        });
+        List<String> l = messageTypeSms.stream().map(OMessageType::name).collect(Collectors.toList());
         return smshour_repo.groupCarrierByYeMoDaWhMessageTypeIn(yearSms, monthSms, l, list_sid);
+    }
+
+    public List<SmsByYearMonthDay> getGroupCarrierByYeMoMe(int yearSms, int monthSms, Collection<String> carrier_list, Collection<OMessageType> messageTypeSms, List<String> list_sid) {
+        List<String> l = messageTypeSms.stream().map(OMessageType::name).collect(Collectors.toList());
+        return smshour_repo.groupCarrierByYeMoDaWhMessageTypeIn(yearSms, monthSms, carrier_list, l, list_sid);
     }
 
     public List<SmsByYearMonthDay> getGroupSystemIdByYeMoDa(int yearSms, int monthSms, Set<OMessageType> messageTypeSms, List<String> list_sid) {
