@@ -161,7 +161,14 @@ public class User extends AbstractEntitySequence {
 
     public void setClient(Client client) {
         this.clients.clear();
-        if (client == null) return;
+        if (client == null) {
+            System.out.println("Bean viene nulo");
+            return;
+        }
+        if (this.clients==null){
+            System.out.println("Instanciando el Hash de Clientes.");
+            this.clients = new HashSet<>();
+        }
         clients.add(client);
     }
 

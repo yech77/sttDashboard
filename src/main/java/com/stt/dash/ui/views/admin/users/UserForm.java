@@ -136,7 +136,8 @@ public class UserForm extends FormLayout {
                 .asRequired(new Validator<Client>() {
                     @Override
                     public ValidationResult apply(Client client, ValueContext valueContext) {
-                        if (userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
+                        if (userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS &&
+                                userTypeOrd.getValue() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
                             return ValidationResult.ok();
                         }
                         if (client != null) {
