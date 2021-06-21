@@ -123,23 +123,31 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         divHeader.add(multi_carrier, multi_messagetype, filterButton);
         /*Actualiza trimestra al entrar en la pantalla. */
         updateTrimestral(userSystemIdList.getList());
-        /* --------------DIARIO */
-        List<SmsByYearMonthDay> smsDayGroup = smsHourService.getGroupSmsByYearMonthDayMessageType(actual_year, actual_month, stringListGenericBean.getList());
-        List<SmsByYearMonthDay> carrierDayGroup = smsHourService.getGroupCarrierByYeMoDa(actual_year, actual_month, multi_messagetype.getSelectedItems(), stringListGenericBean.getList());
-        populateMonthChart(smsDayGroup, new ArrayList<>(carrierDayGroup));
-        /* PIE */
-        populateMonthlyPieChart(carrierDayGroup);
-        /* --------------POR HORA */
-        List<SmsByYearMonthDayHour> smsHourGroup = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actual_year, actual_month, actual_day, stringListGenericBean.getList());
-        List<SmsByYearMonthDayHour> carrierHourGroup = smsHourService.getGroupCarrierByYeMoDaHoWhYeMoDayEqMessageTypeIn(actual_year, actual_month, actual_day, multi_messagetype.getSelectedItems(), stringListGenericBean.getList());
-        populateHourChart(smsHourGroup, new ArrayList<>(carrierHourGroup));
-        /* PIE */
-        populateHourPieChart(carrierHourGroup);
+//        updateDaily(userSystemIdList.getList());
+//        updateHourly(userSystemIdList.getList());
         filterButton.addClickListener(click -> {
             VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_CARRIER, multi_carrier.getSelectedItems());
             VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_MESSAGETYPE, multi_messagetype.getSelectedItems());
             UI.getCurrent().getPage().reload();
         });
+    }
+
+    private void updateHourly(List<String> sids) {
+        /* --------------POR HORA */
+        List<SmsByYearMonthDayHour> smsHourGroup = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actual_year, actual_month, actual_day, sids);
+        List<SmsByYearMonthDayHour> carrierHourGroup = smsHourService.getGroupCarrierByYeMoDaHoWhYeMoDayEqMessageTypeIn(actual_year, actual_month, actual_day, multi_messagetype.getSelectedItems(), sids);
+        populateHourChart(smsHourGroup, new ArrayList<>(carrierHourGroup));
+        /* PIE */
+        populateHourPieChart(carrierHourGroup);
+    }
+
+    private void updateDaily(List<String> sids) {
+        /* --------------DIARIO */
+        List<SmsByYearMonthDay> smsDayGroup = smsHourService.getGroupSmsByYearMonthDayMessageType(actual_year, actual_month, sids);
+        List<SmsByYearMonthDay> carrierDayGroup = smsHourService.getGroupCarrierByYeMoDa(actual_year, actual_month, multi_messagetype.getSelectedItems(), sids);
+        populateMonthChart(smsDayGroup, new ArrayList<>(carrierDayGroup));
+        /* PIE */
+        populateMonthlyPieChart(carrierDayGroup);
     }
 
     private void updateTrimestral(List<String> sids) {
@@ -244,27 +252,28 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
      */
     private void populateTriColumnLineChart(List<? extends AbstractSmsByYearMonth> smsGroup, List<SmsByYearMonth> carrierGroup) {
         Configuration confTriChart = carrierTriMixChart.getConfiguration();
-
-        System.out.println("************************************************ ");
-        carrierGroup.stream().forEach(System.out::println);
-        System.out.println("************************************************ ");
+        /**/
+        Tooltip tooltip = new Tooltip();
+        tooltip.setShared(true);
+        tooltip.setValueDecimals(0);
+        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
+        confTriChart.setTitle("Trimestre");
+        confTriChart.setTooltip(tooltip);
+/**/
+//        System.out.println("************************************************ ");
+//        carrierGroup.stream().forEach(System.out::println);
+//        System.out.println("************************************************ ");
 
         /**/
 //        configureColumnChart(confIn);
         /* Averiguar cuales son los tres meses a calular. */
         confTriChart.getxAxis().setCategories(ml);
         /**/
-        System.out.println("BEFORE FILL AND ORDER ");
-        smsGroup.stream().forEach(System.out::println);
+//        System.out.println("BEFORE FILL AND ORDER ");
+//        smsGroup.stream().forEach(System.out::println);
         smsGroup = orderGroup(fillWithCero(smsGroup, monthToShowList));
-        System.out.println("AFTER FILL AND ORDER ");
-        smsGroup.stream().forEach(System.out::println);
-        /**/
-        Tooltip tooltip = new Tooltip();
-        tooltip.setValueDecimals(0);
-//        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
-        confTriChart.setTooltip(tooltip);
-        /**/
+//        System.out.println("AFTER FILL AND ORDER ");
+//        smsGroup.stream().forEach(System.out::println);
         List<DataSeries> columnDataSeriesList = findDataSeriesColumnsBase(smsGroup);
 
         for (DataSeries list_sery : columnDataSeriesList) {
@@ -312,7 +321,6 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
                 confTriChart.addSeries(LineDateSeriesList.get(i));
             }
         }
-        confTriChart.setTitle("Trimestre");
     }
 
     private void populatePieChart(List<SmsByYearMonth> smsByYearMonth) {
@@ -331,7 +339,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         for (DataSeries list_sery : list_series) {
             conf.addSeries(list_sery);
         }
-        conf.setTitle("Trimestre..");
+        conf.setTitle("Trimestre");
     }
 
     private void populateMonthChart(List<? extends AbstractSmsByYearMonth> smsGroup, List<SmsByYearMonthDay> carrierGroup) {
@@ -741,7 +749,9 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         List<DataSeries> list_series = new ArrayList<>(2);
         list_series.add(pieSeries);
         list_series.add(donutSeries);
-//        conf.addSeries(series);
+        /**/
+        pieSeries.setName("SMS");
+        donutSeries.setName("SMS");
         return list_series;
     }
 
