@@ -295,7 +295,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         /* Convertir Set<SystemId> seleccionados en un List<String>*/
         List<String> selectedSystemIdList = systemIdMultiCombo.getSelectedItems().stream().map(SystemId::getSystemId).collect(Collectors.toList());
         /* Line Chart */
-        l = smsHourService.getGroupSystemIdByYeMoDaHoWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), 5, 2, messageTypeMultiCombo.getSelectedItems(), selectedSystemIdList);
+        l = smsHourService.getGroupSystemIdByYeMoDaHoWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), actual_month, actual_day, messageTypeMultiCombo.getSelectedItems(), selectedSystemIdList);
         PlotOptionsLine plotLine = new PlotOptionsLine();
         LineDateSeriesList = paEntenderLine(l, hourList);
         addToChart(confHourlyChart, LineDateSeriesList, plotLine);
