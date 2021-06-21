@@ -13,7 +13,7 @@ public abstract class AbstractEntitySequence implements Serializable {
 	private Long id;
 
 	@Version
-	private int version;
+	private int version=0;
 
 	public Long getId() {
 		return id;

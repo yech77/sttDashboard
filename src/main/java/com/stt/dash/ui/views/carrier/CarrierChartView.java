@@ -259,7 +259,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
         confTriChart.setTitle("Trimestre");
         confTriChart.setTooltip(tooltip);
-/**/
+        /**/
 //        System.out.println("************************************************ ");
 //        carrierGroup.stream().forEach(System.out::println);
 //        System.out.println("************************************************ ");
@@ -344,20 +344,19 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
 
     private void populateMonthChart(List<? extends AbstractSmsByYearMonth> smsGroup, List<SmsByYearMonthDay> carrierGroup) {
         Configuration confIn = carrierDailyChart.getConfiguration();
-
         /**/
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
+        tooltip.setShared(true);
         confIn.setTooltip(tooltip);
         /**/
-        /**/
-//        configureColumnChart(confIn);
+        configureColumnChart(confIn);
         smsGroup = orderGroup(fillWithCero(smsGroup, monthToShowList));
         /**/
         List<DataSeries> list_series1 = findDataSeriesColumnsBase(smsGroup);
         for (DataSeries list_sery : list_series1) {
-//            confIn.addSeries(list_sery);
+            confIn.addSeries(list_sery);
         }
 //        DataProvider<SmsByYearMonth, ?> dataProvider = new ListDataProvider<>(smsGroup);
 //
@@ -471,7 +470,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
 
     public List<ListSeries> paEntender(List<? extends AbstractSmsByYearMonth> l, List<Integer> integerList) {
         l.stream().forEach(System.out::println);
-        List<String> c = Arrays.asList("DIGITEL", "MOVILNET", "MOVISTAR");
+        List<String> c = multi_carrier.getSelectedItems().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
 
         List<ListSeries> dataSeriesList = new ArrayList<>();
 
@@ -670,18 +669,18 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         multi_carrier.getValue().forEach(oCarrier -> {
             mapMx.put(oCarrier.getCarrierCharcode(), 0l);
         });
-        /* Agrupar por Carrier */
         DataSeries pieSeries = new DataSeries();
 
         System.out.println("********************//1///**************************");
         l.stream().forEach(System.out::println);
-        Map<String, List<SmsByYearMonth>> gbc =
+        /* Agrupar por Carrier */
+        Map<String, List<SmsByYearMonth>> groupByCarrier =
                 l.stream().collect(Collectors.groupingBy(s -> s.getSomeCode()));
         System.out.println("********************//2///**************************");
-        gbc.entrySet().stream().forEach(System.out::println);
+        groupByCarrier.entrySet().stream().forEach(System.out::println);
         DataSeries donutSeries = new DataSeries();
         long startTime = System.currentTimeMillis();
-        gbc.entrySet().forEach(carrier -> {
+        groupByCarrier.entrySet().forEach(carrier -> {
                     long totalCarrier = carrier.getValue()
                             .stream()
                             .mapToLong(p -> p.getTotal())
