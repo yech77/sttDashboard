@@ -122,8 +122,8 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         /* HEADER */
         divHeader.add(multi_carrier, multi_messagetype, filterButton);
         /*Actualiza trimestra al entrar en la pantalla. */
-//        updateTrimestral(userSystemIdList.getList());
-//        updateDaily(userSystemIdList.getList());
+        updateTrimestral(userSystemIdList.getList());
+        updateDaily(userSystemIdList.getList());
         updateHourlyChart(userSystemIdList.getList());
         filterButton.addClickListener(click -> {
             filterButton.setEnabled(false);
@@ -165,10 +165,12 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
                 actual_day,
                 carrier_list,
                 multi_messagetype.getSelectedItems(), sids);
-
+        List<SmsByYearMonthDayHour> l2 = new ArrayList<>(l);
         PlotOptionsLine plotLine = new PlotOptionsLine();
         LineDateSeriesList = paEntenderLine(l, hourList);
         addToChart(confHourlyChart, LineDateSeriesList, plotLine);
+        /* DAY PIE*/
+        populateHourPieChart(l2);
     }
 
     private void addToChart(Configuration configuration, List<Series> LineDateSeriesList, AbstractPlotOptions plot) {
@@ -220,7 +222,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
                 multi_messagetype.getSelectedItems(), sids);
         populateHourChart(smsHourGroup, new ArrayList<>(carrierHourGroup));
         /* PIE */
-//        populateHourPieChart(carrierHourGroup);
+        populateHourPieChart(carrierHourGroup);
     }
 
     private void updateDaily(List<String> sids) {
@@ -248,11 +250,6 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
                 sids);
         populateTriColumnLineChart(smsGroup, new ArrayList<>(carrierGroup));
         /* PIE */
-        List<SmsByYearMonth> groupCarrier = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(actual_year,
-                monthToShowList,
-                multi_carrier.getSelectedItems(),
-                multi_messagetype.getSelectedItems(),
-                sids);
         populatePieChart(carrierGroup);
     }
 
@@ -411,7 +408,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
 
         l.stream().forEach(System.out::println);
 //        l = orderGroup(fillWithCero(l, monthToShowList));
-        List<Series> LineDateSeriesList = paEntender(l, monthToShowList);
+        List<Series> LineDateSeriesList = paEntenderLine(l, monthToShowList);
         if (LineDateSeriesList == null || LineDateSeriesList.size() == 0) {
             log.info("{} NO DATA FOR CARRIER CHART LINE", getStringLog());
         } else {
