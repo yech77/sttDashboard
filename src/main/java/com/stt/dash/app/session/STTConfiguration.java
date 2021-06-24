@@ -106,10 +106,17 @@ public class STTConfiguration {
     }
 
     private class SpringSecurityAuditorAware implements AuditorAware<String> {
-
         @Override
         public Optional<String> getCurrentAuditor() {
-            return Optional.of(SecurityUtils.getUsername());
+            Optional<String> s;
+            /* 22/06/2021: Debi agregar este try dado que si la bd se esta creando por primera vez,
+            * SecurityUtils.getUsername() da un nullpointer*/
+            try {
+                s = Optional.ofNullable(SecurityUtils.getUsername());
+            }catch (Exception e){
+                s = Optional.ofNullable(null);
+            }
+            return s;
         }
     }
 }
