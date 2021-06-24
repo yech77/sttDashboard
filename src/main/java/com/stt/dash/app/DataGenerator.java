@@ -71,7 +71,7 @@ public class DataGenerator implements HasLogger {
     private final Random random = new Random(1L);
 
     private OrderRepository orderRepository;
-    private UserRepository ouser_repo;
+    private UserRepository user_repo;
     private ProductRepository productRepository;
     private PickupLocationRepository pickupLocationRepository;
     private PasswordEncoder passwordEncoder;
@@ -80,14 +80,14 @@ public class DataGenerator implements HasLogger {
     private ClientRepository client_repo;
 
     @Autowired
-    public DataGenerator(OrderRepository orderRepository, UserRepository ouser_repo,
+    public DataGenerator(OrderRepository orderRepository, UserRepository user_repo,
                          ProductRepository productRepository, PickupLocationRepository pickupLocationRepository,
                          PasswordEncoder passwordEncoder,
                          OAuthorityRepository oauth_repo,
                          ORoleRepository orole_repo,
                          ClientRepository client_repo) {
         this.orderRepository = orderRepository;
-        this.ouser_repo = ouser_repo;
+        this.user_repo = user_repo;
         this.productRepository = productRepository;
         this.pickupLocationRepository = pickupLocationRepository;
         this.passwordEncoder = passwordEncoder;
@@ -100,7 +100,7 @@ public class DataGenerator implements HasLogger {
     public void loadData() {
 
         /**/
-        if (ouser_repo.count() != 0L) {
+        if (user_repo.count() != 0L) {
             getLogger().info("Using existing database");
             return;
         }
@@ -251,7 +251,7 @@ public class DataGenerator implements HasLogger {
          */
         boolean doUser = true;
         if (doUser) {
-            User ouser = ouser_repo.findByEmailIgnoreCase("admin@soltextech.com");
+            User ouser = user_repo.findByEmailIgnoreCase("admin@soltextech.com");
             if (ouser == null) {
                 ouser = new User();
             } else {
@@ -262,7 +262,7 @@ public class DataGenerator implements HasLogger {
             ouser.setEmail("admin@soltextech.com");
             ouser.setUserType(User.OUSER_TYPE.HAS);
             ouser.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
-            ouser.setPasswordHash(passwordEncoder.encode("4Dm1n$"));
+            ouser.setPasswordHash(passwordEncoder.encode("admin"));
             ouser.setLocked(true);
             List<Client> c = client_repo.findAll();
             if (c != null) {
@@ -275,9 +275,9 @@ public class DataGenerator implements HasLogger {
                 r1 = new ArrayList<>();
             }
             ouser.setRoles(new HashSet<>(r1));
-            ouser_repo.saveAndFlush(ouser);
+            user_repo.saveAndFlush(ouser);
             /**/
-            ouser = ouser_repo.findByEmailIgnoreCase("enavas@soltextech.com");
+            ouser = user_repo.findByEmailIgnoreCase("enavas@soltextech.com");
             if (ouser == null) {
                 ouser = new User();
             } else {
@@ -308,11 +308,11 @@ public class DataGenerator implements HasLogger {
             r.add(orole_repo.findByRolName(ROL.USUARIOS.name()).get(0));
             ouser.setRoles(r);
             /* Gleryxa fue creada por enavas*/
-            ouser.setUserParent(ouser_repo.findByEmailIgnoreCase("admin@soltextech.com"));
-            ouser_repo.saveAndFlush(ouser);
+            ouser.setUserParent(user_repo.findByEmailIgnoreCase("admin@soltextech.com"));
+            user_repo.saveAndFlush(ouser);
             /**/
 
-            ouser = ouser_repo.findByEmailIgnoreCase("gbandres@soltextech.com");
+            ouser = user_repo.findByEmailIgnoreCase("gbandres@soltextech.com");
             if (ouser == null) {
                 ouser = new User();
             } else {
@@ -343,13 +343,13 @@ public class DataGenerator implements HasLogger {
             ouser.setRoles(r);
 
             /* Gleryxa fue creada por enavas*/
-            ouser.setUserParent(ouser_repo.findByEmailIgnoreCase("enavas@soltextech.com"));
-            ouser_repo.saveAndFlush(ouser);
+            ouser.setUserParent(user_repo.findByEmailIgnoreCase("enavas@soltextech.com"));
+            user_repo.saveAndFlush(ouser);
             /**
              * ***************
              */
 
-            ouser = ouser_repo.findByEmailIgnoreCase("lsuarez@soltextech.com");
+            ouser = user_repo.findByEmailIgnoreCase("lsuarez@soltextech.com");
             if (ouser == null) {
                 ouser = new User();
             } else {
@@ -381,14 +381,14 @@ public class DataGenerator implements HasLogger {
             ouser.setRoles(r);
 
             /* Luis fue creada por enavas*/
-            ouser.setUserParent(ouser_repo.findByEmailIgnoreCase("enavas@soltextech.com"));
-            ouser_repo.saveAndFlush(ouser);
+            ouser.setUserParent(user_repo.findByEmailIgnoreCase("enavas@soltextech.com"));
+            user_repo.saveAndFlush(ouser);
             /**
              *
              * /**
              * ***************
              */
-            ouser = ouser_repo.findByEmailIgnoreCase("dsolorzano@soltextech.com");
+            ouser = user_repo.findByEmailIgnoreCase("dsolorzano@soltextech.com");
             if (ouser == null) {
                 ouser = new User();
             } else {
@@ -420,18 +420,18 @@ public class DataGenerator implements HasLogger {
             ouser.setRoles(r);
 
             /* Denny fue creada por enavas*/
-            ouser.setUserParent(ouser_repo.findByEmailIgnoreCase("enavas@soltextech.com"));
-            ouser_repo.saveAndFlush(ouser);
+            ouser.setUserParent(user_repo.findByEmailIgnoreCase("enavas@soltextech.com"));
+            user_repo.saveAndFlush(ouser);
         }
 
         getLogger().info("Generating demo data");
 
         getLogger().info("... generating users");
-        User baker = createBaker(ouser_repo, passwordEncoder);
-        User barista = createBarista(ouser_repo, passwordEncoder);
-        createAdmin(ouser_repo, passwordEncoder);
+        User baker = createBaker(user_repo, passwordEncoder);
+        User barista = createBarista(user_repo, passwordEncoder);
+        createAdmin(user_repo, passwordEncoder);
         // A set of products without constrains that can be deleted
-        createDeletableUsers(ouser_repo, passwordEncoder);
+        createDeletableUsers(user_repo, passwordEncoder);
 
         getLogger().info("... generating products");
         // A set of products that will be used for creating orders.
