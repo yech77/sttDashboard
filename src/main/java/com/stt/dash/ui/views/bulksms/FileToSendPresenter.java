@@ -2,6 +2,7 @@ package com.stt.dash.ui.views.bulksms;
 
 import com.stt.dash.app.OProperties;
 import com.stt.dash.app.security.CurrentUser;
+import com.stt.dash.backend.data.Status;
 import com.stt.dash.backend.data.entity.FIlesToSend;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.service.FilesToSendService;
@@ -166,18 +167,18 @@ public class FileToSendPresenter {
     }
 
     void delete() {
-        entityPresenter.delete(entity -> {
+        EntityPresenter.CrudOperationListener<FIlesToSend>
+                onSuccess = entity -> {
             dataProvider.refreshAll();
             view.showUpdatedNotification();
             close();
-        });
+        };
+        EntityPresenter.CrudOnPreOperation<FIlesToSend>
+                onBeforeDelete = entity -> {
+            return false;
+        };
+        entityPresenter.delete(onSuccess, onBeforeDelete);
     }
-//    void addComment(String comment) {
-//        if (entityPresenter.executeUpdate(e -> orderService.addComment(currentUser.getUser(), e, comment))) {
-//            // You can only add comments when in view mode, so reopening in that state.
-//            open(entityPresenter.getEntity(), false);
-//        }
-//    }
 
     private void open(FIlesToSend order, boolean edit) {
         System.out.println("Llegue a Open...");
