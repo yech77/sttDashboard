@@ -49,11 +49,20 @@ public class EntityPresenter<T extends AbstractEntitySequence, V extends EntityV
 		Message CONFIRM_DELETE = Message.CONFIRM_DELETE.createMessage();
 		confirmIfNecessaryAndExecute(true, CONFIRM_DELETE, () -> {
 			if (executeOperation(() -> crudService.delete(currentUser.getUser(),
-				state.getEntity()))) {
+					state.getEntity()))) {
 				onSuccess.execute(state.getEntity());
 			}
 		}, () -> {
 		});
+	}
+
+	public void delete(CrudOperationListener<T> onSuccess, CrudOnPreOperation<T> onPreDelete) {
+		boolean isComfirmed = onPreDelete.confirm(state.getEntity());
+		if (isComfirmed){
+			delete(onSuccess);
+		}else {
+			view.showNotification("Gleryxa, Cueles puedo borrar? Los ya enviados y los por enviarr? Los anotas por alli y lo hablamos.", true);
+		}
 	}
 
 	public void save(CrudOperationListener<T> onSuccess) {
@@ -183,10 +192,17 @@ public class EntityPresenter<T extends AbstractEntitySequence, V extends EntityV
 
 	@FunctionalInterface
 	public interface CrudOperationListener<T> {
-
 		void execute(T entity);
 	}
 
+	/**
+	 * Usado para confirmar la CrudOperation
+	 * @param <T>
+	 */
+	@FunctionalInterface
+	public interface CrudOnPreOperation<T> {
+		boolean confirm(T entity);
+	}
 }
 
 /**
