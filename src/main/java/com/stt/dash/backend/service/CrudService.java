@@ -37,6 +37,10 @@ public interface CrudService<T extends AbstractEntitySequence> {
 		return getRepository().count();
 	}
 
+	default long count(long count) {
+		return count;
+	}
+
 	default T load(long id) {
 		System.out.println("CARGANDO!!!!!!!!");
 		T entity = getRepository().findById(id).orElse(null);

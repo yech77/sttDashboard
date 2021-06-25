@@ -42,8 +42,8 @@ public class STTConfiguration {
                                                    SystemIdRepository repo) {
         Set<SystemId> allSystemId;
         if (currentUser.getUser().getUserType() != User.OUSER_TYPE.BY) {
-            log.info("{} ***** {}", currentUser.getUser().getClient(),
-                    currentUser.getUser().getClient().getSystemids());
+            log.info("CLIENTE ***** {}", currentUser.getUser().getClient());
+            log.info("SIDS ***** {}", currentUser.getUser().getClient().getSystemids());
             allSystemId = repo.findAllSystemId(currentUser.getUser().getEmail());
         } else {
             allSystemId = new HashSet<>(currentUser.getUser().getSystemids());

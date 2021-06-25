@@ -160,15 +160,15 @@ public class User extends AbstractEntitySequence {
     }
 
     public void setClient(Client client) {
-        this.clients.clear();
         if (client == null) {
             System.out.println("Bean viene nulo");
             return;
         }
-        if (this.clients==null){
-            System.out.println("Instanciando el Hash de Clientes.");
-            this.clients = new HashSet<>();
-        }
+        /* Por algun motivo daba error de null, asi que si
+        * es un tipo de useuario distinto de has, cada vez que
+        * asigne el cliente instancia el hash. */
+        this.clients = new HashSet<>();
+        System.out.println("VALOR DEL CLIENTE: " + clients +" ---- "+client);
         clients.add(client);
     }
 
@@ -177,6 +177,7 @@ public class User extends AbstractEntitySequence {
     }
 
     public void setClients(Set<Client> clients) {
+        System.out.println("Llame a setClients con: " + clients.size());
         this.clients = clients;
     }
 
