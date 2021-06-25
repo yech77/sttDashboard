@@ -75,11 +75,13 @@ public class UserService implements FilterableCrudService<User> {
 	}
 
 	public Page<User> find(CurrentUser currentUser, Pageable pageable) {
-		/* es para indicar que el counter debe contar este*/
 		if (currentUser.getUser().getUserType() == User.OUSER_TYPE.HAS){
-			return getRepository().findAll(pageable);
+			Page<User> p =  getRepository().findAllByUserParentIsNotNull(pageable);
+			isotherCounter = p.getTotalElements();
+			return p;
 		}
 		List<User> lu = getUserFamily(currentUser);
+		/* es para indicar que el counter debe contar este*/
 		isotherCounter=lu.size();
 		Page<User> u = new PageImpl<>(lu);
 		return u;
@@ -87,7 +89,13 @@ public class UserService implements FilterableCrudService<User> {
 
 	@Override
 	public User save(User currentUser, User entity) {
+		System.out.println("Salvando CLiente");
 		throwIfUserLocked(entity);
+		if (entity.getClients() != null){
+			entity.getClients().stream().forEach(System.out::println);
+		}else{
+			System.out.println("Salvado Clients viene null");
+		}
 		return getRepository().saveAndFlush(entity);
 	}
 
@@ -121,7 +129,7 @@ public class UserService implements FilterableCrudService<User> {
 		List<User> currentFam = new ArrayList<>();
 		List<User> addingChildren = new ArrayList<>();
 
-		currentFam.add(currentUser.getUser());
+//		currentFam.add(currentUser.getUser());
 		addingChildren.addAll(currentUser.getUser().getUserChildren());
 		while (addingChildren.size() > 0) {
 			allUsers.addAll(currentFam);

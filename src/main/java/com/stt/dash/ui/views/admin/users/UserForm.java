@@ -109,9 +109,11 @@ public class UserForm extends FormLayout {
                     @Override
                     public ValidationResult apply(Set<Client> clients, ValueContext valueContext) {
                         if (userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+                            System.out.println("En Clients devuelvo ok poruqe no es comercial: " + userTypeOrd.getValue());
                             return ValidationResult.ok();
                         }
                         if (clients != null && clients.size() > 0) {
+                            System.out.println("En Clients devuelvo ok poruqe client no es null y tiene: " + clients.size());
                             return ValidationResult.ok();
                         }
                         return ValidationResult.error("Debe seleccionar al menos un cliente");
@@ -138,9 +140,11 @@ public class UserForm extends FormLayout {
                     public ValidationResult apply(Client client, ValueContext valueContext) {
                         if (userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS &&
                                 userTypeOrd.getValue() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+                            System.out.println("Devuelvo OK porque no es ADMIN y es COMERCIAL: " + userTypeOrd.getValue());
                             return ValidationResult.ok();
                         }
                         if (client != null) {
+                            System.out.println("Devuelvo OK porque client no es null " + client.getClientCod());
                             return ValidationResult.ok();
                         }
                         return ValidationResult.error("Debe escoger un Cliente");
@@ -273,6 +277,7 @@ public class UserForm extends FormLayout {
     }
 
     public Binder<User> getBinder() {
+        System.out.println("Llamado getBinder de User");
         return binder;
     }
 
@@ -299,9 +304,11 @@ public class UserForm extends FormLayout {
 
     public void setUser(User user) {
 //        binder.removeBean();
+        System.out.println("Llamado le setUser de User: " + user);
         if (user == null) {
             return;
         }
+        binder.setBean(user);
         System.out.println("Seting usertype: " + user.getUserType());
         userType.setValue(user.getUserType());
         userTypeOrd.setValue(user.getUserTypeOrd());

@@ -161,6 +161,11 @@ public class FileToSendEditor extends LitTemplate {
         /* date-to-send */
         dueDate.setMin(LocalDateTime.now());
         dueDate.setValue(LocalDateTime.now().plusMinutes(10));
+        /**/
+        binder.addValueChangeListener(c->{
+            System.out.println("OLDVALUE ->" + c.getOldValue()+" VALUE ->" + c.getValue());
+            System.out.println("ADDVALUE BINDER->" + binder.hasChanges());
+        });
     }
 
     private void addListeners() {

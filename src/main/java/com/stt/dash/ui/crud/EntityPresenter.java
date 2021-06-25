@@ -61,7 +61,7 @@ public class EntityPresenter<T extends AbstractEntitySequence, V extends EntityV
 		if (isComfirmed){
 			delete(onSuccess);
 		}else {
-			view.showNotification("Gleryxa, Cueles puedo borrar? Los ya enviados y los por enviarr? Los anotas por alli y lo hablamos.", true);
+			view.showNotification("Gleryxa, Cuáles puedo borrar? Los ya enviados y los por enviar? Los anotas por alli y lo hablamos. Gracias.", true);
 		}
 	}
 
