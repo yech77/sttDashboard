@@ -124,7 +124,8 @@ public class UserForm extends FormLayout {
                 .asRequired(new Validator<Set<SystemId>>() {
                     @Override
                     public ValidationResult apply(Set<SystemId> systemIds, ValueContext valueContext) {
-                        if (userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.USUARIO) {
+                        if (userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.USUARIO &&
+                                userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.EMPRESA) {
                             return ValidationResult.ok();
                         }
                         if (systemIds != null && systemIds.size() > 0) {
@@ -138,9 +139,8 @@ public class UserForm extends FormLayout {
                 .asRequired(new Validator<Client>() {
                     @Override
                     public ValidationResult apply(Client client, ValueContext valueContext) {
-                        if (userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS &&
-                                userTypeOrd.getValue() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
-                            System.out.println("Devuelvo OK porque no es ADMIN y es COMERCIAL: " + userTypeOrd.getValue());
+                        if (userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
+                            System.out.println("Devuelvo OK porque no es tipo empresa: " + userTypeOrd.getValue());
                             return ValidationResult.ok();
                         }
                         if (client != null) {
@@ -217,6 +217,7 @@ public class UserForm extends FormLayout {
             }
         });
         userTypeOrd.addValueChangeListener((evt) -> {
+            System.out.println("OCURRIO UN VALUE CHANGEDLISTENER DE USERTYPEORD");
             User.OUSER_TYPE type;
 //            if (!evt.isFromClient()) {
 //                return;
@@ -339,28 +340,28 @@ public class UserForm extends FormLayout {
     }
 
     /**
-     * Llena el combo de tipo de usuario. Un usuario de Tipo IS solo uede crear
+     * Llena el combo de tipo de usuario. Un usuario de Tipo IS solo pueden crear
      * user tipo BY. Los tipo BY solo tienen asignados SIDS.
      *
      * @param usertype
-     * @param c
+     * @param userTypeCombo
      */
     private void fillUserType(User.OUSER_TYPE usertype,
                               User.OUSER_TYPE_ORDINAL userTypeOrd,
-                              ComboBox<User.OUSER_TYPE> c,
-                              ComboBox<User.OUSER_TYPE_ORDINAL> d) {
-        c.clear();
-        c.setItems(User.OUSER_TYPE.values());
-        d.clear();
+                              ComboBox<User.OUSER_TYPE> userTypeCombo,
+                              ComboBox<User.OUSER_TYPE_ORDINAL> userTypeOrdinalCombo) {
+        userTypeCombo.clear();
+        userTypeCombo.setItems(User.OUSER_TYPE.values());
+        userTypeOrdinalCombo.clear();
         if (userTypeOrd == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
-            d.setItems(User.OUSER_TYPE_ORDINAL.values());
+            userTypeOrdinalCombo.setItems(User.OUSER_TYPE_ORDINAL.values());
         } else if (userTypeOrd == User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
-            d.setItems(User.OUSER_TYPE_ORDINAL.EMPRESA, User.OUSER_TYPE_ORDINAL.USUARIO);
+            userTypeOrdinalCombo.setItems(User.OUSER_TYPE_ORDINAL.EMPRESA, User.OUSER_TYPE_ORDINAL.USUARIO);
         } else if (userTypeOrd == User.OUSER_TYPE_ORDINAL.EMPRESA) {
-            d.setItems(User.OUSER_TYPE_ORDINAL.USUARIO);
+            userTypeOrdinalCombo.setItems(User.OUSER_TYPE_ORDINAL.USUARIO);
         } else {
-            d.setItems(User.OUSER_TYPE_ORDINAL.USUARIO);
-            c.setEnabled(false);
+            userTypeOrdinalCombo.setItems(User.OUSER_TYPE_ORDINAL.USUARIO);
+            userTypeCombo.setEnabled(false);
         }
     }
 
@@ -369,6 +370,7 @@ public class UserForm extends FormLayout {
         List<User> values = new ArrayList<>();
         for (User user : users) {
             for (User.OUSER_TYPE_ORDINAL type : targetTypes) {
+                System.out.println("Usuario: " + user.getEmail() + ":" + user.getUserTypeOrd() +" - "+type);
                 if (user.getUserTypeOrd() == type) {
                     values.add(user);
                     break;
