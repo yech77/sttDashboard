@@ -29,6 +29,7 @@ public class CrudEntityPresenter<E extends AbstractEntitySequence>	implements Ha
 	}
 
 	public void delete(E entity, Consumer<E> onSuccess, Consumer<E> onFail) {
+		System.out.println("CrudEntityPresenter: delete ******************** ");
 		if (executeOperation(() -> crudService.delete(currentUser.getUser(), entity))) {
 			onSuccess.accept(entity);
 		} else {
@@ -37,6 +38,7 @@ public class CrudEntityPresenter<E extends AbstractEntitySequence>	implements Ha
 	}
 
 	public void save(E entity, Consumer<E> onSuccess, Consumer<E> onFail) {
+		System.out.println("CrudEntityPresenter: save ******************** ");
 		if (executeOperation(() -> saveEntity(entity))) {
 			onSuccess.accept(entity);
 		} else {
@@ -46,6 +48,7 @@ public class CrudEntityPresenter<E extends AbstractEntitySequence>	implements Ha
 
 	private boolean executeOperation(Runnable operation) {
 		try {
+			System.out.println("CrudEntityPresenter: executeOperation ******************** ");
 			operation.run();
 			return true;
 		} catch (UserFriendlyDataException e) {
@@ -71,11 +74,12 @@ public class CrudEntityPresenter<E extends AbstractEntitySequence>	implements Ha
 	}
 
 	private void saveEntity(E entity) {
+		System.out.println("CrudEntityPresenter: saveEntity ******************** ");
 		crudService.save(currentUser.getUser(), entity);
 	}
 
 	public boolean loadEntity(Long id, Consumer<E> onSuccess) {
-		System.out.println("ID ******************** " + id);
+		System.out.println("CrudEntityPresenter: loadEntity ******************** ");
 		return executeOperation(() -> onSuccess.accept(crudService.load(id)));
 	}
 }

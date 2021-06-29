@@ -4,6 +4,8 @@ import java.util.*;
 
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.ListGenericBean;
+import com.stt.dash.backend.data.entity.MyAuditEventComponent;
+import com.stt.dash.backend.data.entity.ODashAuditEvent;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -21,8 +23,10 @@ public class UserService implements FilterableCrudService<User> {
 	public static final String MODIFY_LOCKED_USER_NOT_PERMITTED = "User has been locked and cannot be modified or deleted";
 	private static final String DELETING_SELF_NOT_PERMITTED = "You cannot delete your own account";
 	private final UserRepository userRepository;
-	public UserService(UserRepository userRepository) {
+	private final MyAuditEventComponent audit;
+	public UserService(UserRepository userRepository, MyAuditEventComponent audit) {
 		this.userRepository = userRepository;
+		this.audit=audit;
 	}
 	private long isotherCounter =-1;
 
@@ -89,14 +93,10 @@ public class UserService implements FilterableCrudService<User> {
 
 	@Override
 	public User save(User currentUser, User entity) {
-		System.out.println("Salvando CLiente");
 		throwIfUserLocked(entity);
-		if (entity.getClients() != null){
-			entity.getClients().stream().forEach(System.out::println);
-		}else{
-			System.out.println("Salvado Clients viene null");
-		}
-		return getRepository().saveAndFlush(entity);
+		User u = getRepository().saveAndFlush(entity);
+		audit.add(ODashAuditEvent.OEVENT_TYPE.CREATE_USER, entity);
+		return u;
 	}
 
 	@Override

@@ -7,7 +7,5 @@ import com.vaadin.flow.component.ComponentEvent;
 public class BulkSmsReviewEvent extends ComponentEvent<FileToSendEditor> {
     public BulkSmsReviewEvent(FileToSendEditor source) {
         super(source, false);
-        System.out.println(source);
-        System.out.println("BULKSMSREVIEWEVENT");
     }
 }

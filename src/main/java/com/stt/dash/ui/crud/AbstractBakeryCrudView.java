@@ -115,13 +115,9 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
 
         addCancelListener(e -> navigateToEntity(null));
         addSaveListener(e -> {
+            System.out.println("AbstractBakeryCrudView: setupCrudEventListeners -> addSaveListener");
             idBeforeSave = e.getItem().getId() == null ? 0 : e.getItem().getId();
             beforeSaving(idBeforeSave, e.getItem());
-
-//            ConfirmDialog dialog = new ConfirmDialog(headerDialog, textDialog, confirmTextDialog,
-//                    confirmEvent -> entityPresenter.save(e.getItem(), onSuccessSaved, onFail),
-//                    cancelTextDialog, cancelEvent -> System.out.println("Cancelado"));
-//            dialog.open();
             entityPresenter.save(e.getItem(), onSuccessSaved, onFail);
 
         });
