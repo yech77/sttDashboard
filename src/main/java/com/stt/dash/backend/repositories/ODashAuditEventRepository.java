@@ -1,6 +1,9 @@
 package com.stt.dash.backend.repositories;
 
 import com.stt.dash.backend.data.entity.ODashAuditEvent;
+import com.stt.dash.backend.data.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
@@ -9,6 +12,7 @@ import java.util.Optional;
 
 public interface ODashAuditEventRepository extends JpaRepository<ODashAuditEvent, Long> {
 
+    public Page<ODashAuditEvent> findBy(Pageable pageable);
     /**
      * Por usuario y todos los eventos
      * @param princial

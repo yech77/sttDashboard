@@ -1,19 +1,24 @@
 package com.stt.dash.backend.service;
 
 import com.stt.dash.backend.data.entity.ODashAuditEvent;
+import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.ODashAuditEventRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-public class ODashAuditEventService {
+public class ODashAuditEventService implements FilterableCrudService<ODashAuditEvent>{
 
     /**/
     private ODashAuditEventRepository audit_repo;
@@ -74,5 +79,41 @@ public class ODashAuditEventService {
         StringBuilder sb = new StringBuilder();
         sb.append('[').append(id).append("] [").append(UI_CODE).append("]");
         return sb.toString();
+    }
+
+    @Override
+    public ODashAuditEventRepository getRepository() {
+        return audit_repo;
+    }
+
+    @Override
+    public ODashAuditEvent createNew(User currentUser) {
+        return new ODashAuditEvent();
+    }
+
+    @Override
+    public Page<ODashAuditEvent> findAnyMatching(Optional<String> filter, Pageable pageable) {
+
+        if (filter.isPresent()) {
+            String repositoryFilter = "%" + filter.get() + "%";
+            return getRepository()
+                    .findAll(pageable);
+        } else {
+            return find(pageable);
+        }
+    }
+
+    @Override
+    public long countAnyMatching(Optional<String> filter) {
+        if (filter.isPresent()) {
+            String repositoryFilter = "%" + filter.get() + "%";
+            return getRepository().count();
+        } else {
+            return count();
+        }
+    }
+
+    public Page<ODashAuditEvent> find(Pageable pageable) {
+        return getRepository().findBy(pageable);
     }
 }

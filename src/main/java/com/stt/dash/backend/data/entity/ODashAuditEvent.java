@@ -1,5 +1,7 @@
 package com.stt.dash.backend.data.entity;
 
+import com.stt.dash.ui.crud.GridColumn;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -14,25 +16,33 @@ public class ODashAuditEvent extends AbstractEntitySequence{
 
 
     public static enum OEVENT_TYPE {
-        CREATE_AGENDA, CREATE_RECADO, UPDATE_AGENDA, UPDATE_RECADO, DELETE_AGENDA, DELETE_RECADO,
-        LOGIN_IN, LOGOUT, PASSWORD_CHANGED,
-        CREATE_USER, DOWNLOAD_FILE_AGENDA, DOWNLOAD_FILE_TRAFFIC_SMS, DOWNLOAD_FILE_SEARCH_SMS, UPDATE_USER,
+        CREATE_AGENDA,
+        CREATE_RECADO,
+        UPDATE_AGENDA,
+        UPDATE_RECADO,
+        DELETE_AGENDA,
+        DELETE_RECADO,
+        LOGIN_IN,
+        LOGOUT,
+        PASSWORD_CHANGED,
+        CREATE_USER,
+        DOWNLOAD_FILE_AGENDA, DOWNLOAD_FILE_TRAFFIC_SMS, DOWNLOAD_FILE_SEARCH_SMS, UPDATE_USER,
         DOWNLOAD_FILE_AUDITEVENT
     }
 
-//    @GridColum(order = 2, columnName = "Date")
+    @GridColumn(order = 2, columnName = "Date")
     private Date eventDate;
 
     @Size(min = 3, max = 100)
     @Column(length = 100)
-//    @GridColum(order = 0, columnName = "USUARIO")
+    @GridColumn(order = 0, columnName = "USUARIO")
     private String principal;
 
-//    @GridColum(order = 1, columnName = "TIPO")
+    @GridColumn(order = 1, columnName = "TIPO")
     @Enumerated(EnumType.ORDINAL)
     private OEVENT_TYPE eventType;
 
-//    @GridColum(order = 3, columnName = "DESSCRIPCION")
+    @GridColumn(order = 3, columnName = "DESSCRIPCION")
     @Size(min = 3)
     private String eventDesc;
 
