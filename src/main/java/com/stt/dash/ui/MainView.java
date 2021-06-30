@@ -1,5 +1,6 @@
 package com.stt.dash.ui;
 
+import com.stt.dash.ui.views.audit.AuditView;
 import com.stt.dash.ui.views.bulksms.BulkSmsSchedulerView;
 import com.stt.dash.ui.views.bulksms.BulkSmsView;
 import com.stt.dash.ui.views.bulksms.FileToSendEditor;
@@ -104,7 +105,9 @@ public class MainView extends AppLayout {
 //		tabs.add(createTab(VaadinIcon.EDIT, TITLE_STOREFRONT,
 //						StorefrontView.class));
 		tabs.add(createTab(VaadinIcon.CLOCK, TITLE_BULKSMS_SCHEDULER,
-						FileToSendFrontView.class));
+				FileToSendFrontView.class));
+		tabs.add(createTab(VaadinIcon.CLOCK, TITLE_AUDIT,
+				AuditView.class));
 //		tabs.add(createTab(VaadinIcon.CLOCK,TITLE_DASHBOARD, DashboardView.class));
 		if (SecurityUtils.isAccessGranted(MainDashboardView.class)) {
 			tabs.add(createTab(VaadinIcon.HOME,TITLE_DASHBOARD_MAIN, MainDashboardView.class));
