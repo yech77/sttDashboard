@@ -1,5 +1,6 @@
 package com.stt.dash.backend.data.entity;
 
+import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.service.ODashAuditEventService;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import org.slf4j.Logger;
@@ -25,10 +26,14 @@ public class MyAuditEventComponent implements AuditEventRepository {
 
     @Override
     public void add(AuditEvent event) {
+        System.out.println("ADDING EVENT OVERRIDE: " + event);
         l.add(event);
         /* Lista de eventos del servicio maximo de 500. */
         if (l.size()>500){
             l.removeAll(l.subList(0, 50));
+        }
+        if (event.getType().equalsIgnoreCase("AUTHENTICATION_SUCCESS")){
+            add(ODashAuditEvent.OEVENT_TYPE.LOGIN_IN, event.getPrincipal());
         }
     }
 
@@ -53,13 +58,20 @@ public class MyAuditEventComponent implements AuditEventRepository {
 //        String desc = "Nombre: '" + SecurityContextHolder.getContext().getAuthentication().getName() + "'. Descripcion: " + type.name();
 //        log.info("xxxxxxxxxxxxxxxxxxxxxxxxx " + type.name() +" - " + desc);
         /**/
+
         try {
-            AuditEvent e = new AuditEvent(SecurityContextHolder.getContext().getAuthentication().getName(), type.name(), map);
-            add(e);
+            if (type== ODashAuditEvent.OEVENT_TYPE.LOGIN_IN){
+                AuditEvent e = new AuditEvent(eventDesc, type.name(), map);
+                add(e);
+            }else{
+                AuditEvent e = new AuditEvent(SecurityContextHolder.getContext().getAuthentication().getName(), type.name(), map);
+                add(e);
+            }
             /**/
             audit_serv.save(valueOf(type, eventDesc));
         } catch (Exception e) {
-            log.warn("{} EVENT DISCARTED BY NULL", type);
+            e.printStackTrace();
+            log.warn("{} EVENT DISCARTED BY NULL", e);
         }
     }
 
@@ -116,13 +128,13 @@ public class MyAuditEventComponent implements AuditEventRepository {
         }
     }
 
-    public void add(ODashAuditEvent.OEVENT_TYPE type, OUser user, String changes) {
+    public void add(ODashAuditEvent.OEVENT_TYPE type, User user, String changes) {
         if (type != ODashAuditEvent.OEVENT_TYPE.LOGIN_IN) {
-            String desc = user.getUserEmail() + " - " + user.getUserName() + " " + user.getUserLastname();
+            String desc = user.getEmail() + " - " + user.getFirstName() + " " + user.getLastName();
             log.info("************************ " + type.name() + " - " + desc + " CAMBIOS: " + changes);
             add(type, desc + " CAMBIOS: " + changes);
         } else {
-            String desc = user.getUserName() + " " + user.getUserLastname();
+            String desc = user.getFirstName() + " " + user.getLastName();
             log.info("************************ " + type.name() + " - " + desc + " CAMBIOS: " + changes);
             add(type, desc + " CAMBIOS: " + changes);
         }
@@ -142,8 +154,13 @@ public class MyAuditEventComponent implements AuditEventRepository {
         ODashAuditEvent d = new ODashAuditEvent();
         d.setEventDate(new Date());
         d.setEventType(type);
-        d.setEventDesc(eventDesc);
-        d.setPrincipal(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (type== ODashAuditEvent.OEVENT_TYPE.LOGIN_IN){
+            d.setEventDesc("Ingreso al sistema.");
+            d.setPrincipal(eventDesc);
+        }else{
+            d.setEventDesc(eventDesc);
+            d.setPrincipal(SecurityContextHolder.getContext().getAuthentication().getName());
+        }
         return d;
     }
 

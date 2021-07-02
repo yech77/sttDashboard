@@ -7,7 +7,6 @@ import com.stt.dash.backend.service.FilterableCrudService;
 import com.stt.dash.ui.components.SearchBar;
 import com.stt.dash.ui.utils.TemplateUtil;
 import com.stt.dash.ui.views.HasNotifications;
-import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.crud.Crud;
 import com.vaadin.flow.component.crud.CrudEditor;
 import com.vaadin.flow.component.crud.CrudI18n;
@@ -32,6 +31,7 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
     private static String confirmTextDialog = "Confirmar";
     private static String cancelTextDialog = "Volver";
     private final Grid<E> grid;
+    private E oldEntity;
 
     private final CrudEntityPresenter<E> entityPresenter;
 
@@ -49,6 +49,14 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
     protected void afterSaving(long idBeforeSave, E entity) {
         if (idBeforeSave != 0) {
             System.out.println("----------------- Modificando: " + idBeforeSave);
+        } else {
+            System.out.println("--------------------- UN ON SAVED");
+        }
+    }
+    protected void afterSaving(long idBeforeSave, E entity, E oldEntity) {
+        if (idBeforeSave != 0) {
+            System.out.println("----------------- Modificando: " + idBeforeSave);
+            System.out.println("----------------- oldentity: " + oldEntity);
         } else {
             System.out.println("--------------------- UN ON SAVED");
         }
@@ -88,7 +96,6 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         Crud.addEditColumn(grid);
 
         entityPresenter = new CrudEntityPresenter<>(service, currentUser, this);
-
         SearchBar searchBar = new SearchBar();
         searchBar.setActionText("Nuevo " + entityName);
         searchBar.setPlaceHolder("Buscar");
@@ -103,6 +110,7 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         Consumer<E> onSuccess = entity -> navigateToEntity(null);
         Consumer<E> onSuccessSaved = entity -> {
             afterSaving(idBeforeSave, entity);
+            afterSaving(idBeforeSave, entity, oldEntity);
             navigateToEntity(null);
         };
         Consumer<E> onFail = entity -> {
@@ -111,7 +119,11 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
 
         addEditListener(e ->
                 entityPresenter.loadEntity(e.getItem().getId(),
-                        entity -> navigateToEntity(entity.getId().toString())));
+                        entity -> {
+                            navigateToEntity(entity.getId().toString());
+                            System.out.println("GUARDO EL VALOR DEL VIEJO ENTITY");
+                            setOldEntity(entity);
+                        }));
 
         addCancelListener(e -> navigateToEntity(null));
         addSaveListener(e -> {
@@ -128,7 +140,10 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
     protected void navigateToEntity(String id) {
         getUI().ifPresent(ui -> ui.navigate(TemplateUtil.generateLocation(getBasePage(), id)));
     }
-
+    private void setOldEntity(E entity){
+        System.out.println("AbstractBakeryCrudView:setOldEntity-> " + entity);
+        oldEntity = entity;
+    }
     @Override
     public void setParameter(BeforeEvent event, @OptionalParameter Long id) {
         if (id != null) {
@@ -136,7 +151,10 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
             if (item != null && id.equals(item.getId())) {
                 return;
             }
-            entityPresenter.loadEntity(id, entity -> edit(entity, EditMode.EXISTING_ITEM));
+            entityPresenter.loadEntity(id, entity -> {edit(entity, EditMode.EXISTING_ITEM);
+                System.out.println("Estoy por setparameter");
+                setOldEntity(entity);
+            });
         } else {
             setOpened(false);
         }

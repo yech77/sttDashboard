@@ -2,6 +2,8 @@ package com.stt.dash.backend.service;
 
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.entity.Agenda;
+import com.stt.dash.backend.data.entity.MyAuditEventComponent;
+import com.stt.dash.backend.data.entity.ODashAuditEvent;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.AgendaRepository;
 import com.stt.dash.backend.repositories.UserRepository;
@@ -28,13 +30,14 @@ public class AgendaService implements FilterableCrudService<Agenda> {
     private static final Logger log = LoggerFactory.getLogger(AgendaService.class.getName());
     private AgendaRepository repo;
     private UserRepository ouser_repo;
+    private final MyAuditEventComponent auditEvent;
 
     public AgendaService(AgendaRepository repo,
-                         UserRepository ouser_repo/*,
-                         MyAuditEventComponent auditEvent*/) {
+                         UserRepository ouser_repo,
+                         MyAuditEventComponent auditEvent) {
         this.repo = repo;
         this.ouser_repo = ouser_repo;
-//        this.auditEvent = auditEvent;
+        this.auditEvent = auditEvent;
     }
 
     private String getStringLog() {
@@ -52,7 +55,7 @@ public class AgendaService implements FilterableCrudService<Agenda> {
     public void delete(Agenda agenda) {
         try {
             repo.delete(agenda);
-//            auditEvent.add(ODashAuditEvent.OEVENT_TYPE.DELETE_AGENDA, agenda);
+            auditEvent.add(ODashAuditEvent.OEVENT_TYPE.DELETE_AGENDA, agenda);
             log.info("{} Deleted: [{}]", getStringLog(), agenda.getName());
         } catch (Exception d) {
             log.error("{} Error on Delete [{}]:", getStringLog(), agenda.getName());
@@ -63,7 +66,6 @@ public class AgendaService implements FilterableCrudService<Agenda> {
     /**
      * Utilizado por el hilo cuando va Vallidando.
      * @deprecated
-     * @see updateState(CurrentUser, Agenda)
      * @param agenda
      */
     public void updateState(Agenda agenda) {
@@ -106,18 +108,18 @@ public class AgendaService implements FilterableCrudService<Agenda> {
             repo.save(agenda);
             if (id == null) {
                 log.info("{} Saved: Agenda[{}]", getStringLog(), agenda.getName());
-//                try {
-//                    auditEvent.add(ODashAuditEvent.OEVENT_TYPE.CREATE_AGENDA, agenda);
-//                } catch (Exception e) {
-//                    log.error("", e);
-//                }
+                try {
+                    auditEvent.add(ODashAuditEvent.OEVENT_TYPE.CREATE_AGENDA, agenda);
+                } catch (Exception e) {
+                    log.error("", e);
+                }
             } else {
                 log.info("{} Updated: Agenda[{}]", getStringLog(), agenda.getName());
-//                try {
-//                    auditEvent.add(ODashAuditEvent.OEVENT_TYPE.UPDATE_AGENDA, agenda);
-//                } catch (Exception e) {
-//                    log.error("", e);
-//                }
+                try {
+                    auditEvent.add(ODashAuditEvent.OEVENT_TYPE.UPDATE_AGENDA, agenda);
+                } catch (Exception e) {
+                    log.error("", e);
+                }
             }
         } catch (Exception d) {
             log.error("{} Error on Save:", getStringLog());
@@ -177,10 +179,32 @@ public class AgendaService implements FilterableCrudService<Agenda> {
     @Override
     public Agenda save(User currentUser, Agenda entity) {
         try {
-            return FilterableCrudService.super.save(currentUser, entity);
+            try {
+                Long id = entity.getId();
+                entity = FilterableCrudService.super.save(currentUser, entity);
+                if (id == null) {
+                    log.info("{} Saved: Agenda[{}]", getStringLog(), entity.getName());
+                    try {
+                        auditEvent.add(ODashAuditEvent.OEVENT_TYPE.CREATE_AGENDA, entity);
+                    } catch (Exception e) {
+                        log.error("", e);
+                    }
+                } else {
+                    log.info("{} Updated: Agenda[{}]", getStringLog(), entity.getName());
+                    try {
+                        auditEvent.add(ODashAuditEvent.OEVENT_TYPE.UPDATE_AGENDA, entity);
+                    } catch (Exception e) {
+                        log.error("", e);
+                    }
+                }
+            } catch (Exception d) {
+                log.error("{} Error on Save:", getStringLog());
+                log.error("", d);
+            }
+            return entity;
         } catch (DataIntegrityViolationException e) {
             throw new UserFriendlyDataException(
-                    "There is already a product with that name. Please select a unique name for the product.");
+                    "Ya existe una agenda con ese nombe. Por favor seleccione otro nombre.");
         }
     }
 

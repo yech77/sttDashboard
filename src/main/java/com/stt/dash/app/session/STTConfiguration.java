@@ -14,6 +14,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -117,6 +120,11 @@ public class STTConfiguration {
                 s = Optional.ofNullable(null);
             }
             return s;
+//            return Optional.ofNullable(SecurityContextHolder.getContext())
+//                    .map(SecurityContext::getAuthentication)
+//                    .filter(Authentication::isAuthenticated)
+//                    .map(Authentication::getPrincipal)
+//                    .map(User.class::cast);
         }
     }
 }

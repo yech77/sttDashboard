@@ -94,8 +94,15 @@ public class UserService implements FilterableCrudService<User> {
 	@Override
 	public User save(User currentUser, User entity) {
 		throwIfUserLocked(entity);
-		User u = getRepository().saveAndFlush(entity);
+		User u = FilterableCrudService.super.save(currentUser, entity);
 		audit.add(ODashAuditEvent.OEVENT_TYPE.CREATE_USER, entity);
+		return u;
+	}
+
+	public User save(User currentUser, User entity, String changes) {
+		throwIfUserLocked(entity);
+		User u = getRepository().saveAndFlush(entity);
+		audit.add(ODashAuditEvent.OEVENT_TYPE.UPDATE_USER, entity, changes);
 		return u;
 	}
 
