@@ -3,13 +3,10 @@ package com.stt.dash.backend.service;
 import java.util.*;
 
 import com.stt.dash.app.security.CurrentUser;
-import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.entity.MyAuditEventComponent;
 import com.stt.dash.backend.data.entity.ODashAuditEvent;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,18 +90,24 @@ public class UserService implements FilterableCrudService<User> {
 
 	@Override
 	public User save(User currentUser, User entity) {
+		boolean isNew = entity.getId()==null?true:false;
 		throwIfUserLocked(entity);
 		User u = FilterableCrudService.super.save(currentUser, entity);
-		audit.add(ODashAuditEvent.OEVENT_TYPE.CREATE_USER, entity);
+		if (isNew) {
+			audit.add(ODashAuditEvent.OEVENT_TYPE.CREATE_USER, entity);
+		}else{
+			/* Buscar el usuario original y comparar??? */
+			audit.add(ODashAuditEvent.OEVENT_TYPE.UPDATE_USER, entity);
+		}
 		return u;
 	}
 
-	public User save(User currentUser, User entity, String changes) {
+	/*public User save(User currentUser, User entity, String changes) {
 		throwIfUserLocked(entity);
 		User u = getRepository().saveAndFlush(entity);
 		audit.add(ODashAuditEvent.OEVENT_TYPE.UPDATE_USER, entity, changes);
 		return u;
-	}
+	}*/
 
 	@Override
 	@Transactional
@@ -112,6 +115,7 @@ public class UserService implements FilterableCrudService<User> {
 		throwIfDeletingSelf(currentUser, userToDelete);
 		throwIfUserLocked(userToDelete);
 		FilterableCrudService.super.delete(currentUser, userToDelete);
+		audit.add(ODashAuditEvent.OEVENT_TYPE.DELETE_USER, userToDelete);
 	}
 
 	private void throwIfDeletingSelf(User currentUser, User user) {

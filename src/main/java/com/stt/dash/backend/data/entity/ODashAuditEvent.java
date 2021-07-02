@@ -16,17 +16,19 @@ public class ODashAuditEvent extends AbstractEntitySequence{
 
 
     public static enum OEVENT_TYPE {
+        LOGIN,
+        LOGOUT,
         CREATE_AGENDA,
         CREATE_RECADO,
+        CREATE_USER,
         UPDATE_AGENDA,
         UPDATE_RECADO,
+        UPDATE_USER,
         DELETE_AGENDA,
         DELETE_RECADO,
-        LOGIN_IN,
-        LOGOUT,
+        DELETE_USER,
         PASSWORD_CHANGED,
-        CREATE_USER,
-        DOWNLOAD_FILE_AGENDA, DOWNLOAD_FILE_TRAFFIC_SMS, DOWNLOAD_FILE_SEARCH_SMS, UPDATE_USER,
+        DOWNLOAD_FILE_AGENDA, DOWNLOAD_FILE_TRAFFIC_SMS, DOWNLOAD_FILE_SEARCH_SMS,
         DOWNLOAD_FILE_AUDITEVENT
     }
 

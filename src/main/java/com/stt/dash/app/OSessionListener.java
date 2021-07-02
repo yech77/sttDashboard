@@ -3,13 +3,12 @@ package com.stt.dash.app;
 import com.stt.dash.backend.data.entity.MyAuditEventComponent;
 import com.stt.dash.backend.data.entity.ODashAuditEvent;
 import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 import java.util.Enumeration;
 
-@Component
+//@Component
 public class OSessionListener  implements HttpSessionListener {
 
     private MyAuditEventComponent auditEvent;
@@ -58,7 +57,7 @@ public class OSessionListener  implements HttpSessionListener {
                 break;
             }
         }
-        auditEvent.add(ODashAuditEvent.OEVENT_TYPE.LOGIN_IN, name);
+        auditEvent.add(ODashAuditEvent.OEVENT_TYPE.LOGIN, name);
     }
 
 }
