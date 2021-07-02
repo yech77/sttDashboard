@@ -1,8 +1,6 @@
 package com.stt.dash.backend.data.entity;
 
-import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.service.ODashAuditEventService;
-import com.vaadin.flow.spring.annotation.SpringComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.audit.AuditEvent;
@@ -12,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.*;
+
 @Component
 public class MyAuditEventComponent implements AuditEventRepository {
 
@@ -29,17 +28,29 @@ public class MyAuditEventComponent implements AuditEventRepository {
         System.out.println("ADDING EVENT OVERRIDE: " + event);
         l.add(event);
         /* Lista de eventos del servicio maximo de 500. */
-        if (l.size()>500){
+        if (l.size() > 500) {
             l.removeAll(l.subList(0, 50));
-        }
-        if (event.getType().equalsIgnoreCase("AUTHENTICATION_SUCCESS")){
-            add(ODashAuditEvent.OEVENT_TYPE.LOGIN_IN, event.getPrincipal());
         }
     }
 
     @Override
     public List<AuditEvent> find(String principal, Instant after, String type) {
         return l;
+    }
+
+    /**
+     * Evento cuando se crea o se actualiza un usruaio.
+     * @param type
+     * @param user
+     */
+    public void add(ODashAuditEvent.OEVENT_TYPE type, User user) {
+        String desc;
+        if (type == ODashAuditEvent.OEVENT_TYPE.CREATE_USER) {
+            desc = addNewUserEventDescription(user);
+        } else {
+            desc = addUpdateUserEventDescription(user);
+        }
+        add(type, desc);
     }
 
     public void add(String type, int year, int month, List<String> list) {
@@ -60,10 +71,10 @@ public class MyAuditEventComponent implements AuditEventRepository {
         /**/
 
         try {
-            if (type== ODashAuditEvent.OEVENT_TYPE.LOGIN_IN){
+            if (type == ODashAuditEvent.OEVENT_TYPE.LOGIN) {
                 AuditEvent e = new AuditEvent(eventDesc, type.name(), map);
                 add(e);
-            }else{
+            } else {
                 AuditEvent e = new AuditEvent(SecurityContextHolder.getContext().getAuthentication().getName(), type.name(), map);
                 add(e);
             }
@@ -89,53 +100,51 @@ public class MyAuditEventComponent implements AuditEventRepository {
 
     public void add(ODashAuditEvent.OEVENT_TYPE type, Agenda agenda) {
         String desc = "Nombre: " + agenda.getName() + ". Descripcion: " + agenda.getDescription();
-        log.info("************************ " + type.name() + " - " + desc);
+//        log.info("************************ " + type.name() + " - " + desc);
         add(type, desc);
     }
 
-    public void add(ODashAuditEvent.OEVENT_TYPE type, User user) {
-        if (type == ODashAuditEvent.OEVENT_TYPE.CREATE_USER) {
-            StringJoiner sjRol = new StringJoiner(",", "[", "]");
-            user.getRoles().forEach(role -> {
-                sjRol.add(role.getRolName());
+    private String addUpdateUserEventDescription(User user){
+        return addNewUserEventDescription(user);
+    }
+
+    private String addNewUserEventDescription(User user){
+        StringJoiner sjRol = new StringJoiner(",", "[", "]");
+        user.getRoles().forEach(role -> {
+            sjRol.add(role.getRolName());
+        });
+        StringJoiner sjCliJoiner = new StringJoiner(",", "[", "]");
+        String data = "";
+        if (user.getUserType() != User.OUSER_TYPE.BY) {
+            user.getClients().forEach(client -> {
+                sjCliJoiner.add(client.getClientName());
             });
-            StringJoiner sjCliJoiner = new StringJoiner(",", "[", "]");
-            String data = "";
-            if (user.getUserType() != User.OUSER_TYPE.BY) {
-                user.getClients().forEach(client -> {
-                    sjCliJoiner.add(client.getClientName());
-                });
-                data = "CLIENTES: ";
-            } else {
-                user.getSystemids().forEach(sid -> {
-                    sjCliJoiner.add(sid.getSystemId());
-                });
-                data = "CREDENCIALES: ";
-            }
-            data += sjCliJoiner.toString();
-            String desc = user.getEmail()
-                    + ", " + user.getFirstName()
-                    + ", " + user.getLastName()
-                    + ", " + user.getUserTypeOrd().name()
-//                    + ", " + user.getStatus().name()
-                    + ", Roles: " + sjRol.toString()
-                    + ", " + data;
-            add(type, desc);
+            data = "CLIENTES: ";
         } else {
-            String desc = user.getFirstName() + " " + user.getLastName();
-            log.info("************************ " + type.name() + " - " + desc);
-            add(type, desc);
+            user.getSystemids().forEach(sid -> {
+                sjCliJoiner.add(sid.getSystemId());
+            });
+            data = "CREDENCIALES: ";
         }
+        data += sjCliJoiner.toString();
+        String desc = user.getEmail()
+                + ", " + user.getFirstName()
+                + ", " + user.getLastName()
+                + ", " + user.getUserTypeOrd().name()
+                    + ", " + (user.isActive()?"Activo":"Desactivado")
+                + ", Roles: " + sjRol.toString()
+                + ", " + data;
+        return desc;
     }
 
     public void add(ODashAuditEvent.OEVENT_TYPE type, User user, String changes) {
-        if (type != ODashAuditEvent.OEVENT_TYPE.LOGIN_IN) {
+        if (type != ODashAuditEvent.OEVENT_TYPE.LOGIN) {
             String desc = user.getEmail() + " - " + user.getFirstName() + " " + user.getLastName();
-            log.info("************************ " + type.name() + " - " + desc + " CAMBIOS: " + changes);
+//            log.info("************************ " + type.name() + " - " + desc + " CAMBIOS: " + changes);
             add(type, desc + " CAMBIOS: " + changes);
         } else {
             String desc = user.getFirstName() + " " + user.getLastName();
-            log.info("************************ " + type.name() + " - " + desc + " CAMBIOS: " + changes);
+//            log.info("************************ " + type.name() + " - " + desc + " CAMBIOS: " + changes);
             add(type, desc + " CAMBIOS: " + changes);
         }
     }
@@ -154,15 +163,16 @@ public class MyAuditEventComponent implements AuditEventRepository {
         ODashAuditEvent d = new ODashAuditEvent();
         d.setEventDate(new Date());
         d.setEventType(type);
-        if (type== ODashAuditEvent.OEVENT_TYPE.LOGIN_IN){
+        if (type == ODashAuditEvent.OEVENT_TYPE.LOGIN) {
             d.setEventDesc("Ingreso al sistema.");
             d.setPrincipal(eventDesc);
-        }else{
+        } else {
             d.setEventDesc(eventDesc);
             d.setPrincipal(SecurityContextHolder.getContext().getAuthentication().getName());
         }
         return d;
     }
+
 
     public ODashAuditEvent valueOf(ODashAuditEvent.OEVENT_TYPE type, String eventDesc, String user) {
         ODashAuditEvent d = new ODashAuditEvent();
