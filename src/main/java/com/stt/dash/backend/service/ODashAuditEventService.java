@@ -75,7 +75,7 @@ public class ODashAuditEventService implements FilterableCrudService<ODashAuditE
     }
 
     private String getStringLog() {
-        String id = SecurityContextHolder.getContext().getAuthentication().getName();
+        String id = ""; //SecurityContextHolder.getContext().getAuthentication().getName();
         StringBuilder sb = new StringBuilder();
         sb.append('[').append(id).append("] [").append(UI_CODE).append("]");
         return sb.toString();
