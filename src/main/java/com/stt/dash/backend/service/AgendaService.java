@@ -86,7 +86,7 @@ public class AgendaService implements FilterableCrudService<Agenda> {
      * @param agenda
      */
     public Agenda updateState(CurrentUser currentUser, Agenda agenda) {
-        return this.save(null, agenda);
+        return FilterableCrudService.super.save(null, agenda);
     }
 
     public Optional<Agenda> findById(Long agendaId) {
