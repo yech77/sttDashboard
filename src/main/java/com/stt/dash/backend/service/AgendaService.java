@@ -21,8 +21,8 @@ import java.util.Optional;
 @Service
 public class AgendaService implements FilterableCrudService<Agenda> {
 
-    public static final String MODIFY_LOCKED_USER_NOT_PERMITTED = "User has been locked and cannot be modified or deleted";
-    private static final String DELETING_SELF_NOT_PERMITTED = "You cannot delete your own account";
+    public static final String MODIFY_LOCKED_USER_NOT_PERMITTED = "El Usuario está bloqueado para cambios.";
+    private static final String DELETING_SELF_NOT_PERMITTED = "No puedes borrar tu cuenta.";
 
     /**/
 //    private final MyAuditEventComponent auditEvent;

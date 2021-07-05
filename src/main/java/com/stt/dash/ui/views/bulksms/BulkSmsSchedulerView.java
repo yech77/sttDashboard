@@ -46,6 +46,7 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
     private final OProperties properties;
     private final FilesToSendService files_service;
     private final String userEmail;
+    private final CurrentUser currentUser;
     public BulkSmsSchedulerView(
             OProperties properties, SystemIdRepository systemid_repo,
             AgendaService agendaService,
@@ -58,6 +59,7 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
         this.properties=properties;
         this.userEmail = currentUser.getUser().getEmail();
         this.systemid_repo=systemid_repo;
+        this.currentUser = currentUser;
     }
 
     @Override
@@ -114,7 +116,7 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
             scheduler.schedule(new SmsGeneratorParserRunnable(properties,
                             this.files_service,
                             entity, form.agendaCombo.getValue(), form.systemIdCombo.getValue(),
-                            form.messageBox.getValue(), clientCod, userEmail),
+                            form.messageBox.getValue(), clientCod, userEmail, currentUser.getUser()),
                     ODateUitls.localDateTimeToDate(LocalDateTime.now().plusSeconds(5)));
 
             getUI().get().navigate("smsOrderView");
