@@ -2,9 +2,11 @@ package com.stt.dash.backend.thread;
 
 import com.stt.dash.Application;
 import com.stt.dash.app.OProperties;
+import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.Status;
 import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.data.entity.FIlesToSend;
+import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.FilesToSendService;
 import com.stt.dash.backend.util.AgendaFileUtils;
 import org.apache.commons.csv.CSVFormat;
@@ -39,6 +41,7 @@ public class SmsGeneratorParserRunnable implements Runnable {
     private Agenda agenda;
     /**/
     private final String userEmail;
+    private final User currentUser;
 
     private Date date;
     private int batchSize;
@@ -47,8 +50,15 @@ public class SmsGeneratorParserRunnable implements Runnable {
     private String source;
     private int datacoding;
 
-    public SmsGeneratorParserRunnable(OProperties properties, FilesToSendService files_service, FIlesToSend fileToSend,
-                                      Agenda agenda, String systemId, String messagesText, String client, String userEmail) {
+    public SmsGeneratorParserRunnable(OProperties properties,
+                                      FilesToSendService files_service,
+                                      FIlesToSend fileToSend,
+                                      Agenda agenda,
+                                      String systemId,
+                                      String messagesText,
+                                      String client,
+                                      String userEmail,
+                                      User currentUser) {
         this.files_service = files_service;
         this.fileToSend = fileToSend;
         this.agenda = agenda;
@@ -58,6 +68,7 @@ public class SmsGeneratorParserRunnable implements Runnable {
         this.client = client;
         baseDirectory = properties.getAgendafilePathBase();
         this.userEmail = userEmail;
+        this.currentUser = currentUser;
         log.info("[{}] [{}] BASE DIRECTORY", getStringLog(), baseDirectory);
     }
 
@@ -77,13 +88,15 @@ public class SmsGeneratorParserRunnable implements Runnable {
         if (stream == null || messagesText.length() == 0) {
             log.info("[{}] [{}] El archivo o el mensaje esta vacio.", getStringLog(), fileToSend.getFileName());
             fileToSend.setStatus(Status.INVALID);
-            fileToSend = files_service.save(fileToSend, userEmail);
+//            fileToSend = files_service.save(fileToSend, userEmail);
+            fileToSend = files_service.save(currentUser, fileToSend);
             return;
         }
         fileToSend.setStatus(Status.GENERATING_MESSAGES);
         log.info("[{}] [{}] UPDATING -> GENERATING_MESSAGES", getStringLog(),
                 fileToSend.getFileName());
-        fileToSend = files_service.save(fileToSend, userEmail);
+//        fileToSend = files_service.save(fileToSend, userEmail);
+        fileToSend = files_service.save(currentUser, fileToSend);
         int numLine = 0;
         StringBuilder sbLine = new StringBuilder();
         try {
@@ -134,7 +147,8 @@ public class SmsGeneratorParserRunnable implements Runnable {
                     fileToSend.setNumGenerated(numLine);
                     log.info("[{}] [{}] UPDATING -> NUMGENERATED", Application.getAPP_NAME(),
                             fileToSend.getFileName());
-                    fileToSend = files_service.save(fileToSend, userEmail);
+//                    fileToSend = files_service.save(fileToSend, userEmail);
+                    fileToSend = files_service.save(currentUser, fileToSend);
                 }
             }
 
@@ -143,7 +157,8 @@ public class SmsGeneratorParserRunnable implements Runnable {
             fileToSend.setStatus(Status.PREPARING_SMS);
             log.info("[{}] [{}] UPDATING -> PREPARING_SMS", Application.getAPP_NAME(),
                     fileToSend.getFileName());
-            fileToSend = files_service.save(fileToSend, userEmail);
+//            fileToSend = files_service.save(fileToSend, userEmail);
+            fileToSend = files_service.save(currentUser, fileToSend);
 
             File targetFile = new File(baseDirectory + "/" + client + "/" + systemId + "/http/" + fileToSend.getId() + ".csv");
 
@@ -160,7 +175,8 @@ public class SmsGeneratorParserRunnable implements Runnable {
                 log.info("[{}] [{}] UPDATING -> INVALIDS", Application.getAPP_NAME(),
                         fileToSend.getFileName());
                 fileToSend.setStatus(Status.INVALID);
-                fileToSend = files_service.save(fileToSend, userEmail);
+//                fileToSend = files_service.save(fileToSend, userEmail);
+                fileToSend = files_service.save(currentUser, fileToSend);
             }
 
         } catch (FileNotFoundException ex) {
@@ -168,14 +184,16 @@ public class SmsGeneratorParserRunnable implements Runnable {
             log.info("[{}] [{}] UPDATING -> INVALIDS", Application.getAPP_NAME(),
                     fileToSend.getFileName());
             fileToSend.setStatus(Status.INVALID);
-            fileToSend = files_service.save(fileToSend, userEmail);
+//            fileToSend = files_service.save(fileToSend, userEmail);
+            fileToSend = files_service.save(currentUser, fileToSend);
             log.error("", ex);
         } catch (IOException ex) {
             log.info("[{}] [{}] UPDATING -> INVALIDS", Application.getAPP_NAME(),
                     fileToSend.getFileName());
             fileToSend.setStatus(Status.INVALID);
             fileToSend.setStatus(Status.INVALID);
-            fileToSend = files_service.save(fileToSend, userEmail);
+//            fileToSend = files_service.save(fileToSend, userEmail);
+            fileToSend = files_service.save(currentUser, fileToSend);
             log.error("", ex);
         }
     }

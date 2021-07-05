@@ -154,7 +154,9 @@ public class FileToSendPresenter {
                 scheduler.schedule(new SmsGeneratorParserRunnable(properties,
                                 service,
                                 e, e.getAgenda(), e.getSystemId(),
-                                e.getMessageWithParam(), clientCod, currentUser.getUser().getEmail()),
+                                e.getMessageWithParam(), clientCod,
+                                currentUser.getUser().getEmail(),
+                                currentUser.getUser()),
                         ODateUitls.localDateTimeToDate(LocalDateTime.now().plusSeconds(5)));
                 /**/
             } else {

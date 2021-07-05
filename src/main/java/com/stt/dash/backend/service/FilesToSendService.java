@@ -1,10 +1,9 @@
 package com.stt.dash.backend.service;
 
 import com.stt.dash.Application;
+import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.Status;
-import com.stt.dash.backend.data.entity.FIlesToSend;
-import com.stt.dash.backend.data.entity.FileToSendSummary;
-import com.stt.dash.backend.data.entity.User;
+import com.stt.dash.backend.data.entity.*;
 import com.stt.dash.backend.repositories.FilesToSendRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +23,16 @@ public class FilesToSendService implements CrudService<FIlesToSend> {
     //    private MyAuditEventComponent auditEvent;
     private static String UI_CODE = "SERV";
     private FilesToSendRepository filesToSendRepository;
+    private final MyAuditEventComponent auditEvent;
 
     private static final Logger log = LoggerFactory.getLogger(FilesToSendService.class.getName());
 
     @Autowired
-    public FilesToSendService(FilesToSendRepository filesToSendRepository) {
+    public FilesToSendService(FilesToSendRepository filesToSendRepository,
+                              MyAuditEventComponent auditEvent) {
         super();
         this.filesToSendRepository = filesToSendRepository;
+        this.auditEvent = auditEvent;
     }
 
     private static final Set<Status> notAvailableStates = Collections.unmodifiableSet(
@@ -55,7 +57,7 @@ public class FilesToSendService implements CrudService<FIlesToSend> {
         return filesToSendRepository.save(fIlesToSend);
     }
 
-//    @Override
+    //    @Override
 //    public FIlesToSend save(User currentUser, FIlesToSend entity) {
 //        try {
 //            return FilterableCrudService.super.save(currentUser, entity);
@@ -64,17 +66,17 @@ public class FilesToSendService implements CrudService<FIlesToSend> {
 //                    "There is already a Masivo Agendado with that name. Please select a unique name for the Masivo a enviar.");
 //        }
 //    }
-
-    public FIlesToSend save(FIlesToSend fIlesToSend, String user) {
-        FIlesToSend f = null;
+    @Override
+    public FIlesToSend save(User currentUser, FIlesToSend fIlesToSend) {
         if (fIlesToSend == null) {
             log.warn("[{}] FilesToSend is null", Application.getAPP_NAME());
-            return f;
+            return null;
         }
+        Long id = fIlesToSend.getId();
+        FIlesToSend f = CrudService.super.save(currentUser, fIlesToSend);
         try {
-            Long id = fIlesToSend.getId();
-            f = filesToSendRepository.save(fIlesToSend);
-//            ODashAuditEvent.OEVENT_TYPE t = ODashAuditEvent.OEVENT_TYPE.CREATE_RECADO;
+//            f = filesToSendRepository.save(fIlesToSend);
+            ODashAuditEvent.OEVENT_TYPE t = ODashAuditEvent.OEVENT_TYPE.CREATE_RECADO;
             if (id == null) {
                 log.info("[{}] SAVED: ORDER NAME [{}] STATUS [{} - {}] BEING PRO[{}] READY TO SEND[{}]", Application.getAPP_NAME(),
                         fIlesToSend.getOrderName(),
@@ -83,11 +85,11 @@ public class FilesToSendService implements CrudService<FIlesToSend> {
                         fIlesToSend.isBeingProcessed(),
                         fIlesToSend.isReadyToSend());
 //                t = ODashAuditEvent.OEVENT_TYPE.CREATE_RECADO;
-//                try {
-//                    auditEvent.add(ODashAuditEvent.OEVENT_TYPE.CREATE_RECADO, files);
-//                } catch (Exception e) {
-//                    log.error("", e);
-//                }
+                try {
+                    auditEvent.add(ODashAuditEvent.OEVENT_TYPE.CREATE_RECADO, f);
+                } catch (Exception e) {
+                    log.error("", e);
+                }
             } else {
                 log.info("[{}] UPDATED: ORDER NAME [{}] STATUS [{} - {}] BEING PRO[{}] READY TO SEND[{}]", Application.getAPP_NAME(),
                         fIlesToSend.getOrderName(),
@@ -95,24 +97,93 @@ public class FilesToSendService implements CrudService<FIlesToSend> {
                         fIlesToSend.getStatusText(),
                         fIlesToSend.isBeingProcessed(),
                         fIlesToSend.isReadyToSend());
-//                t = ODashAuditEvent.OEVENT_TYPE.UPDATE_RECADO;
-//                try {
-//                    auditEvent.add(ODashAuditEvent.OEVENT_TYPE.UPDATE_RECADO, files);
-//                } catch (Exception e) {
-//                    log.error("", e);
-//                }
+                t = ODashAuditEvent.OEVENT_TYPE.UPDATE_RECADO;
+                try {
+                    auditEvent.add(ODashAuditEvent.OEVENT_TYPE.UPDATE_RECADO, f);
+                } catch (Exception e) {
+                    log.error("", e);
+                }
             }
-//            try {
-//                auditEvent.add(t, f, user);
-//            } catch (Exception e) {
-//                log.error("", e);
-//            }
         } catch (Exception d) {
             log.error("[{}] Error on Save:", Application.getAPP_NAME());
             log.error("", d);
         }
         return f;
     }
+
+    public FIlesToSend updateState(User currentUser, FIlesToSend fIlesToSend) {
+        if (fIlesToSend == null) {
+            log.warn("[{}] FilesToSend is null", Application.getAPP_NAME());
+            return null;
+        }
+        Long id = fIlesToSend.getId();
+        FIlesToSend f = CrudService.super.save(currentUser, fIlesToSend);
+        try {
+            if (id == null) {
+                throw new Exception("No debe venir vacio");
+            } else {
+                log.info("[{}] UPDATED: ORDER NAME [{}] STATUS [{} - {}] BEING PRO[{}] READY TO SEND[{}]", Application.getAPP_NAME(),
+                        fIlesToSend.getOrderName(),
+                        fIlesToSend.getStatus().name(),
+                        fIlesToSend.getStatusText(),
+                        fIlesToSend.isBeingProcessed(),
+                        fIlesToSend.isReadyToSend());
+            }
+        } catch (Exception d) {
+            log.error("[{}] Error on Save:", Application.getAPP_NAME());
+            log.error("", d);
+        }
+        return f;
+    }
+
+//    public FIlesToSend save(FIlesToSend fIlesToSend, String user) {
+//        FIlesToSend f = null;
+//        if (fIlesToSend == null) {
+//            log.warn("[{}] FilesToSend is null", Application.getAPP_NAME());
+//            return f;
+//        }
+//        try {
+//            Long id = fIlesToSend.getId();
+//            f = filesToSendRepository.save(fIlesToSend);
+////            ODashAuditEvent.OEVENT_TYPE t = ODashAuditEvent.OEVENT_TYPE.CREATE_RECADO;
+//            if (id == null) {
+//                log.info("[{}] SAVED: ORDER NAME [{}] STATUS [{} - {}] BEING PRO[{}] READY TO SEND[{}]", Application.getAPP_NAME(),
+//                        fIlesToSend.getOrderName(),
+//                        fIlesToSend.getStatus().name(),
+//                        fIlesToSend.getStatusText(),
+//                        fIlesToSend.isBeingProcessed(),
+//                        fIlesToSend.isReadyToSend());
+////                t = ODashAuditEvent.OEVENT_TYPE.CREATE_RECADO;
+////                try {
+////                    auditEvent.add(ODashAuditEvent.OEVENT_TYPE.CREATE_RECADO, files);
+////                } catch (Exception e) {
+////                    log.error("", e);
+////                }
+//            } else {
+//                log.info("[{}] UPDATED: ORDER NAME [{}] STATUS [{} - {}] BEING PRO[{}] READY TO SEND[{}]", Application.getAPP_NAME(),
+//                        fIlesToSend.getOrderName(),
+//                        fIlesToSend.getStatus().name(),
+//                        fIlesToSend.getStatusText(),
+//                        fIlesToSend.isBeingProcessed(),
+//                        fIlesToSend.isReadyToSend());
+////                t = ODashAuditEvent.OEVENT_TYPE.UPDATE_RECADO;
+////                try {
+////                    auditEvent.add(ODashAuditEvent.OEVENT_TYPE.UPDATE_RECADO, files);
+////                } catch (Exception e) {
+////                    log.error("", e);
+////                }
+//            }
+////            try {
+////                auditEvent.add(t, f, user);
+////            } catch (Exception e) {
+////                log.error("", e);
+////            }
+//        } catch (Exception d) {
+//            log.error("[{}] Error on Save:", Application.getAPP_NAME());
+//            log.error("", d);
+//        }
+//        return f;
+//    }
 
     public Page<FIlesToSend> findAnyMatchingAfterDateToSend(Optional<String> optionalFilter,
                                                             Optional<Date> optionalFilterDate, Pageable pageable) {
