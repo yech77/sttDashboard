@@ -65,8 +65,9 @@ public class AgendaService implements FilterableCrudService<Agenda> {
 
     /**
      * Utilizado por el hilo cuando va Vallidando.
-     * @deprecated
+     *
      * @param agenda
+     * @deprecated
      */
     public void updateState(Agenda agenda) {
         if (agenda == null) {
@@ -80,6 +81,7 @@ public class AgendaService implements FilterableCrudService<Agenda> {
             log.error("", d);
         }
     }
+
     /**
      * Utilizado por el hilo cuando va Vallidando.
      *
@@ -210,10 +212,13 @@ public class AgendaService implements FilterableCrudService<Agenda> {
 
     @Override
     @Transactional
-    public void delete(User currentUser, Agenda userToDelete) {
-        throwIfDeletingSelf(currentUser, userToDelete);
-        throwIfUserLocked(currentUser);
-        FilterableCrudService.super.delete(currentUser, userToDelete);
+    public void delete(User currentUser, Agenda agenda) {
+        FilterableCrudService.super.delete(currentUser, agenda);
+        try {
+            auditEvent.add(ODashAuditEvent.OEVENT_TYPE.DELETE_AGENDA, agenda);
+        } catch (Exception e) {
+            log.error("", e);
+        }
     }
 
     private void throwIfDeletingSelf(User currentUser, Agenda user) {

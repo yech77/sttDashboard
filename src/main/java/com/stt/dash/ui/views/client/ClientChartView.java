@@ -266,7 +266,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
     private void updateHourlyChart() {
         Configuration confHourlyChart = clientHourlyChart.getConfiguration();
-        confHourlyChart.setTitle("JUNIO - dia de hoy");
+        confHourlyChart.setTitle( OMonths.valueOf(actual_month).getMonthName() + " - dia de hoy");
         confHourlyChart.setSubTitle("por hora");
         confHourlyChart.getyAxis().setTitle("SMS");
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
@@ -306,7 +306,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         /**/
         confMonthlyLineChart.getyAxis().setTitle("SMS");
         confMonthlyLineChart.getxAxis().setTitle("Dia");
-        confMonthlyLineChart.setTitle("JUNIO - 2021");
+        confMonthlyLineChart.setTitle(OMonths.valueOf(actual_month).getMonthName() + " - 2021");
         confMonthlyLineChart.setSubTitle("por dia");
         String[] da = new String[LocalDate.now().getMonth().maxLength()];
         for (int i = 1; i <= LocalDate.now().getMonth().maxLength(); i++) {
