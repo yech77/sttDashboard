@@ -1,5 +1,6 @@
 package com.stt.dash.ui.views.bulksms;
 
+import com.stt.dash.backend.data.Status;
 import com.stt.dash.backend.data.entity.FIlesToSend;
 import com.stt.dash.backend.data.entity.Order;
 import com.stt.dash.ui.events.CancelEvent;
@@ -113,6 +114,7 @@ public class FileToSendDetails extends LitTemplate {
             cancel.setVisible(!review);
             back.setVisible(review);
             delete.setVisible(!review);
+            delete.setVisible(order.getStatus()!= Status.COMPLETED);
         }
         this.isDirty = review;
     }

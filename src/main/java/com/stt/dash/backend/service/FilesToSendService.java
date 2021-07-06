@@ -1,7 +1,6 @@
 package com.stt.dash.backend.service;
 
 import com.stt.dash.Application;
-import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.Status;
 import com.stt.dash.backend.data.entity.*;
 import com.stt.dash.backend.repositories.FilesToSendRepository;
@@ -20,6 +19,7 @@ import java.util.function.BiConsumer;
 @Service
 public class FilesToSendService implements CrudService<FIlesToSend> {
 
+    private static final String NO_SE_PUEDEN_BORRAR_PROGRAMACIONES_YA_ENVIADAS = "No se pueden borrar Programaciones ya enviadas.";
     //    private MyAuditEventComponent auditEvent;
     private static String UI_CODE = "SERV";
     private FilesToSendRepository filesToSendRepository;
@@ -247,6 +247,22 @@ public class FilesToSendService implements CrudService<FIlesToSend> {
         return new FIlesToSend();
     }
 
+    @Override
+    public void delete(User currentUser, FIlesToSend entity) {
+        throwIfDeletingFileAlreadySended(currentUser, entity);
+        CrudService.super.delete(currentUser, entity);
+        try {
+            auditEvent.add(ODashAuditEvent.OEVENT_TYPE.DELETE_AGENDA, entity);
+        } catch (Exception e) {
+            log.error("", e);
+        }
+    }
+
+    private void throwIfDeletingFileAlreadySended(User currentUser, FIlesToSend entity) {
+        if (entity.getStatus()==Status.COMPLETED){
+            throw new UserFriendlyDataException(NO_SE_PUEDEN_BORRAR_PROGRAMACIONES_YA_ENVIADAS);
+        }
+    }
 //    @Override
 //    public Page<FIlesToSend> findAnyMatching(Optional<String> filter, Pageable pageable) {
 //        return null;

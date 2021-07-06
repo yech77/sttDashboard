@@ -32,6 +32,7 @@ import static com.stt.dash.ui.utils.BakeryConst.PAGE_BULK_STOREFRONT_ORDER_EDIT;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class FileToSendPresenter {
 
+    private static final String DELETE_DENIED_INCORRECT_STATUS = "No se puede borrar. Programacion ya enviada.";
     private FileToSendCardHeaderGenerator headersGenerator;
     private FileToSendFrontView view;
 
@@ -177,9 +178,13 @@ public class FileToSendPresenter {
         };
         EntityPresenter.CrudOnPreOperation<FIlesToSend>
                 onBeforeDelete = entity -> {
-            return false;
+            return entity.getStatus()!=Status.COMPLETED;
         };
-        entityPresenter.delete(onSuccess, onBeforeDelete);
+        if (entityPresenter.getEntity().getStatus()!= Status.COMPLETED) {
+            entityPresenter.delete(onSuccess);
+        }else{
+            view.showNotification(DELETE_DENIED_INCORRECT_STATUS, true);
+        }
     }
 
     private void open(FIlesToSend order, boolean edit) {
