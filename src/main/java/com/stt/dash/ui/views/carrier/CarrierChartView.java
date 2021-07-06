@@ -136,7 +136,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
 
     private void updateHourlyChart(List<String> sids) {
         Configuration confHourlyChart = carrierTriLineChart.getConfiguration();
-        confHourlyChart.setTitle("JUNIO - dia de hoy");
+        confHourlyChart.setTitle(OMonths.valueOf(actual_month).getMonthName() + " - dia de hoy");
         confHourlyChart.setSubTitle("por hora");
         confHourlyChart.getyAxis().setTitle("SMS");
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
@@ -275,7 +275,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     private void populateHourChart(List<? extends AbstractSmsByYearMonth> smsHourGroup, List<SmsByYearMonthDayHour> carrierHourGroup) {
         Configuration confIn = carrierTriLineChart.getConfiguration();
 
-        confIn.setTitle("JUNIO - dia de hoy");
+        confIn.setTitle( OMonths.valueOf(actual_month).getMonthName() + "- dia de hoy");
         confIn.setSubTitle("por hora");
         confIn.getyAxis().setTitle("SMS");
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
@@ -339,7 +339,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         for (DataSeries list_sery : list_series) {
             confOut.addSeries(list_sery);
         }
-        confOut.setTitle("Junio");
+        confOut.setTitle(OMonths.valueOf(actual_month).getMonthName());
     }
 
     /**
@@ -727,6 +727,10 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     private List<AbstractSmsByYearMonth> fillWithCero(List<? extends AbstractSmsByYearMonth> listToFill, List<Integer> monthList) {
         boolean hasToFill = false;
         List<AbstractSmsByYearMonth> l = new ArrayList<>(listToFill);
+        if (listToFill==null || listToFill.size()==0){
+            log.info("Nothing to Fill");
+            return l;
+        }
         for (Integer monthLoop : monthList) {
             hasToFill = true;
             for (AbstractSmsByYearMonth sms : listToFill) {
