@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -14,6 +15,8 @@ import java.util.*;
 @Component
 public class MyAuditEventComponent implements AuditEventRepository {
 
+    private static final String EVENT_AUTHENTICATION_FAILURE = "AUTHENTICATION_FAILURE";
+    private static final String EVENT_AUTHENTICATION_SUCCESS = "AUTHENTICATION_SUCCESS";
     Logger log = LoggerFactory.getLogger(MyAuditEventComponent.class);
     /**/
     private final ODashAuditEventService audit_serv;
@@ -25,11 +28,23 @@ public class MyAuditEventComponent implements AuditEventRepository {
 
     @Override
     public void add(AuditEvent event) {
-        System.out.println("ADDING EVENT OVERRIDE: " + event);
+//        System.out.println("ADDING EVENT OVERRIDE: " + event);
         l.add(event);
         /* Lista de eventos del servicio maximo de 500. */
         if (l.size() > 500) {
             l.removeAll(l.subList(0, 50));
+        }
+        System.out.println("Principal " + event.getPrincipal()
+                + " - " + event.getType());
+        WebAuthenticationDetails details =
+                (WebAuthenticationDetails) event.getData().get("details");
+        System.out.println("Remote IP address: "
+                + details.getRemoteAddress());
+        if (event.getType().equalsIgnoreCase(EVENT_AUTHENTICATION_FAILURE)
+                && event.getPrincipal().equalsIgnoreCase("anonymousUser")) {
+            add(ODashAuditEvent.OEVENT_TYPE.LOGOUT, event.getType() + " from " + details.getRemoteAddress(), event.getPrincipal());
+        }else if(event.getType().equalsIgnoreCase(EVENT_AUTHENTICATION_SUCCESS)){
+            add(ODashAuditEvent.OEVENT_TYPE.LOGIN, event.getType() + " from " + details.getRemoteAddress(), event.getPrincipal());
         }
     }
 
@@ -40,6 +55,7 @@ public class MyAuditEventComponent implements AuditEventRepository {
 
     /**
      * Evento cuando se crea o se actualiza un usruaio.
+     *
      * @param type
      * @param user
      */
@@ -74,6 +90,7 @@ public class MyAuditEventComponent implements AuditEventRepository {
             if (type == ODashAuditEvent.OEVENT_TYPE.LOGIN) {
                 AuditEvent e = new AuditEvent(eventDesc, type.name(), map);
                 add(e);
+            } else if (type == ODashAuditEvent.OEVENT_TYPE.LOGOUT) {
             } else {
                 AuditEvent e = new AuditEvent(SecurityContextHolder.getContext().getAuthentication().getName(), type.name(), map);
                 add(e);
@@ -93,7 +110,10 @@ public class MyAuditEventComponent implements AuditEventRepository {
 //        log.info("xxxxxxxxxxxxxxxxxxxxxxxxx " + type.name() +" - " + desc);
         /**/
         AuditEvent e = new AuditEvent(user, type.name(), map);
-        add(e);
+        /* Ambos eventos son disparados por Springboot, asi que no llamo la metodo. */
+        if (type != ODashAuditEvent.OEVENT_TYPE.LOGOUT && type != ODashAuditEvent.OEVENT_TYPE.LOGIN){
+            add(e);
+        }
         /**/
         audit_serv.save(valueOf(type, eventDesc, user));
     }
@@ -104,11 +124,11 @@ public class MyAuditEventComponent implements AuditEventRepository {
         add(type, desc);
     }
 
-    private String addUpdateUserEventDescription(User user){
+    private String addUpdateUserEventDescription(User user) {
         return addNewUserEventDescription(user);
     }
 
-    private String addNewUserEventDescription(User user){
+    private String addNewUserEventDescription(User user) {
         StringJoiner sjRol = new StringJoiner(",", "[", "]");
         user.getRoles().forEach(role -> {
             sjRol.add(role.getRolName());
@@ -131,7 +151,7 @@ public class MyAuditEventComponent implements AuditEventRepository {
                 + ", " + user.getFirstName()
                 + ", " + user.getLastName()
                 + ", " + user.getUserTypeOrd().name()
-                    + ", " + (user.isActive()?"Activo":"Desactivado")
+                + ", " + (user.isActive() ? "Activo" : "Desactivado")
                 + ", Roles: " + sjRol.toString()
                 + ", " + data;
         return desc;

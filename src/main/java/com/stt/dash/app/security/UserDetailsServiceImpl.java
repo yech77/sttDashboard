@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implements the {@link UserDetailsService}.
@@ -41,6 +42,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	 * 
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userRepository.findByEmailIgnoreCase(username);
 		if (null == user) {

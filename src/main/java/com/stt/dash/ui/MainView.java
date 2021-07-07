@@ -1,5 +1,6 @@
 package com.stt.dash.ui;
 
+import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.ui.smsview.SmsView;
 import com.stt.dash.ui.views.audit.AuditView;
 import com.stt.dash.ui.views.bulksms.BulkSmsSchedulerView;
@@ -53,13 +54,14 @@ public class MainView extends AppLayout {
 	private final ConfirmDialog confirmDialog = new ConfirmDialog();
 	private final Tabs menu;
 
-	public MainView() {
+	public MainView(CurrentUser currentUser) {
 		confirmDialog.setCancelable(true);
 		confirmDialog.setConfirmButtonTheme("raised tertiary error");
 		confirmDialog.setCancelButtonTheme("raised tertiary");
 
 		this.setDrawerOpened(false);
-		Span appName = new Span("Orinoco Dash");
+		Span appName = new Span("Bienvenido " + currentUser.getUser().getFirstName() + " "
+				+ currentUser.getUser().getLastName());
 		appName.addClassName("hide-on-mobile");
 
 		menu = createMenuTabs();
