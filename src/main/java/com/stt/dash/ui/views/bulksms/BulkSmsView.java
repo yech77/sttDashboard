@@ -20,7 +20,7 @@ import org.springframework.security.access.annotation.Secured;
 
 @Route(value = BakeryConst.PAGE_BULKSMS, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_BULKSMS)
-@Secured({Role.ADMIN, "UI_USER"})
+@Secured({Role.ADMIN, "UI_AGENDA_SMS"})
 public class BulkSmsView extends AbstractBakeryCrudView<Agenda> {
     private final AgendaService service;
     private final CurrentUser currentUser;
