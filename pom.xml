@@ -74,13 +74,13 @@
                 <enabled>false</enabled>
             </snapshots>
         </pluginRepository>
-       <!-- <pluginRepository>
-            <id>vaadin-prereleases</id>
-            <url>https://maven.vaadin.com/vaadin-prereleases</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>-->
+        <!-- <pluginRepository>
+             <id>vaadin-prereleases</id>
+             <url>https://maven.vaadin.com/vaadin-prereleases</url>
+             <snapshots>
+                 <enabled>false</enabled>
+             </snapshots>
+         </pluginRepository>-->
     </pluginRepositories>
     <dependencyManagement>
         <dependencies>
@@ -178,10 +178,10 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <!-- Bean validation implementation-->
-<!--        <dependency>-->
-<!--            <groupId>javax.validation</groupId>-->
-<!--            <artifactId>validation-api</artifactId>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>javax.validation</groupId>-->
+        <!--            <artifactId>validation-api</artifactId>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
@@ -270,6 +270,12 @@
             <artifactId>opencsv</artifactId>
             <version>5.4</version>
         </dependency>
+        <!-- Agregado el 06/07/21 -->
+        <dependency>
+            <groupId>com.vaadin.componentfactory</groupId>
+            <artifactId>vcf-date-range-picker</artifactId>
+            <version>1.4.0</version>
+        </dependency>
         <!-- An invalid Lifecycle transition was attempted ([before_destroy]) -->
         <!--        <dependency>
             <groupId>org.apache.tomee</groupId>
@@ -310,14 +316,14 @@
                     </execution>
                 </executions>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-compiler-plugin</artifactId>-->
-<!--                <configuration>-->
-<!--                    <source>9</source>-->
-<!--                    <target>9</target>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+            <!--            <plugin>-->
+            <!--                <groupId>org.apache.maven.plugins</groupId>-->
+            <!--                <artifactId>maven-compiler-plugin</artifactId>-->
+            <!--                <configuration>-->
+            <!--                    <source>9</source>-->
+            <!--                    <target>9</target>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
         </plugins>
     </build>
 

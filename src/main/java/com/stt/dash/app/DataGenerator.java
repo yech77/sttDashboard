@@ -139,7 +139,7 @@ public class DataGenerator implements HasLogger {
             oauth_repo.save(oauth);
             oauth = new OAuthority();
             oauth.setAuthName(AUTH.UI_SEARCH_SMS.name());
-            oauth.setAuthDesc("Permite ver la Pantalla USER");
+            oauth.setAuthDesc("Permite ver la Pantalla BUSCAR SMS");
             oauth_repo.save(oauth);
             oauth = new OAuthority();
             oauth.setAuthName(AUTH.UI_TRAFFIC_SMS.name());
@@ -151,7 +151,7 @@ public class DataGenerator implements HasLogger {
             oauth_repo.save(oauth);
             oauth = new OAuthority();
             oauth.setAuthName(AUTH.UI_PROGRAM_SMS.name());
-            oauth.setAuthDesc("Permite ver la Pantalla MANEJO DE RECADOS");
+            oauth.setAuthDesc("Permite ver la Pantalla PROGRAMAR SMS");
             oauth_repo.save(oauth);
         }
 

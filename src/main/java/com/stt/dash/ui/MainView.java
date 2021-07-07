@@ -1,5 +1,6 @@
 package com.stt.dash.ui;
 
+import com.stt.dash.ui.smsview.SmsView;
 import com.stt.dash.ui.views.audit.AuditView;
 import com.stt.dash.ui.views.bulksms.BulkSmsSchedulerView;
 import com.stt.dash.ui.views.bulksms.BulkSmsView;
@@ -31,6 +32,7 @@ import com.stt.dash.ui.views.admin.users.UsersView;
 import com.stt.dash.ui.views.dashboard.DashboardView;
 import com.stt.dash.ui.views.storefront.StorefrontView;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +40,7 @@ import java.util.Optional;
 import static com.stt.dash.ui.utils.BakeryConst.*;
 
 @Viewport(VIEWPORT)
-@PWA(name = "Bakery App Starter", shortName = "Orinoco Dash",
+@PWA(name = "Orinoco App Starter", shortName = "Orinoco Dash",
 		startPath = "login",
 		backgroundColor = "#227aef", themeColor = "#227aef",
 		offlinePath = "offline-page.html",
@@ -46,6 +48,8 @@ import static com.stt.dash.ui.utils.BakeryConst.*;
 		enableInstallPrompt = false)
 public class MainView extends AppLayout {
 
+	/* Hora del servidor para establecer busquedas de YYYY-MM-DD*/
+	public static LocalDateTime localDateTime = LocalDateTime.now();
 	private final ConfirmDialog confirmDialog = new ConfirmDialog();
 	private final Tabs menu;
 
@@ -101,41 +105,41 @@ public class MainView extends AppLayout {
 	}
 
 	private static Tab[] getAvailableTabs() {
-		final List<Tab> tabs = new ArrayList<>(4);
+		final List<Tab> tabs = new ArrayList<>(6);
 //		tabs.add(createTab(VaadinIcon.EDIT, TITLE_STOREFRONT,
 //						StorefrontView.class));
-		tabs.add(createTab(VaadinIcon.CLOCK, TITLE_BULKSMS_SCHEDULER,
-				FileToSendFrontView.class));
-		tabs.add(createTab(VaadinIcon.CLOCK, TITLE_AUDIT,
-				AuditView.class));
+//		tabs.add(createTab(VaadinIcon.ENVELOPES_O, TITLE_SMS_VIEW,
+//				SmsView.class));
 //		tabs.add(createTab(VaadinIcon.CLOCK,TITLE_DASHBOARD, DashboardView.class));
-		if (SecurityUtils.isAccessGranted(MainDashboardView.class)) {
-			tabs.add(createTab(VaadinIcon.HOME,TITLE_DASHBOARD_MAIN, MainDashboardView.class));
+//		if (SecurityUtils.isAccessGranted(MainDashboardView.class)) {
+//		}
+		if (SecurityUtils.isAccessGranted(FileToSendFrontView.class)) {
+			tabs.add(createTab(VaadinIcon.CALENDAR_ENVELOPE, TITLE_BULKSMS_SCHEDULER,
+					FileToSendFrontView.class));
 		}
-		if (SecurityUtils.isAccessGranted(ORolesView.class)) {
-			tabs.add(createTab(VaadinIcon.KEY,"Roles", ORolesView.class));
+		if (SecurityUtils.isAccessGranted(BulkSmsView.class)) {
+			tabs.add(createTab(VaadinIcon.USER,TITLE_BULKSMS, BulkSmsView.class));
 		}
-		if (SecurityUtils.isAccessGranted(CarrierChartView.class)) {
+		if (SecurityUtils.isAccessGranted(ClientChartView.class)) {
 			tabs.add(createTab(VaadinIcon.CHART_LINE,TITLE_CLIENT, ClientChartView.class));
 		}
 		if (SecurityUtils.isAccessGranted(CarrierChartView.class)) {
 			tabs.add(createTab(VaadinIcon.CHART_TIMELINE,TITLE_CARRIER, CarrierChartView.class));
 		}
-		if (SecurityUtils.isAccessGranted(BulkSmsView.class)) {
-			tabs.add(createTab(VaadinIcon.USER,TITLE_BULKSMS, BulkSmsView.class));
+		tabs.add(createTab(VaadinIcon.HOME,TITLE_DASHBOARD_MAIN, MainDashboardView.class));
+		if (SecurityUtils.isAccessGranted(AuditView.class)) {
+			tabs.add(createTab(VaadinIcon.CLOCK, TITLE_AUDIT,
+					AuditView.class));
 		}
-//		if (SecurityUtils.isAccessGranted(BulkSmsSchedulerView.class)) {
-//			tabs.add(createTab(VaadinIcon.USER,TITLE_BULKSMS_SCHEDULER, BulkSmsSchedulerView.class));
-//		}
-//		if (SecurityUtils.isAccessGranted(BulkSmsSchedulerView.class)) {
-//			tabs.add(createTab(VaadinIcon.USER,TITLE_BULKSMS_SCHEDULER+"nuevo", FileToSendFrontView.class));
-//		}
 		if (SecurityUtils.isAccessGranted(UsersView.class)) {
 			tabs.add(createTab(VaadinIcon.USER,TITLE_USERS, UsersView.class));
 		}
-		if (SecurityUtils.isAccessGranted(ProductsView.class)) {
-			tabs.add(createTab(VaadinIcon.CALENDAR, TITLE_PRODUCTS, ProductsView.class));
+		if (SecurityUtils.isAccessGranted(ORolesView.class)) {
+			tabs.add(createTab(VaadinIcon.KEY,"Roles", ORolesView.class));
 		}
+//		if (SecurityUtils.isAccessGranted(ProductsView.class)) {
+//			tabs.add(createTab(VaadinIcon.CALENDAR, TITLE_PRODUCTS, ProductsView.class));
+//		}
 		final String contextPath = VaadinServlet.getCurrent().getServletContext().getContextPath();
 		final Tab logoutTab = createTab(createLogoutLink(contextPath));
 		tabs.add(logoutTab);

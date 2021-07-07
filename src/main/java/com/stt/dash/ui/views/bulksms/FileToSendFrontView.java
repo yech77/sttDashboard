@@ -1,6 +1,7 @@
 package com.stt.dash.ui.views.bulksms;
 
 import com.stt.dash.app.HasLogger;
+import com.stt.dash.backend.data.Role;
 import com.stt.dash.backend.data.entity.FIlesToSend;
 import com.stt.dash.backend.data.entity.util.EntityUtil;
 import com.stt.dash.ui.MainView;
@@ -19,6 +20,7 @@ import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.*;
+import org.springframework.security.access.annotation.Secured;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,8 +32,8 @@ import static com.stt.dash.ui.utils.BakeryConst.ORDER_ID;
 @JsModule("./src/views/bulksms/file-to-sendfront-view.ts")
 @Route(value = BakeryConst.PAGE_BULK_STOREFRONT_ORDER_TEMPLATE, layout = MainView.class)
 @RouteAlias(value = BakeryConst.PAGE_BULK_STOREFRONT_ORDER_EDIT_TEMPLATE, layout = MainView.class)
-//@RouteAlias(value = BakeryConst.PAGE_ROOT, layout = MainView.class)
-@PageTitle(BakeryConst.TITLE_STOREFRONT+"ittititi")
+@Secured({Role.ADMIN, "UI_PROGRAM_SMS"})
+@PageTitle(BakeryConst.TITLE_STOREFRONT)
 public class FileToSendFrontView extends LitTemplate implements HasLogger, BeforeEnterObserver, EntityView<FIlesToSend> {
 
     @Id("search")

@@ -81,7 +81,7 @@ public class UserService implements FilterableCrudService<User> {
 			isotherCounter = p.getTotalElements();
 			return p;
 		}
-		List<User> lu = getUserFamily(currentUser);
+		List<User> lu = getUserFamily(currentUser.getUser());
 		/* es para indicar que el counter debe contar este*/
 		isotherCounter=lu.size();
 		Page<User> u = new PageImpl<>(lu);
@@ -135,13 +135,13 @@ public class UserService implements FilterableCrudService<User> {
 		return new User();
 	}
 
-	private List<User> getUserFamily(CurrentUser currentUser) {
+	private List<User> getUserFamily(User currentUser) {
 		List<User> allUsers = new ArrayList<>();
 		List<User> currentFam = new ArrayList<>();
 		List<User> addingChildren = new ArrayList<>();
 
 //		currentFam.add(currentUser.getUser());
-		addingChildren.addAll(currentUser.getUser().getUserChildren());
+		addingChildren.addAll(currentUser.getUserChildren());
 		while (addingChildren.size() > 0) {
 			allUsers.addAll(currentFam);
 			currentFam.clear();
@@ -152,7 +152,8 @@ public class UserService implements FilterableCrudService<User> {
 			}
 		}
 		allUsers.addAll(currentFam);
-		System.out.println("Usuarios en la familia de " + currentUser.getUser().getEmail() + ": " + allUsers);
+		System.out.println("Usuarios en la familia de " + currentUser.getEmail() );
+
 		return allUsers;
 	}
 }

@@ -140,10 +140,12 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
     protected void navigateToEntity(String id) {
         getUI().ifPresent(ui -> ui.navigate(TemplateUtil.generateLocation(getBasePage(), id)));
     }
+
     private void setOldEntity(E entity){
         System.out.println("AbstractBakeryCrudView:setOldEntity-> " + entity);
         oldEntity = entity;
     }
+
     @Override
     public void setParameter(BeforeEvent event, @OptionalParameter Long id) {
         if (id != null) {

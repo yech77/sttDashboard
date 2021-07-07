@@ -4,10 +4,7 @@ import com.stt.dash.app.OMessageType;
 import com.stt.dash.app.OMonths;
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.ListGenericBean;
-import com.stt.dash.backend.data.AbstractSmsByYearMonth;
-import com.stt.dash.backend.data.SmsByYearMonth;
-import com.stt.dash.backend.data.SmsByYearMonthDay;
-import com.stt.dash.backend.data.SmsByYearMonthDayHour;
+import com.stt.dash.backend.data.*;
 import com.stt.dash.backend.data.entity.Carrier;
 import com.stt.dash.backend.data.entity.Client;
 import com.stt.dash.backend.data.entity.SystemId;
@@ -15,7 +12,9 @@ import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.CarrierService;
 import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
+import com.stt.dash.ui.components.SearchSmsBar;
 import com.stt.dash.ui.utils.BakeryConst;
+import com.vaadin.componentfactory.EnhancedDateRangePicker;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -33,6 +32,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.annotation.Secured;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.time.LocalDate;
@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 @JsModule("./src/views/client/client-chart-view.js")
 @Route(value = BakeryConst.PAGE_CLIENT, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_CLIENT)
+@Secured({Role.ADMIN, "UI_EVOLUTION_CLIENT"})
 public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
     private static final String CLIENT_VIEW_SELECTED_SYSTEMID = "client_view_selected_systemid";
