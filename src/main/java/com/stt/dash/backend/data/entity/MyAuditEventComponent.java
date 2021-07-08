@@ -15,8 +15,8 @@ import java.util.*;
 @Component
 public class MyAuditEventComponent implements AuditEventRepository {
 
-    private static final String EVENT_AUTHENTICATION_FAILURE = "AUTHENTICATION_FAILURE";
-    private static final String EVENT_AUTHENTICATION_SUCCESS = "AUTHENTICATION_SUCCESS";
+    public static final String EVENT_AUTHENTICATION_FAILURE = "AUTHENTICATION_FAILURE";
+    public static final String EVENT_AUTHENTICATION_SUCCESS = "AUTHENTICATION_SUCCESS";
     Logger log = LoggerFactory.getLogger(MyAuditEventComponent.class);
     /**/
     private final ODashAuditEventService audit_serv;
@@ -39,11 +39,11 @@ public class MyAuditEventComponent implements AuditEventRepository {
         WebAuthenticationDetails details =
                 (WebAuthenticationDetails) event.getData().get("details");
         System.out.println("Remote IP address: "
-                + details.getRemoteAddress());
+                + details==null?details.getRemoteAddress():"");
         if (event.getType().equalsIgnoreCase(EVENT_AUTHENTICATION_FAILURE)
                 && event.getPrincipal().equalsIgnoreCase("anonymousUser")) {
             add(ODashAuditEvent.OEVENT_TYPE.LOGOUT, event.getType() + " from " + details.getRemoteAddress(), event.getPrincipal());
-        }else if(event.getType().equalsIgnoreCase(EVENT_AUTHENTICATION_SUCCESS)){
+        } else if (event.getType().equalsIgnoreCase(EVENT_AUTHENTICATION_SUCCESS)) {
             add(ODashAuditEvent.OEVENT_TYPE.LOGIN, event.getType() + " from " + details.getRemoteAddress(), event.getPrincipal());
         }
     }
@@ -75,14 +75,14 @@ public class MyAuditEventComponent implements AuditEventRepository {
         map.put("month", month);
         map.put("list_sid", list);
         /**/
-        AuditEvent e = new AuditEvent(SecurityContextHolder.getContext().getAuthentication().getName(), type, map);
+        AuditEvent e = new AuditEvent(getAuthenticationName(), type, map);
         add(e);
     }
 
     public void add(ODashAuditEvent.OEVENT_TYPE type, String eventDesc) {
         Map<String, Object> map = new HashMap<>();
         map.put("eventDesc", eventDesc);
-//        String desc = "Nombre: '" + SecurityContextHolder.getContext().getAuthentication().getName() + "'. Descripcion: " + type.name();
+//        String desc = "Nombre: '" + getAuthenticationName() + "'. Descripcion: " + type.name();
 //        log.info("xxxxxxxxxxxxxxxxxxxxxxxxx " + type.name() +" - " + desc);
         /**/
 
@@ -92,7 +92,7 @@ public class MyAuditEventComponent implements AuditEventRepository {
                 add(e);
             } else if (type == ODashAuditEvent.OEVENT_TYPE.LOGOUT) {
             } else {
-                AuditEvent e = new AuditEvent(SecurityContextHolder.getContext().getAuthentication().getName(), type.name(), map);
+                AuditEvent e = new AuditEvent(getAuthenticationName() , type.name(), map);
                 add(e);
             }
             /**/
@@ -106,12 +106,12 @@ public class MyAuditEventComponent implements AuditEventRepository {
     public void add(ODashAuditEvent.OEVENT_TYPE type, String eventDesc, String user) {
         Map<String, Object> map = new HashMap<>();
         map.put("eventDesc", eventDesc);
-//        String desc = "Nombre: '" + SecurityContextHolder.getContext().getAuthentication().getName() + "'. Descripcion: " + type.name();
+//        String desc = "Nombre: '" + getAuthenticationName() + "'. Descripcion: " + type.name();
 //        log.info("xxxxxxxxxxxxxxxxxxxxxxxxx " + type.name() +" - " + desc);
         /**/
         AuditEvent e = new AuditEvent(user, type.name(), map);
         /* Ambos eventos son disparados por Springboot, asi que no llamo la metodo. */
-        if (type != ODashAuditEvent.OEVENT_TYPE.LOGOUT && type != ODashAuditEvent.OEVENT_TYPE.LOGIN){
+        if (type != ODashAuditEvent.OEVENT_TYPE.LOGOUT && type != ODashAuditEvent.OEVENT_TYPE.LOGIN) {
             add(e);
         }
         /**/
@@ -188,9 +188,17 @@ public class MyAuditEventComponent implements AuditEventRepository {
             d.setPrincipal(eventDesc);
         } else {
             d.setEventDesc(eventDesc);
-            d.setPrincipal(SecurityContextHolder.getContext().getAuthentication().getName());
+            d.setPrincipal(getAuthenticationName());
         }
         return d;
+    }
+    private String getAuthenticationName(){
+        String name="anonimous";
+        try {
+            name = SecurityContextHolder.getContext().getAuthentication().getName();
+        } catch (Exception e) {
+        }
+        return name;
     }
 
 

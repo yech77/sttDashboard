@@ -30,18 +30,19 @@ public class ODashAuditEventService implements FilterableCrudService<ODashAuditE
         this.audit_repo = audit_repo;
     }
 
-    public void save(ODashAuditEvent dashEvent) {
+    public ODashAuditEvent save(ODashAuditEvent dashEvent) {
         if (dashEvent == null) {
             log.warn("{} ODashAuditEvent is null", getStringLog());
-            return;
+            return null;
         }
         try {
             Long id = dashEvent.getId();
-            audit_repo.save(dashEvent);
+            return audit_repo.save(dashEvent);
         } catch (Exception d) {
             log.error("{} Error on Save: {}", getStringLog(), dashEvent);
             log.error("", d);
         }
+        return null;
     }
 
     public List<ODashAuditEvent> findAll() {
