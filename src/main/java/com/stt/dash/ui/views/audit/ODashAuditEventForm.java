@@ -30,6 +30,7 @@ public class ODashAuditEventForm  extends FormLayout {
     private Binder<OdashAuditEventFormBean> binder = new BeanValidationBinder<>(OdashAuditEventFormBean.class);
     /**/
     private Checkbox allUserCheck = new Checkbox("todos los usuarios");
+    private Checkbox allEventCheck = new Checkbox("todos los eventos");
 
     public ODashAuditEventForm(List<User> userList) {
         initCombo(userList);
@@ -62,9 +63,24 @@ public class ODashAuditEventForm  extends FormLayout {
                         },
                         "Seleccione el Usuario")
                 .bind(OdashAuditEventFormBean::getUserCombo, OdashAuditEventFormBean::setUserCombo);
+        /* Event */
         binder.forField(eventCombo)
-                .asRequired("Seleecione el evento")
+                .withValidator(
+                        user -> {
+                            if ((user == null || eventCombo.isEmpty()) && allEventCheck.getValue() == true) {
+                                return true;
+                            } else if (user != null && allEventCheck.getValue() == false) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        },
+                        "Seleccione el Evento")
                 .bind(OdashAuditEventFormBean::getEventCombo, OdashAuditEventFormBean::setEventCombo);
+
+//        binder.forField(eventCombo)
+//                .asRequired("Seleecione el evento")
+//                .bind(OdashAuditEventFormBean::getEventCombo, OdashAuditEventFormBean::setEventCombo);
         /* firstDate */
         // Store return date binding so we can
 // revalidate it later
@@ -106,7 +122,9 @@ public class ODashAuditEventForm  extends FormLayout {
         userItem.add(allUserCheck);
         /**/
         setColspan(userItem, 1);
-        setColspan(addFormItem(eventCombo, "Eventos"), 1);
+        FormItem formItem = addFormItem(eventCombo, "Eventos");
+        formItem.add(allEventCheck);
+        setColspan(formItem, 1);
         HorizontalLayout h = new HorizontalLayout(searchButton);
         setColspan(addFormItem(h, ""), 4);
         searchButton.getElement().getStyle().set("margin-left", "auto");
@@ -130,14 +148,24 @@ public class ODashAuditEventForm  extends FormLayout {
     }
 
     private void initAllUserCheck() {
-        allUserCheck.addClickListener(click -> {
+        allUserCheck.addValueChangeListener(click -> {
             if (allUserCheck.getValue()) {
                 userCombo.setValue(null);
+                allEventCheck.setValue(false);
             }
             binder.validate();
             userCombo.setEnabled(!allUserCheck.getValue());
         });
         allUserCheck.addClassName("text-desc-s");
+        allEventCheck.addValueChangeListener(click -> {
+            if (allUserCheck.getValue()) {
+                eventCombo.setValue(null);
+                allUserCheck.setValue(false);
+            }
+            binder.validate();
+            eventCombo.setEnabled(!allEventCheck.getValue());
+        });
+        allEventCheck.addClassName("text-desc-s");
     }
 
     private void initButtonSearch() {
