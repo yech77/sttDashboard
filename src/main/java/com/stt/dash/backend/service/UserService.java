@@ -66,6 +66,10 @@ public class UserService implements FilterableCrudService<User> {
 		}
 	}
 
+	public User findByEmailIgnoreCase(String email){
+		return getRepository().findByEmailIgnoreCase(email);
+	}
+
 	@Override
 	public UserRepository getRepository() {
 		return userRepository;
