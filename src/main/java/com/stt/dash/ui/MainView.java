@@ -60,7 +60,7 @@ public class MainView extends AppLayout {
 		confirmDialog.setCancelButtonTheme("raised tertiary");
 
 		this.setDrawerOpened(false);
-		Span appName = new Span("Bienvenido " + currentUser.getUser().getFirstName() + " "
+		Span appName = new Span(currentUser.getUser().getFirstName() + " "
 				+ currentUser.getUser().getLastName());
 		appName.addClassName("hide-on-mobile");
 
