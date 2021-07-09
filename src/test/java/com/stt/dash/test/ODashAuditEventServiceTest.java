@@ -70,7 +70,7 @@ public class ODashAuditEventServiceTest {
     }
 
     @Test
-    @DisplayName("Encontrarlos todos")
+    @DisplayName("Eventos de Usuario")
     public void testAddUserEvent() {
         eventService = new ODashAuditEventService(oDashAuditEventRepository);
         myAuditEventComponent = new MyAuditEventComponent(eventService);
@@ -85,14 +85,17 @@ public class ODashAuditEventServiceTest {
         addUser("yechev@soltextech.com");
         /* BORRAR EL USUARIO CREADO */
         deleteUser(currentUser, findUser("yechev@soltextech.com"));
+        /* BUSCAR TODOS LOS EVENTOS */
         List<ODashAuditEvent> l = eventRepository.findAll();
-        /**/
+        /* SOLO EVENTOS CREATE_USER */
         List<ODashAuditEvent> createList = l.stream()
                 .filter(o -> o.getEventType() == ODashAuditEvent.OEVENT_TYPE.CREATE_USER)
                 .collect(Collectors.toList());
+        /* SOLO EVENTOS DELETE_USER */
         List<ODashAuditEvent> deleteList = l.stream()
                 .filter(o -> o.getEventType() == ODashAuditEvent.OEVENT_TYPE.DELETE_USER)
                 .collect(Collectors.toList());
+        /* SOLO EVENTOS UPDATE_USER */
         List<ODashAuditEvent> updateList = l.stream()
                 .filter(o -> o.getEventType() == ODashAuditEvent.OEVENT_TYPE.UPDATE_USER)
                 .collect(Collectors.toList());
