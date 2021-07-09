@@ -17,8 +17,8 @@ import com.stt.dash.backend.repositories.UserRepository;
 @Service
 public class UserService implements FilterableCrudService<User> {
 
-	public static final String MODIFY_LOCKED_USER_NOT_PERMITTED = "User has been locked and cannot be modified or deleted";
-	private static final String DELETING_SELF_NOT_PERMITTED = "You cannot delete your own account";
+	public static final String MODIFY_LOCKED_USER_NOT_PERMITTED = "Usuario bloqueado para modificaciones.";
+	private static final String DELETING_SELF_NOT_PERMITTED = "No puedes borrar tu propia cuenta.";
 	private final UserRepository userRepository;
 	private final MyAuditEventComponent audit;
 	public UserService(UserRepository userRepository, MyAuditEventComponent audit) {
