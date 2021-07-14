@@ -143,7 +143,7 @@ public class ODashAuditEventServiceTest {
     private UserDetails login(MyAuditEventComponent myAuditEventComponent, String email) {
         UserDetailsServiceImpl ud = applicationContext.getBean(UserDetailsServiceImpl.class);
         /* LOGIN */
-        UserDetails userDetails = ud.loadUserByUsername("admin@soltextech.com");
+        UserDetails userDetails = ud.loadUserByUsername(email);
         Authentication authToken = new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);
         myAuditEventComponent.add(ODashAuditEvent.OEVENT_TYPE.LOGIN, EVENT_AUTHENTICATION_SUCCESS, email);

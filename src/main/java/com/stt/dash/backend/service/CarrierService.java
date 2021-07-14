@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CarrierService {
+public class CarrierService{
     private CarrierRepository carrierRepository;
 
     public CarrierService(CarrierRepository carrierRepository) {
