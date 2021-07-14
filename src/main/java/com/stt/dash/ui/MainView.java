@@ -3,9 +3,7 @@ package com.stt.dash.ui;
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.ui.smsview.SmsView;
 import com.stt.dash.ui.views.audit.AuditView;
-import com.stt.dash.ui.views.bulksms.BulkSmsSchedulerView;
 import com.stt.dash.ui.views.bulksms.BulkSmsView;
-import com.stt.dash.ui.views.bulksms.FileToSendEditor;
 import com.stt.dash.ui.views.bulksms.FileToSendFrontView;
 import com.stt.dash.ui.views.carrier.CarrierChartView;
 import com.stt.dash.ui.views.client.ClientChartView;
@@ -28,10 +26,7 @@ import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.server.VaadinServlet;
 import com.stt.dash.app.security.SecurityUtils;
 import com.stt.dash.ui.views.HasConfirmation;
-import com.stt.dash.ui.views.admin.products.ProductsView;
 import com.stt.dash.ui.views.admin.users.UsersView;
-import com.stt.dash.ui.views.dashboard.DashboardView;
-import com.stt.dash.ui.views.storefront.StorefrontView;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -110,8 +105,8 @@ public class MainView extends AppLayout {
 		final List<Tab> tabs = new ArrayList<>(6);
 //		tabs.add(createTab(VaadinIcon.EDIT, TITLE_STOREFRONT,
 //						StorefrontView.class));
-//		tabs.add(createTab(VaadinIcon.ENVELOPES_O, TITLE_SMS_VIEW,
-//				SmsView.class));
+		tabs.add(createTab(VaadinIcon.ENVELOPES_O, TITLE_SMS_VIEW,
+				SmsView.class));
 //		tabs.add(createTab(VaadinIcon.CLOCK,TITLE_DASHBOARD, DashboardView.class));
 //		if (SecurityUtils.isAccessGranted(MainDashboardView.class)) {
 //		}
