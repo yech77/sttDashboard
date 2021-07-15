@@ -1,34 +1,29 @@
 package com.stt.dash.ui.smsview;
 
 import com.stt.dash.app.OMessageType;
-import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.app.session.SetGenericBean;
 import com.stt.dash.backend.data.OUserSession;
 import com.stt.dash.backend.data.bean.OPageable;
 import com.stt.dash.backend.data.entity.Carrier;
 import com.stt.dash.backend.data.entity.SystemId;
-import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.data.entity.sms.AbstractSMS;
 import com.stt.dash.backend.service.AbstractSmsService;
 import com.stt.dash.backend.service.CarrierService;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.utils.BakeryConst;
-import com.stt.dash.ui.views.EntityView;
+import com.vaadin.componentfactory.DateRange;
 import com.vaadin.componentfactory.EnhancedDateRangePicker;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.template.Id;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
@@ -40,8 +35,10 @@ import java.util.Set;
 @Route(value = BakeryConst.PAGE_SMS_VIEW, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_SMS_VIEW)
 public class SmsView extends LitTemplate {
-    @Id("header")
-    Div header;
+    @Id("firstline")
+    Div firstline;
+    @Id("secondline")
+    Div secondline;
     private EnhancedDateRangePicker dateOne = new EnhancedDateRangePicker();
     private DatePicker dateTwo = new DatePicker();
     MultiselectComboBox<Carrier> comboCarrier = new MultiselectComboBox<>();
@@ -65,29 +62,37 @@ public class SmsView extends LitTemplate {
     public SmsView(@Autowired AbstractSmsService sms_serv,
                    @Autowired OUserSession ouser_session,
                    @Autowired CarrierService carrier_serv,
-                   SetGenericBean<SystemId> systemIdSetGenericBean){
-        this.sms_serv=sms_serv;
-        this.ouser_session=ouser_session;
-        this.carrier_serv=carrier_serv;
+                   SetGenericBean<SystemId> systemIdSetGenericBean) {
+        this.sms_serv = sms_serv;
+        this.ouser_session = ouser_session;
+        this.carrier_serv = carrier_serv;
         /**/
         Page<Carrier> carrierList = carrier_serv.findAll();
         Set<Carrier> carrierSet = carrierList.toSet();
+        comboCarrier.setLabel("Operadoras");
         comboCarrier.setItems(carrierSet);
         comboCarrier.setItemLabelGenerator(Carrier::getCarrierCharcode);
         comboCarrier.setValue(carrierSet);
         /**/
+        multi_systemIds.setLabel("Credenciales");
         multi_systemIds.setItems(systemIdSetGenericBean.getSet());
         multi_systemIds.setItemLabelGenerator(SystemId::getSystemId);
         multi_systemIds.setValue(systemIdSetGenericBean.getSet());
-        /**/
         multi_messagetype.setItems(OMessageType.values());
         /**/
-        MultiselectComboBox<Carrier> test = new MultiselectComboBox();
-        test.setItems(carrierSet);
-        test.setItemLabelGenerator(Carrier::getCarrierCharcode);
-        test.setValue(carrierSet);
-        header.add(dateOne, test);
+        textPhoneNumer.setLabel("Numero a buscar");
         /**/
+        /**/
+        dateOne.setMin(LocalDate.now().minusMonths(1));
+        dateOne.setMax(LocalDate.now());
+        dateOne.setClearButtonVisible(true);
+        dateOne.setRequired(true);
+        dateOne.setInitialPosition(LocalDate.now());
+        dateOne.setValue(new DateRange(LocalDate.now().minusDays(1), LocalDate.now()));
+        dateOne.setLabel("Rango de busqueda");
+        /**/
+        firstline.add(dateOne);
+        secondline.add(textPhoneNumer, comboCarrier, multi_systemIds);
     }
 
     private Page<? extends AbstractSMS> getSmsPage(LocalDate dateOne, LocalDate dateTwo) {
