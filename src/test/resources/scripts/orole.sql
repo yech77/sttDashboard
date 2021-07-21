@@ -1,0 +1,10 @@
+INSERT INTO public.orole (id, version, rol_name) VALUES (11, 0, 'AGENDAR_SMS');
+INSERT INTO public.orole (id, version, rol_name) VALUES (12, 0, 'AUDITORIA');
+INSERT INTO public.orole (id, version, rol_name) VALUES (13, 0, 'BUSQUEDA_SMS');
+INSERT INTO public.orole (id, version, rol_name) VALUES (14, 0, 'EVOLUCION_CLIENTE');
+INSERT INTO public.orole (id, version, rol_name) VALUES (15, 0, 'EVOLUCION_OPERADORA');
+INSERT INTO public.orole (id, version, rol_name) VALUES (16, 0, 'EVOLUCION_PASAPORTES');
+INSERT INTO public.orole (id, version, rol_name) VALUES (17, 0, 'PROGRAMAR_SMS');
+INSERT INTO public.orole (id, version, rol_name) VALUES (18, 0, 'ROLES');
+INSERT INTO public.orole (id, version, rol_name) VALUES (19, 0, 'TRAFICO_SMS');
+INSERT INTO public.orole (id, version, rol_name) VALUES (20, 0, 'USUARIOS');

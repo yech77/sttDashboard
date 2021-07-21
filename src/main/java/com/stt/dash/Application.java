@@ -1,5 +1,7 @@
 package com.stt.dash;
 
+import com.stt.dash.backend.service.TempSmsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -13,6 +15,8 @@ import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.UserRepository;
 import com.stt.dash.backend.service.UserService;
 import com.stt.dash.ui.MainView;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 
 /**
  * Spring boot web application initializer.
@@ -21,7 +25,10 @@ import com.stt.dash.ui.MainView;
 		UserService.class }, exclude = ErrorMvcAutoConfiguration.class)
 @EnableJpaRepositories(basePackageClasses = { UserRepository.class })
 @EntityScan(basePackageClasses = { User.class })
+@EnableScheduling
 public class Application extends SpringBootServletInitializer {
+	@Autowired
+	TempSmsService temp_serv;
 	private static String APP_NAME = "ODASH";
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
@@ -30,6 +37,11 @@ public class Application extends SpringBootServletInitializer {
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(Application.class);
+	}
+
+	@Scheduled(cron = "0 */1 * * * ?")
+	public void runResumeSms(){
+		temp_serv.doResume();
 	}
 
 	public static String getAPP_NAME(){

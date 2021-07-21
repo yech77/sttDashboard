@@ -1,0 +1,3 @@
+INSERT INTO public.carrier (id, carrier_charcode, carrier_name, country_iso2, version) VALUES (1, 'MOVILNET', 'MOVILNET, C.A', 'VE', 0);
+INSERT INTO public.carrier (id, carrier_charcode, carrier_name, country_iso2, version) VALUES (2, 'DIGITEL', 'DIGITEL, C.A', 'VE', 0);
+INSERT INTO public.carrier (id, carrier_charcode, carrier_name, country_iso2, version) VALUES (3, 'MOVISTAR', 'MOVISTAR, C.A', 'VE', 0);

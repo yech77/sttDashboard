@@ -1,0 +1,10 @@
+INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (11, 9);
+INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (12, 1);
+INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (13, 7);
+INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (14, 5);
+INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (15, 4);
+INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (16, 6);
+INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (17, 10);
+INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (18, 2);
+INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (19, 8);
+INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (20, 3);
