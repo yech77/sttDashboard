@@ -12,55 +12,43 @@ export class SmsView extends LitElement {
         return html`
             <style include="shared-styles">
                 :host {
+                    position: relative;
+                    z-index: 2;
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    padding: 0 var(--lumo-space-s);
+                    background-image: linear-gradient(var(--lumo-shade-20pct), var(--lumo-shade-20pct));
+                    background-color: var(--lumo-base-color);
+                    box-shadow: 0 0 16px 2px var(--lumo-shade-20pct);
+                    order: 1;
                     width: 100%;
-                    -webkit-overflow-scrolling: touch;
-                    overflow: auto;
+                    height: 48px;
                 }
 
-                .vaadin-board-cell {
-                    padding: var(--lumo-space-s);
+                @media (min-width: 700px) {
+                    .row {
+                        width: 100%;
+                        max-width: 964px;
+                        margin: 0 auto;
+                    }
+                    .field {
+                         padding-right: var(--lumo-space-m);
+                     }
                 }
-
-                *::-ms-backdrop,
-                .vaadin-board-cell {
-                    padding: 0;
-                }
-
-                .column-chart {
-                    box-shadow: 0 2px 5px 0 rgba(23, 68, 128, 0.1);
-                    border-radius: 4px;
-                    height: calc(20vh - 64px) !important;
-                    min-height: 150px;
-                }
-
-                #yearlySalesGraph {
-                    height: calc(30vh - 64px) !important;
-                    min-height: 200px;
-                }
-
-                #monthlyProductSplit,
-                #ordersGrid {
-                    border-radius: 4px;
-                    box-shadow: 0 2px 5px 0 rgba(23, 68, 128, 0.1);
-                    height: calc(40vh - 64px) !important;
-                    min-height: 355px;
-                }
-
-                vaadin-board-row.custom-board-row {
-                    --vaadin-board-width-medium: 1440px;
-                    --vaadin-board-width-small: 1024px;
-                }
-
             </style>
-            <vaadin-board>
-                <vaadin-row>
-                    <div id="firstline" align="center"></div>
-                    <div id="secondline"></div>
-                </vaadin-row>
-                <vaadi-row>
-                    <vaadin-grid></vaadin-grid>
-                </vaadi-row>
-            </vaadin-board>
+            <div class="row" id="firstline"></div>
+            <div class="row" id="secondline"></div>
+            <div>
+                <vaadin-board style="max-width: 964px; margin-right: auto; margin-left: auto">
+                    <vaadi-row>
+                        <vaadin-grid id ="smsGrid"></vaadin-grid>
+                    </vaadi-row>
+                    <vaadin-row>
+                        <div id="footer"></div>
+                    </vaadin-row>
+                </vaadin-board>
+            </div>
         `;
     }
 }

@@ -1,0 +1,10 @@
+INSERT INTO public.oauthority (id, version, auth_desc, auth_name) VALUES (1, 0, 'Permite ver la Pantalla AUDITEVEN', 'UI_AUDIT');
+INSERT INTO public.oauthority (id, version, auth_desc, auth_name) VALUES (2, 0, 'Permite ver la Pantalla ROL', 'UI_ROL');
+INSERT INTO public.oauthority (id, version, auth_desc, auth_name) VALUES (3, 0, 'Permite ver la Pantalla USER', 'UI_USER');
+INSERT INTO public.oauthority (id, version, auth_desc, auth_name) VALUES (4, 0, 'Permite ver la Pantalla AUDITEVEN', 'UI_EVOLUTION_CARRIER');
+INSERT INTO public.oauthority (id, version, auth_desc, auth_name) VALUES (5, 0, 'Permite ver la Pantalla ROL', 'UI_EVOLUTION_CLIENT');
+INSERT INTO public.oauthority (id, version, auth_desc, auth_name) VALUES (6, 0, 'Permite ver la Pantalla USER', 'UI_EVOLUTION_SYSTEMID');
+INSERT INTO public.oauthority (id, version, auth_desc, auth_name) VALUES (7, 0, 'Permite ver la Pantalla USER', 'UI_SEARCH_SMS');
+INSERT INTO public.oauthority (id, version, auth_desc, auth_name) VALUES (8, 0, 'Permite ver la Pantalla TRAFICO', 'UI_TRAFFIC_SMS');
+INSERT INTO public.oauthority (id, version, auth_desc, auth_name) VALUES (9, 0, 'Permite ver la Pantalla AGENDA', 'UI_AGENDA_SMS');
+INSERT INTO public.oauthority (id, version, auth_desc, auth_name) VALUES (10, 0, 'Permite ver la Pantalla MANEJO DE RECADOS', 'UI_PROGRAM_SMS');

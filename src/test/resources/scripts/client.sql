@@ -1,0 +1,3 @@
+INSERT INTO public.client (id, client_cod, client_name, cuadrante, email, version) VALUES (55, '0001', 'RAZON 0001', 'ALIADO', 'corre@0001.xom', 0);
+INSERT INTO public.client (id, client_cod, client_name, cuadrante, email, version) VALUES (61, '0002', 'RAZON 0002', 'FINANZAS', 'contacto0002@gmail.com', 0);
+INSERT INTO public.client (id, client_cod, client_name, cuadrante, email, version) VALUES (63, 'REV01', 'REVENDEDOR, C.A', 'ALIADO', 'revendedor@gmail.com', 0);

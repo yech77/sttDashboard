@@ -1,0 +1,15 @@
+INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38624, 63);
+INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38624, 61);
+INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38624, 55);
+INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38625, 55);
+INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38626, 63);
+INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38626, 61);
+INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38626, 55);
+INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38627, 61);
+INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38628, 63);
+INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38628, 61);
+INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38628, 55);
+INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (77323, 55);
+INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (894148, 55);
+INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (894004, 63);
+INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (894194, 55);
