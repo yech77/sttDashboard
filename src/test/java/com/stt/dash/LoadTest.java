@@ -16,9 +16,15 @@ public class LoadTest {
     @Autowired
     TempSmsRepository tempSmsRepository;
 
+    //    @Test
+//    @DisplayName("Trigger de Jan hacia TempSms")
+//    @Sql({"/scripts/jun_sms_23k.sql", "/scripts/jul_sms_10k.sql", "/scripts/may_sms_17k.sql"})
+//    @Rollback(value = true)
+//    @Order(10)
     @Test
     @DisplayName("Trigger de Jan hacia TempSms")
-    @Sql({"/scripts/jun_sms_23k.sql", "/scripts/jul_sms_10k.sql", "/scripts/may_sms_17k.sql"})
+    @Sql(value = {"/scripts/oauthority.sql", "/scripts/orole.sql", "/scripts/client.sql",
+    "/scripts/system_id.sql", "/scripts/user_info.sql"})
     @Rollback(value = true)
     @Order(10)
     public void TriggrJan(){
