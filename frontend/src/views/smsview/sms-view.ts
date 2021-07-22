@@ -41,9 +41,9 @@ export class SmsView extends LitElement {
             <div class="row" id="secondline"></div>
             <div>
                 <vaadin-board style="max-width: 964px; margin-right: auto; margin-left: auto">
-                    <vaadi-row>
-                        <vaadin-grid id ="smsGrid"></vaadin-grid>
-                    </vaadi-row>
+                    <vaadin-row>
+                        <vaadin-grid id="smsGrid" style="min-height: 500px"></vaadin-grid>
+                    </vaadin-row>
                     <vaadin-row>
                         <div id="footer"></div>
                     </vaadin-row>
