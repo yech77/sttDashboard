@@ -1,108 +1,76 @@
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38624, 17);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38624, 16);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38624, 15);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38624, 14);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38624, 13);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38624, 12);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38624, 11);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38624, 20);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38624, 19);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38624, 18);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38625, 17);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38625, 16);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38625, 15);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38625, 14);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38625, 13);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38625, 11);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38625, 20);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38625, 19);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38626, 17);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38626, 16);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38626, 15);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38626, 14);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38626, 13);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38626, 12);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38626, 11);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38626, 20);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38626, 19);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38626, 18);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38627, 17);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38627, 16);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38627, 15);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38627, 14);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38627, 13);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38627, 12);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38627, 11);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38627, 20);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38627, 19);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38627, 18);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38628, 17);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38628, 16);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38628, 15);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38628, 14);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38628, 13);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38628, 12);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38628, 11);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38628, 20);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38628, 19);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38628, 18);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77323, 17);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77323, 16);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77323, 15);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77323, 14);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77323, 13);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77323, 12);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77323, 11);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77323, 20);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77323, 19);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77323, 18);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77337, 17);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77337, 16);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77337, 15);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77337, 14);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77337, 13);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77337, 12);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77337, 11);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77337, 20);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77337, 19);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77337, 18);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77338, 17);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77338, 16);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77338, 15);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77338, 14);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77338, 13);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77338, 12);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77338, 11);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77338, 20);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77338, 19);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (77338, 18);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894004, 14);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894004, 13);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894004, 12);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894004, 11);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894148, 12);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894148, 20);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894148, 19);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894148, 18);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894192, 17);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894192, 16);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894192, 15);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894192, 14);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894192, 13);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894192, 12);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894192, 11);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894192, 20);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894192, 19);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894192, 18);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894194, 17);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894194, 16);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894194, 15);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894194, 14);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894194, 13);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894194, 12);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894194, 11);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894194, 20);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894194, 19);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (894194, 18);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38625, 12);
-INSERT INTO public.user_has_roles (ouser_id, orole_id) VALUES (38625, 18);
+insert into public.user_has_roles (ouser_id, orole_id)
+values  (15, 12352),
+        (15, 12353),
+        (15, 12354),
+        (15, 12345),
+        (15, 12346),
+        (15, 12347),
+        (15, 12348),
+        (15, 12349),
+        (15, 12350),
+        (15, 12351),
+        (16, 12352),
+        (16, 12353),
+        (16, 12354),
+        (16, 12345),
+        (16, 12346),
+        (16, 12347),
+        (16, 12348),
+        (16, 12349),
+        (16, 12350),
+        (16, 12351),
+        (18, 12352),
+        (18, 12353),
+        (18, 12354),
+        (18, 12345),
+        (18, 12346),
+        (18, 12347),
+        (18, 12348),
+        (18, 12349),
+        (18, 12350),
+        (18, 12351),
+        (19, 12353),
+        (19, 12354),
+        (19, 12345),
+        (19, 12346),
+        (19, 12347),
+        (19, 12348),
+        (19, 12349),
+        (19, 12350),
+        (19, 12351),
+        (17, 12352),
+        (17, 12353),
+        (17, 12354),
+        (17, 12345),
+        (17, 12346),
+        (17, 12347),
+        (17, 12348),
+        (17, 12349),
+        (17, 12350),
+        (17, 12351),
+        (12448, 12346),
+        (12448, 12351),
+        (12530, 12353),
+        (12530, 12354),
+        (12530, 12345),
+        (12530, 12346),
+        (12530, 12347),
+        (12530, 12348),
+        (12530, 12349),
+        (12530, 12350),
+        (12530, 12351),
+        (12578, 12345),
+        (12578, 12350),
+        (12578, 12351),
+        (12626, 12353),
+        (12626, 12345),
+        (12626, 12352),
+        (12787, 12353),
+        (12787, 12345),
+        (12787, 12351),
+        (14714, 12353),
+        (14714, 12346),
+        (14714, 12347),
+        (14714, 12348),
+        (14714, 12349),
+        (14714, 12350);

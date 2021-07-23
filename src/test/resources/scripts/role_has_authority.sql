@@ -1,10 +1,11 @@
-INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (11, 9);
-INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (12, 1);
-INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (13, 7);
-INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (14, 5);
-INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (15, 4);
-INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (16, 6);
-INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (17, 10);
-INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (18, 2);
-INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (19, 8);
-INSERT INTO public.role_has_authority (orole_id, oauthority_id) VALUES (20, 3);
+insert into public.role_has_authority (orole_id, oauthority_id)
+values  (12345, 12343),
+        (12346, 12335),
+        (12347, 12341),
+        (12348, 12339),
+        (12349, 12338),
+        (12350, 12340),
+        (12351, 12344),
+        (12352, 12336),
+        (12353, 12342),
+        (12354, 12337);

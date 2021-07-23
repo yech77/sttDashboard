@@ -1,15 +1,21 @@
-INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38624, 63);
-INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38624, 61);
-INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38624, 55);
-INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38625, 55);
-INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38626, 63);
-INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38626, 61);
-INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38626, 55);
-INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38627, 61);
-INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38628, 63);
-INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38628, 61);
-INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (38628, 55);
-INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (77323, 55);
-INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (894148, 55);
-INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (894004, 63);
-INSERT INTO public.user_has_clients (ouser_id, client_id) VALUES (894194, 55);
+insert into public.user_has_clients (ouser_id, client_id)
+values  (15, 43),
+        (16, 43),
+        (17, 43),
+        (18, 43),
+        (15, 49),
+        (16, 49),
+        (17, 49),
+        (18, 49),
+        (15, 53),
+        (16, 53),
+        (17, 53),
+        (18, 53),
+        (15, 59),
+        (16, 59),
+        (17, 59),
+        (18, 59),
+        (19, 59),
+        (12448, 53),
+        (12530, 59),
+        (14714, 59);

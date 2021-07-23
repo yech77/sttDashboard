@@ -1,12 +1,9 @@
-INSERT INTO public.system_id (id, version, payment_type, system_id, client_id) VALUES (56, 0, 'POSTPAGO', 'C0001', 55);
-INSERT INTO public.system_id (id, version, payment_type, system_id, client_id) VALUES (62, 0, 'POSTPAGO', 'C0002', 55);
-INSERT INTO public.system_id (id, version, payment_type, system_id, client_id) VALUES (64, 0, 'POSTPAGO', 'C0003', 63);
-INSERT INTO public.system_id (id, version, payment_type, system_id, client_id) VALUES (65, 0, 'POSTPAGO', 'C0004', 63);
-INSERT INTO public.system_id (id, version, payment_type, system_id, client_id) VALUES (66, 0, 'POSTPAGO', 'C0005', 63);
-INSERT INTO public.system_id (id, version, payment_type, system_id, client_id) VALUES (67, 0, 'POSTPAGO', 'C0006', 63);
-INSERT INTO public.system_id (id, version, payment_type, system_id, client_id) VALUES (68, 0, 'POSTPAGO', 'C0007', 55);
-INSERT INTO public.system_id (id, version, payment_type, system_id, client_id) VALUES (69, 0, 'POSTPAGO', 'C0008', 55);
-INSERT INTO public.system_id (id, version, payment_type, system_id, client_id) VALUES (70, 0, 'POSTPAGO', 'C0009', 63);
-INSERT INTO public.system_id (id, version, payment_type, system_id, client_id) VALUES (71, 0, 'POSTPAGO', 'C0010', 63);
-INSERT INTO public.system_id (id, version, payment_type, system_id, client_id) VALUES (72, 0, 'POSTPAGO', 'C0011', 63);
-INSERT INTO public.system_id (id, version, payment_type, system_id, client_id) VALUES (73, 0, 'POSTPAGO', 'C0012', 63);
+insert into public.system_id (id, payment_type, system_id, client_id)
+values  (44, 'POSTPAGO', 'CRETEST00', 43),
+        (50, 'POSTPAGO', 'CRETESTALL', 49),
+        (52, 'POSTPAGO', 'CRESTTEST00_1', 43),
+        (54, 'POSTPAGO', 'INVJLC2020', 53),
+        (55, 'PREPAGO', 'INVJLC2020_1', 53),
+        (60, 'POSTPAGO', 'VXGJBB', 59),
+        (61, 'POSTPAGO', 'VEGJBB', 59),
+        (62, 'PREPAGO', 'VEGJBB_1', 59);

@@ -1,3 +1,5 @@
-INSERT INTO public.client (id, client_cod, client_name, cuadrante, email, version) VALUES (55, '0001', 'RAZON 0001', 'ALIADO', 'corre@0001.xom', 0);
-INSERT INTO public.client (id, client_cod, client_name, cuadrante, email, version) VALUES (61, '0002', 'RAZON 0002', 'FINANZAS', 'contacto0002@gmail.com', 0);
-INSERT INTO public.client (id, client_cod, client_name, cuadrante, email, version) VALUES (63, 'REV01', 'REVENDEDOR, C.A', 'ALIADO', 'revendedor@gmail.com', 0);
+insert into public.client (id, client_cod, client_name, cuadrante, email)
+values  (43, 'TEST00', 'NOMBRE TEST00', 'ALIADO', 'corre@test.com'),
+        (45, 'TEST02', 'RAZON TEST02', 'ALIADO', 'itjoye@yahoo.com'),
+        (53, 'TEST03', 'INVERSIONES JLC 20-20, C.A', 'EMPRESAS', 'aarongonzalezv@hotmail.com'),
+        (59, 'TESTGB01', 'GLERYXA J. BANDRES B, FP', 'EMPRESAS', 'gleryxab@gmail.com');

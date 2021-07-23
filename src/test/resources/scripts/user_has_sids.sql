@@ -1,28 +1,15 @@
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (38625, 62);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (38625, 56);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (38625, 69);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (38625, 68);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (77337, 62);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (77337, 56);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (77338, 62);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (77338, 56);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894148, 62);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894148, 56);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894148, 69);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894148, 68);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894192, 62);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894192, 56);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894192, 69);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894192, 68);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894194, 62);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894194, 56);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894194, 69);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894194, 68);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894004, 65);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894004, 64);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894004, 73);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894004, 72);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894004, 71);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894004, 70);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894004, 67);
-INSERT INTO public.user_has_sids (ouser_id, systemid_id) VALUES (894004, 66);
+insert into public.user_has_sids (ouser_id, systemid_id)
+values  (19, 60),
+        (19, 61),
+        (19, 62),
+        (12448, 54),
+        (12448, 55),
+        (12530, 60),
+        (12530, 61),
+        (12530, 62),
+        (12578, 61),
+        (12626, 61),
+        (12787, 62),
+        (14714, 60),
+        (14714, 61),
+        (14714, 62);
