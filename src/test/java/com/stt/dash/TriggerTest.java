@@ -8,6 +8,7 @@ import com.stt.dash.backend.repositories.sms.TempSmsRepository;
 import com.stt.dash.backend.service.TempSmsService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -16,8 +17,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest
+//@DataJpaTest
+@AutoConfigureTestDatabase
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ActiveProfiles("local")
+//@ActiveProfiles("local")
 public class TriggerTest {
     @Autowired
     TempSmsRepository tempSmsRepository;
@@ -26,7 +29,7 @@ public class TriggerTest {
 
     @Test
     @DisplayName("Trigger de Jan hacia TempSms")
-    @Sql({"/scripts/jan_sms.sql"})
+    @Sql({"/scripts/schema.sql", "/scripts/jan_sms.sql"})
     @Rollback(value = true)
     @Order(10)
     public void TriggrJan(){

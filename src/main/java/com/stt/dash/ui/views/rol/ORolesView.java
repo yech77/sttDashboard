@@ -27,8 +27,8 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Set;
 
-@Route(value = "ROLES", layout = MainView.class)
-@PageTitle("ROLES")
+@Route(value = BakeryConst.PAGE_ROLES, layout = MainView.class)
+@PageTitle(BakeryConst.TITLE_ROLES)
 @Secured({Role.ADMIN, "UI_ROL"})
 public class ORolesView extends AbstractBakeryCrudView<ORole> {
 
@@ -60,7 +60,7 @@ public class ORolesView extends AbstractBakeryCrudView<ORole> {
 
     @Override
     protected String getBasePage() {
-        return "OROLES";
+        return BakeryConst.PAGE_ROLES;
     }
 
     private static BinderCrudEditor<ORole> createForm(List<OAuthority> authorities) {

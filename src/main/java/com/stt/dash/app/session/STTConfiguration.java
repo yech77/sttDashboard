@@ -45,9 +45,14 @@ public class STTConfiguration {
                                                    SystemIdRepository repo) {
         Set<SystemId> allSystemId;
         if (currentUser.getUser().getUserType() != User.OUSER_TYPE.BY) {
-            log.info("CLIENTE ***** {}", currentUser.getUser().getClient());
-            log.info("SIDS ***** {}", currentUser.getUser().getClient().getSystemids());
-            allSystemId = repo.findAllSystemId(currentUser.getUser().getEmail());
+            if (currentUser.getUser().getClient() ==null){
+                log.info("El usuario no tiene clientes asignados.");
+                allSystemId = new HashSet<>();
+            }else {
+                log.info("CLIENTE ***** {}", currentUser.getUser().getClient());
+                log.info("SIDS ***** {}", currentUser.getUser().getClient().getSystemids());
+                allSystemId = repo.findAllSystemId(currentUser.getUser().getEmail());
+            }
         } else {
             allSystemId = new HashSet<>(currentUser.getUser().getSystemids());
         }
