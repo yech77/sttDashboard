@@ -13,6 +13,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -27,6 +28,7 @@ import com.vaadin.flow.server.VaadinServlet;
 import com.stt.dash.app.security.SecurityUtils;
 import com.stt.dash.ui.views.HasConfirmation;
 import com.stt.dash.ui.views.admin.users.UsersView;
+import org.springframework.context.annotation.Import;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ import static com.stt.dash.ui.utils.BakeryConst.*;
 		offlinePath = "offline-page.html",
 		offlineResources = {"images/offline-login-banner.jpg"},
 		enableInstallPrompt = false)
+
 public class MainView extends AppLayout {
 
 	/* Hora del servidor para establecer busquedas de YYYY-MM-DD*/
@@ -132,7 +135,7 @@ public class MainView extends AppLayout {
 			tabs.add(createTab(VaadinIcon.USER,TITLE_USERS, UsersView.class));
 		}
 		if (SecurityUtils.isAccessGranted(ORolesView.class)) {
-			tabs.add(createTab(VaadinIcon.KEY,"Roles", ORolesView.class));
+			tabs.add(createTab(VaadinIcon.KEY,TITLE_ROLES, ORolesView.class));
 		}
 //		if (SecurityUtils.isAccessGranted(ProductsView.class)) {
 //			tabs.add(createTab(VaadinIcon.CALENDAR, TITLE_PRODUCTS, ProductsView.class));
