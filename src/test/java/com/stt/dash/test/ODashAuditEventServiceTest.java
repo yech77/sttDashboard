@@ -11,6 +11,7 @@ import com.stt.dash.backend.repositories.UserRepository;
 import com.stt.dash.backend.service.ODashAuditEventService;
 import com.stt.dash.backend.service.TempSmsService;
 import com.stt.dash.backend.service.UserService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 //@WebMvcTest(EntryOverviewController.class)
 @Import({UserDetailsServiceImpl.class, SecurityConfiguration.class, TempSmsService.class})
+@Disabled
 public class ODashAuditEventServiceTest {
     @Autowired
     ApplicationContext applicationContext;

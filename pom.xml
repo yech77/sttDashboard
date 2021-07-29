@@ -489,6 +489,10 @@
 
         <profile>
             <id>local</id>
+            <properties>
+                <spring.profiles.active>local</spring.profiles.active>
+<!--                <vaadin.productionMode>true</vaadin.productionMode>-->
+            </properties>
             <build>
                 <plugins>
                     <plugin>

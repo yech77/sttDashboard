@@ -10,6 +10,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Disabled("Hasta cambiar la base de datos")
 public class LoadTest {
     @Autowired
     TempSmsService tempSmsService;

@@ -1,3 +1,6 @@
+/*******
+
+ ****/
 create or replace function insertintotempsms() returns trigger
     language plpgsql
 as
