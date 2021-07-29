@@ -101,7 +101,7 @@ public class DataGenerator implements HasLogger {
         getLogger().info("********************* * * * * * * * * * * * " + passwordEncoder.encode("admin"));
         getLogger().info("********************* * * * * * * * * * * * " + passwordEncoder.encode("admin"));
         /**/
-        if (user_repo.count() != 0L) {
+        if (true) {
             getLogger().info("Using existing database");
             return;
         }

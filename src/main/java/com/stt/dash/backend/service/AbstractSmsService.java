@@ -41,70 +41,70 @@ public class AbstractSmsService {
         monthRepos[11] = dec_repo;
     }
 
-    public Page<? extends AbstractSMS> findByPhoneNumer(int year, int month, List<String> list_sid, String destination) {
+    public Page<AbstractSMS> findByPhoneNumer(int year, int month, List<String> list_sid, String destination) {
         return findByPhoneNumer(year, month, list_sid, destination, 0, pageSize);
     }
 
     // Caso 1
-    public Page<? extends AbstractSMS> findByPhoneNumer(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, String destination, int page) {
+    public Page<AbstractSMS> findByPhoneNumer(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, String destination, int page) {
         return findByPhoneNumer(dateOne, dateTwo, list_sid, destination, page, pageSize);
     }
 
     // Caso 2
-    public Page<? extends AbstractSMS> findBySystemIdIn(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, int page) {
+    public Page<AbstractSMS> findBySystemIdIn(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, int page) {
         return findBySystemIdIn(dateOne, dateTwo, list_sid, page, pageSize);
     }
 
     // Caso 3, 5, 11
-    public Page<? extends AbstractSMS> findByPhoneNumber(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, String destination, int page) {
+    public Page<AbstractSMS> findByPhoneNumber(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, String destination, int page) {
         return findByPhoneNumber(dateOne, dateTwo, list_sid, destination, page, pageSize);
     }
 
     // Caso 4 y 6
-    public Page<? extends AbstractSMS> findByCarrier(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, String carrierCharCode, int page) {
+    public Page<AbstractSMS> findByCarrier(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, String carrierCharCode, int page) {
         return findByCarrier(dateOne, dateTwo, list_sid, carrierCharCode, page, pageSize);
     }
 
     // Caso 8 y 10
-    public Page<? extends AbstractSMS> findByMessageType(LocalDate dateOne, LocalDate dateTwo, Collection<String> list_sid, Collection<String> messageType, int page) {
+    public Page<AbstractSMS> findByMessageType(LocalDate dateOne, LocalDate dateTwo, Collection<String> list_sid, Collection<String> messageType, int page) {
         return findByMessageType(dateOne, dateTwo, list_sid, messageType, page, pageSize);
     }
 
     // Caso 9
-    public Page<? extends AbstractSMS> findByPhoneNumber(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, String destination, Collection<String> messageType, int page) {
+    public Page<AbstractSMS> findByPhoneNumber(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, String destination, Collection<String> messageType, int page) {
         return findByPhoneNumber(dateOne, dateTwo, list_sid, destination, messageType, page, pageSize);
     }
 
     // Caso 0
-    public Page<? extends AbstractSMS> getAllMessages(LocalDate dateOne, LocalDate dateTwo, List<String> systemIds, int page) {
+    public Page<AbstractSMS> getAllMessages(LocalDate dateOne, LocalDate dateTwo, List<String> systemIds, int page) {
         return getAllMessages(dateOne, dateTwo, systemIds, page, pageSize);
     }
 
     // Caso 12 y 14
-    public Page<? extends AbstractSMS> findByCarrierAndMessageType(LocalDate dateOne, LocalDate dateTwo, Collection<String> list_sid, String carrierCharCode, Collection<String> messageType, int page) {
+    public Page<AbstractSMS> findByCarrierAndMessageType(LocalDate dateOne, LocalDate dateTwo, Collection<String> list_sid, String carrierCharCode, Collection<String> messageType, int page) {
         return findByCarrierAndMessageType( dateOne, dateTwo, list_sid, carrierCharCode, messageType, page, pageSize);
     }
 
     // Caso 13 y 15
-    public Page<? extends AbstractSMS> findByPhoneNumber(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, String destination, Collection<String> messageType, String carrierCharCode, int page) {
+    public Page<AbstractSMS> findByPhoneNumber(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, String destination, Collection<String> messageType, String carrierCharCode, int page) {
         return findByPhoneNumber(dateOne, dateTwo, list_sid, destination, messageType, carrierCharCode, page, pageSize);
     }
 
-    public Page<? extends AbstractSMS> findByPhoneNumer(int year, int month, List<String> list_sid, String destination, int page) {
+    public Page<AbstractSMS> findByPhoneNumer(int year, int month, List<String> list_sid, String destination, int page) {
         return findByPhoneNumer(year, month, list_sid, destination, page, pageSize);
     }
 
-    public Page<? extends AbstractSMS> findByPhoneNumer(int year, int month, List<String> list_sid, String destination, Collection<String> messageType, int page) {
+    public Page<AbstractSMS> findByPhoneNumer(int year, int month, List<String> list_sid, String destination, Collection<String> messageType, int page) {
         return findByPhoneNumer(year, month, list_sid, destination, messageType, page, pageSize);
     }
 
-    public Page<? extends AbstractSMS> findByPhoneNumer(int year, int month, List<String> list_sid, String destination, Collection<String> messageType, String carrierCharCode, int page) {
+    public Page<AbstractSMS> findByPhoneNumer(int year, int month, List<String> list_sid, String destination, Collection<String> messageType, String carrierCharCode, int page) {
         return findByPhoneNumer(year, month, list_sid, destination, messageType, carrierCharCode, page, pageSize);
     }
 
 
 
-    public Page<? extends AbstractSMS> findByMessageTypeCase10(
+    public Page<AbstractSMS> findByMessageTypeCase10(
             LocalDate dateOne,
             LocalDate dateTwo,
             List<String> list_sid,
@@ -131,7 +131,7 @@ public class AbstractSmsService {
      * @param pageSize
      * @return
      */
-    public Page<? extends AbstractSMS> findByPhoneNumer(
+    public Page<AbstractSMS> findByPhoneNumer(
             LocalDate dateOne,
             LocalDate dateTwo,
             List<String> list_sid,
@@ -160,7 +160,7 @@ public class AbstractSmsService {
      * @param pageSize
      * @return
      */
-    public Page<? extends AbstractSMS> findByPhoneNumber(
+    public Page<AbstractSMS> findByPhoneNumber(
             LocalDate dateOne,
             LocalDate dateTwo,
             List<String> list_sid,
@@ -179,7 +179,7 @@ public class AbstractSmsService {
     }
 
     @Deprecated
-    public Page<? extends AbstractSMS> findByPhoneNumer(
+    public Page<AbstractSMS> findByPhoneNumer(
             int year,
             int month,
             List<String> list_sid,
@@ -203,7 +203,7 @@ public class AbstractSmsService {
     }
 
     @Deprecated
-    public Page<? extends AbstractSMS> findByPhoneNumer(
+    public Page<AbstractSMS> findByPhoneNumer(
             int year,
             int month,
             List<String> list_sid,
@@ -238,7 +238,7 @@ public class AbstractSmsService {
      * @param pageSize
      * @return
      */
-    public Page<? extends AbstractSMS> findByPhoneNumber(
+    public Page<AbstractSMS> findByPhoneNumber(
             LocalDate dateOne,
             LocalDate dateTwo,
             List<String> list_sid,
@@ -257,7 +257,7 @@ public class AbstractSmsService {
     }
 
     @Deprecated
-    public Page<? extends AbstractSMS> findByPhoneNumer(
+    public Page<AbstractSMS> findByPhoneNumer(
             int year,
             int month,
             List<String> list_sid,
@@ -299,7 +299,7 @@ public class AbstractSmsService {
      * @param pageSize
      * @return
      */
-    public Page<? extends AbstractSMS> findByPhoneNumber(
+    public Page<AbstractSMS> findByPhoneNumber(
             LocalDate dateOne,
             LocalDate dateTwo,
             List<String> list_sid,
@@ -323,7 +323,7 @@ public class AbstractSmsService {
                 paging);
     }
 
-    public Page<? extends AbstractSMS> findBySystemIdIn(int year, int month, List<String> list_sid) {
+    public Page<AbstractSMS> findBySystemIdIn(int year, int month, List<String> list_sid) {
         return findBySystemIdIn(year, month, list_sid, 0);
     }
 
@@ -336,7 +336,7 @@ public class AbstractSmsService {
      * @param page
      * @return
      */
-    public Page<? extends AbstractSMS> findBySystemIdIn(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, int page, int pageSize) {
+    public Page<AbstractSMS> findBySystemIdIn(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, int page, int pageSize) {
         /* DATE */
         Date dateStart = ODateUitls.valueOf(dateOne);
         Date dateEnd = ODateUitls.valueOf(dateTwo);
@@ -349,7 +349,7 @@ public class AbstractSmsService {
     }
 
     @Deprecated
-    public Page<? extends AbstractSMS> findBySystemIdIn(int year, int month, List<String> list_sid, int page) {
+    public Page<AbstractSMS> findBySystemIdIn(int year, int month, List<String> list_sid, int page) {
         try {
             /* DATE */
             Date dateStart = parseYearMonthToDate(year, month);
@@ -367,11 +367,11 @@ public class AbstractSmsService {
         return null;
     }
 
-    public Page<? extends AbstractSMS> findBySystemIdIn(int year, int month, int day, List<String> list_sid) {
+    public Page<AbstractSMS> findBySystemIdIn(int year, int month, int day, List<String> list_sid) {
         return findBySystemIdIn(year, month, day, list_sid, 0);
     }
 
-    public Page<? extends AbstractSMS> findBySystemIdIn(int year, int month, int day, List<String> list_sid, int page) {
+    public Page<AbstractSMS> findBySystemIdIn(int year, int month, int day, List<String> list_sid, int page) {
         try {
             /* DATE */
             System.out.println("A convertir: " + year + " " + month + " " + day);
@@ -389,7 +389,7 @@ public class AbstractSmsService {
         return null;
     }
 
-    public Page<? extends AbstractSMS> findByMessageType(int year, int month, Collection<String> list_sid, Collection<String> messageType) {
+    public Page<AbstractSMS> findByMessageType(int year, int month, Collection<String> list_sid, Collection<String> messageType) {
         return findByMessageType(year, month, list_sid, messageType, 0);
     }
 
@@ -403,7 +403,7 @@ public class AbstractSmsService {
      * @param page
      * @return
      */
-    public Page<? extends AbstractSMS> findByMessageType(LocalDate dateOne, LocalDate dateTwo, Collection<String> list_sid, Collection<String> messageType, int page, int pageSize) {
+    public Page<AbstractSMS> findByMessageType(LocalDate dateOne, LocalDate dateTwo, Collection<String> list_sid, Collection<String> messageType, int page, int pageSize) {
         /* DATE */
         Date dateStart = ODateUitls.valueOf(dateOne);
         Date dateEnd = ODateUitls.valueOf(dateTwo);
@@ -418,7 +418,7 @@ public class AbstractSmsService {
     }
 
     @Deprecated
-    public Page<? extends AbstractSMS> findByMessageType(int year, int month, Collection<String> list_sid, Collection<String> messageType, int page) {
+    public Page<AbstractSMS> findByMessageType(int year, int month, Collection<String> list_sid, Collection<String> messageType, int page) {
         try {
             /* DATE */
             Date dateStart = parseYearMonthToDate(year, month);
@@ -437,12 +437,12 @@ public class AbstractSmsService {
         return null;
     }
 
-    public Page<? extends AbstractSMS> findByCarrier(int year, int month, List<String> list_sid, String carrierCharCode) {
+    public Page<AbstractSMS> findByCarrier(int year, int month, List<String> list_sid, String carrierCharCode) {
         return findByCarrier(year, month, list_sid, carrierCharCode, 0);
     }
 
     @Deprecated
-    public Page<? extends AbstractSMS> findByCarrier(int year, int month, List<String> list_sid, String carrierCharCode, int page) {
+    public Page<AbstractSMS> findByCarrier(int year, int month, List<String> list_sid, String carrierCharCode, int page) {
         try {
             /* DATE */
             Date dateStart = parseYearMonthToDate(year, month);
@@ -470,7 +470,7 @@ public class AbstractSmsService {
      * @param pageSize
      * @return
      */
-    public Page<? extends AbstractSMS> findByCarrier(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, String carrierCharCode, int page, int pageSize) {
+    public Page<AbstractSMS> findByCarrier(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, String carrierCharCode, int page, int pageSize) {
 
         /* DATE */
         Date dateStart = ODateUitls.valueOf(dateOne);
@@ -485,13 +485,13 @@ public class AbstractSmsService {
 
     }
 
-    public Page<? extends AbstractSMS> findByCarrierAndMessageType(int year, int month, Collection<String> list_sid,
+    public Page<AbstractSMS> findByCarrierAndMessageType(int year, int month, Collection<String> list_sid,
                                                                    String carrierCharCode, Collection<String> messageType) {
         return findByCarrierAndMessageType(year, month, list_sid, carrierCharCode, messageType, 0);
     }
 
     @Deprecated
-    public Page<? extends AbstractSMS> findByCarrierAndMessageType(int year, int month, Collection<String> list_sid,
+    public Page<AbstractSMS> findByCarrierAndMessageType(int year, int month, Collection<String> list_sid,
                                                                    String carrierCharCode, Collection<String> messageType, int page) {
         try {
             /* DATE */
@@ -523,7 +523,7 @@ public class AbstractSmsService {
      * @param pageSize
      * @return
      */
-    public Page<? extends AbstractSMS> findByCarrierAndMessageType(LocalDate dateOne, LocalDate dateTwo, Collection<String> list_sid,
+    public Page<AbstractSMS> findByCarrierAndMessageType(LocalDate dateOne, LocalDate dateTwo, Collection<String> list_sid,
                                                                    String carrierCharCode, Collection<String> messageType, int page, int pageSize) {
         /* DATE */
         Date dateStart = ODateUitls.valueOf(dateOne);
@@ -539,7 +539,7 @@ public class AbstractSmsService {
                 paging);
     }
 
-    public List<? extends AbstractSMS> getAllMessages(int year, int month, int day, List<String> systemIds) {
+    public List<AbstractSMS> getAllMessages(int year, int month, int day, List<String> systemIds) {
         return getAllMessages(year, month, day, systemIds, 0);
     }
 
@@ -552,20 +552,20 @@ public class AbstractSmsService {
      * @param pageSize
      * @return
      */
-    public Page<? extends AbstractSMS> getAllMessages(LocalDate dateOne, LocalDate dateTwo, List<String> systemIds, int page, int pageSize) {
+    public Page<AbstractSMS> getAllMessages(LocalDate dateOne, LocalDate dateTwo, List<String> systemIds, int page, int pageSize) {
         /* DATE */
         Date dateStart = ODateUitls.valueOf(dateOne);
         Date dateEnd = ODateUitls.valueOf(dateTwo);
 
         Pageable paging = PageRequest.of(page, pageSize);
-        Page<? extends AbstractSMS> p = monthRepos[dateOne.getMonthValue() - 1].findByDateBetweenAndSystemIdIn(dateStart,
+        Page<AbstractSMS> p = monthRepos[dateOne.getMonthValue() - 1].findByDateBetweenAndSystemIdIn(dateStart,
                 dateEnd,
                 systemIds,
                 paging);
         return p;
     }
 
-    public List<? extends AbstractSMS> getAllMessages(int year, int month, int day, List<String> systemIds, int page) {
+    public List<AbstractSMS> getAllMessages(int year, int month, int day, List<String> systemIds, int page) {
         List<AbstractSMS> list = new ArrayList<>();
 
         try {
@@ -576,7 +576,7 @@ public class AbstractSmsService {
             Date dateEnd = parseYearMonthDayHourToDate(t.getYear(), t.getMonthValue(), t.getDayOfMonth(), t.getHour());
 
             Pageable paging = PageRequest.of(page, pageSize);
-            Page<? extends AbstractSMS> p = monthRepos[month - 1].findByDateBetweenAndSystemIdIn(dateStart,
+            Page<AbstractSMS> p = monthRepos[month - 1].findByDateBetweenAndSystemIdIn(dateStart,
                     dateEnd,
                     systemIds,
                     paging);
@@ -590,7 +590,7 @@ public class AbstractSmsService {
         return null;
     }
 
-    public List<? extends AbstractSMS> getAllMessages(int year, int month, int day, int hour, List<String> systemIds) {
+    public List<AbstractSMS> getAllMessages(int year, int month, int day, int hour, List<String> systemIds) {
         return getAllMessages(year, month, day, hour, systemIds, 0);
     }
 
@@ -604,8 +604,8 @@ public class AbstractSmsService {
      * @param systemIds
      * @return
      */
-    public List<? extends AbstractSMS> getAllMessages(int year, int month, int day, int hour, List<String> systemIds, int page) {
-        List<? extends AbstractSMS> newList = new ArrayList<>();
+    public List<AbstractSMS> getAllMessages(int year, int month, int day, int hour, List<String> systemIds, int page) {
+        List<AbstractSMS> newList = new ArrayList<>();
         Date dateStart = null;
         Date dateEnd = null;
         Pageable paging = PageRequest.of(page, pageSize);
@@ -621,14 +621,14 @@ public class AbstractSmsService {
             return null;
         }
 
-        Page<? extends AbstractSMS> msgList = monthRepos[month - 1].findByDateBetweenAndSystemIdIn(dateStart,
+        Page<AbstractSMS> msgList = monthRepos[month - 1].findByDateBetweenAndSystemIdIn(dateStart,
                 dateEnd,
                 systemIds,
                 paging);
         newList = msgList.getContent();
 //        switch (month) {
 //            case 8:
-//                Page<? extends AbstractSMS> augList = aug_repo.findByDateBetweenAndSystemIdIn(dateStart,
+//                Page<AbstractSMS> augList = aug_repo.findByDateBetweenAndSystemIdIn(dateStart,
 //                        dateEnd,
 //                        systemIds,
 //                        paging);
@@ -636,7 +636,7 @@ public class AbstractSmsService {
 //                break;
 //
 //            case 9:
-//                Page<? extends AbstractSMS> sepList = sep_repo.findByDateBetweenAndSystemIdIn(dateStart,
+//                Page<AbstractSMS> sepList = sep_repo.findByDateBetweenAndSystemIdIn(dateStart,
 //                        dateEnd,
 //                        systemIds,
 //                        paging);
@@ -644,7 +644,7 @@ public class AbstractSmsService {
 //                break;
 //
 //            case 10:
-//                Page<? extends AbstractSMS> octList = oct_repo.findByDateBetweenAndSystemIdIn(dateStart,
+//                Page<AbstractSMS> octList = oct_repo.findByDateBetweenAndSystemIdIn(dateStart,
 //                        dateEnd,
 //                        systemIds,
 //                        paging);
@@ -654,12 +654,12 @@ public class AbstractSmsService {
 //
 //            case 11:
 //                System.out.println("Llamando Noviembre Por horas: " + dateStart + " " + dateEnd);
-//                Page<? extends AbstractSMS> novList = nov_repo.findByDateBetweenAndSystemIdIn(dateStart,
+//                Page<AbstractSMS> novList = nov_repo.findByDateBetweenAndSystemIdIn(dateStart,
 //                        dateEnd,
 //                        systemIds,
 //                        paging);
 //                newList = novList.getContent();
-////                for (? extends AbstractSMS msg : novList) {
+////                for (AbstractSMS msg : novList) {
 ////                    newList.add((AbstractSMS) msg);
 ////                }
 //                break;
@@ -667,12 +667,12 @@ public class AbstractSmsService {
         return newList;
     }
 
-    public List<? extends AbstractSMS> getAllMessages(int year, int month, int day, int hour, String messageType, List<String> systemIds) {
+    public List<AbstractSMS> getAllMessages(int year, int month, int day, int hour, String messageType, List<String> systemIds) {
         return getAllMessages(year, month, day, hour, messageType, systemIds, 0);
     }
 
-    public List<? extends AbstractSMS> getAllMessages(int year, int month, int day, int hour, String messageType, List<String> systemIds, int page) {
-        List<? extends AbstractSMS> newList = new ArrayList<>();
+    public List<AbstractSMS> getAllMessages(int year, int month, int day, int hour, String messageType, List<String> systemIds, int page) {
+        List<AbstractSMS> newList = new ArrayList<>();
         Date dateStart = null;
         Date dateEnd = null;
         Pageable paging = PageRequest.of(page, pageSize);
@@ -686,7 +686,7 @@ public class AbstractSmsService {
             java.util.logging.Logger.getLogger(AbstractSmsService.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
-        Page<? extends AbstractSMS> msgList = monthRepos[month - 1].findByDateBetweenAndSystemIdInAndMessageTypeIn(dateStart,
+        Page<AbstractSMS> msgList = monthRepos[month - 1].findByDateBetweenAndSystemIdInAndMessageTypeIn(dateStart,
                 dateEnd,
                 systemIds,
                 Arrays.asList(messageType),
@@ -694,7 +694,7 @@ public class AbstractSmsService {
         newList = msgList.getContent();
 //        switch (month) {
 //            case 8:
-//                Page<? extends AbstractSMS> augList = aug_repo.findByDateBetweenAndSystemIdInAndMessageTypeIn(dateStart, dateEnd, systemIds, Arrays.asList(messageType), paging);
+//                Page<AbstractSMS> augList = aug_repo.findByDateBetweenAndSystemIdInAndMessageTypeIn(dateStart, dateEnd, systemIds, Arrays.asList(messageType), paging);
 ////                 for (AugSms msg : augList) {
 ////                    newList.add((AbstractSMS) msg);
 ////                }
@@ -702,24 +702,24 @@ public class AbstractSmsService {
 //                break;
 //
 //            case 9:
-//                Page<? extends AbstractSMS> sepList = sep_repo.findByDateBetweenAndSystemIdInAndMessageTypeIn(dateStart, dateEnd, systemIds, Arrays.asList(messageType), paging);
+//                Page<AbstractSMS> sepList = sep_repo.findByDateBetweenAndSystemIdInAndMessageTypeIn(dateStart, dateEnd, systemIds, Arrays.asList(messageType), paging);
 //                newList = sepList.getContent();
 //                break;
 //
 //            case 10:
-//                Page<? extends AbstractSMS> octList = oct_repo.findByDateBetweenAndSystemIdInAndMessageTypeIn(dateStart, dateEnd, systemIds, Arrays.asList(messageType), paging);
+//                Page<AbstractSMS> octList = oct_repo.findByDateBetweenAndSystemIdInAndMessageTypeIn(dateStart, dateEnd, systemIds, Arrays.asList(messageType), paging);
 //                newList = octList.getContent();
 //                break;
 //
 //            case 11:
-//                Page<? extends AbstractSMS> novList = nov_repo.findByDateBetweenAndSystemIdInAndMessageTypeIn(dateStart, dateEnd, systemIds, Arrays.asList(messageType), paging);
+//                Page<AbstractSMS> novList = nov_repo.findByDateBetweenAndSystemIdInAndMessageTypeIn(dateStart, dateEnd, systemIds, Arrays.asList(messageType), paging);
 //                newList = novList.getContent();
 //                break;
 //        }
         return newList;
     }
 
-    public List<? extends AbstractSMS> getAllFilteredMessages(int year, int month, int day,
+    public List<AbstractSMS> getAllFilteredMessages(int year, int month, int day,
                                                               int hour, List<String> systemIds, String systemId, String messagesText,
                                                               String messageType, String iso2, String carrierCharCode, String source,
                                                               String destination, String msgSended, String msgReceived) {
@@ -728,12 +728,12 @@ public class AbstractSmsService {
                 messageType, iso2, carrierCharCode, source, destination, msgSended, msgReceived, 0);
     }
 
-    public List<? extends AbstractSMS> getAllFilteredMessages(int year, int month, int day,
+    public List<AbstractSMS> getAllFilteredMessages(int year, int month, int day,
                                                               int hour, List<String> systemIds, String systemId, String messagesText,
                                                               String messageType, String iso2, String carrierCharCode, String source,
                                                               String destination, String msgSended, String msgReceived, int page) {
 
-        List<? extends AbstractSMS> newList = new ArrayList<>();
+        List<AbstractSMS> newList = new ArrayList<>();
 
         Date dateStart = null;
         Date dateEnd = null;
@@ -749,7 +749,7 @@ public class AbstractSmsService {
             java.util.logging.Logger.getLogger(AbstractSmsService.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
-        Page<? extends AbstractSMS> msgList = monthRepos[month - 1].findByDateBetweenAndSystemIdInAndSystemIdLikeAndMessagesTextLikeAndMessageTypeLikeAndIso2LikeAndCarrierCharCodeLikeAndSourceLikeAndDestinationLikeAndMsgSendedLikeAndMsgReceivedLike(dateStart,
+        Page<AbstractSMS> msgList = monthRepos[month - 1].findByDateBetweenAndSystemIdInAndSystemIdLikeAndMessagesTextLikeAndMessageTypeLikeAndIso2LikeAndCarrierCharCodeLikeAndSourceLikeAndDestinationLikeAndMsgSendedLikeAndMsgReceivedLike(dateStart,
                 dateEnd,
                 systemIds,
                 systemId,
