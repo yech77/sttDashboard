@@ -216,7 +216,7 @@ public class SmsView extends LitTemplate {
             }
             click.getSource().setEnabled(true);
             dataProvider.refreshAll();
-            if (dataProvider.getItems().size() == 0) {
+            if (dataProvider.getItems().isEmpty()) {
                 Notification notification = new Notification();
                 Span label = new Span("No hay información a mostrar.");
                 Button closeButton = new Button("Cerrar", e -> notification.close());
@@ -398,15 +398,18 @@ public class SmsView extends LitTemplate {
         if (!"".equals(textPhoneNumer.getValue().trim())) {
             n += 1;
         }
-        if (multi_systemIds.getSelectedItems().size() > 0) {
+        if (!multi_systemIds.getSelectedItems().isEmpty()) {
             n += 2;
         }
-//        if (comboCarrier.getValue() != null && !"".equals(comboCarrier.getValue().getCarrierName().trim())) {
-//            n += 4;
-//        }
-        if (multi_messagetype.getValue().size() > 0) {
+
+        if (comboCarrier.getValue() != null && !"".equals(comboCarrier.getValue().getCarrierName().trim())) {
+            n += 4;
+        }
+
+        if (!multi_messagetype.getValue().isEmpty()) {
             n += 8;
         }
+
         System.out.println("FindType: " + n);
         return n;
     }
@@ -505,7 +508,7 @@ public class SmsView extends LitTemplate {
                 .addColumn(new LocalDateTimeRenderer<>(
                         client -> client.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
                         DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")))
-                .setComparator(client -> client.getDate()).setHeader("Date")
+                .setComparator(AbstractSMS::getDate).setHeader("Date")
                 .setAutoWidth(true);
 //                .setWidth("180px").setFlexGrow(0);
     }
