@@ -6,7 +6,7 @@ import org.springframework.data.domain.Sort;
 
 public class BakeryConst {
 
-	public static final Locale APP_LOCALE = Locale.US;
+	public static final Locale APP_LOCALE = new Locale("es", "VE");
 
 	public static final String ORDER_ID = "orderID";
 	public static final String EDIT_SEGMENT = "edit";

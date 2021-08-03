@@ -192,6 +192,8 @@ public class UserForm extends FormLayout {
             if (!listener.isFromClient()) {
                 return;
             }
+            /* obtener solo los roles del padre */
+            roles.setItems(listener.getValue().getRoles());
             switch (listener.getSource().getValue().getUserTypeOrd()) {
                 case COMERCIAL:
                     comboClient.setItems(listener.getSource().getValue().getClients());

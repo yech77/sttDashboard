@@ -10,10 +10,12 @@ import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
+import java.text.DecimalFormat;
+
 @Tag("main-counter-label")
 @JsModule("./src/views/main/main-counter-label.js")
 public class MainCounterLabel extends PolymerTemplate<TemplateModel> {
-
+	DecimalFormat df = new DecimalFormat("###,###,###");
 	@Id("title")
 	private H4 title;
 
@@ -26,6 +28,6 @@ public class MainCounterLabel extends PolymerTemplate<TemplateModel> {
 	public void setOrdersCountData(OrdersCountData data) {
 		title.setText(data.getTitle());
 		subtitle.setText(data.getSubtitle());
-		count.setText(String.valueOf(data.getCount()));
+		count.setText(df.format(data.getCount()));
 	}
 }
