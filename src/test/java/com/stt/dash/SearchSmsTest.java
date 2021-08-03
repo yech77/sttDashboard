@@ -16,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
 //@SpringBootTest(
@@ -51,6 +52,7 @@ public class SearchSmsTest {
         Assertions.assertNotEquals(0, augSmsRepository.count());
         tempSmsService.doResume();
         Assertions.assertNotEquals(0, smsHourRepository.count());
-
     }
+
+
 }

@@ -90,7 +90,7 @@ values (40, 'POSTPAGO', 'BCOTEST04', 30),
        (50, 'POSTPAGO', 'NETMBO01', 31);
 /******* USUARIOS **********/
 insert into public.user_info (id, version, active, created_by, created_date, email, first_name, last_name, locked, password_hash, role, user_type, user_type_ord, user_parent_id)
-values  (51, 1, true, null, '2021-07-23 15:00:53.987278', 'adminstt@soltextech.com', 'Name Admin', 'Last Admin', true, '$2a$10$KcQI.OQnX3/obH8W0/X8weVVoK2A/GPW1SK6EveNRODDfXb0rmpzm', null, 1, 0, null),
+values  (51, 0, true, null, '2021-07-23 15:00:53.987278', 'adminstt@soltextech.com', 'Name Admin', 'Last Admin', true, '$2a$10$KcQI.OQnX3/obH8W0/X8weVVoK2A/GPW1SK6EveNRODDfXb0rmpzm', null, 1, 0, null),
         (52, 0, true, 'adminstt@soltextech.com', '2021-07-23 15:03:17.433041', 'gbandres@soltextech.com', 'Gleryxa', 'Bandres', false, '$2a$10$niedArOXTyf7tEHYogfs4.Ku.WYyn4a2MSdb7Dr7I/b7KSBhhZaOG', null, 1, 0, 51),
         (53, 0, true, 'adminstt@soltextech.com', '2021-07-23 18:12:12.353113', 'enavas@soltextech.com', 'Elizabeth', 'Navas', false, '$2a$10$HcyK0gjx7yGXjD/DWcG.xeT/9zxcTSHL99CqwJfgPWspjTNizxzKe', null, 1, 0, 51),
         (54, 0, true, 'adminstt@soltextech.com', '2021-07-23 18:15:34.585924', 'dsolorzano@gmail.com', 'Denny', 'Solorzano', false, '$2a$10$szMOmQz7j9nMnK4b8tJQsOhiGtAjwDGdkxwfC7SsTinw/BzdHkmzO', null, 1, 0, 51),
@@ -98,7 +98,7 @@ values  (51, 1, true, null, '2021-07-23 15:00:53.987278', 'adminstt@soltextech.c
         (6, 0, true, 'gbandres@soltextech.com', '2021-07-26 07:49:19.554942', 'userbqtnet@soltextech.com', 'userbqtnet', '', false, '$2a$10$jhksTEd4bMaqhj3UNZvTq.R4miVDU0gYFamgQuifEW4RdzXGJNkNq', null, 2, 3, 4),
         (8, 0, true, 'gbandres@soltextech.com', '2021-07-26 07:52:32.954888', 'adminbco@soltextech.com', 'adminbco', '', false, '$2a$10$rRnHHr6loJ.sYJn95fkx5O..IL9BLfepA6OPrpCXhzYa7pjsHh4CS', null, 0, 1, 52),
         (10, 0, true, 'gbandres@soltextech.com', '2021-07-26 07:54:13.572442', 'userbco01@soltextech.com', 'UserBco01', '', false, '$2a$10$4SZUy.lXlRMsGohF0ptFoOTX8ZJu5GmXzoxEDbjBqJeV2LhaZBT/.', null, 2, 3, 8),
-        (4, 1, true, 'gbandres@soltextech.com', '2021-07-26 07:47:21.076028', 'empresanet@soltextech.com', 'empresanet', '', false, '$2a$10$G4bSEx9q.Kz1qp0wqJP1WemqnxC.I1VcIsrvsprscDBnmNgY5U2We', null, 2, 2, 2);/**********/
+        (4, 0, true, 'gbandres@soltextech.com', '2021-07-26 07:47:21.076028', 'empresanet@soltextech.com', 'empresanet', '', false, '$2a$10$G4bSEx9q.Kz1qp0wqJP1WemqnxC.I1VcIsrvsprscDBnmNgY5U2We', null, 2, 2, 2);/**********/
 insert into public.user_has_roles (ouser_id, orole_id)
 values  (51, 29),
         (51, 28),
