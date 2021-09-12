@@ -14,9 +14,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,10 +38,11 @@ public class STTConfiguration {
      */
     @Bean
     @VaadinSessionScope
-    public SetGenericBean getComercialUserSystemId(CurrentUser currentUser,
+    public SetGenericBean<SystemId> getComercialUserSystemId(CurrentUser currentUser,
                                                    SystemIdRepository repo) {
         Set<SystemId> allSystemId;
-        if (currentUser.getUser().getUserType() != User.OUSER_TYPE.BY) {
+        User.OUSER_TYPE userType = currentUser.getUser().getUserType();
+        if (userType != User.OUSER_TYPE.BY) {
             if (currentUser.getUser().getClient() ==null){
                 log.info("El usuario no tiene clientes asignados.");
                 allSystemId = new HashSet<>();
@@ -56,10 +54,10 @@ public class STTConfiguration {
         } else {
             allSystemId = new HashSet<>(currentUser.getUser().getSystemids());
         }
-        log.info("{} Created SystemId ({}) Session Bean For type [{}] ",
+        log.info("{} Created SystemId ({}) Session Bean For type {}",
                 currentUser.getUser().getEmail(),
                 allSystemId.size(),
-                currentUser.getUser().getUserType().name());
+                userType);
         return () -> allSystemId;
     }
 
@@ -73,7 +71,7 @@ public class STTConfiguration {
      */
     @Bean
     @VaadinSessionScope
-    public ListGenericBean getUserSystemIdString(CurrentUser currentUser,
+    public ListGenericBean<String> getUserSystemIdString(CurrentUser currentUser,
                                                    SystemIdRepository repo) {
         SetGenericBean<SystemId> s = getComercialUserSystemId(currentUser, repo);
         List<String> allSystemId = s.getSet().stream().map(SystemId::getSystemId).collect(Collectors.toList());
@@ -89,7 +87,7 @@ public class STTConfiguration {
      */
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public ListGenericBean getUserMeAndChildren(CurrentUser currentUser) {
+    public ListGenericBean<User> getUserMeAndChildren(CurrentUser currentUser) {
         User thisUser = currentUser.getUser();
         List<User> allUsers = new ArrayList<>();
         List<User> currentFam = new ArrayList<>();
@@ -97,7 +95,7 @@ public class STTConfiguration {
 
         currentFam.add(thisUser);
         addingChildren.addAll(thisUser.getUserChildren());
-        while (addingChildren.size() > 0) {
+        while (!addingChildren.isEmpty()) {
             allUsers.addAll(currentFam);
             currentFam.clear();
             currentFam.addAll(addingChildren);
@@ -122,14 +120,9 @@ public class STTConfiguration {
             try {
                 s = Optional.ofNullable(SecurityUtils.getUsername());
             }catch (Exception e){
-                s = Optional.ofNullable(null);
+                s = Optional.empty();
             }
             return s;
-//            return Optional.ofNullable(SecurityContextHolder.getContext())
-//                    .map(SecurityContext::getAuthentication)
-//                    .filter(Authentication::isAuthenticated)
-//                    .map(Authentication::getPrincipal)
-//                    .map(User.class::cast);
         }
     }
 }

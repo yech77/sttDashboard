@@ -16,7 +16,6 @@ public interface CrudService<T extends AbstractEntitySequence> {
 		try {
 			t = getRepository().saveAndFlush(entity);
 		}catch (Exception e){
-			e.printStackTrace();
 			throw e;
 		}
 		return t;
