@@ -5,23 +5,21 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import com.stt.dash.app.security.CurrentUser;
-import com.stt.dash.app.session.SetGenericBean;
+import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.OUserSession;
 import com.stt.dash.backend.data.Role;
-import com.stt.dash.backend.data.entity.*;
-import com.stt.dash.backend.repositories.OUserRepository;
+import com.stt.dash.backend.data.entity.MyAuditEventComponent;
+import com.stt.dash.backend.data.entity.ODashAuditEvent;
+import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.UserRepository;
-import com.stt.dash.backend.service.*;
+import com.stt.dash.backend.service.ODashAuditEventService;
+import com.stt.dash.backend.service.OUserService;
 import com.stt.dash.backend.util.SessionObjectUtils;
 import com.stt.dash.ui.MainView;
-import com.stt.dash.ui.crud.AbstractBakeryCrudView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.ODateUitls;
-import com.stt.dash.ui.views.admin.users.UserForm;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.crud.BinderCrudEditor;
-import com.vaadin.flow.component.crud.CrudEditor;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.details.DetailsVariant;
 import com.vaadin.flow.component.grid.Grid;
@@ -40,27 +38,28 @@ import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.function.SerializableComparator;
-import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.stt.dash.ui.utils.BakeryConst.PAGE_AUDIT;
-import static com.stt.dash.ui.utils.BakeryConst.PAGE_USERS;
 
 @Route(value = PAGE_AUDIT, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_AUDIT)
@@ -71,7 +70,7 @@ public class AuditView extends VerticalLayout {
     /**/
     private ODashAuditEventForm form;
     /**/
-    private final SessionObjectUtils utils;
+//    private final SessionObjectUtils utils;
     /**/
     private Grid<ODashAuditEvent> grid = new Grid<>();
     private Button downloadButton = new Button("Descargar");
@@ -94,18 +93,21 @@ public class AuditView extends VerticalLayout {
     private final List<String> userChildren = new ArrayList<>();
 
     public AuditView(@Autowired CurrentUser currentUser,
+                     @Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
                      @Autowired ODashAuditEventService event_serv,
-                               @Autowired OUserService user_serv,
-                               @Autowired OUserSession ouser_session,
-                               @Autowired UserRepository ouser_repo,
-                               @Autowired MyAuditEventComponent auditEvent) {
-        utils = new SessionObjectUtils(ouser_session);
+                     @Autowired OUserService user_serv,
+                     @Autowired OUserSession ouser_session,
+                     @Autowired UserRepository ouser_repo,
+                     @Autowired MyAuditEventComponent auditEvent) {
+//        utils = new SessionObjectUtils(ouser_session);
         /**/
         this.event_serv = event_serv;
-        List<User> user = utils.getUserFamily(currentUser);
-        user.forEach(cnsmr -> {
-            userChildren.add(cnsmr.getEmail());
-        });
+//        List<User> user = utils.getUserFamily(currentUser);
+        List<User> user = userChildrenList.getList();
+        userChildren.addAll(user.stream().map(User::getEmail).collect(Collectors.toList()));
+//        user.forEach(cnsmr -> {
+//            userChildren.add(cnsmr.getEmail());
+//        });
         Label titleSpan = new Label("Auditoría de Eventos");
         Span s = new Span(titleSpan, new Hr());
         s.setWidthFull();
@@ -127,7 +129,7 @@ public class AuditView extends VerticalLayout {
                 .setHeader("Fecha");
 
         grid.addColumn(TemplateRenderer.<ODashAuditEvent>of(
-                "<div><small><b>[[item.name]]</b></small><br>[[item.purchasedate]]</div>")
+                        "<div><small><b>[[item.name]]</b></small><br>[[item.purchasedate]]</div>")
                 .withProperty("name", col -> {
                     return col.getEventType().name();
                 })
@@ -162,7 +164,7 @@ public class AuditView extends VerticalLayout {
 //        s.setWidthFull();
 //        h.setWidthFull();
 //        h.getStyle().set("margin-left", "auto");
-        VerticalLayout h = new VerticalLayout(downloadButtonWrapper,grid, details);
+        VerticalLayout h = new VerticalLayout(downloadButtonWrapper, grid, details);
         h.setSizeFull();
         /**/
         h.setSpacing(false);
@@ -237,7 +239,7 @@ public class AuditView extends VerticalLayout {
                 }
             }
             /**/
-            if (items.isEmpty()){
+            if (items.isEmpty()) {
                 showNotification("No hay información a mostrar.");
             }
         } catch (Exception e) {
@@ -248,7 +250,7 @@ public class AuditView extends VerticalLayout {
 
     public void setItemsGrid(List<ODashAuditEvent> items) {
         grid.setItems(items);
-        downloadButton.setEnabled((items.size() > 0));
+        downloadButton.setEnabled(!items.isEmpty());
     }
 
     private void showNotification(String text) {
@@ -274,7 +276,7 @@ public class AuditView extends VerticalLayout {
         // Fetch all data from the grid in the current sorted order
         Stream<ODashAuditEvent> persons = null;
         Set<ODashAuditEvent> selection = grid.asMultiSelect().getValue();
-        if (selection != null && selection.size() > 0) {
+        if (selection != null && !selection.isEmpty()) {
             persons = selection.stream();
         } else {
 //            persons = dataView.getItems();

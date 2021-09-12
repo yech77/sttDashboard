@@ -46,6 +46,12 @@ public class SessionObjectUtils {
 //        ouser_session.setUser(user_serv.findByUserEmail(ouser_session.getUserEmail()));
 //    }
 
+    /**
+     *
+     * @param currentUser
+     * @return
+     * @deprecated @see com.stt.dash.app.session.STTConfiguration
+     */
     public List<User> getUserFamily(CurrentUser currentUser) {
         List<User> allUsers = new ArrayList<>();
         List<User> currentFam = new ArrayList<>();

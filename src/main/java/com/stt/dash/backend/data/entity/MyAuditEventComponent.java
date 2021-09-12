@@ -38,8 +38,9 @@ public class MyAuditEventComponent implements AuditEventRepository {
                 + " - " + event.getType());
         WebAuthenticationDetails details =
                 (WebAuthenticationDetails) event.getData().get("details");
-        System.out.println("Remote IP address: "
-                + details==null?details.getRemoteAddress():"");
+        if (details!=null) {
+            System.out.println("Remote IP address: " + details.getRemoteAddress());
+        }
         if (event.getType().equalsIgnoreCase(EVENT_AUTHENTICATION_FAILURE)
                 && event.getPrincipal().equalsIgnoreCase("anonymousUser")) {
             add(ODashAuditEvent.OEVENT_TYPE.LOGOUT, event.getType() + " from " + details.getRemoteAddress(), event.getPrincipal());
