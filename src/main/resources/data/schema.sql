@@ -1,5 +1,5 @@
 /*******
-
+Crea SOLO los triggers.
  ****/
 create or replace function insertintotempsms() returns trigger
     language plpgsql
