@@ -18,7 +18,6 @@ public interface AgendaRepository extends JpaRepository<Agenda, Long> {
     public List<Agenda> getAllAgendasInFamily(List<User> users);
 
     public List<Agenda> findByName(String name);
-
     @Override
     Optional<Agenda> findById(Long aLong);
 

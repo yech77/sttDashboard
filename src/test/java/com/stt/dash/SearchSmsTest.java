@@ -32,6 +32,7 @@ import java.util.Arrays;
 @Import(value = {TempSmsService.class})
 @Rollback
 @Transactional
+@Disabled("mientras se termina el traspaso a Uma")
 public class SearchSmsTest {
     @Autowired
     Environment environment;

@@ -1,7 +1,7 @@
 package com.stt.dash.ui.utils.messages;
 
 public final class CrudErrorMessage {
-	public static final String ENTITY_NOT_FOUND = "The selected entity was not found.";
+	public static final  String ENTITY_NOT_FOUND = "The selected entity was not found.";
 
 	public static final String CONCURRENT_UPDATE = "Somebody else might have updated the data. Please refresh and try again.";
 
