@@ -9,6 +9,9 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+/**
+ * @version 1.00
+ */
 @Entity
 public class FIlesToSend extends AbstractEntitySequence implements FileToSendSummary{
 
