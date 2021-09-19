@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration name="OProcessor" monitoringInterval="30" shutdownHook="disable">
+    <Properties>
+        <Property name="log-path">./logs</Property>
+        <Property name="filename">file</Property>
+    </Properties>
+    <Appenders>
+        <RollingFile name="file" fileName="${log-path}/DayTwo_info.log" filePattern="logs/$${date:yyyy-MM}/DayTwo_info-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>[%d{dd/MM/yyyy-HH:mm:ss,SSS}] [%-5p] %m %n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 GB"/>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+        <RollingFile name="file_dev1" fileName="${log-path}/DayTwo_info.log" filePattern="logs/$${date:yyyy-MM}/opro_info-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>[%d{dd/MM/yyyy-HH:mm:ss,SSS}] [%-5p](%t) : %m %n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 GB"/>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+        <RollingFile name="file_dev2" fileName="${log-path}/DayTwo_info.log" filePattern="logs/$${date:yyyy-MM}/DayTwo_info-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>[%d{dd/MM/yyyy-HH:mm:ss,SSS}] [%-5p](%t) (%c:%L): %m %n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 GB"/>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+        <RollingFile name="fileError" fileName="${log-path}/DayTwo_error.log" filePattern="logs/$${date:yyyy-MM}/
+      opro_error-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>[%d{dd/MM/yyyy-HH:mm:ss,SSS}] [%-5p](%t) (%c:%L): %m %n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+        <Console name="console" target="SYSTEM_OUT" ignoreExceptions="false">
+            <PatternLayout pattern="[%d{dd/MM/yyyy-HH:mm:ss,SSS}] [%-5p] %m %n"/>
+        </Console>
+        <Console name="console_dev" target="SYSTEM_OUT" ignoreExceptions="false">
+            <PatternLayout pattern="[%d{dd/MM/yyyy-HH:mm:ss,SSS}] [%-5p](%t) (%c:%L): %m %n"/>
+        </Console>
+        <Console name="console_dev2" target="SYSTEM_OUT" ignoreExceptions="false">
+            <PatternLayout pattern="[%d{dd/MM/yyyy-HH:mm:ss,SSS}] [%-5p](%t) : %m %n"/>
+        </Console>
+    </Appenders>
+    <Loggers>   
+        <Root level="info">
+            <AppenderRef ref="file_dev2"/>
+            <AppenderRef ref="console_dev"/>
+        </Root>
+    </Loggers>
+</Configuration>
