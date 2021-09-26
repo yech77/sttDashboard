@@ -249,10 +249,10 @@ public class MQHandler implements Runnable {
         }
         try {
             if (qSender != null) {
-                qSender.close();
                 log.info("{} [SENDER-CLOSED-QUEUE] [{}] WITH [{}]", getStringLog(),
                         qSender.getQueue().getQueueName(),
                         qSession);
+                qSender.close();
             }
         } catch (Exception e) {
             log.error("", e);

@@ -7,8 +7,9 @@ package com.stt.smstransfertoqueue;
 
 import com.stt.smstransfertoqueue.entity.FilesToSend;
 import com.stt.smstransfertoqueue.repository.SendingSmsRepository;
-import com.stt.smstransfertoqueue.runnable.SmsSenderRunnable;
+import com.stt.smstransfertoqueue.runnable.SmsSenderThread;
 import com.stt.smstransfertoqueue.service.FilesToSendService;
+import com.stt.smstransfertoqueue.service.SendingSmsService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,8 @@ public class SmsTransferToQueueApplication extends SpringBootServletInitializer 
     // REPO
     @Autowired
     private SendingSmsRepository sending_repo;
+    @Autowired
+    private SendingSmsService sending_service;
     @Autowired
     private FilesToSendService files_service;
     @Autowired
@@ -71,7 +74,7 @@ public class SmsTransferToQueueApplication extends SpringBootServletInitializer 
             }
         }
         try {
-            scheduler.schedule(new SmsSenderRunnable(file, sending_repo, files_service, p),
+            scheduler.schedule(new SmsSenderThread(file, sending_service, files_service, p),
                     1, TimeUnit.SECONDS);
             log.info("[{}] SCHEDULED TO SEND FILE ID [{}] ORDER NAME [{}]. FILE NAME [{}]",
                     getAPP_NAME(),
