@@ -1,0 +1,5 @@
+insert into public.files_to_send (id, version, being_processed, date_to_send, file_id, file_name, file_path, message_with_param, num_generated, num_sent, order_description, order_name, ready_to_send, sms_count, status, system_id, agenda_id, user_creator_id)
+values  (11, 49, false, '2021-09-21 07:45:00.000000', null, null, null, 'Este es un Mensaje de Prueba Masivo Dahssboard', 24000, 0, 'progrm', 'prog test12k - BCOTEST04', true, 24000, 3, 'BCOTEST04', 2, null),
+        (13, 49, false, '2021-09-21 07:45:00.000000', null, null, null, 'Este es un Mensaje de Prueba Masivo Dahssboard', 24000, 0, '', 'prog test24k - BCOTEST05', true, 24000, 3, 'BCOTEST05', 4, null),
+        (15, 101, false, '2021-09-21 07:45:00.000000', null, null, null, 'Este es un Mensaje de Prueba Masivo Dahssboard', 50000, 0, '', 'test50k - INVJL2020', true, 50000, 3, 'INVJLC2020', 6, null),
+        (17, 181, false, '2021-09-21 07:45:00.000000', null, null, null, 'Este es un Mensaje de Prueba Masivo Dahssboard', 90000, 0, '', 'test60k - NETBQTO01', true, 90000, 3, 'NETBQTO01', 8, null);
