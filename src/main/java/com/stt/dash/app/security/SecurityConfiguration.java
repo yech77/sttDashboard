@@ -32,6 +32,7 @@ import com.stt.dash.ui.utils.BakeryConst;
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+	public static final String LOGOUT_URL = "/logout";
 	private static final String LOGIN_PROCESSING_URL = "/login";
 	private static final String LOGIN_FAILURE_URL = "/login?error";
 	private static final String LOGIN_URL = "/login";

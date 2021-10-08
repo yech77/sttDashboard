@@ -1,5 +1,4 @@
 create sequence hibernate_sequence;
-
 alter sequence hibernate_sequence owner to postgres;
 
 create table if not exists sending_sms
