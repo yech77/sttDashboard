@@ -14,7 +14,6 @@ import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.UserRepository;
 import com.stt.dash.backend.service.ODashAuditEventService;
 import com.stt.dash.backend.service.OUserService;
-import com.stt.dash.backend.util.SessionObjectUtils;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.ODateUitls;

@@ -8,7 +8,6 @@ import com.stt.dash.backend.service.AgendaService;
 import com.stt.dash.backend.thread.AgendaParserRunnable;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.crud.AbstractBakeryCrudView;
-import com.stt.dash.ui.crud.CrudEntityPresenter;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.vaadin.flow.component.crud.BinderCrudEditor;
 import com.vaadin.flow.component.grid.Grid;
