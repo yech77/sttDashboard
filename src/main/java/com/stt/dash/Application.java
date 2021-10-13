@@ -1,7 +1,11 @@
 package com.stt.dash;
 
+import com.stt.dash.app.security.SecurityConfiguration;
+import com.stt.dash.backend.data.entity.User;
+import com.stt.dash.backend.repositories.UserRepository;
 import com.stt.dash.backend.service.TempSmsService;
-import com.vaadin.flow.component.dependency.HtmlImport;
+import com.stt.dash.backend.service.UserService;
+import com.stt.dash.ui.MainView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,12 +14,6 @@ import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConf
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
-import com.stt.dash.app.security.SecurityConfiguration;
-import com.stt.dash.backend.data.entity.User;
-import com.stt.dash.backend.repositories.UserRepository;
-import com.stt.dash.backend.service.UserService;
-import com.stt.dash.ui.MainView;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 

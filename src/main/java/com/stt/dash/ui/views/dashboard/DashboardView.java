@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.stt.dash.ui.views.storefront.beans.OrdersCountData;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.ComponentEventListener;
