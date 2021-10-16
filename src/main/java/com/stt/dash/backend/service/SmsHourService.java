@@ -404,6 +404,7 @@ public class SmsHourService {
             /* Agregar el HOUR faltante a la respuesta. */
             if (!thisHasIt) {
                 log.info("HOUR COLUMN DATA - ADDING HOUR({}) WITH 0 ", hourRunner);
+                /* TODO Descablear year*/
                 SmsByYearMonthDayHour o = new SmsByYearMonthDayHour(0, 2021, c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH), hourRunner, "N/A");
                 hourList.add(o);
             }
