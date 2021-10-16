@@ -26,6 +26,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.templatemodel.TemplateModel;
+import org.apache.commons.collections4.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -157,6 +158,10 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         List<String> carrier_list = multi_carrier.getSelectedItems().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
         /* Column Chart*/
         List<SmsByYearMonthDayHour> l = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actual_year, actual_month, actual_day, sids);
+        if (l==null || l.isEmpty()){
+            log.info("Hourly Chart Without data to show");
+            return;
+        }
         List<Series> LineDateSeriesList = paEntender(l, hourList);
         addToChart(confHourlyChart, LineDateSeriesList, plotColum);
         /* Line Chart */
@@ -484,6 +489,10 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
      * @return
      */
     public List<DataSeries> findDataSeriesColumnsBase(List<? extends AbstractSmsByYearMonth> smsGroupList) {
+        if (smsGroupList==null || smsGroupList.isEmpty()){
+            log.info("No data to Show");
+            return new ArrayList<>();
+        }
         Map<Integer, Map<String, Long>> monthlyDataToShowMap = new HashMap<>();
         int m = 0;
         System.out.println("CarrierEvolution: Columns size() " + smsGroupList.size());

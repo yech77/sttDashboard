@@ -282,15 +282,15 @@
             <version>1.4.0</version>
         </dependency>
         <!-- Agregado el 14/07/21 Para que funcione lo anterior-->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.13.1</version>
+        </dependency>
 <!--        <dependency>-->
-<!--            <groupId>org.jsoup</groupId>-->
-<!--            <artifactId>jsoup</artifactId>-->
-<!--            <version>1.13.1</version>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-jdbc</artifactId>-->
 <!--        </dependency>-->
-<!--        <dependency>-->
-<!--        <groupId>org.springframework.boot</groupId>-->
-<!--        <artifactId>spring-boot-starter-jdbc</artifactId>-->
-<!--    </dependency>-->
         <!-- An invalid Lifecycle transition was attempted ([before_destroy]) -->
         <!--        <dependency>
             <groupId>org.apache.tomee</groupId>
