@@ -1,3 +1,6 @@
+truncate oct_sms cascade;
+truncate temp_sms cascade;
+truncate sms_hour cascade;
 insert into public.oct_sms (id, carrier_char_code, datacoding, date, destination, iso2, message_type, messages_text, msg_received, msg_sended, source, system_id)
 values  (76627, 'DIGITEL', 3, '2021-10-26 07:07:07.000000', '584125045017', 'VE', 'MT', 'Este es un mensaje artificial.', 'msgReceived', 'msgSent', '456000', 'VXGJBB'),
         (76628, 'DIGITEL', 3, '2021-10-26 04:10:41.000000', '584124569951', 'VE', 'MT', 'Este es un mensaje artificial.', 'msgReceived', 'msgSent', '456000', 'INVJLC2020'),

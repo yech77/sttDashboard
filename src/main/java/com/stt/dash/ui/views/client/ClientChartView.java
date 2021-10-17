@@ -334,6 +334,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         Configuration confTriMixChart = clientTriMixChart.getConfiguration();
         /**/
         confTriMixChart.getyAxis().setTitle("SMS");
+        /* TODO: Desablar Year*/
         confTriMixChart.setTitle("Trimestral - 2021");
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /* Averiguar cuales son los tres meses a calular. */
@@ -386,18 +387,20 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     }
 
     public List<Series> paEntender(List<? extends AbstractSmsByYearMonth> l, List<Integer> integerList) {
+        System.out.println("************ pa entender I - KKK");
         l.stream().forEach(System.out::println);
+        System.out.println("************ pa entender II - KKK");
 
         List<Series> dataSeriesList = new ArrayList<>();
         /*TODO nullpointer*/
-        /* Recorre los Carrier seleccionados. */
         PlotOptionsColumn splinePlotOptions = new PlotOptionsColumn();
+        /* Recorre los MessageType seleccionados. */
         messageTypeMultiCombo.getSelectedItems().forEach(messageType -> {
             ListSeries series = new ListSeries();
             series.setName(messageType.name());
             /* Recorre los meses del trimestre */
             integerList.forEach(month -> {
-                /* Total por Month y Carrier*/
+                /* Total por Month y MessageType */
                 Long tot = l.stream()
                         .filter(sms -> sms.getGroupBy() == month
                                 && messageType.name().equalsIgnoreCase(sms.getSomeCode()))
