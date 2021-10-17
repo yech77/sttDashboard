@@ -59,7 +59,11 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
     private final SmsHourService smsHourService;
     private final ListGenericBean<String> stingListGenericBean;
     private final CurrentUser currentUser;
-    /**/
+    /* Para Graficos y servicios */
+    private List<Integer> monthToShowList;
+    private List<Integer> hourList = new ArrayList<>();
+    private List<Integer> dayList = new ArrayList<>();
+    /*Fechas */
     private static int actualYear;
     private static int actualMonth;
     private static int actualDay;
@@ -85,7 +89,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
     private Chart deliveriesThisYearChart;
 
     @Id("yearlySalesGraph")
-    private Chart yearlySalesGraph;
+    private Chart monthlySmsGraph;
 
     @Id("ordersGrid")
     private Grid<Order> grid;
@@ -142,7 +146,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         todayCountChart.addChartLoadListener(chartLoadListener);
         deliveriesThisMonthChart.addChartLoadListener(chartLoadListener);
         deliveriesThisYearChart.addChartLoadListener(chartLoadListener);
-        yearlySalesGraph.addChartLoadListener(chartLoadListener);
+        monthlySmsGraph.addChartLoadListener(chartLoadListener);
         monthlyProductSplit.addChartLoadListener(chartLoadListener);
     }
 
@@ -346,7 +350,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
     }
 
     private void populateMonthlySmsChart(DashboardData data) {
-        Configuration conf = yearlySalesGraph.getConfiguration();
+        Configuration conf = monthlySmsGraph.getConfiguration();
         conf.getChart().setType(ChartType.AREASPLINE);
         conf.getChart().setBorderRadius(4);
 
@@ -360,26 +364,19 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
                 OMonths.valueOf(monthToShowList.get(1)).getMonthName(),
                 OMonths.valueOf(monthToShowList.get(2)).getMonthName()};
         conf.getxAxis().setCategories(ml);
-        List<SmsByYearMonth> monthToShowDataList = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actualYear, monthToShowList, stingListGenericBean.getList());
-
-        for (Integer integer : monthToShowList) {
-            boolean thisHasIt = false;
-            for (SmsByYearMonth smsByYearMonth : monthToShowDataList) {
-                /* Si tengo el Month me salgo del ciclo. */
-                if (smsByYearMonth.getGroupBy() == integer) {
-                    thisHasIt = true;
-                    break;
-                }
-            }
-            /* Agregar el mes faltante a la respuesta. */
-            if (!thisHasIt) {
-//                System.out.println("TRIMESTRE COLUMN DATA - ADDING MONTH({}) WITH 0 ", integer);
-                SmsByYearMonth o = new SmsByYearMonth(0, actualYear, integer, "N/A");
-                monthToShowDataList.add(o);
-            }
-        }
+        List<? extends AbstractSmsByYearMonth> monthToShowDataList = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actualYear, monthToShowList, stingListGenericBean.getList());
+        System.out.println("**************** MAIN MONTHLY RESP ");
+        monthToShowDataList.stream().forEach(System.out::println);
+        System.out.println("**************** MAIN MONTHLY RESP ");
+        monthToShowDataList = fillMonthListWithCero(monthToShowDataList, monthToShowList);
+        System.out.println("**************** MAIN MONTHLY FILL ");
+        monthToShowDataList.stream().forEach(System.out::println);
+        System.out.println("**************** MAIN MONTHLY FILL ");
         /**/
-        OrderToMonthSeries(monthToShowDataList);
+        monthToShowDataList = OrderToMonthSeries(monthToShowDataList);
+        System.out.println("**************** MAIN MONTHLY ORDER ");
+        monthToShowDataList.stream().forEach(System.out::println);
+        System.out.println("**************** MAIN MONTHLY ORDER ");
         /**/
         List<DataSeries> list_series1 = findDataSeriesLineBase(monthToShowDataList);
         for (DataSeries list_sery : list_series1) {
@@ -393,6 +390,29 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         conf.setTooltip(tooltip);
     }
 
+    private List<AbstractSmsByYearMonth> fillMonthListWithCero(List<? extends AbstractSmsByYearMonth> listToFill, List<Integer> monthList) {
+        boolean hasToFill = false;
+        List<AbstractSmsByYearMonth> l = new ArrayList<>(listToFill);
+        if (listToFill==null || listToFill.size()==0){
+            log.info("Nothing to Fill");
+            return l;
+        }
+        for (Integer monthLoop : monthList) {
+            hasToFill = true;
+            for (AbstractSmsByYearMonth sms : listToFill) {
+                if (sms.getGroupBy() == monthLoop) {
+                    hasToFill = false;
+                    break;
+                }
+            }
+            if (hasToFill) {
+                log.info("TRIMESTRE COLUMN DATA - ADDING MONTH({}) WITH 0 ", monthLoop);
+                AbstractSmsByYearMonth o = listToFill.get(0).getObject(0, actualYear, monthLoop, "N/A");
+                l.add(o);
+            }
+        }
+        return l;
+    }
     /**
      * Agrega los dias sin data con 0.
      *
@@ -417,7 +437,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
                 numberList.add(smsByYearMonthDay.getDaySms() - 1, smsByYearMonthDay.getTotal());
             }
         }
-        /* Limitar hasta el dia de hoy. */
+        /* TODO: Limitar hasta el dia de hoy. */
         numberList = numberList.subList(0, 31);
 //        System.out.println("{} Day List of {} day[{}-{}]", getStringLog(), typeOfMessage, 1, actual_day);
         return numberList;
@@ -465,14 +485,14 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         return lm;
     }
 
-    public List<DataSeries> findDataSeriesLineBase(List<? extends SmsByYearMonth> l) {
+    public List<DataSeries> findDataSeriesLineBase(List<? extends AbstractSmsByYearMonth> l) {
 
         Map<Integer, Map<String, Long>> data_monthly = new HashMap<>();
         List<Integer> monthList = new ArrayList<>(4);
 
         Map<String, Long> mapMx = new HashMap<>();
         log.info("findDataSeriesLineBase size [{}]", l.size());
-        for (SmsByYearMonth smsByYearMonth : l) {
+        for (AbstractSmsByYearMonth smsByYearMonth : l) {
             log.info("findDataSeriesLineBase {}", smsByYearMonth);
 
             /* Si no esta el Month/day/Hour agregarlos systemid seleccionados en 0l */
@@ -637,19 +657,20 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         return list_series;
     }
 
-    private void OrderToMonthSeries(List<SmsByYearMonth> listToOrder) {
+    private List<AbstractSmsByYearMonth> OrderToMonthSeries(List<? extends AbstractSmsByYearMonth> listToFill) {
         /* Ordenar la lista por YearMonth */
-        Map<String, SmsByYearMonth> forTriOrderedMap = new HashMap<>();
-        listToOrder.forEach(smsByYearMonth -> {
-            forTriOrderedMap.put(smsByYearMonth.forKey(), smsByYearMonth);
+        Map<String, AbstractSmsByYearMonth> forOrderedMap = new HashMap<>();
+        for (AbstractSmsByYearMonth smsByYearMonth : listToFill) {
+            forOrderedMap.put(smsByYearMonth.forKey(), smsByYearMonth);
+        }
+        SortedSet<String> keys = new TreeSet<>(forOrderedMap.keySet());
+//        log.info("TRIMESTRE LINE DATA - BEFORE CLEARING {}", listToFill);
+        listToFill.clear();
+        List<AbstractSmsByYearMonth> l = new ArrayList<>();
+        keys.forEach(key -> {
+            l.add(forOrderedMap.get(key));
         });
-        SortedSet<String> trikeys = new TreeSet<>(forTriOrderedMap.keySet());
-        System.out.println("TRIMESTRE DATA - BEFORE CLEARING {} " + listToOrder);
-        listToOrder.clear();
-        trikeys.forEach(key -> {
-            listToOrder.add(forTriOrderedMap.get(key));
-        });
-        System.out.println("TRIMESTRE DATA - FILLED AND ORDERED: {} " + listToOrder);
+        return l;
     }
 
     private void setActualDate() {
@@ -659,8 +680,13 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         actualYear = c.get(Calendar.YEAR);
         log.info("{} HOUR OF DAY {} HOUR {}", getStringLog(), c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.HOUR));
         actualHour = c.get(Calendar.HOUR_OF_DAY);
+        for (int i = 0; i <= actualHour; i++) {
+            hourList.add(i);
+        }
+        for (int i = 1; i <= actualDay; i++) {
+            dayList.add(i);
+        }
     }
-
     private String getStringLog() {
         return "[" + currentUser.getUser().getEmail() + "] [" + UI_CODE + "]";
     }

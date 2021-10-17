@@ -65,10 +65,9 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     private static String CARRIER_VIEW_SELECTED_CARRIER = "carrier_view_selected_carrier";
     private static String CARRIER_VIEW_SELECTED_MESSAGETYPE = "carrier_view_selected_messageType";
     /**/
-    Logger log = LoggerFactory.getLogger(CarrierChartView.class);
+    private static Logger log = LoggerFactory.getLogger(CarrierChartView.class);
     private final SmsHourService smsHourService;
     private final ListGenericBean<String> userSystemIdList;
-    private final CurrentUser currentUser;
     /* OPERADORAS */
     private MultiselectComboBox<Carrier> multi_carrier = new MultiselectComboBox<>("Operadoras");
     private final MultiselectComboBox<OMessageType> multi_messagetype = new MultiselectComboBox<>("Mensajes");
@@ -180,7 +179,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
 
     private void addToChart(Configuration configuration, List<Series> LineDateSeriesList, AbstractPlotOptions plot) {
         if (LineDateSeriesList == null || LineDateSeriesList.size() == 0) {
-            log.info("{} NO DATA FOR CARRIER CHART LINE");
+            log.info("NO DATA FOR CARRIER CHART LINE");
         } else {
             for (int i = 0; i < LineDateSeriesList.size(); i++) {
                 System.out.println("ADDING LINE********" + LineDateSeriesList.get(i).getName());
@@ -193,7 +192,9 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     }
     public List<Series> paEntenderLine(List<? extends AbstractSmsByYearMonth> l,
                                        List<Integer> integerList) {
+        System.out.println("************ carrier pa entender I - KKK");
         l.stream().forEach(System.out::println);
+        System.out.println("************ carrier pa entender II - KKK");
 
         List<Series> dataSeriesList = new ArrayList<>();
         /*TODO nullpointer*/
@@ -253,7 +254,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
                 multi_carrier.getSelectedItems(),
                 multi_messagetype.getSelectedItems(),
                 sids);
-        populateTriColumnLineChart(smsGroup, new ArrayList<>(carrierGroup));
+        populateTriChart(smsGroup, new ArrayList<>(carrierGroup));
         /* PIE */
         populatePieChart(carrierGroup);
     }
@@ -347,6 +348,29 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         confOut.setTitle(OMonths.valueOf(actual_month).getMonthName());
     }
 
+    /**
+     * @param smsGroup     Agrupado por Year-Month-MessageType
+     * @param carrierGroup Data agrupada por Year-Month-Carrier-MessageType
+     */
+    private void populateTriChart(List<? extends AbstractSmsByYearMonth> smsGroup, List<SmsByYearMonth> carrierGroup) {
+        Configuration confTriChart = carrierTriMixChart.getConfiguration();
+        /* Column */
+        Tooltip tooltip = new Tooltip();
+        tooltip.setShared(true);
+        tooltip.setValueDecimals(0);
+        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
+        confTriChart.setTitle("Trimestre");
+        confTriChart.setTooltip(tooltip);
+        /* Averiguar cuales son los tres meses a calular. */
+        confTriChart.getxAxis().setCategories(ml);
+        PlotOptionsColumn plotColum = new PlotOptionsColumn();
+        List<Series> LineDateSeriesList = paEntender(smsGroup, monthToShowList);
+        addToChart(confTriChart, LineDateSeriesList, plotColum);
+        /**/
+        PlotOptionsLine plotLine = new PlotOptionsLine();
+        LineDateSeriesList = paEntenderLine(carrierGroup, monthToShowList);
+        addToChart(confTriChart, LineDateSeriesList, plotLine);
+    }
     /**
      * @param smsGroup     Agrupado por Year-Month-MessageType
      * @param carrierGroup Data agrupada por Year-Month-Carrier-MessageType
