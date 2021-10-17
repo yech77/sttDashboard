@@ -31,6 +31,7 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
+import liquibase.pro.packaged.O;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,7 +124,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         grid.setDataProvider(orderDataProvider);
 
         DashboardData data = orderService.getDashboardData(MonthDay.now().getMonthValue(), Year.now().getValue());
-        populateMonthlySmsChart(data);
+        populateMonthlySmsChart();
         populateDeliveriesCharts(data);
         populateOrdersCounts(data.getDeliveryStats());
         initProductSplitMonthlyGraph(data.getProductDeliveries());
@@ -207,7 +208,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         series.setName("");
         conf.setSeries(innerSeries, series);
         conf.setTooltip(tooltip);
-        }
+    }
 
     private void populateOrdersCounts(DeliveryStats deliveryStats) {
         List<OrderSummary> orders = orderService.findAnyMatchingStartingToday();
@@ -349,6 +350,44 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         conf.getLegend().setEnabled(false);
     }
 
+    private void populateMonthlySmsChart() {
+        Configuration conf = monthlySmsGraph.getConfiguration();
+        conf.getChart().setType(ChartType.AREASPLINE);
+        conf.getChart().setBorderRadius(4);
+        conf.setTitle("SMS Últimos Tres Meses");
+        Tooltip tooltip = new Tooltip();
+        tooltip.setValueDecimals(0);
+        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.x}</span><br/>");
+        tooltip.setShared(true);
+        conf.setTooltip(tooltip);
+//        conf.getxAxis().setVisible(true);
+
+        conf.getyAxis().getTitle().setText(null);
+        List<Integer> monthToShowList = monthsIn(2);
+        String[] ml = new String[]{OMonths.valueOf(monthToShowList.get(0)).getMonthName(),
+                OMonths.valueOf(monthToShowList.get(1)).getMonthName(),
+                OMonths.valueOf(monthToShowList.get(2)).getMonthName()};
+        conf.getxAxis().setCategories(ml);
+        List<? extends AbstractSmsByYearMonth> monthToShowDataList = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actualYear, monthToShowList, stingListGenericBean.getList());
+        List<Series> lineDateSeriesList = paEntender(monthToShowDataList, monthToShowList);
+        PlotOptionsLine plotLine = new PlotOptionsLine();
+        addToChart(conf, lineDateSeriesList, plotLine);
+    }
+
+    private void addToChart(Configuration configuration, List<Series> LineDateSeriesList, AbstractPlotOptions plot) {
+        if (LineDateSeriesList == null || LineDateSeriesList.size() == 0) {
+            log.info("{} NO DATA FOR CARRIER CHART LINE");
+        } else {
+            for (int i = 0; i < LineDateSeriesList.size(); i++) {
+                System.out.println("ADDING LINE********" + LineDateSeriesList.get(i).getName());
+                Series series = LineDateSeriesList.get(i);
+                System.out.println("ADDING LINE COPY********" + series.getName());
+                series.setPlotOptions(plot);
+                configuration.addSeries(series);
+            }
+        }
+    }
+
     private void populateMonthlySmsChart(DashboardData data) {
         Configuration conf = monthlySmsGraph.getConfiguration();
         conf.getChart().setType(ChartType.AREASPLINE);
@@ -369,15 +408,8 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         monthToShowDataList.stream().forEach(System.out::println);
         System.out.println("**************** MAIN MONTHLY RESP ");
         monthToShowDataList = fillMonthListWithCero(monthToShowDataList, monthToShowList);
-        System.out.println("**************** MAIN MONTHLY FILL ");
-        monthToShowDataList.stream().forEach(System.out::println);
-        System.out.println("**************** MAIN MONTHLY FILL ");
         /**/
         monthToShowDataList = OrderToMonthSeries(monthToShowDataList);
-        System.out.println("**************** MAIN MONTHLY ORDER ");
-        monthToShowDataList.stream().forEach(System.out::println);
-        System.out.println("**************** MAIN MONTHLY ORDER ");
-        /**/
         List<DataSeries> list_series1 = findDataSeriesLineBase(monthToShowDataList);
         for (DataSeries list_sery : list_series1) {
             conf.addSeries(list_sery);
@@ -393,7 +425,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
     private List<AbstractSmsByYearMonth> fillMonthListWithCero(List<? extends AbstractSmsByYearMonth> listToFill, List<Integer> monthList) {
         boolean hasToFill = false;
         List<AbstractSmsByYearMonth> l = new ArrayList<>(listToFill);
-        if (listToFill==null || listToFill.size()==0){
+        if (listToFill == null || listToFill.size() == 0) {
             log.info("Nothing to Fill");
             return l;
         }
@@ -413,6 +445,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         }
         return l;
     }
+
     /**
      * Agrega los dias sin data con 0.
      *
@@ -687,6 +720,57 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
             dayList.add(i);
         }
     }
+
+    public List<Series> paEntender(List<? extends AbstractSmsByYearMonth> l, List<Integer> integerList) {
+        System.out.println("************ pa entender I - KKK");
+        l.stream().forEach(System.out::println);
+        System.out.println("************ pa entender II - KKK");
+
+        List<Series> dataSeriesList = new ArrayList<>();
+        /*TODO nullpointer*/
+        PlotOptionsColumn splinePlotOptions = new PlotOptionsColumn();
+        /* Recorre los MessageType seleccionados. */
+        List<OMessageType> omt = Arrays.asList(OMessageType.values());
+        omt.stream().forEach(messageType -> {
+            ListSeries series = new ListSeries();
+            series.setName(messageType.name());
+            /* Recorre los meses del trimestre */
+            integerList.forEach(month -> {
+                /* Total por Month y MessageType */
+                Long tot = l.stream()
+                        .filter(sms -> sms.getGroupBy() == month
+                                && messageType.name().equalsIgnoreCase(sms.getSomeCode()))
+                        .mapToLong(sms -> sms.getTotal()).sum();
+                System.out.println("MONTH-> " + month + ". Message Type: " + messageType + " - TOTAL: " + tot);
+                series.addData(tot);
+                series.setPlotOptions(splinePlotOptions);
+            });
+            dataSeriesList.add(series);
+        });
+//        ListSeries digitelSerie = new ListSeries("DIGITel", 100,200,300);
+//        ListSeries movilnetSerie = new ListSeries("MOVILnet", 200,300,400);
+//        ListSeries movistarSerie = new ListSeries("MOVistar", 300,400,500);
+//        List<ListSeries> dataSeriesList = new ArrayList<>();
+//        dataSeriesList.add(digitelSerie);
+//        dataSeriesList.add(movilnetSerie);
+//        dataSeriesList.add(movistarSerie);
+        /* FORMA 2 */
+//        List<DataSeries> dataSeriesList = new ArrayList<>();
+//        DataSeries series = new DataSeries();
+//        series.setName("DIGITEL");
+//        series.setData(1427, 11383, 0);
+//        dataSeriesList.add(series);
+//        series = new DataSeries();
+//        series.setName("MOVILNET");
+//        series.setData(2710, 23030, 0);
+//        dataSeriesList.add(series);
+//        series = new DataSeries();
+//        series.setName("MOVISTAR");
+//        series.setData(2795, 22520, 0);
+//        dataSeriesList.add(series);
+        return dataSeriesList;
+    }
+
     private String getStringLog() {
         return "[" + currentUser.getUser().getEmail() + "] [" + UI_CODE + "]";
     }
