@@ -297,7 +297,7 @@ public class MainView extends AppLayout {
 
 
     public void logout() {
-        UI.getCurrent().getPage().setLocation(SecurityConfiguration.LOGOUT_URL);
+//        UI.getCurrent().getPage().setLocation(SecurityConfiguration.LOGOUT_URL);
         SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
         logoutHandler.logout(VaadinServletRequest.getCurrent().getHttpServletRequest(), null, null);
     }
