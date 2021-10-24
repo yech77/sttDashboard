@@ -98,6 +98,7 @@ export class FileToSendEditor extends LitElement {
 
         `;
     }
+
     //
     // static get is() {
     //     return 'file-to-send-editor';

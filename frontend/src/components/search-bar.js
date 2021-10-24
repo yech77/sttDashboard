@@ -8,10 +8,11 @@ import '../../styles/shared-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
 import { timeOut } from '@polymer/polymer/lib/utils/async.js';
+
 class SearchBar extends PolymerElement {
   static get template() {
     return html`
-    <style include="shared-styles">
+<style include="shared-styles">
       :host {
         position: relative;
         z-index: 2;
@@ -83,25 +84,23 @@ class SearchBar extends PolymerElement {
         }
       }
     </style>
-
-    <div class="row">
-      <vaadin-text-field id="field" class="field" placeholder="[[fieldPlaceholder]]" value="{{fieldValue}}" on-focus="_onFieldFocus" 
-        on-blur="_onFieldBlur" theme="white">
-        <iron-icon icon\$="[[fieldIcon]]" slot="prefix"></iron-icon>
-      </vaadin-text-field>
-      <vaadin-checkbox class="checkbox desktop" checked="{{checkboxChecked}}" on-focus="_onFieldFocus" 
-        on-blur="_onFieldBlur">[[checkboxText]]</vaadin-checkbox>
-      <vaadin-button id="clear" class="clear-btn" theme="tertiary">
-        [[clearText]]
-      </vaadin-button>
-      <vaadin-button id="action" class="action-btn" theme="primary">
-        <iron-icon icon\$="[[buttonIcon]]" slot="prefix"></iron-icon>
-        [[buttonText]]
-      </vaadin-button>
-    </div>
-
-    <vaadin-checkbox class="checkbox mobile" checked="{{checkboxChecked}}" on-focus="_onFieldFocus" 
-      on-blur="_onFieldBlur">[[checkboxText]]</vaadin-checkbox>
+<div class="row">
+ <vaadin-text-field id="field" class="field" placeholder="[[fieldPlaceholder]]" value="{{fieldValue}}" on-focus="_onFieldFocus" on-blur="_onFieldBlur" theme="white" has-value>
+  <iron-icon icon\$="[[fieldIcon]]" slot="prefix" icon="vaadin:search"></iron-icon>
+ </vaadin-text-field>
+ <vaadin-checkbox class="checkbox desktop" checked="{{checkboxChecked}}" on-focus="_onFieldFocus" on-blur="_onFieldBlur">
+  [[checkboxText]]
+ </vaadin-checkbox>
+ <vaadin-button id="clear" class="clear-btn" theme="tertiary">
+   [[clearText]] 
+ </vaadin-button>
+ <vaadin-button id="action" class="action-btn" theme="primary">
+  <iron-icon icon\$="[[buttonIcon]]" slot="prefix"></iron-icon> [[buttonText]] 
+ </vaadin-button>
+</div>
+<vaadin-checkbox class="checkbox mobile" checked="{{checkboxChecked}}" on-focus="_onFieldFocus" on-blur="_onFieldBlur">
+ [[checkboxText]]
+</vaadin-checkbox>
 `;
   }
 
