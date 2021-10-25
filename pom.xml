@@ -410,6 +410,7 @@
             <!-- Production mode is activated using -Pproduction -->
             <id>qa</id>
             <properties>
+                <spring.profiles.active>qa</spring.profiles.active>
                 <vaadin.productionMode>true</vaadin.productionMode>
             </properties>
 
