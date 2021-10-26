@@ -1,3 +1,24 @@
+/* Trigger que asigna el cliente guardado por primera vez, a todos los usuario HAS */
+CREATE OR REPLACE FUNCTION assingClientToUserHas() RETURNS TRIGGER AS
+$BODY$
+BEGIN
+    INSERT INTO user_has_clients (client_id, ouser_Id)
+    SELECT NEW.id, o.id
+    FROM user_info o
+    WHERE o.user_type = 1;
+
+    RETURN new;
+END;
+$BODY$
+    language plpgsql;
+
+CREATE TRIGGER trigger_insert_clientToCommercialUser
+    AFTER INSERT
+    ON client
+    FOR EACH ROW
+EXECUTE PROCEDURE assingClientToUserHas();
+
+alter function insertintotempsms() owner to postgres;
 /*******
 Crea SOLO los triggers.
  ****/
@@ -7,8 +28,11 @@ as
 '
     BEGIN
         INSERT INTO public.temp_sms(id,
-                                    carrier_char_code, datacoding, date, destination, iso2, message_type, messages_text, msg_received, msg_sended, source, system_id)
-        VALUES (nextval(''hibernate_sequence''), NEW.carrier_char_code, NEW.datacoding, NEW.date, NEW.destination, NEW.iso2, NEW.message_type, NEW.messages_text, NEW.msg_received, NEW.msg_sended, NEW.source, NEW.system_id);
+                                    carrier_char_code, datacoding, date, destination, iso2, message_type, messages_text,
+                                    msg_received, msg_sended, source, system_id)
+        VALUES (nextval(''hibernate_sequence''), NEW.carrier_char_code, NEW.datacoding, NEW.date, NEW.destination,
+                NEW.iso2, NEW.message_type, NEW.messages_text, NEW.msg_received, NEW.msg_sended, NEW.source,
+                NEW.system_id);
 
         RETURN new;
     END;
