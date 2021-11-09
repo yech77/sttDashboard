@@ -81,7 +81,7 @@ values (51, 0, true, null, '2021-07-23 15:00:53.987278', 'adminstt@soltextech.co
         'Bandres', false, '$2a$10$niedArOXTyf7tEHYogfs4.Ku.WYyn4a2MSdb7Dr7I/b7KSBhhZaOG', null, 1, 0, 51),
        (53, 0, true, 'adminstt@soltextech.com', '2021-07-23 18:12:12.353113', 'enavas@soltextech.com', 'Elizabeth',
         'Navas', false, '$2a$10$HcyK0gjx7yGXjD/DWcG.xeT/9zxcTSHL99CqwJfgPWspjTNizxzKe', null, 1, 0, 51),
-       (54, 0, true, 'adminstt@soltextech.com', '2021-07-23 18:15:34.585924', 'dsolorzano@gmail.com', 'Denny',
+       (54, 0, true, 'adminstt@soltextech.com', '2021-07-23 18:15:34.585924', 'dsolorzano@soltextech.com', 'Denny',
         'Solorzano', false, '$2a$10$szMOmQz7j9nMnK4b8tJQsOhiGtAjwDGdkxwfC7SsTinw/BzdHkmzO', null, 1, 0, 51),
        (2, 0, true, 'gbandres@soltextech.com', '2021-07-26 07:44:12.040646', 'adminnet@soltextech.com', 'Adminnet', '',
         false, '$2a$10$.U25bW8rfnewSXxqXrM/ae21.SZzg0FZaEc4tkwVJTyz7wo7ZlsAq', null, 0, 1, 52),

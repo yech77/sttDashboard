@@ -31,7 +31,7 @@ import static com.stt.dash.ui.utils.BakeryConst.ORDER_ID;
 @Route(value = BakeryConst.PAGE_BULK_STOREFRONT_ORDER_TEMPLATE, layout = MainView.class)
 @RouteAlias(value = BakeryConst.PAGE_BULK_STOREFRONT_ORDER_EDIT_TEMPLATE, layout = MainView.class)
 @Secured({Role.ADMIN, "UI_PROGRAM_SMS"})
-@PageTitle(BakeryConst.TITLE_STOREFRONT)
+@PageTitle(BakeryConst.TITLE_BULK_SCHEDULER)
 public class FileToSendFrontView extends LitTemplate implements HasLogger, BeforeEnterObserver, EntityView<FIlesToSend> {
 
     @Id("search")
@@ -80,7 +80,7 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
 
     @Override
     public boolean isDirty() {
-        System.out.println("******* DIRTY ************ filetoSend: "+ fileToSendEditor.hasChanges() +
+        System.out.println("******* DIRTY ************ filetoSend: " + fileToSendEditor.hasChanges() +
                 "orderDetails: " + orderDetails.isDirty());
         return fileToSendEditor.hasChanges() || orderDetails.isDirty();
     }
@@ -118,6 +118,7 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
     Grid<FIlesToSend> getGrid() {
         return grid;
     }
+
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         Optional<Long> orderId = event.getRouteParameters().getLong(ORDER_ID);
@@ -142,6 +143,7 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
         List<String> segments = event.getLocation().getSegments();
         return segments.get(segments.size() - 1);
     }
+
     void setOpened(boolean opened) {
         dialog.setOpened(opened);
     }

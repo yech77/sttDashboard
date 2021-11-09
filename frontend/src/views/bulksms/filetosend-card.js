@@ -50,11 +50,11 @@ class FileToSendCard extends PolymerElement {
 
                 .badge {
                     margin: var(--lumo-space-s) 0;
-                    width: 120px;
+                    width: 135px;
                 }
 
                 .time-place {
-                    width: 120px;
+                    width: 130px;
                 }
 
                 .name-items {
