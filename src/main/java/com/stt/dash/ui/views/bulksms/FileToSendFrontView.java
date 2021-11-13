@@ -81,7 +81,7 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
     @Override
     public boolean isDirty() {
         System.out.println("******* DIRTY ************ filetoSend: " + fileToSendEditor.hasChanges() +
-                "orderDetails: " + orderDetails.isDirty());
+                " orderDetails: " + orderDetails.isDirty());
         return fileToSendEditor.hasChanges() || orderDetails.isDirty();
     }
 

@@ -17,6 +17,7 @@ import {FormLayoutResponsiveStep} from "@vaadin/vaadin-form-layout";
 @customElement('file-to-send-details')
 export class FileToSendDetails extends LitElement {
     showing = true;
+
     createRenderRoot() {
         // Do not use a shadow root
         return this;
@@ -145,7 +146,7 @@ export class FileToSendDetails extends LitElement {
                     }
                 }
             </style>
-            
+
             <div class="scrollable main-row" id="main">
 
                 <vaadin-form-layout id="form1" .responsiveSteps="${this.form1}">
@@ -171,39 +172,39 @@ export class FileToSendDetails extends LitElement {
                     <vaadin-form-item>
                         <label slot="label">Credencial</label>
                         <h3 id="systemid"></h3>
-                        <label> este es ${this.showing}</label>
+                            <!--                        <label> este es ${this.showing}</label>-->
                     </vaadin-form-item>
                 </vaadin-form-layout>
 
-<!--                <vaadin-form-layout id="form3">-->
-<!--                    <div></div>-->
+                <!--                <vaadin-form-layout id="form3">-->
+                <!--                    <div></div>-->
 
-<!--                    <vaadin-form-layout id="form4" colspan="2">-->
-<!--                        <template is="dom-if" if="[[item.customer.details]]">-->
-<!--                            <vaadin-form-item label-position="top">-->
-<!--                                <label slot="label">Additional details</label>-->
-<!--                                <span>[[item.customer.details]]</span>-->
-<!--                            </vaadin-form-item>-->
-<!--                        </template>-->
+                <!--                    <vaadin-form-layout id="form4" colspan="2">-->
+                <!--                        <template is="dom-if" if="[[item.customer.details]]">-->
+                <!--                            <vaadin-form-item label-position="top">-->
+                <!--                                <label slot="label">Additional details</label>-->
+                <!--                                <span>[[item.customer.details]]</span>-->
+                <!--                            </vaadin-form-item>-->
+                <!--                        </template>-->
 
-<!--                    </vaadin-form-layout>-->
+                <!--                    </vaadin-form-layout>-->
             </div>
 
             <buttons-bar id="footer" no-scroll\$="[[noScroll]]">
-                <vaadin-button slot="left" id="back" >Atras</vaadin-button>
-                <vaadin-button slot="left" id="cancel" >Cancelar</vaadin-button>
+                <vaadin-button slot="left" id="back">Atras</vaadin-button>
+                <vaadin-button slot="left" id="cancel">Cancelar</vaadin-button>
 
                 <div slot="info" class="total">
 
-                    <vaadin-button slot="right" id="save" theme="primary success" >
-                        <iron-icon icon="vaadin:check"  slot="suffix"></iron-icon>
+                    <vaadin-button slot="right" id="save" theme="primary success">
+                        <iron-icon icon="vaadin:check" slot="suffix"></iron-icon>
                         Programar
                     </vaadin-button>
-                    <vaadin-button slot="right" id="edit" theme="primary" >
+                    <vaadin-button slot="right" id="edit" theme="primary">
                         Editar Programación
                         <iron-icon icon="vaadin:edit" slot="suffix"></iron-icon>
                     </vaadin-button>
-                    <vaadin-button slot="right" id="delete" theme="primary error" >
+                    <vaadin-button slot="right" id="delete" theme="primary error">
                         Borrar Programación
                         <iron-icon icon="vaadin:trash" slot="suffix"></iron-icon>
                     </vaadin-button>

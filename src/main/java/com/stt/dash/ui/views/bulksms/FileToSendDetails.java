@@ -108,18 +108,18 @@ public class FileToSendDetails extends LitTemplate {
             cancel.setVisible(!review);
             back.setVisible(review);
             delete.setVisible(!review);
-        }else{
+        } else {
             save.setVisible(review);
             edit.setVisible(review);
             cancel.setVisible(!review);
             back.setVisible(review);
             delete.setVisible(!review);
-            delete.setVisible(order.getStatus()!= Status.COMPLETED);
+            delete.setVisible(order.getStatus() != Status.COMPLETED);
         }
         this.isDirty = review;
     }
 
-    private void showData(){
+    private void showData() {
         bulkday.setText(FormattingUtils.MONTH_AND_DAY_FORMATTER.format(ODateUitls.valueOf(order.getDateToSend())));
         bulktime.setText(FormattingUtils.HOUR_FORMATTER.format(ODateUitls.valueOf(order.getDateToSend())));
         orderName.setText(order.getOrderName());
