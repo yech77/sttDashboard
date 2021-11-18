@@ -109,18 +109,18 @@ public class Agenda extends AbstractEntitySequence {
     }
 
     public String getCreatorEmail() {
-        if(creator !=null){
+        if (creator != null) {
             return creatorEmail;
         }
         return "-";
     }
 
-    public void setCreatorEmail(String creatorEmail){
+    public void setCreatorEmail(String creatorEmail) {
         this.creatorEmail = creatorEmail;
     }
 
     public String getCreatorName() {
-        if(creator != null){
+        if (creator != null) {
             return creator.getLastName() + ", " + creator.getFirstName();
         }
         return "-";
@@ -143,7 +143,7 @@ public class Agenda extends AbstractEntitySequence {
     }
 
     public Date getDateCreated() {
-        if(dateCreated == null){
+        if (dateCreated == null) {
             dateCreated = Calendar.getInstance().getTime();
         }
         return dateCreated;
@@ -166,20 +166,20 @@ public class Agenda extends AbstractEntitySequence {
     }
 
     public void setCreator(User creator) {
-        if(creator != null){
+        if (creator != null) {
             this.creator = creator;
 //            this.creatorEmail = creator.getEmail();
         }
     }
 
     public String getStringStatus() {
-        switch(status){
+        switch (status) {
             case BLANK:
                 return "Sin Crear";
             case VALIDATING:
                 return "Validando";
             case HAS_WARNINGS:
-                return "Tiene Discrepancias";
+                return "Con errores";
             case READY_TO_USE:
                 return "Válido";
             case CORRUPT_OR_LOST:

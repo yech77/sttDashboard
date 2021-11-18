@@ -12,13 +12,15 @@ import com.stt.dash.ui.crud.AbstractBakeryCrudView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.views.agenda.EditAgendaView;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.crud.BinderCrudEditor;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
@@ -58,16 +60,15 @@ public class BulkSmsView extends AbstractBakeryCrudView<Agenda> {
 
     @Override
     protected void setupGrid(Grid<Agenda> grid) {
-        grid.addColumn(Agenda::getName).setWidth("250px").setHeader("Nombre").setFlexGrow(5);
-        grid.addColumn(Agenda::getDescription).setHeader("Descripción").setWidth("180px").setFlexGrow(5);
+        grid.addColumn(Agenda::getName).setWidth("200px").setHeader("Nombre").setFlexGrow(5);
+        grid.addColumn(Agenda::getDescription).setHeader("Descripción").setWidth("230px").setFlexGrow(5);
         grid.addColumn(role -> {
             return role.getStringStatus();
         }).setHeader("Status").setWidth("150px");
         grid.addComponentColumn(item -> {
-            System.out.println("AGENDA **************** " + item);
-            Button b = createRemoveButton(grid, item);
+            Button b = createDownloadButton(grid, item);
             return b;
-        }).setHeader("Action");
+        }).setHeader("Descargar");
     }
 
     private static BinderCrudEditor<Agenda> createForm(CurrentUser currentUser, OProperties properties) {
@@ -92,11 +93,9 @@ public class BulkSmsView extends AbstractBakeryCrudView<Agenda> {
         return true;
     }
 
-    private Button createRemoveButton(Grid<Agenda> grid, Agenda agenda) {
+    private Button createDownloadButton(Grid<Agenda> grid, Agenda agenda) {
         @SuppressWarnings("unchecked")
-        Button button = new Button("view", clickEvent -> {
-
-
+        Button button = new Button(new Icon(VaadinIcon.DOWNLOAD_ALT), clickEvent -> {
             // Crea dialogo
             Dialog dialog = new Dialog();
             dialog.setCloseOnEsc(false);
@@ -136,6 +135,7 @@ public class BulkSmsView extends AbstractBakeryCrudView<Agenda> {
             dialog.add(vl);
             dialog.open();
         });
+        button.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_TERTIARY);
         return button;
     }
 }
