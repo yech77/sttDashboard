@@ -6,16 +6,35 @@ import com.stt.dash.backend.data.Role;
 import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.service.AgendaService;
 import com.stt.dash.backend.thread.AgendaParserRunnable;
+import com.stt.dash.backend.util.AgendaFileUtils;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.crud.AbstractBakeryCrudView;
 import com.stt.dash.ui.utils.BakeryConst;
+import com.stt.dash.ui.views.agenda.EditAgendaView;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.crud.BinderCrudEditor;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.annotation.Secured;
+import org.vaadin.olli.FileDownloadWrapper;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Route(value = BakeryConst.PAGE_BULKSMS, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_BULKSMS)
@@ -29,6 +48,7 @@ public class BulkSmsView extends AbstractBakeryCrudView<Agenda> {
         super(Agenda.class, service, new Grid<>(), createForm(currentUser, properties), currentUser);
         this.service = service;
         this.currentUser = currentUser;
+        AgendaFileUtils.setBaseDir(properties.getAgendaFilePathUpload());
     }
 
     @Override
@@ -43,6 +63,11 @@ public class BulkSmsView extends AbstractBakeryCrudView<Agenda> {
         grid.addColumn(role -> {
             return role.getStringStatus();
         }).setHeader("Status").setWidth("150px");
+        grid.addComponentColumn(item -> {
+            System.out.println("AGENDA **************** " + item);
+            Button b = createRemoveButton(grid, item);
+            return b;
+        }).setHeader("Action");
     }
 
     private static BinderCrudEditor<Agenda> createForm(CurrentUser currentUser, OProperties properties) {
@@ -53,20 +78,64 @@ public class BulkSmsView extends AbstractBakeryCrudView<Agenda> {
     @Override
     @Async
     protected void afterSaving(long idBeforeSave, Agenda agenda) {
-        if (idBeforeSave==0l) {
+        if (idBeforeSave == 0l) {
             AgendaParserRunnable parser = new AgendaParserRunnable(agenda, service, agenda.getCreatorEmail());
             parser.run();
         }
-//        Thread t = new Thread(parser);
-//        t.start();
-
     }
 
     @Override
     protected boolean beforeSaving(long idBeforeSave, Agenda entity) {
-        if (idBeforeSave==0l) {
+        if (idBeforeSave == 0l) {
             entity.setCreator(currentUser.getUser());
         }
         return true;
+    }
+
+    private Button createRemoveButton(Grid<Agenda> grid, Agenda agenda) {
+        @SuppressWarnings("unchecked")
+        Button button = new Button("view", clickEvent -> {
+
+
+            // Crea dialogo
+            Dialog dialog = new Dialog();
+            dialog.setCloseOnEsc(false);
+            dialog.setCloseOnOutsideClick(false);
+
+            // Genera String
+            InputStream stream = AgendaFileUtils.getStreamValidationLog(agenda.getFileName());
+            BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            try {
+                String line = br.readLine();
+                while (line != null) {
+                    sb.append(line).append("\n");
+                    line = br.readLine();
+                }
+                br.close();
+            } catch (IOException ex) {
+                Logger.getLogger(EditAgendaView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            // Crea Boton de Descarga
+            String fileName = agenda.getName() + "-error_log.txt";
+            Button confirmButton = new Button("Descargar Log", event -> dialog.close());
+            FileDownloadWrapper buttonWrapper = new FileDownloadWrapper(
+                    new StreamResource(fileName, () -> new ByteArrayInputStream(sb.toString().getBytes())));
+            buttonWrapper.wrapComponent(confirmButton);
+
+            // Llena Dialogo con texto y botones
+            Button cancelButton = new Button("Cancelar", event -> {
+                dialog.close();
+            });
+            Span question = new Span("Por favor confirme para completar la descarga:");
+            HorizontalLayout hl = new HorizontalLayout();
+            VerticalLayout vl = new VerticalLayout();
+            vl.add(question, hl);
+            hl.add(buttonWrapper, cancelButton);
+            dialog.add(vl);
+            dialog.open();
+        });
+        return button;
     }
 }

@@ -32,8 +32,8 @@ public class BulkSmsForm extends FormLayout {
     private TextField fileNameOriginal = new TextField();
 
     public BulkSmsForm(CurrentUser currentUser, OProperties properties) {
-        this.currentUser=currentUser;
-        this.properties=properties;
+        this.currentUser = currentUser;
+        this.properties = properties;
         setResponsiveSteps(
                 new ResponsiveStep("25em", 1, ResponsiveStep.LabelsPosition.TOP),
                 new ResponsiveStep("32em", 2, ResponsiveStep.LabelsPosition.TOP));
