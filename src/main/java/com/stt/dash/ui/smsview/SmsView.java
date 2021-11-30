@@ -600,7 +600,7 @@ public class SmsView extends LitTemplate {
         grid.setWidthFull();
 //        labs = getSms();
 //        if (labs == null) {
-            labs = new ArrayList<>();
+        labs = new ArrayList<>();
 //        }
         dataProvider = new ListDataProvider<>(labs);
         grid.setDataProvider(dataProvider);

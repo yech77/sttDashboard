@@ -82,7 +82,7 @@ public class AbstractSmsService {
 
     // Caso 12 y 14
     public Page<AbstractSMS> findByCarrierAndMessageType(LocalDate dateOne, LocalDate dateTwo, Collection<String> list_sid, String carrierCharCode, Collection<String> messageType, int page) {
-        return findByCarrierAndMessageType( dateOne, dateTwo, list_sid, carrierCharCode, messageType, page, pageSize);
+        return findByCarrierAndMessageType(dateOne, dateTwo, list_sid, carrierCharCode, messageType, page, pageSize);
     }
 
     // Caso 13 y 15
@@ -101,7 +101,6 @@ public class AbstractSmsService {
     public Page<AbstractSMS> findByPhoneNumer(int year, int month, List<String> list_sid, String destination, Collection<String> messageType, String carrierCharCode, int page) {
         return findByPhoneNumer(year, month, list_sid, destination, messageType, carrierCharCode, page, pageSize);
     }
-
 
 
     public Page<AbstractSMS> findByMessageTypeCase10(
@@ -229,6 +228,7 @@ public class AbstractSmsService {
 
     /**
      * Usado para los casos: #9.
+     *
      * @param dateOne
      * @param dateTwo
      * @param list_sid
@@ -289,6 +289,7 @@ public class AbstractSmsService {
 
     /**
      * Usado para casos: #13, #15.
+     *
      * @param dateOne
      * @param dateTwo
      * @param list_sid
@@ -339,7 +340,13 @@ public class AbstractSmsService {
     public Page<AbstractSMS> findBySystemIdIn(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, int page, int pageSize) {
         /* DATE */
         Date dateStart = ODateUitls.valueOf(dateOne);
-        Date dateEnd = ODateUitls.valueOf(dateTwo);
+        Date dateEnd = null;
+        try {
+            dateEnd = ODateUitls.parseToYearMonthDay(dateTwo, "23:59:59");
+        } catch (ParseException e) {
+            log.error("Error parsing date " + dateEnd);
+            throw new UserFriendlyDataException("Error con la fecha final");
+        }
         return monthRepos[dateOne.getMonthValue() - 1].findByDateBetweenAndSystemIdIn(
                 dateStart,
                 dateEnd, list_sid,
@@ -394,8 +401,8 @@ public class AbstractSmsService {
     }
 
     /**
-     *
      * Usado para casos: #8, #10.
+     *
      * @param dateOne
      * @param dateTwo
      * @param list_sid
@@ -462,6 +469,7 @@ public class AbstractSmsService {
 
     /**
      * Usado para los casos: #4, #6.
+     *
      * @param dateOne
      * @param dateTwo
      * @param list_sid
@@ -486,13 +494,13 @@ public class AbstractSmsService {
     }
 
     public Page<AbstractSMS> findByCarrierAndMessageType(int year, int month, Collection<String> list_sid,
-                                                                   String carrierCharCode, Collection<String> messageType) {
+                                                         String carrierCharCode, Collection<String> messageType) {
         return findByCarrierAndMessageType(year, month, list_sid, carrierCharCode, messageType, 0);
     }
 
     @Deprecated
     public Page<AbstractSMS> findByCarrierAndMessageType(int year, int month, Collection<String> list_sid,
-                                                                   String carrierCharCode, Collection<String> messageType, int page) {
+                                                         String carrierCharCode, Collection<String> messageType, int page) {
         try {
             /* DATE */
             Date dateStart = parseYearMonthToDate(year, month);
@@ -514,6 +522,7 @@ public class AbstractSmsService {
 
     /**
      * Usado para los casos: #12, #14.
+     *
      * @param dateOne
      * @param dateTwo
      * @param list_sid
@@ -524,7 +533,7 @@ public class AbstractSmsService {
      * @return
      */
     public Page<AbstractSMS> findByCarrierAndMessageType(LocalDate dateOne, LocalDate dateTwo, Collection<String> list_sid,
-                                                                   String carrierCharCode, Collection<String> messageType, int page, int pageSize) {
+                                                         String carrierCharCode, Collection<String> messageType, int page, int pageSize) {
         /* DATE */
         Date dateStart = ODateUitls.valueOf(dateOne);
         Date dateEnd = ODateUitls.valueOf(dateTwo);
@@ -545,6 +554,7 @@ public class AbstractSmsService {
 
     /**
      * Usado para el caso #0; Se buscan todos los sms.
+     *
      * @param dateOne
      * @param dateTwo
      * @param systemIds
@@ -720,18 +730,18 @@ public class AbstractSmsService {
     }
 
     public List<AbstractSMS> getAllFilteredMessages(int year, int month, int day,
-                                                              int hour, List<String> systemIds, String systemId, String messagesText,
-                                                              String messageType, String iso2, String carrierCharCode, String source,
-                                                              String destination, String msgSended, String msgReceived) {
+                                                    int hour, List<String> systemIds, String systemId, String messagesText,
+                                                    String messageType, String iso2, String carrierCharCode, String source,
+                                                    String destination, String msgSended, String msgReceived) {
 
         return getAllFilteredMessages(year, month, day, hour, systemIds, systemId, messagesText,
                 messageType, iso2, carrierCharCode, source, destination, msgSended, msgReceived, 0);
     }
 
     public List<AbstractSMS> getAllFilteredMessages(int year, int month, int day,
-                                                              int hour, List<String> systemIds, String systemId, String messagesText,
-                                                              String messageType, String iso2, String carrierCharCode, String source,
-                                                              String destination, String msgSended, String msgReceived, int page) {
+                                                    int hour, List<String> systemIds, String systemId, String messagesText,
+                                                    String messageType, String iso2, String carrierCharCode, String source,
+                                                    String destination, String msgSended, String msgReceived, int page) {
 
         List<AbstractSMS> newList = new ArrayList<>();
 
