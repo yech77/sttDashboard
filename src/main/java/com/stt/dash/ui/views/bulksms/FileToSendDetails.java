@@ -116,7 +116,7 @@ public class FileToSendDetails extends LitTemplate {
             delete.setVisible(!review);
             delete.setVisible(order.getStatus() != Status.COMPLETED);
         }
-        this.isDirty = review;
+        this.isDirty = false;
     }
 
     private void showData() {

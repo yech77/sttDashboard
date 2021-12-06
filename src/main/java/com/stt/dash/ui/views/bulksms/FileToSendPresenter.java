@@ -178,11 +178,11 @@ public class FileToSendPresenter {
         };
         EntityPresenter.CrudOnPreOperation<FIlesToSend>
                 onBeforeDelete = entity -> {
-            return entity.getStatus()!=Status.COMPLETED;
+            return entity.getStatus() != Status.COMPLETED;
         };
-        if (entityPresenter.getEntity().getStatus()!= Status.COMPLETED) {
+        if (entityPresenter.getEntity().getStatus() != Status.COMPLETED) {
             entityPresenter.delete(onSuccess);
-        }else{
+        } else {
             view.showNotification(DELETE_DENIED_INCORRECT_STATUS, true);
         }
     }
@@ -201,7 +201,7 @@ public class FileToSendPresenter {
     }
 
     private void close() {
-        System.out.println("Llegue a Close...");
+        System.out.println("FileToSendPresenter: Close");
         view.getOpenedOrderEditor().close();
         view.setOpened(false);
         view.navigateToMainView();

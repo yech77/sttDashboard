@@ -4,6 +4,7 @@ import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.security.SecurityConfiguration;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.ui.smsview.SmsView;
+import com.stt.dash.ui.views.HasConfirmation;
 import com.stt.dash.ui.views.audit.AuditView;
 import com.stt.dash.ui.views.bulksms.BulkSmsView;
 import com.stt.dash.ui.views.bulksms.FileToSendFrontView;
@@ -287,6 +288,10 @@ public class MainView extends AppLayout {
     @Override
     protected void afterNavigation() {
         super.afterNavigation();
+        confirmDialog.setOpened(false);
+        if (getContent() instanceof HasConfirmation) {
+            ((HasConfirmation) getContent()).setConfirmDialog(confirmDialog);
+        }
         viewTitle.setText(getCurrentPageTitle());
     }
 
