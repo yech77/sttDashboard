@@ -34,6 +34,7 @@ import org.springframework.data.domain.Page;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -132,6 +133,11 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         filterButton.setEnabled(true);
     }
 
+    /**
+     * Por Hora
+     *
+     * @param sids
+     */
     private void updateHourlyChart(List<String> sids) {
         Configuration confHourlyChart = carrierTriLineChart.getConfiguration();
         confHourlyChart.setTitle(OMonths.valueOf(actual_month).getMonthName() + " - dia de hoy");
@@ -140,11 +146,11 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /**/
         confHourlyChart.getxAxis().setTitle("Hora");
-//        String[] da = new String[LocalDateTime.now().getHour())];
-//        for (int i = 0; i <= LocalDateTime.now().getHour(); i++) {
-//            da[i] = i + ":";
-//        }
-//        confHourlyChart.getxAxis().setCategories(da);
+        String[] da = new String[LocalDateTime.now().getHour() + 1];
+        for (int i = 0; i <= LocalDateTime.now().getHour(); i++) {
+            da[i] = i + ":";
+        }
+        confHourlyChart.getxAxis().setCategories(da);
         /**/
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
@@ -476,12 +482,21 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     private void populateMonthChart(List<? extends AbstractSmsByYearMonth> smsGroup, List<SmsByYearMonthDay> carrierGroup) {
         Configuration confIn = carrierDailyChart.getConfiguration();
         /**/
-        confIn.getxAxis().setTitle("MES");
         confIn.getyAxis().setTitle("SMS");
+        confIn.setTitle(OMonths.valueOf(actual_month).getMonthName() + " - " + actual_year);
+        confIn.setSubTitle("por dia");
+        String[] da = new String[LocalDate.now().getMonth().maxLength()];
+        for (int i = 1; i <= LocalDate.now().getMonth().maxLength(); i++) {
+            da[i - 1] = i + "";
+        }
+        confIn.getxAxis().setCategories(da);
+        /**/
+        PlotOptionsLine plotColum = new PlotOptionsLine();
+        /**/
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
-        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
         tooltip.setShared(true);
+        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
         confIn.setTooltip(tooltip);
         /**/
         configureColumnChart(confIn);

@@ -111,9 +111,9 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         /* ******* Message type */
         messageTypeMultiCombo.setItems(new HashSet<>(Arrays.asList(OMessageType.values())));
         Optional<Object> op = getCurrentSessionAttributeAndNullIt(CLIENT_VIEW_SELECTED_MESSAGETYPE);
-        if (op.isPresent()){
+        if (op.isPresent()) {
             messageTypeMultiCombo.setValue((Set<OMessageType>) op.get());
-        }else{
+        } else {
             messageTypeMultiCombo.setValue(new HashSet<>(Arrays.asList(OMessageType.values())));
         }
 //        op.ifPresentOrElse(o -> {
@@ -165,9 +165,9 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         clientCombobox.addValueChangeListener(clientListener -> {
             systemIdMultiCombo.setItems(clientListener.getValue().getSystemids());
             Optional<Object> op = getCurrentSessionAttributeAndNullIt(CLIENT_VIEW_SELECTED_SYSTEMID);
-            if(op.isPresent()) {
+            if (op.isPresent()) {
                 systemIdMultiCombo.setValue((Set<SystemId>) op.get());
-            }else {
+            } else {
 //                systemIdMultiCombo.setValue(null);
                 systemIdMultiCombo.setValue(new HashSet<>(clientListener.getValue().getSystemids()));
             }
@@ -264,7 +264,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
     private void updateHourlyChart() {
         Configuration confHourlyChart = clientHourlyChart.getConfiguration();
-        confHourlyChart.setTitle( OMonths.valueOf(actual_month).getMonthName() + " - dia de hoy");
+        confHourlyChart.setTitle(OMonths.valueOf(actual_month).getMonthName() + " - dia de hoy");
         confHourlyChart.setSubTitle("por hora");
         confHourlyChart.getyAxis().setTitle("SMS");
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
@@ -282,7 +282,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">Hora: {point.key}</span><br/>");
         confHourlyChart.setTooltip(tooltip);
         /**/
-        if(systemIdMultiCombo.getSelectedItems()==null){
+        if (systemIdMultiCombo.getSelectedItems() == null) {
             log.info("No systemids selected");
             return;
         }
@@ -299,12 +299,15 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         addToChart(confHourlyChart, LineDateSeriesList, plotLine);
     }
 
+    /**
+     *
+     */
     private void updateMonthlyLineChart() {
         Configuration confMonthlyLineChart = clientMonthlyChart.getConfiguration();
         /**/
         confMonthlyLineChart.getyAxis().setTitle("SMS");
         confMonthlyLineChart.getxAxis().setTitle("Dia");
-        confMonthlyLineChart.setTitle(OMonths.valueOf(actual_month).getMonthName() + " - 2021");
+        confMonthlyLineChart.setTitle(OMonths.valueOf(actual_month).getMonthName() + " - " + actual_year);
         confMonthlyLineChart.setSubTitle("por dia");
         String[] da = new String[LocalDate.now().getMonth().maxLength()];
         for (int i = 1; i <= LocalDate.now().getMonth().maxLength(); i++) {

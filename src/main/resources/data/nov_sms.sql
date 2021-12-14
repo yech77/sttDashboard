@@ -1,7 +1,3 @@
-truncate nov_sms cascade;
-truncate oct_sms cascade;
-truncate temp_sms cascade;
-truncate sms_hour cascade;
 insert into public.nov_sms (id, carrier_char_code, datacoding, date, destination, iso2, message_type, messages_text,
                             msg_received, msg_sended, source, system_id)
 values (76627, 'DIGITEL', 3, '2021-11-26 07:07:07.000000', '584125045017', 'VE', 'MT',
