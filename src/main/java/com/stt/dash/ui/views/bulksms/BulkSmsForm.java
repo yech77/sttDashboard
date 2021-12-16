@@ -65,7 +65,17 @@ public class BulkSmsForm extends FormLayout implements OnUI {
     @Override
     public void onUI() {
         MemoryBuffer fileUploader = new MemoryBuffer();
-        Upload upload = new Upload(fileUploader);
+        Upload upload = new Upload(fileUploader);  /**/
+        upload.setDropLabel(new Span("Añadir archivo aquí"));
+        upload.setMaxFileSize(83840000);
+        upload.addSucceededListener(event -> {
+            stream = fileUploader.getInputStream();
+            AgendaFileUtils.setBaseDir(properties.getAgendaFilePathUpload());
+            String fileName = AgendaFileUtils.createUniqueFileName(fileUploader.getFileName());
+            AgendaFileUtils.createAgendaFile(fileName, stream);
+            this.fileName.setValue(fileName);
+            this.fileNameOriginal.setValue(fileUploader.getFileName());
+        });
         horizontalLayout.removeAll();
         horizontalLayout.add(upload);
     }
