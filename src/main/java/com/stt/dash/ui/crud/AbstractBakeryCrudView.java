@@ -7,6 +7,7 @@ import com.stt.dash.backend.service.FilterableCrudService;
 import com.stt.dash.ui.components.SearchBar;
 import com.stt.dash.ui.utils.TemplateUtil;
 import com.stt.dash.ui.views.HasNotifications;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.crud.Crud;
 import com.vaadin.flow.component.crud.CrudEditor;
 import com.vaadin.flow.component.crud.CrudI18n;
@@ -15,6 +16,7 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public abstract class
@@ -31,6 +33,8 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
     private static String confirmTextDialog = "Confirmar";
     private static String cancelTextDialog = "Volver";
     private final Grid<E> grid;
+    private STTCrudEditor sttCrudEditor;
+    private OnUI form;
     private E oldEntity;
 
     private final CrudEntityPresenter<E> entityPresenter;
@@ -53,6 +57,7 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
             System.out.println("--------------------- UN ON SAVED");
         }
     }
+
     protected void afterSaving(long idBeforeSave, E entity, E oldEntity) {
         if (idBeforeSave != 0) {
             System.out.println("----------------- Modificando: " + idBeforeSave);
@@ -77,7 +82,39 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
 
     public AbstractBakeryCrudView(Class<E> beanType, FilterableCrudService<E> service,
                                   Grid<E> grid, CrudEditor<E> editor, CurrentUser currentUser) {
+
         super(beanType, grid, editor);
+        sttCrudEditor = new STTCrudEditor() {
+            @Override
+            public void setItem(Object o, boolean b) {
+
+            }
+
+            @Override
+            public Object getItem() {
+                return null;
+            }
+
+            @Override
+            public void clear() {
+
+            }
+
+            @Override
+            public boolean validate() {
+                return false;
+            }
+
+            @Override
+            public void writeItemChanges() {
+
+            }
+
+            @Override
+            public Component getView() {
+                return null;
+            }
+        };
         this.grid = grid;
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         CrudI18n crudI18n = CrudI18n.createDefault();
@@ -89,7 +126,38 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         crudI18n.getConfirm().getDelete().setContent(String.format(DELETE_MESSAGE, entityName));
         crudI18n.setDeleteItem("Borrar");
         setI18n(crudI18n);
+        CrudEntityDataProvider<E> dataProvider = new CrudEntityDataProvider<>(service, currentUser);
+        grid.setDataProvider(dataProvider);
+        setupGrid(grid);
+        Crud.addEditColumn(grid);
 
+        entityPresenter = new CrudEntityPresenter<>(service, currentUser, this);
+        SearchBar searchBar = new SearchBar();
+        searchBar.setActionText("Nuevo " + entityName);
+        searchBar.setPlaceHolder("Buscar");
+        searchBar.addFilterChangeListener(e -> dataProvider.setFilter(searchBar.getFilter()));
+        searchBar.getActionButton().getElement().setAttribute("new-button", true);
+
+        setToolbar(searchBar);
+        setupCrudEventListeners(entityPresenter);
+    }
+
+    public AbstractBakeryCrudView(Class<E> beanType, FilterableCrudService<E> service,
+                                  Grid<E> grid, STTCrudEditor<E> editor, CurrentUser currentUser) {
+        super(beanType, grid, editor);
+        sttCrudEditor = editor;
+        form = (OnUI) editor.getView();
+        this.grid = grid;
+        grid.setSelectionMode(Grid.SelectionMode.NONE);
+        CrudI18n crudI18n = CrudI18n.createDefault();
+        String entityName = EntityUtil.getName(beanType);
+        crudI18n.setNewItem("Nuevo " + entityName);
+        crudI18n.setEditItem("Editar " + entityName);
+        crudI18n.setEditLabel("Editar " + entityName);
+        crudI18n.getConfirm().getCancel().setContent(String.format(DISCARD_MESSAGE, entityName));
+        crudI18n.getConfirm().getDelete().setContent(String.format(DELETE_MESSAGE, entityName));
+        crudI18n.setDeleteItem("Borrar");
+        setI18n(crudI18n);
         CrudEntityDataProvider<E> dataProvider = new CrudEntityDataProvider<>(service, currentUser);
         grid.setDataProvider(dataProvider);
         setupGrid(grid);
@@ -116,7 +184,12 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         Consumer<E> onFail = entity -> {
             throw new RuntimeException("The operation could not be performed.");
         };
-
+        addNewListener(e -> {
+            System.out.println("Press new......");
+            if (Optional.ofNullable(form).isPresent()) {
+                form.onUI();
+            }
+        });
         addEditListener(e ->
                 entityPresenter.loadEntity(e.getItem().getId(),
                         entity -> {
@@ -141,7 +214,7 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         getUI().ifPresent(ui -> ui.navigate(TemplateUtil.generateLocation(getBasePage(), id)));
     }
 
-    private void setOldEntity(E entity){
+    private void setOldEntity(E entity) {
         System.out.println("AbstractBakeryCrudView:setOldEntity-> " + entity);
         oldEntity = entity;
     }
@@ -153,7 +226,8 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
             if (item != null && id.equals(item.getId())) {
                 return;
             }
-            entityPresenter.loadEntity(id, entity -> {edit(entity, EditMode.EXISTING_ITEM);
+            entityPresenter.loadEntity(id, entity -> {
+                edit(entity, EditMode.EXISTING_ITEM);
                 System.out.println("Estoy por setparameter");
                 setOldEntity(entity);
             });

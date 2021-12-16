@@ -9,6 +9,7 @@ import com.stt.dash.backend.thread.AgendaParserRunnable;
 import com.stt.dash.backend.util.AgendaFileUtils;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.crud.AbstractBakeryCrudView;
+import com.stt.dash.ui.crud.STTBinderCrudEditor;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.views.agenda.EditAgendaView;
 import com.vaadin.flow.component.button.Button;
@@ -71,9 +72,9 @@ public class BulkSmsView extends AbstractBakeryCrudView<Agenda> {
         }).setHeader("Descargar");
     }
 
-    private static BinderCrudEditor<Agenda> createForm(CurrentUser currentUser, OProperties properties) {
+    private static STTBinderCrudEditor<Agenda> createForm(CurrentUser currentUser, OProperties properties) {
         BulkSmsForm form = new BulkSmsForm(currentUser, properties);
-        return new BinderCrudEditor<Agenda>(form.getBinder(), form);
+        return new STTBinderCrudEditor<Agenda>(form.getBinder(), form);
     }
 
     @Override

@@ -3,11 +3,11 @@ package com.stt.dash.ui.views.bulksms;
 import com.stt.dash.app.OProperties;
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.entity.Agenda;
-import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.util.AgendaFileUtils;
-import com.vaadin.flow.component.combobox.ComboBox;
+import com.stt.dash.ui.crud.OnUI;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
@@ -16,7 +16,7 @@ import com.vaadin.flow.data.binder.Binder;
 
 import java.io.InputStream;
 
-public class BulkSmsForm extends FormLayout {
+public class BulkSmsForm extends FormLayout implements OnUI {
     Binder<Agenda> binder = new BeanValidationBinder<>(Agenda.class);
     /**/
     TextField nameBox = new TextField("Nombre de la Agenda");
@@ -26,6 +26,7 @@ public class BulkSmsForm extends FormLayout {
     private MemoryBuffer fileUploader = new MemoryBuffer();
     private Upload upload = new Upload(fileUploader);
     /**/
+    HorizontalLayout horizontalLayout = new HorizontalLayout();
     private final CurrentUser currentUser;
     private OProperties properties;
     private TextField fileName = new TextField();
@@ -53,10 +54,19 @@ public class BulkSmsForm extends FormLayout {
             this.fileName.setValue(fileName);
             this.fileNameOriginal.setValue(fileUploader.getFileName());
         });
-        add(nameBox, descriptionBox, upload);
+        horizontalLayout.add(upload);
+        add(nameBox, descriptionBox, horizontalLayout);
     }
 
     public Binder<Agenda> getBinder() {
         return binder;
+    }
+
+    @Override
+    public void onUI() {
+        MemoryBuffer fileUploader = new MemoryBuffer();
+        Upload upload = new Upload(fileUploader);
+        horizontalLayout.removeAll();
+        horizontalLayout.add(upload);
     }
 }
