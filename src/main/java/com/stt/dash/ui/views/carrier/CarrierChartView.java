@@ -253,9 +253,9 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     private void updateTrimestral(List<String> sids) {
         /* ------------- TRIMESTRAL: SMS
          * Ejem: SmsByYearMonth{total=2775, yearSms=2021, monthSms=3, someCode=MO}*/
-        List<SmsByYearMonth> smsGroup = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actual_year, monthToShowList, sids);
+        List<SmsByYearMonth> smsGroup = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actual_year, monthsIn(2), sids);
         List<SmsByYearMonth> carrierGroup = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(actual_year,
-                monthToShowList,
+                monthsIn(2),
                 multi_carrier.getSelectedItems(),
                 multi_messagetype.getSelectedItems(),
                 sids);

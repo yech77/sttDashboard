@@ -291,9 +291,11 @@ public class SmsHourService {
     public List<SmsByYearMonth> getGroupCarrierByYearMonthMessageType(int yearSms, int monthSms, String messageType, List<String> list_sid) {
         return smshour_repo.groupCarrierByYeMo(yearSms, monthSms, messageType, list_sid);
     }
+
     public List<SmsByYearMonth> groupCarrierByYeMoMeWhMoEqMessageTypeIn(int yearSms, int monthSms, List<String> messageType, List<String> list_sid) {
         return smshour_repo.groupCarrierByYeMoMeWhMoEqMessageTypeIn(yearSms, monthSms, messageType, list_sid);
     }
+
     public List<SmsByYearMonthDay> getGroupCarrierByYearMonthDayMessageType(int yearSms, int monthSms, int daySms, String messageType, List<String> list_sid) {
         List<String> lis = new ArrayList<>(1);
         lis.add(messageType);
@@ -331,6 +333,7 @@ public class SmsHourService {
     }
 
     ////////////////////
+
     /**
      * Busca Year, Month In y sids INs
      *
@@ -357,6 +360,7 @@ public class SmsHourService {
     }
 
     ///////////////////////
+
     /**
      * Devuelve los meses que se deben buscar con el anio anterior y modifica
      * dejando solo los meses con busqueda del anio actual.
@@ -380,7 +384,8 @@ public class SmsHourService {
             l.add(monthSms.get(0));
             l.add(monthSms.get(1));
             monthSms.remove(0);
-            monthSms.remove(1);
+            /* La antigua posicion 1*/
+            monthSms.remove(0);
         }
         return l;
     }
@@ -406,7 +411,7 @@ public class SmsHourService {
             if (!thisHasIt) {
                 log.info("HOUR COLUMN DATA - ADDING HOUR({}) WITH 0 ", hourRunner);
                 /* TODO Descablear year*/
-                SmsByYearMonthDayHour o = new SmsByYearMonthDayHour(0, 2021, c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH), hourRunner, "N/A");
+                SmsByYearMonthDayHour o = new SmsByYearMonthDayHour(0, c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH), hourRunner, "N/A");
                 hourList.add(o);
             }
         }

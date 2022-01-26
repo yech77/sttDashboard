@@ -112,7 +112,12 @@ public class AbstractSmsService {
 
         /* DATE */
         Date dateStart = ODateUitls.valueOf(dateOne);
-        Date dateEnd = ODateUitls.valueOf(dateTwo);
+        Date dateEnd = null;
+        try {
+            dateEnd = ODateUitls.parseToDateTo(dateTwo);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         Pageable paging = PageRequest.of(page, pageSize);
         return monthRepos[dateOne.getMonthValue() - 1].findByDateBetweenAndSystemIdInAndMessageTypeIn(
@@ -139,7 +144,12 @@ public class AbstractSmsService {
 
         /* DATE */
         Date dateStart = ODateUitls.valueOf(dateOne);
-        Date dateEnd = ODateUitls.valueOf(dateTwo);
+        Date dateEnd = null;
+        try {
+            dateEnd = ODateUitls.parseToDateTo(dateTwo);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         Pageable paging = PageRequest.of(page, pageSize);
 
@@ -168,7 +178,12 @@ public class AbstractSmsService {
 
         /* DATE */
         Date dateStart = ODateUitls.valueOf(dateOne);
-        Date dateEnd = ODateUitls.valueOf(dateTwo);
+        Date dateEnd = null;
+        try {
+            dateEnd = ODateUitls.parseToDateTo(dateTwo);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         Pageable paging = PageRequest.of(page, pageSize);
 
@@ -248,7 +263,12 @@ public class AbstractSmsService {
 
         /* DATE */
         Date dateStart = ODateUitls.valueOf(dateOne);
-        Date dateEnd = ODateUitls.valueOf(dateTwo);
+        Date dateEnd = null;
+        try {
+            dateEnd = ODateUitls.parseToDateTo(dateTwo);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         Pageable paging = PageRequest.of(page, pageSize);
         return monthRepos[dateOne.getMonthValue() - 1].findByDateBetweenAndSystemIdInAndDestinationAndMessageTypeIn(
@@ -311,7 +331,12 @@ public class AbstractSmsService {
 
         /* DATE */
         Date dateStart = ODateUitls.valueOf(dateOne);
-        Date dateEnd = ODateUitls.valueOf(dateTwo);
+        Date dateEnd = null;
+        try {
+            dateEnd = ODateUitls.parseToDateTo(dateTwo);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         Pageable paging = PageRequest.of(page, pageSize);
         return monthRepos[dateOne.getMonthValue() - 1].findByDateBetweenAndSystemIdInAndDestinationAndMessageTypeInAndCarrierCharCode(
@@ -342,11 +367,12 @@ public class AbstractSmsService {
         Date dateStart = ODateUitls.valueOf(dateOne);
         Date dateEnd = null;
         try {
-            dateEnd = ODateUitls.parseToYearMonthDay(dateTwo, "23:59:59");
+            dateEnd = ODateUitls.parseToDateTo(dateTwo);
         } catch (ParseException e) {
             log.error("Error parsing date " + dateEnd);
             throw new UserFriendlyDataException("Error con la fecha final");
         }
+
         return monthRepos[dateOne.getMonthValue() - 1].findByDateBetweenAndSystemIdIn(
                 dateStart,
                 dateEnd, list_sid,
@@ -413,9 +439,16 @@ public class AbstractSmsService {
     public Page<AbstractSMS> findByMessageType(LocalDate dateOne, LocalDate dateTwo, Collection<String> list_sid, Collection<String> messageType, int page, int pageSize) {
         /* DATE */
         Date dateStart = ODateUitls.valueOf(dateOne);
-        Date dateEnd = ODateUitls.valueOf(dateTwo);
+        Date dateEnd = null;
+        try {
+            dateEnd = ODateUitls.parseToDateTo(dateTwo);
+        } catch (ParseException e) {
+            log.error("Error parsing date " + dateEnd);
+            throw new UserFriendlyDataException("Error con la fecha final");
+        }
 
         Pageable paging = PageRequest.of(page, pageSize);
+        log.info("Repositorio: {} - {}", monthRepos[dateOne.getMonthValue() - 1], dateOne.getMonthValue() - 1);
         return monthRepos[dateOne.getMonthValue() - 1].findByDateBetweenAndSystemIdInAndMessageTypeIn(
                 dateStart,
                 dateEnd,
@@ -482,7 +515,13 @@ public class AbstractSmsService {
 
         /* DATE */
         Date dateStart = ODateUitls.valueOf(dateOne);
-        Date dateEnd = ODateUitls.valueOf(dateTwo);
+        Date dateEnd = null;
+        try {
+            dateEnd = ODateUitls.parseToDateTo(dateTwo);
+        } catch (ParseException e) {
+            log.error("Error parsing date " + dateEnd);
+            throw new UserFriendlyDataException("Error con la fecha final");
+        }
 
         Pageable paging = PageRequest.of(page, pageSize);
         return monthRepos[dateOne.getMonthValue() - 1].findByDateBetweenAndSystemIdInAndCarrierCharCode(
@@ -536,7 +575,13 @@ public class AbstractSmsService {
                                                          String carrierCharCode, Collection<String> messageType, int page, int pageSize) {
         /* DATE */
         Date dateStart = ODateUitls.valueOf(dateOne);
-        Date dateEnd = ODateUitls.valueOf(dateTwo);
+        Date dateEnd = null;
+        try {
+            dateEnd = ODateUitls.parseToDateTo(dateTwo);
+        } catch (ParseException e) {
+            log.error("Error parsing date " + dateEnd);
+            throw new UserFriendlyDataException("Error con la fecha final");
+        }
 
         Pageable paging = PageRequest.of(page, pageSize);
         return monthRepos[dateOne.getMonthValue() - 1].findByDateBetweenAndSystemIdInAndCarrierCharCodeAndMessageTypeIn(
@@ -565,7 +610,13 @@ public class AbstractSmsService {
     public Page<AbstractSMS> getAllMessages(LocalDate dateOne, LocalDate dateTwo, List<String> systemIds, int page, int pageSize) {
         /* DATE */
         Date dateStart = ODateUitls.valueOf(dateOne);
-        Date dateEnd = ODateUitls.valueOf(dateTwo);
+        Date dateEnd = null;
+        try {
+            dateEnd = ODateUitls.parseToDateTo(dateTwo);
+        } catch (ParseException e) {
+            log.error("Error parsing date " + dateEnd);
+            throw new UserFriendlyDataException("Error con la fecha final");
+        }
 
         Pageable paging = PageRequest.of(page, pageSize);
         Page<AbstractSMS> p = monthRepos[dateOne.getMonthValue() - 1].findByDateBetweenAndSystemIdIn(dateStart,

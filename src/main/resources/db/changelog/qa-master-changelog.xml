@@ -8,4 +8,6 @@
     <include file="db/changelog/scripts/createTables.sql"/>
     <include file="db/changelog/scripts/createTriggers.sql"/>
     <include file="db/changelog/scripts/createDataBase.sql"/>
+    <!-- Cambia tamano de campo -->
+    <include file="db/changelog/scripts/changelog_1.sql"/>
 </databaseChangeLog>

@@ -350,6 +350,9 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         conf.getLegend().setEnabled(false);
     }
 
+    /**
+     *
+     */
     private void populateMonthlySmsChart() {
         Configuration conf = monthlySmsGraph.getConfiguration();
         conf.getChart().setType(ChartType.AREASPLINE);
@@ -369,7 +372,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
                 OMonths.valueOf(monthToShowList.get(2)).getMonthName()};
         conf.getxAxis().setCategories(ml);
         List<? extends AbstractSmsByYearMonth> monthToShowDataList = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actualYear, monthToShowList, stingListGenericBean.getList());
-        List<Series> lineDateSeriesList = paEntender(monthToShowDataList, monthToShowList);
+        List<Series> lineDateSeriesList = paEntender(monthToShowDataList, monthsIn(2));
         PlotOptionsLine plotLine = new PlotOptionsLine();
         addToChart(conf, lineDateSeriesList, plotLine);
     }

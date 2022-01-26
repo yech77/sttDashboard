@@ -106,11 +106,12 @@ public class SmsGeneratorParserRunnable implements Runnable {
             BufferedReader br = new BufferedReader(isr);
             /* Marcar el principio del archivo para luego regresarme. */
             br.mark(1);
-            /* Buscar el primer caracter no numero */
+            /* Buscar el primer caracter no numero de la primera columna para obtener el separador */
             while (Character.isDigit(separatorChar)) {
                 separatorChar = (char) br.read();
                 log.info("{} PASING CHAR '{}'", getStringLog(), separatorChar);
             }
+            /* Asignar separador por defecto. */
             if (separatorChar != ';' && separatorChar != ',' && separatorChar != '|') {
                 separatorChar = ',';
                 log.info("{} SEPARATOR NOT FOUND. ASSIGNED ['{}']", getStringLog(), separatorChar);

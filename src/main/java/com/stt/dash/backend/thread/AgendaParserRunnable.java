@@ -25,7 +25,7 @@ public class AgendaParserRunnable {
     /**/
     private final static Logger log = LoggerFactory.getLogger(AgendaParserRunnable.class);
     /**/
-    private  String userEmail;
+    private String userEmail;
 
     // Agenda para procesar
     private Agenda agenda;
@@ -38,12 +38,12 @@ public class AgendaParserRunnable {
 
     // Lista de errores de validacion
     private List<String> agendaLog = new ArrayList<>();
-    /**/
+    /* TODO: Descablear */
     private final static Pattern regexPattern = Pattern.compile("^(58)(412|414|416|424|426)([0-9]{7})$");
 
     public AgendaParserRunnable(Agenda agenda, AgendaService agenda_service, String userEmail) {
         Optional<Agenda> optional = agenda_service.findById(agenda.getId());
-        if (!optional.isPresent()){
+        if (!optional.isPresent()) {
             return;
         }
         this.agenda = optional.get();
@@ -84,11 +84,12 @@ public class AgendaParserRunnable {
             BufferedReader br = new BufferedReader(isr);
             /* Marcar el principio del archivo para luego regresarme. */
             br.mark(1);
-            /* Buscar el primer caracter no numero */
+            /* Buscar el primer caracter no numero para obtener el separador */
             while (Character.isDigit(separatorChar)) {
                 separatorChar = (char) br.read();
                 log.info("{} PASING CHAR '{}'", getStringLog(), separatorChar);
             }
+            /* Asignar un separador por defecto */
             if (separatorChar != ';' && separatorChar != ',' && separatorChar != '|') {
                 separatorChar = ',';
                 log.info("{} SEPARATOR NOT FOUND. ASSIGNED ['{}']", getStringLog(), separatorChar);
@@ -193,10 +194,12 @@ public class AgendaParserRunnable {
         }
 
     }
-    private void updateAgendaStatus(Agenda.Status status){
+
+    private void updateAgendaStatus(Agenda.Status status) {
         agenda.setStatus(status);
         agenda = agenda_service.updateState(null, agenda);
     }
+
     // Añade una linea de informacion al log de errores
     public void logLine(long line, String msg) {
         if (line < 1) {

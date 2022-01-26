@@ -1,0 +1,590 @@
+package com.stt.dash.backend.thread;
+
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.stt.dash.app.OProperties;
+import com.stt.dash.backend.data.Status;
+import com.stt.dash.backend.data.entity.Agenda;
+import com.stt.dash.backend.data.entity.Client;
+import com.stt.dash.backend.data.entity.FIlesToSend;
+import com.stt.dash.backend.data.entity.MyAuditEventComponent;
+import com.stt.dash.backend.data.entity.User;
+import com.stt.dash.backend.repositories.FilesToSendRepository;
+import com.stt.dash.backend.repositories.ODashAuditEventRepository;
+import com.stt.dash.backend.service.FilesToSendService;
+import com.stt.dash.backend.service.ODashAuditEventService;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.HashSet;
+
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+@Disabled
+class SmsGeneratorParserRunnableTest {
+    @Test
+    void testConstructor() {
+        OProperties properties = new OProperties();
+        FilesToSendRepository filesToSendRepository = mock(FilesToSendRepository.class);
+        FilesToSendService files_service = new FilesToSendService(filesToSendRepository,
+                new MyAuditEventComponent(new ODashAuditEventService(mock(ODashAuditEventRepository.class))));
+
+        Client client = new Client();
+        client.setClientCod("Client Cod");
+        client.setClientName("Dr Jane Doe");
+        client.setCuadrante(Client.Cuandrante.ALIADO);
+        client.setEmail("jane.doe@example.org");
+        client.setSystemids(new HashSet<>());
+
+        User user = new User();
+        user.setActive(true);
+        user.setClient(new Client());
+        user.setClients(new HashSet<>());
+        user.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user.setCreatedDate(null);
+        user.setEmail("jane.doe@example.org");
+        user.setFirstName("Jane");
+        user.setLastName("Doe");
+        user.setLocked(true);
+        user.setPasswordHash("Password Hash");
+        user.setRole("Role");
+        user.setRoles(new HashSet<>());
+        user.setSystemids(new HashSet<>());
+        user.setUserChildren(new HashSet<>());
+        user.setUserParent(new User());
+        user.setUserType(User.OUSER_TYPE.IS);
+        user.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        User user1 = new User();
+        user1.setActive(true);
+        user1.setClient(client);
+        user1.setClients(new HashSet<>());
+        user1.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user1.setCreatedDate(LocalDateTime.of(1, 1, 1, 1, 1));
+        user1.setEmail("jane.doe@example.org");
+        user1.setFirstName("Jane");
+        user1.setLastName("Doe");
+        user1.setLocked(true);
+        user1.setPasswordHash("Password Hash");
+        user1.setRole("Role");
+        user1.setRoles(new HashSet<>());
+        user1.setSystemids(new HashSet<>());
+        user1.setUserChildren(new HashSet<>());
+        user1.setUserParent(user);
+        user1.setUserType(User.OUSER_TYPE.IS);
+        user1.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        Agenda agenda = new Agenda();
+        agenda.setCreator(user1);
+        agenda.setCreatorEmail("jane.doe@example.org");
+        LocalDateTime atStartOfDayResult = LocalDate.of(1970, 1, 1).atStartOfDay();
+        agenda.setDateCreated(Date.from(atStartOfDayResult.atZone(ZoneId.of("UTC")).toInstant()));
+        agenda.setDescription("The characteristics of someone or something");
+        agenda.setFileName("foo.txt");
+        agenda.setFileNameOriginal("foo.txt");
+        agenda.setFirstLine("First Line");
+        agenda.setInvalidItemCount(1);
+        agenda.setItemCount(3);
+        agenda.setName("Name");
+        agenda.setStatus(Agenda.Status.BLANK);
+
+        Client client1 = new Client();
+        client1.setClientCod("Client Cod");
+        client1.setClientName("Dr Jane Doe");
+        client1.setCuadrante(Client.Cuandrante.ALIADO);
+        client1.setEmail("jane.doe@example.org");
+        client1.setSystemids(new HashSet<>());
+
+        Client client2 = new Client();
+        client2.setClientCod("Client Cod");
+        client2.setClientName("Dr Jane Doe");
+        client2.setCuadrante(Client.Cuandrante.ALIADO);
+        client2.setEmail("jane.doe@example.org");
+        client2.setSystemids(new HashSet<>());
+
+        User user2 = new User();
+        user2.setActive(true);
+        user2.setClient(new Client());
+        user2.setClients(new HashSet<>());
+        user2.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user2.setCreatedDate(null);
+        user2.setEmail("jane.doe@example.org");
+        user2.setFirstName("Jane");
+        user2.setLastName("Doe");
+        user2.setLocked(true);
+        user2.setPasswordHash("Password Hash");
+        user2.setRole("Role");
+        user2.setRoles(new HashSet<>());
+        user2.setSystemids(new HashSet<>());
+        user2.setUserChildren(new HashSet<>());
+        user2.setUserParent(new User());
+        user2.setUserType(User.OUSER_TYPE.IS);
+        user2.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        User user3 = new User();
+        user3.setActive(true);
+        user3.setClient(client2);
+        user3.setClients(new HashSet<>());
+        user3.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user3.setCreatedDate(LocalDateTime.of(1, 1, 1, 1, 1));
+        user3.setEmail("jane.doe@example.org");
+        user3.setFirstName("Jane");
+        user3.setLastName("Doe");
+        user3.setLocked(true);
+        user3.setPasswordHash("Password Hash");
+        user3.setRole("Role");
+        user3.setRoles(new HashSet<>());
+        user3.setSystemids(new HashSet<>());
+        user3.setUserChildren(new HashSet<>());
+        user3.setUserParent(user2);
+        user3.setUserType(User.OUSER_TYPE.IS);
+        user3.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        User user4 = new User();
+        user4.setActive(true);
+        user4.setClient(client1);
+        user4.setClients(new HashSet<>());
+        user4.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user4.setCreatedDate(LocalDateTime.of(1, 1, 1, 1, 1));
+        user4.setEmail("jane.doe@example.org");
+        user4.setFirstName("Jane");
+        user4.setLastName("Doe");
+        user4.setLocked(true);
+        user4.setPasswordHash("Password Hash");
+        user4.setRole("Role");
+        user4.setRoles(new HashSet<>());
+        user4.setSystemids(new HashSet<>());
+        user4.setUserChildren(new HashSet<>());
+        user4.setUserParent(user3);
+        user4.setUserType(User.OUSER_TYPE.IS);
+        user4.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        FIlesToSend fIlesToSend = new FIlesToSend();
+        fIlesToSend.setAgenda(agenda);
+        fIlesToSend.setBeingProcessed(true);
+        LocalDateTime atStartOfDayResult1 = LocalDate.of(1970, 1, 1).atStartOfDay();
+        fIlesToSend.setDateToSend(Date.from(atStartOfDayResult1.atZone(ZoneId.of("UTC")).toInstant()));
+        fIlesToSend.setFileId("42");
+        fIlesToSend.setFileName("foo.txt");
+        fIlesToSend.setFilePath("/tmp/foo.txt");
+        fIlesToSend.setMessageWithParam("Message With Param");
+        fIlesToSend.setNumGenerated(10);
+        fIlesToSend.setNumSent(10);
+        fIlesToSend.setOrderDescription("Order Description");
+        fIlesToSend.setOrderName("Order Name");
+        fIlesToSend.setReadyToSend(true);
+        fIlesToSend.setSmsCount(3);
+        fIlesToSend.setStatus(Status.VALIDATING);
+        fIlesToSend.setSystemId("42");
+        fIlesToSend.setUserCreator(user4);
+
+        Client client3 = new Client();
+        client3.setClientCod("Client Cod");
+        client3.setClientName("Dr Jane Doe");
+        client3.setCuadrante(Client.Cuandrante.ALIADO);
+        client3.setEmail("jane.doe@example.org");
+        client3.setSystemids(new HashSet<>());
+
+        Client client4 = new Client();
+        client4.setClientCod("Client Cod");
+        client4.setClientName("Dr Jane Doe");
+        client4.setCuadrante(Client.Cuandrante.ALIADO);
+        client4.setEmail("jane.doe@example.org");
+        client4.setSystemids(new HashSet<>());
+
+        User user5 = new User();
+        user5.setActive(true);
+        user5.setClient(new Client());
+        user5.setClients(new HashSet<>());
+        user5.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user5.setCreatedDate(null);
+        user5.setEmail("jane.doe@example.org");
+        user5.setFirstName("Jane");
+        user5.setLastName("Doe");
+        user5.setLocked(true);
+        user5.setPasswordHash("Password Hash");
+        user5.setRole("Role");
+        user5.setRoles(new HashSet<>());
+        user5.setSystemids(new HashSet<>());
+        user5.setUserChildren(new HashSet<>());
+        user5.setUserParent(new User());
+        user5.setUserType(User.OUSER_TYPE.IS);
+        user5.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        User user6 = new User();
+        user6.setActive(true);
+        user6.setClient(client4);
+        user6.setClients(new HashSet<>());
+        user6.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user6.setCreatedDate(LocalDateTime.of(1, 1, 1, 1, 1));
+        user6.setEmail("jane.doe@example.org");
+        user6.setFirstName("Jane");
+        user6.setLastName("Doe");
+        user6.setLocked(true);
+        user6.setPasswordHash("Password Hash");
+        user6.setRole("Role");
+        user6.setRoles(new HashSet<>());
+        user6.setSystemids(new HashSet<>());
+        user6.setUserChildren(new HashSet<>());
+        user6.setUserParent(user5);
+        user6.setUserType(User.OUSER_TYPE.IS);
+        user6.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        User user7 = new User();
+        user7.setActive(true);
+        user7.setClient(client3);
+        user7.setClients(new HashSet<>());
+        user7.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user7.setCreatedDate(LocalDateTime.of(1, 1, 1, 1, 1));
+        user7.setEmail("jane.doe@example.org");
+        user7.setFirstName("Jane");
+        user7.setLastName("Doe");
+        user7.setLocked(true);
+        user7.setPasswordHash("Password Hash");
+        user7.setRole("Role");
+        user7.setRoles(new HashSet<>());
+        user7.setSystemids(new HashSet<>());
+        user7.setUserChildren(new HashSet<>());
+        user7.setUserParent(user6);
+        user7.setUserType(User.OUSER_TYPE.IS);
+        user7.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        Agenda agenda1 = new Agenda();
+        agenda1.setCreator(user7);
+        agenda1.setCreatorEmail("jane.doe@example.org");
+        LocalDateTime atStartOfDayResult2 = LocalDate.of(1970, 1, 1).atStartOfDay();
+        agenda1.setDateCreated(Date.from(atStartOfDayResult2.atZone(ZoneId.of("UTC")).toInstant()));
+        agenda1.setDescription("The characteristics of someone or something");
+        agenda1.setFileName("foo.txt");
+        agenda1.setFileNameOriginal("foo.txt");
+        agenda1.setFirstLine("First Line");
+        agenda1.setInvalidItemCount(1);
+        agenda1.setItemCount(3);
+        agenda1.setName("Name");
+        agenda1.setStatus(Agenda.Status.BLANK);
+
+        Client client5 = new Client();
+        client5.setClientCod("Client Cod");
+        client5.setClientName("Dr Jane Doe");
+        client5.setCuadrante(Client.Cuandrante.ALIADO);
+        client5.setEmail("jane.doe@example.org");
+        client5.setSystemids(new HashSet<>());
+
+        Client client6 = new Client();
+        client6.setClientCod("Client Cod");
+        client6.setClientName("Dr Jane Doe");
+        client6.setCuadrante(Client.Cuandrante.ALIADO);
+        client6.setEmail("jane.doe@example.org");
+        client6.setSystemids(new HashSet<>());
+
+        Client client7 = new Client();
+        client7.setClientCod("Client Cod");
+        client7.setClientName("Dr Jane Doe");
+        client7.setCuadrante(Client.Cuandrante.ALIADO);
+        client7.setEmail("jane.doe@example.org");
+        client7.setSystemids(new HashSet<>());
+
+        User user8 = new User();
+        user8.setActive(true);
+        user8.setClient(new Client());
+        user8.setClients(new HashSet<>());
+        user8.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user8.setCreatedDate(null);
+        user8.setEmail("jane.doe@example.org");
+        user8.setFirstName("Jane");
+        user8.setLastName("Doe");
+        user8.setLocked(true);
+        user8.setPasswordHash("Password Hash");
+        user8.setRole("Role");
+        user8.setRoles(new HashSet<>());
+        user8.setSystemids(new HashSet<>());
+        user8.setUserChildren(new HashSet<>());
+        user8.setUserParent(new User());
+        user8.setUserType(User.OUSER_TYPE.IS);
+        user8.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        User user9 = new User();
+        user9.setActive(true);
+        user9.setClient(client7);
+        user9.setClients(new HashSet<>());
+        user9.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user9.setCreatedDate(LocalDateTime.of(1, 1, 1, 1, 1));
+        user9.setEmail("jane.doe@example.org");
+        user9.setFirstName("Jane");
+        user9.setLastName("Doe");
+        user9.setLocked(true);
+        user9.setPasswordHash("Password Hash");
+        user9.setRole("Role");
+        user9.setRoles(new HashSet<>());
+        user9.setSystemids(new HashSet<>());
+        user9.setUserChildren(new HashSet<>());
+        user9.setUserParent(user8);
+        user9.setUserType(User.OUSER_TYPE.IS);
+        user9.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        User user10 = new User();
+        user10.setActive(true);
+        user10.setClient(client6);
+        user10.setClients(new HashSet<>());
+        user10.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user10.setCreatedDate(LocalDateTime.of(1, 1, 1, 1, 1));
+        user10.setEmail("jane.doe@example.org");
+        user10.setFirstName("Jane");
+        user10.setLastName("Doe");
+        user10.setLocked(true);
+        user10.setPasswordHash("Password Hash");
+        user10.setRole("Role");
+        user10.setRoles(new HashSet<>());
+        user10.setSystemids(new HashSet<>());
+        user10.setUserChildren(new HashSet<>());
+        user10.setUserParent(user9);
+        user10.setUserType(User.OUSER_TYPE.IS);
+        user10.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        User user11 = new User();
+        user11.setActive(true);
+        user11.setClient(client5);
+        user11.setClients(new HashSet<>());
+        user11.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user11.setCreatedDate(LocalDateTime.of(1, 1, 1, 1, 1));
+        user11.setEmail("jane.doe@example.org");
+        user11.setFirstName("Jane");
+        user11.setLastName("Doe");
+        user11.setLocked(true);
+        user11.setPasswordHash("Password Hash");
+        user11.setRole("Role");
+        user11.setRoles(new HashSet<>());
+        user11.setSystemids(new HashSet<>());
+        user11.setUserChildren(new HashSet<>());
+        user11.setUserParent(user10);
+        user11.setUserType(User.OUSER_TYPE.IS);
+        user11.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+        new SmsGeneratorParserRunnable(properties, files_service, fIlesToSend, agenda1, "42", "Messages Text", "Client",
+                "jane.doe@example.org", user11);
+
+        assertNull(SmsGeneratorParserRunnable.baseDirectory);
+    }
+
+    @Test
+    void testAutoGenerateSms() {
+        Client client = new Client();
+        client.setClientCod("Client Cod");
+        client.setClientName("Dr Jane Doe");
+        client.setCuadrante(Client.Cuandrante.ALIADO);
+        client.setEmail("jane.doe@example.org");
+        client.setSystemids(new HashSet<>());
+
+        Client client1 = new Client();
+        client1.setClientCod("Client Cod");
+        client1.setClientName("Dr Jane Doe");
+        client1.setCuadrante(Client.Cuandrante.ALIADO);
+        client1.setEmail("jane.doe@example.org");
+        client1.setSystemids(new HashSet<>());
+
+        User user = new User();
+        user.setActive(true);
+        user.setClient(new Client());
+        user.setClients(new HashSet<>());
+        user.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user.setCreatedDate(null);
+        user.setEmail("jane.doe@example.org");
+        user.setFirstName("Jane");
+        user.setLastName("Doe");
+        user.setLocked(true);
+        user.setPasswordHash("Password Hash");
+        user.setRole("Role");
+        user.setRoles(new HashSet<>());
+        user.setSystemids(new HashSet<>());
+        user.setUserChildren(new HashSet<>());
+        user.setUserParent(new User());
+        user.setUserType(User.OUSER_TYPE.IS);
+        user.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        User user1 = new User();
+        user1.setActive(true);
+        user1.setClient(client1);
+        user1.setClients(new HashSet<>());
+        user1.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user1.setCreatedDate(LocalDateTime.of(1, 1, 1, 1, 1));
+        user1.setEmail("jane.doe@example.org");
+        user1.setFirstName("Jane");
+        user1.setLastName("Doe");
+        user1.setLocked(true);
+        user1.setPasswordHash("Password Hash");
+        user1.setRole("Role");
+        user1.setRoles(new HashSet<>());
+        user1.setSystemids(new HashSet<>());
+        user1.setUserChildren(new HashSet<>());
+        user1.setUserParent(user);
+        user1.setUserType(User.OUSER_TYPE.IS);
+        user1.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        User user2 = new User();
+        user2.setActive(true);
+        user2.setClient(client);
+        user2.setClients(new HashSet<>());
+        user2.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user2.setCreatedDate(LocalDateTime.of(1, 1, 1, 1, 1));
+        user2.setEmail("jane.doe@example.org");
+        user2.setFirstName("Jane");
+        user2.setLastName("Doe");
+        user2.setLocked(true);
+        user2.setPasswordHash("Password Hash");
+        user2.setRole("Role");
+        user2.setRoles(new HashSet<>());
+        user2.setSystemids(new HashSet<>());
+        user2.setUserChildren(new HashSet<>());
+        user2.setUserParent(user1);
+        user2.setUserType(User.OUSER_TYPE.IS);
+        user2.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        Agenda agenda = new Agenda();
+        agenda.setCreator(user2);
+        agenda.setCreatorEmail("jane.doe@example.org");
+        LocalDateTime atStartOfDayResult = LocalDate.of(1970, 1, 1).atStartOfDay();
+        agenda.setDateCreated(Date.from(atStartOfDayResult.atZone(ZoneId.of("UTC")).toInstant()));
+        agenda.setDescription("The characteristics of someone or something");
+        agenda.setFileName("foo.txt");
+        agenda.setFileNameOriginal("foo.txt");
+        agenda.setFirstLine("First Line");
+        agenda.setInvalidItemCount(1);
+        agenda.setItemCount(3);
+        agenda.setName("Name");
+        agenda.setStatus(Agenda.Status.BLANK);
+
+        Client client2 = new Client();
+        client2.setClientCod("Client Cod");
+        client2.setClientName("Dr Jane Doe");
+        client2.setCuadrante(Client.Cuandrante.ALIADO);
+        client2.setEmail("jane.doe@example.org");
+        client2.setSystemids(new HashSet<>());
+
+        Client client3 = new Client();
+        client3.setClientCod("Client Cod");
+        client3.setClientName("Dr Jane Doe");
+        client3.setCuadrante(Client.Cuandrante.ALIADO);
+        client3.setEmail("jane.doe@example.org");
+        client3.setSystemids(new HashSet<>());
+
+        Client client4 = new Client();
+        client4.setClientCod("Client Cod");
+        client4.setClientName("Dr Jane Doe");
+        client4.setCuadrante(Client.Cuandrante.ALIADO);
+        client4.setEmail("jane.doe@example.org");
+        client4.setSystemids(new HashSet<>());
+
+        User user3 = new User();
+        user3.setActive(true);
+        user3.setClient(new Client());
+        user3.setClients(new HashSet<>());
+        user3.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user3.setCreatedDate(null);
+        user3.setEmail("jane.doe@example.org");
+        user3.setFirstName("Jane");
+        user3.setLastName("Doe");
+        user3.setLocked(true);
+        user3.setPasswordHash("Password Hash");
+        user3.setRole("Role");
+        user3.setRoles(new HashSet<>());
+        user3.setSystemids(new HashSet<>());
+        user3.setUserChildren(new HashSet<>());
+        user3.setUserParent(new User());
+        user3.setUserType(User.OUSER_TYPE.IS);
+        user3.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        User user4 = new User();
+        user4.setActive(true);
+        user4.setClient(client4);
+        user4.setClients(new HashSet<>());
+        user4.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user4.setCreatedDate(LocalDateTime.of(1, 1, 1, 1, 1));
+        user4.setEmail("jane.doe@example.org");
+        user4.setFirstName("Jane");
+        user4.setLastName("Doe");
+        user4.setLocked(true);
+        user4.setPasswordHash("Password Hash");
+        user4.setRole("Role");
+        user4.setRoles(new HashSet<>());
+        user4.setSystemids(new HashSet<>());
+        user4.setUserChildren(new HashSet<>());
+        user4.setUserParent(user3);
+        user4.setUserType(User.OUSER_TYPE.IS);
+        user4.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        User user5 = new User();
+        user5.setActive(true);
+        user5.setClient(client3);
+        user5.setClients(new HashSet<>());
+        user5.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user5.setCreatedDate(LocalDateTime.of(1, 1, 1, 1, 1));
+        user5.setEmail("jane.doe@example.org");
+        user5.setFirstName("Jane");
+        user5.setLastName("Doe");
+        user5.setLocked(true);
+        user5.setPasswordHash("Password Hash");
+        user5.setRole("Role");
+        user5.setRoles(new HashSet<>());
+        user5.setSystemids(new HashSet<>());
+        user5.setUserChildren(new HashSet<>());
+        user5.setUserParent(user4);
+        user5.setUserType(User.OUSER_TYPE.IS);
+        user5.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        User user6 = new User();
+        user6.setActive(true);
+        user6.setClient(client2);
+        user6.setClients(new HashSet<>());
+        user6.setCreatedBy("Jan 1, 2020 8:00am GMT+0100");
+        user6.setCreatedDate(LocalDateTime.of(1, 1, 1, 1, 1));
+        user6.setEmail("jane.doe@example.org");
+        user6.setFirstName("Jane");
+        user6.setLastName("Doe");
+        user6.setLocked(true);
+        user6.setPasswordHash("Password Hash");
+        user6.setRole("Role");
+        user6.setRoles(new HashSet<>());
+        user6.setSystemids(new HashSet<>());
+        user6.setUserChildren(new HashSet<>());
+        user6.setUserParent(user5);
+        user6.setUserType(User.OUSER_TYPE.IS);
+        user6.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+
+        FIlesToSend fIlesToSend = new FIlesToSend();
+        fIlesToSend.setAgenda(agenda);
+        fIlesToSend.setBeingProcessed(true);
+        LocalDateTime atStartOfDayResult1 = LocalDate.of(1970, 1, 1).atStartOfDay();
+        fIlesToSend.setDateToSend(Date.from(atStartOfDayResult1.atZone(ZoneId.of("UTC")).toInstant()));
+        fIlesToSend.setFileId("42");
+        fIlesToSend.setFileName("foo.txt");
+        fIlesToSend.setFilePath("/tmp/foo.txt");
+        fIlesToSend.setMessageWithParam("Message With Param");
+        fIlesToSend.setNumGenerated(10);
+        fIlesToSend.setNumSent(10);
+        fIlesToSend.setOrderDescription("Order Description");
+        fIlesToSend.setOrderName("Order Name");
+        fIlesToSend.setReadyToSend(true);
+        fIlesToSend.setSmsCount(3);
+        fIlesToSend.setStatus(Status.VALIDATING);
+        fIlesToSend.setSystemId("42");
+        fIlesToSend.setUserCreator(user6);
+        FilesToSendRepository filesToSendRepository = mock(FilesToSendRepository.class);
+        when(filesToSendRepository.saveAndFlush((FIlesToSend) any())).thenReturn(fIlesToSend);
+        FilesToSendService files_service = new FilesToSendService(filesToSendRepository,
+                new MyAuditEventComponent(new ODashAuditEventService(mock(ODashAuditEventRepository.class))));
+
+        OProperties properties = new OProperties();
+        FIlesToSend fileToSend = new FIlesToSend();
+        Agenda agenda1 = new Agenda();
+        (new SmsGeneratorParserRunnable(properties, files_service, fileToSend, agenda1, "42", "Messages Text", "Client",
+                "jane.doe@example.org", new User())).generateSms();
+        verify(filesToSendRepository).saveAndFlush((FIlesToSend) any());
+    }
+}
+

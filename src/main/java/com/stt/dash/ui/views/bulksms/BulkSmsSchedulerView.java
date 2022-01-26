@@ -47,6 +47,7 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
     private final FilesToSendService files_service;
     private final String userEmail;
     private final CurrentUser currentUser;
+
     public BulkSmsSchedulerView(
             OProperties properties, SystemIdRepository systemid_repo,
             AgendaService agendaService,
@@ -56,9 +57,9 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
             SetGenericBean<SystemId> userSystemIdSet) {
         super(FIlesToSend.class, null, new Grid<FIlesToSend>(), createForm(currentUser, agendaService, userSystemIdSet, userChildrenList), currentUser);
         this.files_service = service;
-        this.properties=properties;
+        this.properties = properties;
         this.userEmail = currentUser.getUser().getEmail();
-        this.systemid_repo=systemid_repo;
+        this.systemid_repo = systemid_repo;
         this.currentUser = currentUser;
     }
 
@@ -72,8 +73,8 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
         grid.addColumn(FIlesToSend::getOrderName).setWidth("250px").setHeader("Nombre").setFlexGrow(5);
         grid.addColumn(FIlesToSend::getOrderDescription).setHeader("Descripción").setWidth("180px").setFlexGrow(5);
         grid.addColumn(new LocalDateTimeRenderer<>(
-                order -> order.getDateToSend().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
-                DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")))
+                        order -> order.getDateToSend().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                        DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")))
                 .setComparator(order -> order.getDateToSend()).setHeader("Fecha para enviar")
                 .setAutoWidth(true);
         grid.addColumn(role -> role.getStatus()).setHeader("Status").setWidth("150px");
@@ -90,7 +91,7 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
 
     @Override
     protected boolean beforeSaving(long idBeforeSave, FIlesToSend entity) {
-        if (idBeforeSave==0){
+        if (idBeforeSave == 0) {
             entity.setFileName(form.agendaCombo.getValue().getFileName());
         }
         return true;
@@ -105,6 +106,7 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
         /**/
         Optional<SystemId> bySystemId = systemid_repo.findBySystemId(form.systemIdCombo.getValue());
         if (!bySystemId.isPresent()) {
+            /* TODO: Esto deberia generar un error.*/
             System.out.println("SysId not found!!!");
         } else {
             String clientCod = bySystemId.get().getClient().getClientCod();

@@ -22,6 +22,9 @@ public class OProperties {
     @Value("${agenda.filepath.base}")
     private String agendafilePathBase;
 
+    @Value("${orinoco.host}")
+    public static String ORINOCO_HOST;
+
     public String getImqaddresslist() {
         return imqaddresslist;
     }
@@ -42,4 +45,7 @@ public class OProperties {
         return agendafilePathBase;
     }
 
+    public static String getOrinocoHost() {
+        return ORINOCO_HOST;
+    }
 }

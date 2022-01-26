@@ -4,8 +4,12 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
-    <!--CREACION BASE E INICIAL DE BD V1.00-->
+    <!-- Crea las tablas en una BD nueva-->
     <include file="db/changelog/scripts/createTables.sql"/>
+    <!-- Crea los triggers neesarios -->
     <include file="db/changelog/scripts/createTriggers.sql"/>
+    <!-- Trunca las tablas y reinicia las secuencias. Crea la data base(roles, usuarios, etc) -->
     <include file="db/changelog/scripts/createDataBase.sql"/>
+    <!-- Trunca las tablas y reinicia las secuencias. Crea la data base(roles, usuarios, etc) -->
+    <include file="db/changelog/scripts/changelog_1.sql"/>
 </databaseChangeLog>

@@ -73,6 +73,17 @@ public class ODateUitls {
 
     /**
      * devuelve una fecha con year, month, day con los hour, minute y los
+     * segundos en "23:59:59".
+     *
+     * @return
+     * @throws ParseException
+     */
+    public static synchronized Date parseToDateTo(LocalDate localDate) throws ParseException {
+        return parseToYearMonthDay(localDate, "23:59:59");
+    }
+
+    /**
+     * devuelve una fecha con year, month, day con los hour, minute y los
      * segundos segun hh_mm_ss.
      *
      * @return

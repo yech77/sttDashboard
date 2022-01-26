@@ -454,6 +454,9 @@ public class SmsView extends LitTemplate {
 //        }
         LocalDate selectedStartDate = (dateOne.getValue() == null) ? null : dateOne.getValue().getStartDate();
         LocalDate selectedEndDate = (dateOne.getValue() == null) ? null : dateOne.getValue().getEndDate();
+        if (selectedEndDate == null) {
+            selectedEndDate = selectedStartDate;
+        }
         return obtainAbstractOf(getSmsPage(selectedStartDate, selectedEndDate));
     }
 

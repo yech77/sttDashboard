@@ -67,11 +67,13 @@
     "@vaadin/vaadin-usage-statistics": "2.1.0",
     "@webcomponents/shadycss": "1.8.0",
     "@webcomponents/webcomponentsjs": "^2.2.10",
+    "bower": "^1.8.13",
     "construct-style-sheets-polyfill": "2.4.16",
     "lit-element": "2.5.1",
     "lit-html": "1.4.1",
     "multiselect-combo-box": "2.4.2",
-    "open": "^7.2.1"
+    "open": "^7.2.1",
+    "polymer-modulizer": "^0.4.3"
   },
   "devDependencies": {
     "babel-loader": "8.2.2",
@@ -186,6 +188,6 @@
       "webpack-dev-server": "3.11.0",
       "webpack-merge": "4.2.2"
     },
-    "hash": "57275c184519fcd89c58904672e5f0d43a64afeba03d8e4b68a97b4451014eea"
+    "hash": "9a2c013b734aac94d1e013afbdaf5de12ac64e434bb59aa1bd731554b53130e3"
   }
 }
