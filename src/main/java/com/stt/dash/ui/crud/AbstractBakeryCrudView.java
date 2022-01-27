@@ -202,7 +202,9 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         addSaveListener(e -> {
             System.out.println("AbstractBakeryCrudView: setupCrudEventListeners -> addSaveListener");
             idBeforeSave = e.getItem().getId() == null ? 0 : e.getItem().getId();
-            beforeSaving(idBeforeSave, e.getItem());
+            if (!beforeSaving(idBeforeSave, e.getItem())) {
+                throw new RuntimeException("Este es un error forzado....");
+            }
             entityPresenter.save(e.getItem(), onSuccessSaved, onFail);
 
         });

@@ -44,7 +44,7 @@ public class BakeryConst {
     public static final String TITLE_CARRIER = "Evolución Operadora";
     public static final String TITLE_CLIENT = "Evolución Cliente";
     public static final String TITLE_SMS_VIEW = "Busqueda de Mensajes";
-    public static final String TITLE_DASHBOARD_MAIN = "Principal";
+    public static final String TITLE_DASHBOARD_MAIN = "Principall";
     public static final String TITLE_USERS = "Usuarios";
     public static final String TITLE_AUDIT = "Auditoria";
     public static final String TITLE_BULKSMS_SCHEDULER = "Programar Masivos";
