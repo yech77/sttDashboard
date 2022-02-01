@@ -20,6 +20,7 @@ import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
+import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H2;
@@ -43,6 +44,7 @@ import com.vaadin.flow.server.VaadinServlet;
 import com.stt.dash.app.security.SecurityUtils;
 import com.stt.dash.ui.views.admin.users.UsersView;
 import com.vaadin.flow.server.VaadinServletRequest;
+import com.vaadin.flow.theme.Theme;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 import java.time.LocalDateTime;
@@ -59,6 +61,7 @@ import static com.stt.dash.ui.utils.BakeryConst.*;
         offlineResources = {"images/offline-login-banner.jpg"},
         enableInstallPrompt = false)
 //@PWA(name = "VaadinCRM", shortName = "CRM")
+@Theme(themeFolder = "odashboard")
 public class MainView extends AppLayout {
 
     /* Hora del servidor para establecer busquedas de YYYY-MM-DD*/
@@ -66,30 +69,46 @@ public class MainView extends AppLayout {
     private final ConfirmDialog confirmDialog = new ConfirmDialog();
 //	private final Tabs menu;
 
-    public static class MenuItemInfo {
+    /**
+     * A simple navigation item component, based on ListItem element.
+     */
+    public static class MenuItemInfo extends ListItem {
 
-        private String text;
-        private String iconClass;
-        private Class<? extends Component> view;
+        private final Class<? extends Component> view;
 
-        public MenuItemInfo(String text, String iconClass, Class<? extends Component> view) {
-            this.text = text;
-            this.iconClass = iconClass;
+        public MenuItemInfo(String menuTitle, String iconClass, Class<? extends Component> view) {
             this.view = view;
+            RouterLink link = new RouterLink();
+            // Use Lumo classnames for various styling
+            link.addClassNames("flex", "mx-s", "p-s", "relative", "text-secondary");
+            link.setRoute(view);
+
+            Span text = new Span(menuTitle);
+            // Use Lumo classnames for various styling
+            text.addClassNames("font-medium", "text-s");
+
+            link.add(new LineAwesomeIcon(iconClass), text);
+            add(link);
         }
 
-        public String getText() {
-            return text;
-        }
-
-        public String getIconClass() {
-            return iconClass;
-        }
-
-        public Class<? extends Component> getView() {
+        public Class<?> getView() {
             return view;
         }
 
+        /**
+         * Simple wrapper to create icons using LineAwesome iconset. See
+         * https://icons8.com/line-awesome
+         */
+        @NpmPackage(value = "line-awesome", version = "1.3.0")
+        public static class LineAwesomeIcon extends Span {
+            public LineAwesomeIcon(String lineawesomeClassnames) {
+                // Use Lumo classnames for suitable font size and margin
+                addClassNames("me-s", "text-l");
+                if (!lineawesomeClassnames.isEmpty()) {
+                    addClassNames(lineawesomeClassnames);
+                }
+            }
+        }
     }
 
     private H6 viewTitle;
@@ -151,9 +170,9 @@ public class MainView extends AppLayout {
         viewTitle.getStyle()
                 .set("font-size", "var(--lumo-font-size-l)")
                 .set("margin", "0");
-        HorizontalLayout header = new HorizontalLayout(toggle, viewTitle);
-//		header.addClassNames("bg-base", "border-b", "border-contrast-10", "box-border", "flex", "h-xl", "items-center",
-//				"w-full");
+        HorizontalLayout header = new HorizontalLayout(toggle, viewTitle, createFooter());
+        header.addClassNames("bg-base", "border-b", "border-contrast-10", "box-border", "flex", "h-xl", "items-center",
+                "w-full");
         return header;
     }
 
@@ -162,7 +181,7 @@ public class MainView extends AppLayout {
         appName.addClassNames("flex", "items-center", "h-xl", "m-0", "px-m", "text-m");
 
         com.vaadin.flow.component.html.Section section = new com.vaadin.flow.component.html.Section(appName,
-                createMenuTabs(), createFooter());
+                createMenuTabs());
         section.addClassNames("flex", "flex-col", "items-stretch", "max-h-full", "min-h-full");
         return section;
     }
@@ -172,24 +191,20 @@ public class MainView extends AppLayout {
         nav.addClassNames("border-b", "border-contrast-10", "flex-grow", "overflow-auto");
         nav.getElement().setAttribute("aria-labelledby", "views");
 
-        H3 views = new H3("Views");
-        views.addClassNames("flex", "h-m", "items-center", "mx-m", "my-0", "text-s", "text-tertiary");
-        views.setId("views");
-
         // Wrap the links in a list; improves accessibility
         UnorderedList list = new UnorderedList();
         list.addClassNames("list-none", "m-0", "p-0");
         nav.add(list);
 
-        for (RouterLink link : createLinks()) {
-            ListItem item = new ListItem(link);
-            list.add(item);
+        for (MenuItemInfo menuItem : createMenuItems()) {
+            list.add(menuItem);
+
         }
         return nav;
     }
 
-    private List<RouterLink> createLinks() {
-        MenuItemInfo[] menuItems = new MenuItemInfo[]{ //
+    private MenuItemInfo[] createMenuItems() {
+        return new MenuItemInfo[]{ //
                 new MenuItemInfo("Evolucion Cliente", "la la-chart-line", ClientChartView.class), //
                 new MenuItemInfo("Usuarios", "la la-user", UsersView.class), //
                 new MenuItemInfo("Roles", "la la-users", ORolesView.class), //
@@ -220,34 +235,25 @@ public class MainView extends AppLayout {
 //                new MenuItemInfo("Checkout Form", "", CheckoutFormView.class), //
 
         };
-        List<RouterLink> links = new ArrayList<>();
-        for (MenuItemInfo menuItemInfo : menuItems) {
-            if (SecurityUtils.isAccessGranted(menuItemInfo.getView())) {
-//			if (accessChecker.hasAccess(menuItemInfo.getView())) {
-                links.add(createLink(menuItemInfo));
-            }
-
-        }
-        return links;
     }
 
-    private static RouterLink createLink(MenuItemInfo menuItemInfo) {
-        RouterLink link = new RouterLink();
-        link.addClassNames("flex", "mx-s", "p-s", "relative", "text-secondary");
-        link.setRoute(menuItemInfo.getView());
-
-        Span icon = new Span();
-        icon.addClassNames("me-s", "text-l");
-        if (!menuItemInfo.getIconClass().isEmpty()) {
-            icon.addClassNames(menuItemInfo.getIconClass());
-        }
-
-        Span text = new Span(menuItemInfo.getText());
-        text.addClassNames("font-medium", "text-s");
-
-        link.add(icon, text);
-        return link;
-    }
+//    private static RouterLink createLink(MenuItemInfo menuItemInfo) {
+//        RouterLink link = new RouterLink();
+//        link.addClassNames("flex", "mx-s", "p-s", "relative", "text-secondary");
+//        link.setRoute(menuItemInfo.getView());
+//
+//        Span icon = new Span();
+//        icon.addClassNames("me-s", "text-l");
+//        if (!menuItemInfo.getIconClass().isEmpty()) {
+//            icon.addClassNames(menuItemInfo.getIconClass());
+//        }
+//
+//        Span text = new Span(menuItemInfo.getText());
+//        text.addClassNames("font-medium", "text-s");
+//
+//        link.add(icon, text);
+//        return link;
+//    }
 
     private Footer createFooter() {
         Footer layout = new Footer();
