@@ -193,10 +193,8 @@ public class FileToSendPresenter {
         view.setOpened(true);
         if (edit) {
             view.getOpenedOrderEditor().read(order, entityPresenter.isNew());
-            System.out.println("Llegue a Open...TRUE");
         } else {
             view.getOpenedOrderDetails().display(order, false);
-            System.out.println("Llegue a Open...FALSE");
         }
     }
 

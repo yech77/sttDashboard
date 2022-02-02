@@ -39,7 +39,6 @@ import static com.stt.dash.ui.utils.BakeryConst.ORDER_ID;
 @JsModule("./src/views/storefront/storefront-view.js")
 @Route(value = BakeryConst.PAGE_STOREFRONT_ORDER_TEMPLATE, layout = MainView.class)
 @RouteAlias(value = BakeryConst.PAGE_STOREFRONT_ORDER_EDIT_TEMPLATE, layout = MainView.class)
-@RouteAlias(value = BakeryConst.PAGE_ROOT, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_BULK_SCHEDULER)
 public class StorefrontView extends PolymerTemplate<TemplateModel>
         implements HasLogger, BeforeEnterObserver, EntityView<Order> {

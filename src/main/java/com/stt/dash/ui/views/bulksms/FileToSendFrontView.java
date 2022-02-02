@@ -47,7 +47,7 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
 
     private final FileToSendEditor fileToSendEditor;
 
-    private final FileToSendDetails orderDetails = new FileToSendDetails();
+    private final FileToSendDetails detailsView = new FileToSendDetails();
 
     private final FileToSendPresenter presenter;
 
@@ -80,14 +80,12 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
 
     @Override
     public boolean isDirty() {
-        System.out.println("******* DIRTY ************ filetoSend: " + fileToSendEditor.hasChanges() +
-                " orderDetails: " + orderDetails.isDirty());
-        return fileToSendEditor.hasChanges() || orderDetails.isDirty();
+        return fileToSendEditor.hasChanges() || detailsView.isDirty();
     }
 
     @Override
     public void clear() {
-        orderDetails.setDirty(false);
+        detailsView.setDirty(false);
         fileToSendEditor.clear();
     }
 
@@ -111,7 +109,7 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
     }
 
     FileToSendDetails getOpenedOrderDetails() {
-        return orderDetails;
+        return detailsView;
     }
 
 
@@ -150,9 +148,9 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
 
     void setDialogElementsVisibility(boolean editing) {
         System.out.println("SET_DIALOG_ELEMETN: EDITING " + editing);
-        dialog.add(editing ? fileToSendEditor : orderDetails);
+        dialog.add(editing ? fileToSendEditor : detailsView);
         fileToSendEditor.setVisible(editing);
-        orderDetails.setVisible(!editing);
+        detailsView.setVisible(!editing);
     }
 
 //    public Stream<HasValue<?, ?>> validate() {

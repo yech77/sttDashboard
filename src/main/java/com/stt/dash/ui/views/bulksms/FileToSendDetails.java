@@ -2,16 +2,12 @@ package com.stt.dash.ui.views.bulksms;
 
 import com.stt.dash.backend.data.Status;
 import com.stt.dash.backend.data.entity.FIlesToSend;
-import com.stt.dash.backend.data.entity.Order;
 import com.stt.dash.ui.events.CancelEvent;
 import com.stt.dash.ui.events.SaveEvent;
 import com.stt.dash.ui.utils.FormattingUtils;
 import com.stt.dash.ui.utils.ODateUitls;
-import com.stt.dash.ui.utils.converters.*;
 import com.stt.dash.ui.views.bulksms.events.DeleteEventFileToSend;
-import com.stt.dash.ui.views.storefront.converters.StorefrontLocalDateConverter;
 import com.stt.dash.ui.views.storefront.events.CommentEvent;
-import com.stt.dash.ui.views.storefront.events.DeleteEvent;
 import com.stt.dash.ui.views.storefront.events.EditEvent;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -22,12 +18,7 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.polymertemplate.Id;
-import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.shared.Registration;
-import com.vaadin.flow.templatemodel.Encode;
-import com.vaadin.flow.templatemodel.Include;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public class FileToSendDetails extends LitTemplate {
     Logger log = LoggerFactory.getLogger(FileToSendDetails.class);
 
-    private FIlesToSend order;
+    private FIlesToSend fIlesToSend;
     @Id("delete")
     private Button delete;
 
@@ -95,11 +86,11 @@ public class FileToSendDetails extends LitTemplate {
         delete.addClickListener(e -> fireEvent(new DeleteEventFileToSend(this)));
     }
 
-    public void display(FIlesToSend order, boolean review) {
+    public void display(FIlesToSend fIlesToSend, boolean review) {
         log.info("DISPLLAY: {}", review);
 //        getModel().setReview(review);
 //        getElement().setProperty("showing", true);
-        this.order = order;
+        this.fIlesToSend = fIlesToSend;
         showData();
 //        getModel().setItem(order);
         if (review) {
@@ -114,17 +105,17 @@ public class FileToSendDetails extends LitTemplate {
             cancel.setVisible(!review);
             back.setVisible(review);
             delete.setVisible(!review);
-            delete.setVisible(order.getStatus() != Status.COMPLETED);
+            delete.setVisible(fIlesToSend.getStatus() != Status.COMPLETED);
         }
         this.isDirty = false;
     }
 
     private void showData() {
-        bulkday.setText(FormattingUtils.MONTH_AND_DAY_FORMATTER.format(ODateUitls.valueOf(order.getDateToSend())));
-        bulktime.setText(FormattingUtils.HOUR_FORMATTER.format(ODateUitls.valueOf(order.getDateToSend())));
-        orderName.setText(order.getOrderName());
-        orderDescription.setText(order.getOrderDescription());
-        systemid.setText(order.getSystemId());
+        bulkday.setText(FormattingUtils.MONTH_AND_DAY_FORMATTER.format(ODateUitls.valueOf(fIlesToSend.getDateToSend())));
+        bulktime.setText(FormattingUtils.HOUR_FORMATTER.format(ODateUitls.valueOf(fIlesToSend.getDateToSend())));
+        orderName.setText(fIlesToSend.getOrderName());
+        orderDescription.setText(fIlesToSend.getOrderDescription());
+        systemid.setText(fIlesToSend.getSystemId());
     }
 
     public boolean isDirty() {

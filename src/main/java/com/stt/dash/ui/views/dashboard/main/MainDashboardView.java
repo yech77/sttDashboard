@@ -5,15 +5,18 @@ import com.stt.dash.app.OMonths;
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.*;
+import com.stt.dash.backend.data.entity.FIlesToSend;
 import com.stt.dash.backend.data.entity.Order;
 import com.stt.dash.backend.data.entity.OrderSummary;
 import com.stt.dash.backend.data.entity.Product;
 import com.stt.dash.backend.service.OrderService;
 import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
+import com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider;
 import com.stt.dash.ui.dataproviders.OrdersGridDataProvider;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.FormattingUtils;
+import com.stt.dash.ui.views.bulksms.FileToSendCard;
 import com.stt.dash.ui.views.dashboard.DataSeriesItemWithRadius;
 import com.stt.dash.ui.views.storefront.OrderCard;
 import com.stt.dash.ui.views.storefront.beans.OrdersCountData;
@@ -50,7 +53,7 @@ import java.util.stream.IntStream;
 @Tag("main-view")
 @JsModule("./src/views/main/main-view.js")
 @Route(value = BakeryConst.PAGE_DASHBOARD_MAIN, layout = MainView.class)
-@RouteAlias("")
+@RouteAlias(value = BakeryConst.PAGE_ROOT, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_DASHBOARD_MAIN)
 public class MainDashboardView extends PolymerTemplate<TemplateModel> {
     private Logger log = LoggerFactory.getLogger(MainDashboardView.class);
@@ -96,7 +99,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
     private Chart monthlySmsGraph;
 
     @Id("ordersGrid")
-    private Grid<Order> grid;
+    private Grid<FIlesToSend> grid;
 
     @Id("monthlyProductSplit")
     private Chart monthlyProductSplit;
@@ -106,7 +109,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
 
     @Autowired
     public MainDashboardView(OrderService orderService,
-                             OrdersGridDataProvider orderDataProvider,
+                             FilesToSendGridDataProvider gridDataProvider,
                              SmsHourService smsHourService,
                              @Qualifier("getUserSystemIdString") ListGenericBean<String> stringListGenericBean,
                              CurrentUser currentUser) {
@@ -117,14 +120,21 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         /**/
         setActualDate();
         /**/
-        grid.addColumn(OrderCard.getTemplate()
-                .withProperty("orderCard", OrderCard::create)
-                .withProperty("header", order -> null)
+//        grid.addColumn(OrderCard.getTemplate()
+//                .withProperty("orderCard", OrderCard::create)
+//                .withProperty("header", order -> null)
+//                .withEventHandler("cardClick",
+//                        order -> UI.getCurrent().navigate(BakeryConst.PAGE_STOREFRONT + "/" + order.getId())));
+
+        grid.addColumn(FileToSendCard.getTemplate()
+                .withProperty("orderCard", FileToSendCard::create)
+                .withProperty("header", fileToSend -> null)
                 .withEventHandler("cardClick",
-                        order -> UI.getCurrent().navigate(BakeryConst.PAGE_STOREFRONT + "/" + order.getId())));
+                        order -> UI.getCurrent().navigate(BakeryConst.PAGE_BULK_STOREFRONT + "/" + order.getId())));
+
 
         grid.setSelectionMode(Grid.SelectionMode.NONE);
-        grid.setDataProvider(orderDataProvider);
+        grid.setDataProvider(gridDataProvider);
 
         DashboardData data = orderService.getDashboardData(MonthDay.now().getMonthValue(), Year.now().getValue());
         populateMonthlySmsChart();
