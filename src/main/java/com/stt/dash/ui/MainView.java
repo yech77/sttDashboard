@@ -18,8 +18,11 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
+import com.vaadin.flow.component.avatar.AvatarVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
+import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Footer;
@@ -31,7 +34,10 @@ import com.vaadin.flow.component.html.Nav;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.page.Viewport;
 import com.vaadin.flow.component.tabs.Tab;
@@ -154,7 +160,9 @@ public class MainView extends AppLayout {
             return;
         }
         setPrimarySection(Section.DRAWER);
-        addToNavbar(true, createHeaderContent());
+        Footer f = createFooter();
+        f.getElement().getStyle().set("margin", "auto");
+        addToNavbar(true, createHeaderContent(), f);
         addToDrawer(createDrawerContent());
     }
 
@@ -170,9 +178,11 @@ public class MainView extends AppLayout {
         viewTitle.getStyle()
                 .set("font-size", "var(--lumo-font-size-l)")
                 .set("margin", "0");
-        HorizontalLayout header = new HorizontalLayout(toggle, viewTitle, createFooter());
+        HorizontalLayout header = new HorizontalLayout(toggle, viewTitle);
         header.addClassNames("bg-base", "border-b", "border-contrast-10", "box-border", "flex", "h-xl", "items-center",
                 "w-full");
+        header.setAlignItems(FlexComponent.Alignment.CENTER);
+
         return header;
     }
 
@@ -264,8 +274,21 @@ public class MainView extends AppLayout {
 //		if (maybeUser.isPresent()) {
 //			User user = maybeUser.get();
 
-        Avatar avatar = new Avatar(user.getFirstName());
-        avatar.addClassNames("me-xs");
+        Avatar avatar = new Avatar(user.getFirstName() + " " + user.getLastName());
+        avatar.addThemeVariants(AvatarVariant.LUMO_LARGE);
+
+//        MenuBar menuBar = new MenuBar();
+//        menuBar.addThemeVariants(MenuBarVariant.LUMO_TERTIARY_INLINE);
+//
+//        MenuItem menuItem = menuBar.addItem(avatar);
+//        SubMenu subMenu = menuItem.getSubMenu();
+//        subMenu.addItem("Profile");
+//        subMenu.addItem("Settings");
+//        subMenu.addItem("Help");
+//        subMenu.addItem("Sign out", e -> {
+//            logout();
+//        });
+
 
         ContextMenu userMenu = new ContextMenu(avatar);
         userMenu.setOpenOnClick(true);
@@ -279,10 +302,10 @@ public class MainView extends AppLayout {
             none.open();
         });
 
-        Span name = new Span(user.getFirstName());
-        name.addClassNames("font-medium", "text-s", "text-secondary");
+//        Span name = new Span(user.getFirstName());
+//        name.addClassNames("font-medium", "text-s", "text-secondary");
 
-        layout.add(avatar, name);
+        layout.add(avatar);
 //		} else {
 //			Anchor loginLink = new Anchor("login", "Sign in");
 //			layout.add(loginLink);

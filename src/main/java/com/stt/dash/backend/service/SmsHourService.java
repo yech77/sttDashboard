@@ -365,11 +365,11 @@ public class SmsHourService {
      * Devuelve los meses que se deben buscar con el anio anterior y modifica
      * dejando solo los meses con busqueda del anio actual.
      *
-     * @param monthSms puede ser modificado
+     * @param monthSms puede ser modificado y su size debe ser igual a tres.
      * @return Meses del anio anterior o null si no tiene.
      */
     private List<Integer> findMonthsOfPreviousYear(List<Integer> monthSms) {
-        if (monthSms == null || monthSms.size() == 1) {
+        if (monthSms == null || monthSms.size() < 3) {
             return null;
         }
         List<Integer> l = null;

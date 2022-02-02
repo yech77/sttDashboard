@@ -255,13 +255,14 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
     List<SmsByYearMonth> groupCarrierByYeMoWhMoInMessageTypeIn(@Param("yearSms") int yearSms,
                                                                @Param("monthSms") List<Integer> monthSms,
                                                                @Param("messageTypeSms") List<String> messageTypeSms,
-                                                               @Param("listSid") List<String> listSid);/**
+                                                               @Param("listSid") List<String> listSid);
+
+    /**
      * GROUP: YEAR, MONTH, CARRIER WHERE: YEAR, LIST-MONTH, SET-CARRIER, LIST-MESSAGETYPE,
      * LIST-SID
      *
      * @param yearSms
      * @param monthSms
-     *
      * @param messageTypeSms
      * @param listSid
      * @return
@@ -281,6 +282,7 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
                                                                @Param("carrierList") List<String> carrierList,
                                                                @Param("messageTypeSms") List<String> messageTypeSms,
                                                                @Param("listSid") List<String> listSid);
+
     /**
      * GROUP: YEAR, MONTH, CARRIER, MESSAGE TYPE WHERE: YEAR, MONTH, LIST-SIDS,
      * LIST-SID
@@ -301,9 +303,9 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
             + "GROUP BY  h.year, h.month, h.carrierCharCode, h.messageType "
             + "ORDER BY h.year, h.month, h.carrierCharCode,h.messageType ")
     List<SmsByYearMonth> groupCarrierByYeMoMeWhMoEqMessageTypeIn(@Param("yearSms") int yearSms,
-                                                               @Param("monthSms") int monthSms,
-                                                               @Param("messageTypeSms") List<String> messageTypeSms,
-                                                               @Param("listSid") List<String> listSid);
+                                                                 @Param("monthSms") int monthSms,
+                                                                 @Param("messageTypeSms") List<String> messageTypeSms,
+                                                                 @Param("listSid") List<String> listSid);
 
     /**
      * GROUP: YEAR, MONTH, CARRIER WHERE: YEAR, LIST-MONTH, LIST-MESSAGETYPE,
@@ -328,6 +330,7 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
                                                                 @Param("monthSms") List<Integer> monthSms,
                                                                 @Param("messageTypeSms") List<String> messageTypeSms,
                                                                 @Param("listSid") List<String> listSid);
+
     /**
      * GROUP: YEAR, MONTH, CARRIER WHERE: YEAR, LIST-MONTH, LIST-MESSAGETYPE,
      * LIST-SID
@@ -363,10 +366,10 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
             + "GROUP BY  h.year, h.month, h.day, h.hour, h.systemId, h.carrierCharCode "
             + "ORDER BY h.year, h.month, h.day, h.hour, h.systemId,h.carrierCharCode ")
     List<SmsByYearMonthDayHour> groupSystemIdByYeMoDaHoCaWhMoEqDaEqMessageTypeIn(@Param("yearSms") int yearSms,
-                                                                  @Param("monthSms") Integer monthSms,
-                                                                  @Param("daySms") Integer daySms,
-                                                                  @Param("messageTypeSms") List<String> messageTypeSms,
-                                                                  @Param("listSid") List<String> listSid);
+                                                                                 @Param("monthSms") Integer monthSms,
+                                                                                 @Param("daySms") Integer daySms,
+                                                                                 @Param("messageTypeSms") List<String> messageTypeSms,
+                                                                                 @Param("listSid") List<String> listSid);
 
     /**
      * GROUP: YEAR, MONTH, DAY, CARRIER WHERE: YEAR, MONTH, LIST-SID
@@ -411,6 +414,7 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
                                                                 @Param("monthSms") int monthSms,
                                                                 @Param("messageTypeSms") List<String> messageTypeSms,
                                                                 @Param("listSid") List<String> listSid);
+
     /**
      * GROUP: YEAR, MONTH, DAY, CARRIER WHERE: YEAR, MONTH, CARRIER-IN, LIST-MESSAGETYPE,
      * LIST-SID
@@ -541,6 +545,7 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
                                                                       @Param("daySms") int daySms,
                                                                       @Param("messageTypeSms") Collection<String> messageTypeSms,
                                                                       @Param("listSid") List<String> listSid);
+
     /**
      * GROUP: YEAR, MONTH, DAY, HOUR, CARRIER WHERE: YEAR, MONTH, DAY,
      * LIST - CARRIER, LIST-MESSAGETYPE, LIST-SID
@@ -564,11 +569,11 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
             + "GROUP BY h.year, h.month, h.day, h.hour, h.carrierCharCode, h.messageType "
             + "ORDER BY h.year, h.month, h.day, h.hour, h.carrierCharCode, h.messageType")
     List<SmsByYearMonthDayHour> groupCarrierByYeMoDaHoWhCaInMessageTypeIn(@Param("yearSms") int yearSms,
-                                                                      @Param("monthSms") int monthSms,
-                                                                      @Param("daySms") int daySms,
-                                                                      @Param("carrierList") Collection<String> carrierList,
-                                                                      @Param("messageTypeSms") Collection<String> messageTypeSms,
-                                                                      @Param("listSid") Collection<String> listSid);
+                                                                          @Param("monthSms") int monthSms,
+                                                                          @Param("daySms") int daySms,
+                                                                          @Param("carrierList") Collection<String> carrierList,
+                                                                          @Param("messageTypeSms") Collection<String> messageTypeSms,
+                                                                          @Param("listSid") Collection<String> listSid);
 
     /**
      * GROUP: YEAR, MONTH, DAY, HOUR, SYSTEMID WHERE: YEAR, MONTH, DAY,
@@ -652,7 +657,7 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
      * @param monthSms
      * @param messageType a buscar
      * @param listSid
-     * @return
+     * @return EXACTAMENTE IGUAL A : groupSystemIdByYearMonthDay
      */
     @Query("SELECT  new com.stt.dash.backend.data.SmsByYearMonthDay("
             + "SUM(h.total), h.year, h.month, h.day, h.systemId) "
