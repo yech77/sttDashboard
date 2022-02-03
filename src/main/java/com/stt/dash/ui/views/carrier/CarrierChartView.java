@@ -9,6 +9,9 @@ import com.stt.dash.backend.data.SmsByYearMonth;
 import com.stt.dash.backend.data.SmsByYearMonthDay;
 import com.stt.dash.backend.data.SmsByYearMonthDayHour;
 import com.stt.dash.backend.data.entity.Carrier;
+import com.stt.dash.backend.data.entity.Client;
+import com.stt.dash.backend.data.entity.SystemId;
+import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.CarrierService;
 import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
@@ -18,8 +21,11 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.PageTitle;
@@ -65,12 +71,17 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     /**/
     private static String CARRIER_VIEW_SELECTED_CARRIER = "carrier_view_selected_carrier";
     private static String CARRIER_VIEW_SELECTED_MESSAGETYPE = "carrier_view_selected_messageType";
+    private static String CARRIER_VIEW_SELECTED_CLIENT = "carrier_view_selected_client";
     /**/
     private static Logger log = LoggerFactory.getLogger(CarrierChartView.class);
     private final SmsHourService smsHourService;
     private final ListGenericBean<String> userSystemIdList;
+    /* CLIENTE */
+    private ComboBox<Client> clientCombobox = new ComboBox<>("Clientes");
+
     /* OPERADORAS */
     private MultiselectComboBox<Carrier> multi_carrier = new MultiselectComboBox<>("Operadoras");
+    /* Tipo de Mensaje */
     private final MultiselectComboBox<OMessageType> multi_messagetype = new MultiselectComboBox<>("Mensajes");
     /* Para Graficos y servicios */
     private List<Integer> monthToShowList;
@@ -88,11 +99,30 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     public CarrierChartView(SmsHourService smsHourService,
                             CarrierService carrierService,
                             @Qualifier("getUserSystemIdString")
-                                    ListGenericBean<String> stringListGenericBean) {
+                                    ListGenericBean<String> stringListGenericBean,
+                            CurrentUser currentUser) {
 
         this.userSystemIdList = stringListGenericBean;
         this.smsHourService = smsHourService;
         setActualDate();
+        /* ******* */
+        /* ******* Client */
+        clientCombobox.setItemLabelGenerator(Client::getClientName);
+        /* Client & Systemids*/
+        if (currentUser.getUser().getUserType() == User.OUSER_TYPE.HAS) {
+            clientCombobox.setItems(currentUser.getUser().getClients());
+        } else if (currentUser.getUser().getUserType() == User.OUSER_TYPE.IS) {
+            clientCombobox.setItems(currentUser.getUser().getClient());
+            /*TODO: Seleccionar por defecto el unico cliente. Validar que no este vacio.*/
+            clientCombobox.setReadOnly(true);
+        }
+
+        if (VaadinSession.getCurrent().getAttribute(CARRIER_VIEW_SELECTED_CLIENT) != null) {
+            clientCombobox.setValue((Client) VaadinSession.getCurrent().getAttribute(CARRIER_VIEW_SELECTED_CLIENT));
+            VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_CLIENT, null);
+        } else {
+//            clientCombobox.setValue((Client) VaadinSession.getCurrent().getAttribute(CARRIER_VIEW_SELECTED_CLIENT));
+        }
         /* Nombre de los Meses */
         monthToShowList = monthsIn(2);
         ml = new String[]{OMonths.valueOf(monthToShowList.get(0)).getMonthName(),
@@ -119,15 +149,35 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         }
 
         /* HEADER */
-        divHeader.add(multi_carrier, multi_messagetype, filterButton);
+        HorizontalLayout container = new HorizontalLayout();
+        VerticalLayout vLeft = new VerticalLayout();
+        VerticalLayout vRight = new VerticalLayout();
+        container.setWidthFull();
+        container.add(vLeft, vRight);
+        vLeft.add(clientCombobox, multi_carrier);
+        vRight.add(multi_messagetype);
+        clientCombobox.setWidthFull();
+        multi_messagetype.setWidthFull();
+
+        divHeader.add(container, filterButton);
+        List<String> systemIdStringList;
+        try {
+            systemIdStringList = clientCombobox.getValue().getSystemids()
+                    .stream()
+                    .map(SystemId::getSystemId)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            systemIdStringList = new ArrayList<>();
+        }
         /*Actualiza trimestra al entrar en la pantalla. */
-        updateTrimestral(userSystemIdList.getList());
-        updateDaily(userSystemIdList.getList());
-        updateHourlyChart(userSystemIdList.getList());
+        updateTrimestral(systemIdStringList);
+        updateDaily(systemIdStringList);
+        updateHourlyChart(systemIdStringList);
         filterButton.addClickListener(click -> {
             filterButton.setEnabled(false);
             VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_CARRIER, multi_carrier.getSelectedItems());
             VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_MESSAGETYPE, multi_messagetype.getSelectedItems());
+            VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_CLIENT, clientCombobox.getValue());
             UI.getCurrent().getPage().reload();
         });
         filterButton.setEnabled(true);
@@ -254,6 +304,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         /* ------------- TRIMESTRAL: SMS
          * Ejem: SmsByYearMonth{total=2775, yearSms=2021, monthSms=3, someCode=MO}*/
         List<SmsByYearMonth> smsGroup = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actual_year, monthsIn(2), sids);
+
         List<SmsByYearMonth> carrierGroup = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(actual_year,
                 monthsIn(2),
                 multi_carrier.getSelectedItems(),
