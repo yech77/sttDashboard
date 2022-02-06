@@ -4,6 +4,7 @@ import com.stt.dash.backend.data.entity.sms.AbstractSMS;
 import com.stt.dash.backend.repositories.sms.*;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.utils.ODateUitls;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -46,8 +47,8 @@ public class AbstractSmsService {
     }
 
     // Caso 1
-    public Page<AbstractSMS> findByPhoneNumer(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, String destination, int page) {
-        return findByPhoneNumer(dateOne, dateTwo, list_sid, destination, page, pageSize);
+    public Page<AbstractSMS> findByPhoneNumer(LocalDate dateOne, LocalDate dateTwo, String carrierCharcode, String destination, int page) {
+        return findByPhoneNumer(dateOne, dateTwo, carrierCharcode, destination, page, pageSize);
     }
 
     // Caso 2
@@ -129,7 +130,6 @@ public class AbstractSmsService {
      *
      * @param dateOne
      * @param dateTwo
-     * @param list_sid
      * @param destination
      * @param page
      * @param pageSize
@@ -138,7 +138,7 @@ public class AbstractSmsService {
     public Page<AbstractSMS> findByPhoneNumer(
             LocalDate dateOne,
             LocalDate dateTwo,
-            List<String> list_sid,
+            String carrierCharcode,
             String destination,
             int page, int pageSize) {
 
@@ -153,9 +153,9 @@ public class AbstractSmsService {
 
         Pageable paging = PageRequest.of(page, pageSize);
 
-        return monthRepos[dateOne.getMonthValue() - 1].findByDateBetweenAndSystemIdInAndDestination(
+        return monthRepos[dateOne.getMonthValue() - 1].findByDateBetweenAndCarrierCharCodeEqualsAndDestinationEquals(
                 dateStart,
-                dateEnd, list_sid, destination, paging);
+                dateEnd, carrierCharcode, destination, paging);
     }
 
     /**

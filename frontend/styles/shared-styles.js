@@ -1,4 +1,5 @@
 import '@polymer/polymer/lib/elements/custom-style.js';
+
 const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `<dom-module id="bakery-app-layout-theme" theme-for="vaadin-app-layout">
@@ -311,13 +312,13 @@ $_documentContainer.innerHTML = `<dom-module id="bakery-app-layout-theme" theme-
     </style>
   </template>
 </dom-module>
-<!-- GLERY -->
-<dom-module id="button-style" theme-for="vaadin-button">
-  <template>
-    <style>:host(:not([theme~="tertiary"])){background-image:linear-gradient(var(--lumo-tint-5pct), var(--lumo-shade-5pct));box-shadow:inset 0 0 0 1px var(--lumo-contrast-20pct);}:host(:not([theme~="tertiary"]):not([theme~="primary"]):not([theme~="error"]):not([theme~="success"])){color:var(--lumo-body-text-color);}:host([theme~="primary"]){text-shadow:0 -1px 0 var(--lumo-shade-20pct);}
-    </style>
-  </template>
-</dom-module>
+<!--&lt;!&ndash; GLERY &ndash;&gt;-->
+<!--<dom-module id="button-style" theme-for="vaadin-button">-->
+<!--  <template>-->
+<!--    <style>:host(:not([theme~="tertiary"])){background-image:linear-gradient(var(&#45;&#45;lumo-tint-5pct), var(&#45;&#45;lumo-shade-5pct));box-shadow:inset 0 0 0 1px var(&#45;&#45;lumo-contrast-20pct);}:host(:not([theme~="tertiary"]):not([theme~="primary"]):not([theme~="error"]):not([theme~="success"])){color:var(&#45;&#45;lumo-body-text-color);}:host([theme~="primary"]){text-shadow:0 -1px 0 var(&#45;&#45;lumo-shade-20pct);}-->
+<!--    </style>-->
+<!--  </template>-->
+<!--</dom-module>-->
 
 <!-- GLERY -->
 <dom-module id="text-field-style" theme-for="vaadin-text-field">

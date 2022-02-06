@@ -1,5 +1,8 @@
 package com.stt.dash.backend.repositories.sms;
 
+import com.stt.dash.backend.data.entity.sms.AbstractSMS;
+import com.stt.dash.backend.data.entity.sms.AprSms;
+import liquibase.pro.packaged.T;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -34,7 +37,6 @@ public interface BaseSmsRepository<T, ID> extends JpaRepository<T, ID> {
      * @param date2
      * @param list_sid
      * @param sort
-     * @param pageable
      * @return
      */
     public List<T> findByDateBetweenAndSystemIdIn(Date date1,
@@ -91,6 +93,8 @@ public interface BaseSmsRepository<T, ID> extends JpaRepository<T, ID> {
                                                                 List<String> list_sid,
                                                                 String destination,
                                                                 Pageable pageable);
+
+    public Page<T> findByDateBetweenAndCarrierCharCodeEqualsAndDestinationEquals(Date dateStart, Date dateEnd, String carrierCharCode, String destination, Pageable pageable);
 
 
     /**

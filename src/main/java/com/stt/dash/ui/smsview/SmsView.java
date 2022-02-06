@@ -14,11 +14,13 @@ import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.ODateUitls;
 import com.vaadin.componentfactory.DateRange;
 import com.vaadin.componentfactory.EnhancedDateRangePicker;
+import com.vaadin.componentfactory.multiselect.MultiComboBox;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -29,6 +31,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.template.Id;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
@@ -37,10 +40,11 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.vaadin.gatanaso.MultiselectComboBox;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
@@ -49,6 +53,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -85,8 +90,8 @@ public class SmsView extends LitTemplate {
     private DatePicker dateTwo = new DatePicker();
     ComboBox<Carrier> comboCarrier = new ComboBox<>();
     TextField textPhoneNumer = new TextField();
-    MultiselectComboBox<SystemId> multi_systemIds = new MultiselectComboBox<>();
-    MultiselectComboBox<OMessageType> multi_messagetype = new MultiselectComboBox<>();
+    MultiComboBox<SystemId> multi_systemIds = new MultiComboBox<>();
+    CheckboxGroup<OMessageType> checkboxMessageType = new CheckboxGroup<>();
     Button searchButton = new Button("Buscar");
     /**/
     private final OPageable opage = new OPageable();
@@ -157,14 +162,37 @@ public class SmsView extends LitTemplate {
         comboCarrier.setLabel("Operadoras");
         comboCarrier.setItems(carrierSet);
         comboCarrier.setItemLabelGenerator(Carrier::getCarrierCharcode);
+        comboCarrier.setHelperText("Dejar en blanco para buscar en todas las operadoras.");
         /**/
         multi_systemIds.setLabel("Credenciales");
         multi_systemIds.setItems(systemIdSetGenericBean.getSet());
         multi_systemIds.setItemLabelGenerator(SystemId::getSystemId);
         multi_systemIds.setValue(systemIdSetGenericBean.getSet());
+        multi_systemIds.setValue(systemIdSetGenericBean.getSet());
+        multi_systemIds.setRequired(true);
+        multi_systemIds.setErrorMessage("Seleccione al menos una credencial");
+        multi_systemIds.addValueChangeListener(change -> {
+            if (change.getValue().size() == 0) {
+                multi_systemIds.setInvalid(true);
+            } else {
+                multi_systemIds.setInvalid(false);
+            }
+            searchButton.setEnabled(isValidSearch());
+        });
         /**/
-        multi_messagetype.setLabel("Tipo de Mensajes");
-        multi_messagetype.setItems(OMessageType.values());
+        checkboxMessageType.setLabel("Tipo de Mensajes");
+        checkboxMessageType.setItems(OMessageType.values());
+        checkboxMessageType.setValue(new HashSet<OMessageType>(Arrays.asList(OMessageType.values())));
+        checkboxMessageType.setRequired(true);
+        checkboxMessageType.setErrorMessage("seleccionar al menos un tipo de sms");
+        checkboxMessageType.addValueChangeListener(change -> {
+            if (checkboxMessageType.getValue().size() == 0) {
+                checkboxMessageType.setInvalid(true);
+            } else {
+                checkboxMessageType.setInvalid(false);
+            }
+            searchButton.setEnabled(isValidSearch());
+        });
         /**/
         textPhoneNumer.setLabel("Numero a buscar");
         /**/
@@ -175,10 +203,17 @@ public class SmsView extends LitTemplate {
         dateOne.setRequired(true);
         dateOne.setInitialPosition(LocalDate.now());
         dateOne.setValue(new DateRange(LocalDate.now().minusDays(1), LocalDate.now()));
+        dateOne.setSidePanelVisible(false);
         dateOne.setLabel("Rango de busqueda");
         /**/
-        firstline.add(dateOne);
-        secondline.add(textPhoneNumer, multi_messagetype, comboCarrier, multi_systemIds, searchButton);
+        secondline.add(new HorizontalLayout(dateOne, checkboxMessageType),
+                new HorizontalLayout(textPhoneNumer, comboCarrier),
+                new HorizontalLayout(multi_systemIds), searchButton);
+        dateOne.setWidthFull();
+        textPhoneNumer.setWidthFull();
+        checkboxMessageType.setWidthFull();
+        comboCarrier.setWidthFull();
+        multi_systemIds.setWidthFull();
         footer.add(previous, pageCounter, next);
         /**/
         createGrid();
@@ -190,6 +225,20 @@ public class SmsView extends LitTemplate {
 //        grid.addColumn(AbstractSMS::getDestination).setHeader("Destino");
 //        grid.addColumn(AbstractSMS::getSource).setHeader("Source");
 //        grid.addColumn(AbstractSMS::getMessageType).setHeader("Destino");
+        textPhoneNumer.addValueChangeListener(listener -> {
+            if (!listener.isFromClient()) {
+                return;
+            }
+            if (StringUtils.startsWith(listener.getValue(), "58414") ||
+                    StringUtils.startsWith(listener.getValue(), "58424")) {
+                Carrier carrier = carrierSet
+                        .stream()
+                        .filter(f -> f.getCarrierCharcode().equalsIgnoreCase("movistar"))
+                        .findFirst()
+                        .orElse(null);
+                comboCarrier.setValue(carrier != null ? carrier : null);
+            }
+        });
         searchButton.addClickListener(click -> {
             if (multi_systemIds.getValue().size() < 1 && comboCarrier.getValue() == null
                     && (textPhoneNumer.getValue() == null || textPhoneNumer.getValue().length() < 1)) {
@@ -228,138 +277,77 @@ public class SmsView extends LitTemplate {
     }
 
     private Page<? extends AbstractSMS> getSmsPage(LocalDate dateOne, LocalDate dateTwo) {
-        Page<? extends AbstractSMS> l = null;
+        Page<? extends AbstractSMS> smsPage = null;
         switch (getFindype()) {
-            case 0:
-                l = sms_serv.getAllMessages(dateOne, dateTwo, ouser_session.getStringSystemid(), onPage);
-                break;
-            case 1:
-                l = sms_serv.findByPhoneNumer(dateOne, dateTwo,
-                        ouser_session.getStringSystemid(),
-                        textPhoneNumer.getValue().trim(),
-                        opage.getCurrentPage());
-                break;
-            case 2:
-                System.out.println(opage);
-                l = sms_serv.findBySystemIdIn(dateOne,
-                        dateTwo,
-                        getSystemIdString(multi_systemIds.getSelectedItems()),
-                        opage.getCurrentPage());
-                break;
-            case 3:
-                l = sms_serv.findByPhoneNumber(dateOne,
-                        dateTwo,
-                        getSystemIdString(multi_systemIds.getSelectedItems()),
-                        textPhoneNumer.getValue().trim(),
-                        opage.getCurrentPage());
-                break;
-            case 4:
-                l = sms_serv.findByCarrier(dateOne,
-                        dateTwo,
-                        ouser_session.getStringSystemid(),
-                        comboCarrier.getValue().getCarrierCharcode().trim(),
-                        opage.getCurrentPage());
-                break;
-            case 5:
-                l = sms_serv.findByPhoneNumber(dateOne,
-                        dateTwo,
-                        getSystemIdString(multi_systemIds.getSelectedItems()),
-                        textPhoneNumer.getValue().trim(),
-                        opage.getCurrentPage());
-                break;
-            case 6:
-                l = sms_serv.findByCarrier(dateOne,
-                        dateTwo,
-                        getSystemIdString(multi_systemIds.getSelectedItems()),
-                        comboCarrier.getValue().getCarrierCharcode().trim(),
-                        opage.getCurrentPage());
-                break;
-            case 8:
-                l = sms_serv.findByMessageType(dateOne,
-                        dateTwo,
-                        ouser_session.getStringSystemid(),
-                        valueOfMessageType(multi_messagetype.getSelectedItems()),
-                        opage.getCurrentPage());
-                break;
-            case 9:
-                l = sms_serv.findByPhoneNumber(dateOne,
-                        dateTwo,
-                        ouser_session.getStringSystemid(),
-                        textPhoneNumer.getValue().trim(),
-                        valueOfMessageType(multi_messagetype.getSelectedItems()),
-                        opage.getCurrentPage());
-                break;
             case 10:
-                l = sms_serv.findByMessageType(dateOne,
+                smsPage = sms_serv.findByMessageType(dateOne,
                         dateTwo,
-                        getSystemIdString(multi_systemIds.getSelectedItems()),
-                        valueOfMessageType(multi_messagetype.getSelectedItems()),
+                        getSystemIdString(multi_systemIds.getValue()),
+                        valueOfMessageType(checkboxMessageType.getSelectedItems()),
                         opage.getCurrentPage());
                 break;
             case 11:
-                l = sms_serv.findByPhoneNumber(dateOne,
+                smsPage = sms_serv.findByPhoneNumber(dateOne,
                         dateTwo,
-                        getSystemIdString(multi_systemIds.getSelectedItems()),
+                        getSystemIdString(multi_systemIds.getValue()),
                         textPhoneNumer.getValue().trim(),
                         opage.getCurrentPage());
                 break;
 
             case 12:
-                l = sms_serv.findByCarrierAndMessageType(dateOne,
+                smsPage = sms_serv.findByCarrierAndMessageType(dateOne,
                         dateTwo,
-                        ouser_session.getStringSystemid(),
+                        getSystemIdString(multi_systemIds.getValue()),
                         comboCarrier.getValue().getCarrierCharcode().trim(),
-                        valueOfMessageType(multi_messagetype.getSelectedItems()),
+                        valueOfMessageType(checkboxMessageType.getSelectedItems()),
                         opage.getCurrentPage());
                 break;
             case 13:
-                l = sms_serv.findByPhoneNumber(dateOne,
+                smsPage = sms_serv.findByPhoneNumer(dateOne,
                         dateTwo,
-                        ouser_session.getStringSystemid(),
-                        textPhoneNumer.getValue().trim(),
-                        valueOfMessageType(multi_messagetype.getSelectedItems()),
                         comboCarrier.getValue().getCarrierCharcode().trim(),
+                        textPhoneNumer.getValue().trim(),
                         opage.getCurrentPage());
                 break;
             case 14:
-                l = sms_serv.findByCarrierAndMessageType(dateOne,
+                smsPage = sms_serv.findByCarrierAndMessageType(dateOne,
                         dateTwo,
-                        getSystemIdString(multi_systemIds.getSelectedItems()),
+                        getSystemIdString(multi_systemIds.getValue()),
                         comboCarrier.getValue().getCarrierCharcode().trim(),
-                        valueOfMessageType(multi_messagetype.getSelectedItems()),
+                        valueOfMessageType(checkboxMessageType.getSelectedItems()),
                         opage.getCurrentPage());
                 break;
             case 15:
-                l = sms_serv.findByPhoneNumber(dateOne,
+                smsPage = sms_serv.findByPhoneNumber(dateOne,
                         dateTwo,
-                        getSystemIdString(multi_systemIds.getSelectedItems()),
+                        getSystemIdString(multi_systemIds.getValue()),
                         textPhoneNumer.getValue().trim(),
-                        valueOfMessageType(multi_messagetype.getSelectedItems()),
+                        valueOfMessageType(checkboxMessageType.getSelectedItems()),
                         comboCarrier.getValue().getCarrierCharcode().trim(),
                         opage.getCurrentPage());
                 break;
         }
-        if (l == null) {
+        if (smsPage == null) {
             return null;
         }
         /* PAGEABLE */
-        opage.setTotalPage(l.getTotalPages());
-        opage.setCurrentPage(l.getPageable().getPageNumber());
-        opage.setTotalData(l.getTotalElements());
-        opage.setTotalDataPage(l.getNumberOfElements());
-        currentPageSize = l.getContent().size();
-        currentElements = (int) l.getTotalElements();
-        currentPageCount = l.getTotalPages();
+        opage.setTotalPage(smsPage.getTotalPages());
+        opage.setCurrentPage(smsPage.getPageable().getPageNumber());
+        opage.setTotalData(smsPage.getTotalElements());
+        opage.setTotalDataPage(smsPage.getNumberOfElements());
+        currentPageSize = smsPage.getContent().size();
+        currentElements = (int) smsPage.getTotalElements();
+        currentPageCount = smsPage.getTotalPages();
 
-        System.out.println("PAGING - getSize: " + l.getSize());
-        System.out.println("PAGING - getNumber: " + l.getNumber());
-        System.out.println("PAGING - getNumberOfElements: " + l.getNumberOfElements());
-        System.out.println("PAGING - getTotalElements: " + l.getTotalElements());
-        System.out.println("PAGING - getPageable().getPageNumber() " + l.getPageable().getPageNumber());
-        System.out.println("PAGING - l.getPageable(): " + l.getPageable());
+        System.out.println("PAGING - getSize: " + smsPage.getSize());
+        System.out.println("PAGING - getNumber: " + smsPage.getNumber());
+        System.out.println("PAGING - getNumberOfElements: " + smsPage.getNumberOfElements());
+        System.out.println("PAGING - getTotalElements: " + smsPage.getTotalElements());
+        System.out.println("PAGING - getPageable().getPageNumber() " + smsPage.getPageable().getPageNumber());
+        System.out.println("PAGING - l.getPageable(): " + smsPage.getPageable());
         System.out.println("AFTER CALL: " + opage);
-        updateDownloadButton(obtainAbstractOf(l));
-        return l;
+        updateDownloadButton(obtainAbstractOf(smsPage));
+        return smsPage;
     }
 
     private void updateDownloadButton(List<? extends AbstractSMS> messages) {
@@ -392,24 +380,33 @@ public class SmsView extends LitTemplate {
         return buttonWrapper;
     }
 
+    /**
+     * 8: No permitida busqueda por solo Tipo de mensaje.
+     * 9: No existe dado que al buscar por num se busca tanbien por su operadora.
+     * 10: Tipo de mensaje y SystemId.
+     * 11: Tipo de mensaje, num de telefono y systemid.
+     * 12: Tipo de mensaje y operadora.
+     * 13: Tipo de mensaje, numero de telefono y operadora.
+     * 14: tipo de mensaje, systemid y operadora.
+     * 15: tipo de mensaje, numero de telefono, systemid y operadora.
+     *
+     * @return
+     */
     private int getFindype() {
-        int n = 0;
-        if (!"".equals(textPhoneNumer.getValue().trim())) {
+        int n = 8;
+
+        if (StringUtils.isNotBlank(textPhoneNumer.getValue())) {
             n += 1;
         }
-        if (!multi_systemIds.getSelectedItems().isEmpty()) {
+
+        if (CollectionUtils.isNotEmpty(multi_systemIds.getValue())) {
             n += 2;
         }
 
-        if (comboCarrier.getValue() != null && !"".equals(comboCarrier.getValue().getCarrierName().trim())) {
+        if (ObjectUtils.isNotEmpty(comboCarrier.getValue()) && StringUtils.isNotBlank(comboCarrier.getValue().getCarrierName())) {
             n += 4;
         }
 
-        if (!multi_messagetype.getValue().isEmpty()) {
-            n += 8;
-        }
-
-        System.out.println("FindType: " + n);
         return n;
     }
 
@@ -609,5 +606,9 @@ public class SmsView extends LitTemplate {
         grid.setDataProvider(dataProvider);
         grid.setPageSize(25);
         grid.appendFooterRow();
+    }
+
+    private boolean isValidSearch() {
+        return (!checkboxMessageType.isInvalid() && !multi_systemIds.isInvalid());
     }
 }
