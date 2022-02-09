@@ -1,5 +1,6 @@
 package com.stt.dash.backend.repositories.sms;
 
+import com.stt.dash.backend.data.entity.sms.AprSms;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -12,6 +13,9 @@ import java.util.List;
 
 @NoRepositoryBean
 public interface BaseSmsRepository<T, ID> extends JpaRepository<T, ID> {
+
+    @Override
+    public Page<T> findAll(Pageable pageable);
 
     /**
      * Buscar por SystemId
@@ -34,7 +38,6 @@ public interface BaseSmsRepository<T, ID> extends JpaRepository<T, ID> {
      * @param date2
      * @param list_sid
      * @param sort
-     * @param pageable
      * @return
      */
     public List<T> findByDateBetweenAndSystemIdIn(Date date1,
@@ -108,6 +111,14 @@ public interface BaseSmsRepository<T, ID> extends JpaRepository<T, ID> {
             Date date2,
             Collection<String> list_sid,
             String destination,
+            Collection<String> messageTypeSms,
+            String carrierCharCode,
+            Pageable pageable);
+
+    Page<T> findByDateBetweenAndSystemIdInAndMessageTypeInAndCarrierCharCode(
+            Date date1,
+            Date date2,
+            Collection<String> list_sid,
             Collection<String> messageTypeSms,
             String carrierCharCode,
             Pageable pageable);

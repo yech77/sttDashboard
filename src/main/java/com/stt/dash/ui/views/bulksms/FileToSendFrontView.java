@@ -55,8 +55,8 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
         this.fileToSendEditor = fileToSendEditor;
         this.presenter = presenter;
 
-        searchBar.setActionText("Programar nuevo envio");
-        searchBar.setCheckboxText("Ver envios anteriores");
+        searchBar.setActionText("Programar nuevo masivo");
+        searchBar.setCheckboxText("Ver masivos anteriores");
         searchBar.setPlaceHolder("Buscar");
 
 

@@ -4,6 +4,7 @@ import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.security.SecurityConfiguration;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.ui.smsview.SmsView;
+import com.stt.dash.ui.smsview.SmsViewTest;
 import com.stt.dash.ui.views.HasConfirmation;
 import com.stt.dash.ui.views.audit.AuditView;
 import com.stt.dash.ui.views.bulksms.BulkSmsView;
@@ -379,6 +380,7 @@ public class MainView extends AppLayout {
         }
         if (SecurityUtils.isAccessGranted(BulkSmsView.class)) {
             tabs.add(createTab(VaadinIcon.USER, TITLE_BULKSMS, BulkSmsView.class));
+            tabs.add(createTab(VaadinIcon.USER, TITLE_BULKSMS + "Test", SmsViewTest.class));
         }
         if (SecurityUtils.isAccessGranted(ClientChartView.class)) {
             tabs.add(createTab(VaadinIcon.CHART_LINE, TITLE_CLIENT, ClientChartView.class));

@@ -32,21 +32,23 @@ export class SmsView extends LitElement {
                         max-width: 964px;
                         margin: 0 auto;
                     }
+
                     .field {
-                         padding-right: var(--lumo-space-m);
-                     }
+                        padding-right: var(--lumo-space-m);
+                    }
                 }
             </style>
             <div class="row" id="firstline"></div>
             <div class="row" id="secondline"></div>
             <div>
-                <vaadin-board style="max-width: 964px; margin-right: auto; margin-left: auto">
-                    <vaadin-row>
-                        <vaadin-grid id="smsGrid" style="min-height: 500px"></vaadin-grid>
-                    </vaadin-row>
-                    <vaadin-row>
-                        <div id="footer"></div>
-                    </vaadin-row>
+                <vaadin-board style="max-width: 100%" ; margin-right: auto; margin-left: auto
+                ">
+                <vaadin-row>
+                    <vaadin-grid id="smsGrid" style="min-height: 500px"></vaadin-grid>
+                </vaadin-row>
+                <vaadin-row>
+                    <div id="footer"></div>
+                </vaadin-row>
                 </vaadin-board>
             </div>
         `;
