@@ -3,7 +3,6 @@ package com.stt.dash.ui.smsview;
 import com.stt.dash.app.OMessageType;
 import com.stt.dash.app.session.SetGenericBean;
 import com.stt.dash.backend.data.OUserSession;
-import com.stt.dash.backend.data.bean.OPageable;
 import com.stt.dash.backend.data.entity.Carrier;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.sms.AbstractSMS;
@@ -15,24 +14,24 @@ import com.stt.dash.ui.utils.ODateUitls;
 import com.vaadin.componentfactory.DateRange;
 import com.vaadin.componentfactory.EnhancedDateRangePicker;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
-import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.grid.FooterRow;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.template.Id;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
@@ -75,8 +74,8 @@ public class SmsView extends LitTemplate {
 
     /**/
     private ListDataProvider<AbstractSMS> dataProvider;
-    private List<AbstractSMS> labs;
-    private Grid.Column<AbstractSMS> idColumn;
+    private List<AbstractSMS> abstractSMSList;
+    //    private Grid.Column<AbstractSMS> idColumn;
     private Grid.Column<AbstractSMS> phoneColum;
     private Grid.Column<AbstractSMS> carrierColum;
     private Grid.Column<AbstractSMS> systemIdColumn;
@@ -88,13 +87,18 @@ public class SmsView extends LitTemplate {
     public static LocalDateTime localDateTime = LocalDateTime.now();
     private EnhancedDateRangePicker dateOne = new EnhancedDateRangePicker();
     private DatePicker dateTwo = new DatePicker();
-    ComboBox<Carrier> comboCarrier = new ComboBox<>();
-    TextField textPhoneNumer = new TextField();
-    MultiComboBox<SystemId> multi_systemIds = new MultiComboBox<>();
-    CheckboxGroup<OMessageType> checkboxMessageType = new CheckboxGroup<>();
-    Button searchButton = new Button("Buscar");
+    private ComboBox<Carrier> comboCarrier = new ComboBox<>();
+    private TextField textPhoneNumer = new TextField();
+    private MultiComboBox<SystemId> multi_systemIds = new MultiComboBox<>();
+    private CheckboxGroup<OMessageType> checkboxMessageType = new CheckboxGroup<>();
+    private Button searchButton = new Button("Buscar");
+    private IntegerField currentPageTextbox = new IntegerField("Página actual");
+    private Label totalAmountOfPagesLabel = new Label();
     /**/
-    private final OPageable opage = new OPageable();
+    HorizontalLayout layoutButtons = new HorizontalLayout();
+    private Component componentWrapper;
+    /**/
+    private int itemsPerPage = 25;
     private static int maxSelect = 3;
     private int onPage = 0;
     private int currentPageSize = 0;
@@ -106,53 +110,13 @@ public class SmsView extends LitTemplate {
     private final OUserSession ouser_session;
     /**/
     private Span pageCounter = new Span("No se ha presionado ningún botón.");
-
-    Button previous = new Button("Anterior", new ComponentEventListener<ClickEvent<Button>>() {
-        @Override
-        public void onComponentEvent(ClickEvent<Button> t) {
-            /* Preguntar si existe la pagina antes de retroceder */
-            if (opage.hasBefore()) {
-                opage.beforePage();
-            }
-
-            labs = getSms();
-            /* Encender o apagar el boton */
-            previous.setEnabled(opage.hasBefore());
-            next.setEnabled(opage.hasNext());
-            dataProvider.getItems().clear();
-            pageCounter.setText(opage.getCurrentPageToShow() + "/" + opage.getTotalPage());
-            if (labs != null) {
-                dataProvider.getItems().addAll(labs);
-            }
-            dataProvider.refreshAll();
-        }
-    });
-    Button next = new Button("Siguiente", new ComponentEventListener<ClickEvent<Button>>() {
-        @Override
-        public void onComponentEvent(ClickEvent<Button> t) {
-            if (opage.hasNext()) {
-                System.out.println("Antes: " + opage);
-                opage.nextPage();
-                System.out.println("Despues: " + opage);
-            }
-
-            labs = getSms();
-            /* Encender o apagar el boton */
-            previous.setEnabled(opage.hasBefore());
-            next.setEnabled(opage.hasNext());
-            pageCounter.setText(opage.getCurrentPageToShow() + "/" + opage.getTotalPage());
-            dataProvider.getItems().clear();
-            if (labs != null) {
-                dataProvider.getItems().addAll(labs);
-            }
-            dataProvider.refreshAll();
-        }
-    });
+    /**/
+    FooterRow footerRow;
 
     public SmsView(@Autowired AbstractSmsService sms_serv,
                    @Autowired OUserSession ouser_session,
                    @Autowired CarrierService carrier_serv,
-                   SetGenericBean<SystemId> systemIdSetGenericBean) {
+                   @Autowired SetGenericBean<SystemId> systemIdSetGenericBean) {
         this.sms_serv = sms_serv;
         this.ouser_session = ouser_session;
         this.carrier_serv = carrier_serv;
@@ -160,6 +124,7 @@ public class SmsView extends LitTemplate {
         Page<Carrier> carrierList = carrier_serv.findAll();
         Set<Carrier> carrierSet = carrierList.toSet();
         comboCarrier.setLabel("Operadoras");
+        comboCarrier.setClearButtonVisible(true);
         comboCarrier.setItems(carrierSet);
         comboCarrier.setItemLabelGenerator(Carrier::getCarrierCharcode);
         comboCarrier.setHelperText("Dejar en blanco para buscar en todas las operadoras.");
@@ -195,6 +160,7 @@ public class SmsView extends LitTemplate {
         });
         /**/
         textPhoneNumer.setLabel("Numero a buscar");
+        textPhoneNumer.setClearButtonVisible(true);
         /**/
         /**/
         dateOne.setMin(LocalDate.now().minusMonths(1));
@@ -205,6 +171,7 @@ public class SmsView extends LitTemplate {
         dateOne.setValue(new DateRange(LocalDate.now().minusDays(1), LocalDate.now()));
         dateOne.setSidePanelVisible(false);
         dateOne.setLabel("Rango de busqueda");
+        dateOne.setPattern(" dd-MM-yyyy");
         /**/
         secondline.add(new HorizontalLayout(dateOne, checkboxMessageType),
                 new HorizontalLayout(textPhoneNumer, comboCarrier),
@@ -214,56 +181,41 @@ public class SmsView extends LitTemplate {
         checkboxMessageType.setWidthFull();
         comboCarrier.setWidthFull();
         multi_systemIds.setWidthFull();
-        footer.add(previous, pageCounter, next);
         /**/
         createGrid();
-
-/****/
-//        grid.addColumn(AbstractSMS::getSystemId).setHeader("Credencial");
-//        grid.addColumn(AbstractSMS::getCarrierCharCode).setHeader("Operadora");
-//        grid.addColumn(AbstractSMS::getDate).setHeader("Fecha de envio");
-//        grid.addColumn(AbstractSMS::getDestination).setHeader("Destino");
-//        grid.addColumn(AbstractSMS::getSource).setHeader("Source");
-//        grid.addColumn(AbstractSMS::getMessageType).setHeader("Destino");
         textPhoneNumer.addValueChangeListener(listener -> {
             if (!listener.isFromClient()) {
                 return;
             }
             if (StringUtils.startsWith(listener.getValue(), "58414") ||
                     StringUtils.startsWith(listener.getValue(), "58424")) {
-                Carrier carrier = carrierSet
-                        .stream()
-                        .filter(f -> f.getCarrierCharcode().equalsIgnoreCase("movistar"))
-                        .findFirst()
-                        .orElse(null);
+                Carrier carrier = searchCarrierbyName(carrierSet, "movistar");
+                comboCarrier.setValue(carrier != null ? carrier : null);
+            }
+            if (StringUtils.startsWith(listener.getValue(), "58416") ||
+                    StringUtils.startsWith(listener.getValue(), "58426")) {
+                Carrier carrier = searchCarrierbyName(carrierSet, "movilnet");
+                comboCarrier.setValue(carrier != null ? carrier : null);
+            }
+            if (StringUtils.startsWith(listener.getValue(), "58412")) {
+                Carrier carrier = searchCarrierbyName(carrierSet, "digitel");
                 comboCarrier.setValue(carrier != null ? carrier : null);
             }
         });
         searchButton.addClickListener(click -> {
-            if (multi_systemIds.getValue().size() < 1 && comboCarrier.getValue() == null
-                    && (textPhoneNumer.getValue() == null || textPhoneNumer.getValue().length() < 1)) {
-                Notification notification = new Notification("Por favor seleccione otro campo adicional para filtrar", 2500);
-                notification.setPosition(Notification.Position.MIDDLE);
-                notification.open();
-                return;
-            }
             click.getSource().setEnabled(false);
+            grid.setPageSize(itemsPerPage);
             try {
-                opage.init();
-                labs = getSms();
-                /* Encender o apagar el boton */
-                previous.setEnabled(opage.hasBefore());
-                next.setEnabled(opage.hasNext());
-                pageCounter.setText(opage.getCurrentPageToShow() + "/" + opage.getTotalPage());
+                abstractSMSList = getSms(0, itemsPerPage, true);
                 dataProvider.getItems().clear();
-                if (labs != null) {
-                    dataProvider.getItems().addAll(labs);
+                if (abstractSMSList != null) {
+                    dataProvider.getItems().addAll(abstractSMSList);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            click.getSource().setEnabled(true);
             dataProvider.refreshAll();
+            click.getSource().setEnabled(true);
             if (dataProvider.getItems().isEmpty()) {
                 Notification notification = new Notification();
                 Span label = new Span("No hay información a mostrar.");
@@ -274,40 +226,88 @@ public class SmsView extends LitTemplate {
                 notification.add(label, closeButton);
             }
         });
+        /**/
+        ComboBox<Integer> comboItemsPerPage = new ComboBox<>("Sms por página");
+        comboItemsPerPage.setItems(Arrays.asList(25, 50, 100, 200, 400, 800));
+        comboItemsPerPage.setValue(itemsPerPage);
+        comboItemsPerPage.addValueChangeListener(change -> {
+            if (change.isFromClient()) {
+                itemsPerPage = change.getValue();
+                try {
+                    abstractSMSList = getSms(0, itemsPerPage, true);
+                    dataProvider.getItems().clear();
+                    grid.setPageSize(itemsPerPage);
+                    if (abstractSMSList != null) {
+                        dataProvider.getItems().addAll(abstractSMSList);
+                    }
+                    dataProvider.refreshAll();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        currentPageTextbox.setValue(1);
+        currentPageTextbox.setMin(1);
+        currentPageTextbox.setHasControls(true);
+        currentPageTextbox.addValueChangeListener(change -> {
+            if (change.isFromClient()) {
+                try {
+                    abstractSMSList = getSms(currentPageTextbox.getValue().intValue() - 1, itemsPerPage, false);
+                    dataProvider.getItems().clear();
+                    if (abstractSMSList != null) {
+                        dataProvider.getItems().addAll(abstractSMSList);
+                    }
+                    dataProvider.refreshAll();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        footer.add(comboItemsPerPage, currentPageTextbox, totalAmountOfPagesLabel);
     }
 
-    private Page<? extends AbstractSMS> getSmsPage(LocalDate dateOne, LocalDate dateTwo) {
+    private Carrier searchCarrierbyName(Set<Carrier> carrierSet, String movistar) {
+        return carrierSet
+                .stream()
+                .filter(f -> f.getCarrierCharcode().equalsIgnoreCase(movistar))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Page<? extends AbstractSMS> getSmsPage(LocalDate dateOne,
+                                                   LocalDate dateTwo,
+                                                   int actualpage,
+                                                   int itemsPerPage,
+                                                   boolean updateView) {
         Page<? extends AbstractSMS> smsPage = null;
+        Page<? extends AbstractSMS> smsPage2 = null;
         switch (getFindype()) {
             case 10:
                 smsPage = sms_serv.findByMessageType(dateOne,
                         dateTwo,
                         getSystemIdString(multi_systemIds.getValue()),
                         valueOfMessageType(checkboxMessageType.getSelectedItems()),
-                        opage.getCurrentPage());
+                        actualpage, itemsPerPage);
+                smsPage2 = sms_serv.findByMessageType(dateOne,
+                        dateTwo,
+                        getSystemIdString(multi_systemIds.getValue()),
+                        valueOfMessageType(checkboxMessageType.getSelectedItems()),
+                        0, 5000000);
                 break;
             case 11:
                 smsPage = sms_serv.findByPhoneNumber(dateOne,
                         dateTwo,
                         getSystemIdString(multi_systemIds.getValue()),
+                        valueOfMessageType(checkboxMessageType.getSelectedItems()),
                         textPhoneNumer.getValue().trim(),
-                        opage.getCurrentPage());
-                break;
-
-            case 12:
-                smsPage = sms_serv.findByCarrierAndMessageType(dateOne,
+                        actualpage, itemsPerPage);
+                smsPage2 = sms_serv.findByPhoneNumber(dateOne,
                         dateTwo,
                         getSystemIdString(multi_systemIds.getValue()),
-                        comboCarrier.getValue().getCarrierCharcode().trim(),
                         valueOfMessageType(checkboxMessageType.getSelectedItems()),
-                        opage.getCurrentPage());
-                break;
-            case 13:
-                smsPage = sms_serv.findByPhoneNumer(dateOne,
-                        dateTwo,
-                        comboCarrier.getValue().getCarrierCharcode().trim(),
                         textPhoneNumer.getValue().trim(),
-                        opage.getCurrentPage());
+                        0, 5000000);
                 break;
             case 14:
                 smsPage = sms_serv.findByCarrierAndMessageType(dateOne,
@@ -315,44 +315,36 @@ public class SmsView extends LitTemplate {
                         getSystemIdString(multi_systemIds.getValue()),
                         comboCarrier.getValue().getCarrierCharcode().trim(),
                         valueOfMessageType(checkboxMessageType.getSelectedItems()),
-                        opage.getCurrentPage());
-                break;
-            case 15:
-                smsPage = sms_serv.findByPhoneNumber(dateOne,
+                        actualpage, itemsPerPage);
+                smsPage2 = sms_serv.findByCarrierAndMessageType(dateOne,
                         dateTwo,
                         getSystemIdString(multi_systemIds.getValue()),
-                        textPhoneNumer.getValue().trim(),
-                        valueOfMessageType(checkboxMessageType.getSelectedItems()),
                         comboCarrier.getValue().getCarrierCharcode().trim(),
-                        opage.getCurrentPage());
+                        valueOfMessageType(checkboxMessageType.getSelectedItems()),
+                        0, 5000000);
                 break;
         }
         if (smsPage == null) {
             return null;
         }
+        if (updateView) {
+            updateDataView(smsPage);
+        }
         /* PAGEABLE */
-        opage.setTotalPage(smsPage.getTotalPages());
-        opage.setCurrentPage(smsPage.getPageable().getPageNumber());
-        opage.setTotalData(smsPage.getTotalElements());
-        opage.setTotalDataPage(smsPage.getNumberOfElements());
         currentPageSize = smsPage.getContent().size();
         currentElements = (int) smsPage.getTotalElements();
         currentPageCount = smsPage.getTotalPages();
-
-        System.out.println("PAGING - getSize: " + smsPage.getSize());
-        System.out.println("PAGING - getNumber: " + smsPage.getNumber());
-        System.out.println("PAGING - getNumberOfElements: " + smsPage.getNumberOfElements());
-        System.out.println("PAGING - getTotalElements: " + smsPage.getTotalElements());
-        System.out.println("PAGING - getPageable().getPageNumber() " + smsPage.getPageable().getPageNumber());
-        System.out.println("PAGING - l.getPageable(): " + smsPage.getPageable());
-        System.out.println("AFTER CALL: " + opage);
-        updateDownloadButton(obtainAbstractOf(smsPage));
+        /* Crear boton descargar */
+        updateDownloadButton(obtainAbstractOf(smsPage2));
         return smsPage;
     }
 
     private void updateDownloadButton(List<? extends AbstractSMS> messages) {
-        footer.removeAll();
-        footer.add(getDownloadButton(messages));
+        if (componentWrapper != null) {
+            footer.remove(componentWrapper);
+        }
+        componentWrapper = getDownloadButton(messages);
+        footer.add(componentWrapper);
     }
 
     private Component getDownloadButton(List<? extends AbstractSMS> messages) {
@@ -364,7 +356,11 @@ public class SmsView extends LitTemplate {
         Button download = new Button("Descargar Datos (" + year + "/" + month + "/" + day + "-" + hour + ":00)");
 
         FileDownloadWrapper buttonWrapper = new FileDownloadWrapper(
-                new StreamResource(fileName, () -> new ByteArrayInputStream(getStringData(messages).getBytes())));
+                new StreamResource(fileName, () -> {
+                    return new ByteArrayInputStream(getStringData(messages).getBytes());
+                }
+                )
+        );
         download.addClickListener(click -> {
             LocalDate selectedStartDate = (dateOne.getValue() == null) ? null : dateOne.getValue().getStartDate();
             LocalDate selectedEndDate = (dateOne.getValue() == null) ? null : dateOne.getValue().getEndDate();
@@ -381,32 +377,27 @@ public class SmsView extends LitTemplate {
     }
 
     /**
-     * 8: No permitida busqueda por solo Tipo de mensaje.
-     * 9: No existe dado que al buscar por num se busca tanbien por su operadora.
+     * phonenumber -> 1
+     * systemid->2 -> siempre
+     * carrier->4
+     * messagetype->8 -> siempre
+     * **************************
      * 10: Tipo de mensaje y SystemId.
-     * 11: Tipo de mensaje, num de telefono y systemid.
-     * 12: Tipo de mensaje y operadora.
-     * 13: Tipo de mensaje, numero de telefono y operadora.
-     * 14: tipo de mensaje, systemid y operadora.
-     * 15: tipo de mensaje, numero de telefono, systemid y operadora.
+     * 11: Tipo de mensaje, SystemId y num de telefono
+     * 14: tipo de mensaje, Systemid, num de telefono y operadora.
      *
      * @return
      */
     private int getFindype() {
-        int n = 8;
+        int n = 10;
 
         if (StringUtils.isNotBlank(textPhoneNumer.getValue())) {
             n += 1;
         }
 
-        if (CollectionUtils.isNotEmpty(multi_systemIds.getValue())) {
-            n += 2;
-        }
-
         if (ObjectUtils.isNotEmpty(comboCarrier.getValue()) && StringUtils.isNotBlank(comboCarrier.getValue().getCarrierName())) {
             n += 4;
         }
-
         return n;
     }
 
@@ -444,21 +435,17 @@ public class SmsView extends LitTemplate {
         return l == null ? new ArrayList<>() : new ArrayList<>(l.getContent());
     }
 
-    private List<AbstractSMS> getSms() {
-//        if (dateOne == null || dateTwo == null) {
-//            LocalDate now = LocalDate.now();
-//            return obtainAbstractOf(getSmsPage(LocalDate.of(now.getYear(), now.getMonthValue(), 1), now));
-//        }
+    private List<AbstractSMS> getSms(int actualpage, int itemsPerPage, boolean updateDataView) {
         LocalDate selectedStartDate = (dateOne.getValue() == null) ? null : dateOne.getValue().getStartDate();
         LocalDate selectedEndDate = (dateOne.getValue() == null) ? null : dateOne.getValue().getEndDate();
         if (selectedEndDate == null) {
             selectedEndDate = selectedStartDate;
         }
-        return obtainAbstractOf(getSmsPage(selectedStartDate, selectedEndDate));
+        return obtainAbstractOf(getSmsPage(selectedStartDate, selectedEndDate, actualpage, itemsPerPage, updateDataView));
     }
 
     private void addColumnsToGrid() {
-        createIdColumn();
+//        createIdColumn();
         createPhoneNumberColumn();
         createCarrierColumn();
         createSystemIdColumn();
@@ -466,10 +453,10 @@ public class SmsView extends LitTemplate {
         createDateColumn();
     }
 
-    private void createIdColumn() {
-        idColumn = grid.addColumn(AbstractSMS::getId, "id").setHeader("ID")
-                .setWidth("120px").setFlexGrow(0);
-    }
+//    private void createIdColumn() {
+//        idColumn = grid.addColumn(AbstractSMS::getId, "id").setHeader("ID")
+//                .setWidth("120px").setFlexGrow(0);
+//    }
 
     private void createPhoneNumberColumn() {
         phoneColum = grid
@@ -481,7 +468,8 @@ public class SmsView extends LitTemplate {
     private void createCarrierColumn() {
         carrierColum = grid
                 .addColumn(AbstractSMS::getCarrierCharCode)
-                .setComparator(client -> client.getCarrierCharCode()).setHeader("Operadora")
+//                .setComparator(client -> client.getCarrierCharCode())
+                .setHeader("Operadora")
                 .setAutoWidth(true);
 //                .setWidth("180px").setFlexGrow(0);
     }
@@ -489,7 +477,7 @@ public class SmsView extends LitTemplate {
     private void createSystemIdColumn() {
         systemIdColumn = grid
                 .addColumn(AbstractSMS::getSystemId)
-                .setComparator(client -> client.getSystemId()).setHeader("Systemid")
+                .setComparator(client -> client.getSystemId()).setHeader("Credencial")
                 .setAutoWidth(true);
 //                .setWidth("180px").setFlexGrow(0);
     }
@@ -497,7 +485,7 @@ public class SmsView extends LitTemplate {
     private void createMessageypeColumn() {
         messageTypeColum = grid
                 .addColumn(AbstractSMS::getMessageType)
-                .setComparator(client -> client.getMessageType()).setHeader("Message type")
+                .setComparator(client -> client.getMessageType()).setHeader("Tipo de Mensaje")
                 .setAutoWidth(true);
 //                .setWidth("180px").setFlexGrow(0);
     }
@@ -507,13 +495,13 @@ public class SmsView extends LitTemplate {
                 .addColumn(new LocalDateTimeRenderer<>(
                         client -> client.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
                         DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")))
-                .setComparator(AbstractSMS::getDate).setHeader("Date")
+                .setComparator(AbstractSMS::getDate).setHeader("Fecha de envío")
                 .setAutoWidth(true);
 //                .setWidth("180px").setFlexGrow(0);
     }
 
     private void addFiltersToGrid() {
-        HeaderRow filterRow = grid.appendHeaderRow();
+//        HeaderRow filterRow = grid.appendHeaderRow();
 
         TextField idFilter = new TextField();
         idFilter.setPlaceholder("Filter");
@@ -524,7 +512,7 @@ public class SmsView extends LitTemplate {
                 event -> dataProvider.addFilter(client -> StringUtils
                         .containsIgnoreCase(Long.toString(client.getId()),
                                 idFilter.getValue())));
-        filterRow.getCell(idColumn).setComponent(idFilter);
+//        filterRow.getCell(idColumn).setComponent(idFilter);
 
         TextField phoneFilter = new TextField();
         phoneFilter.setPlaceholder("Filter");
@@ -534,7 +522,7 @@ public class SmsView extends LitTemplate {
         phoneFilter.addValueChangeListener(event -> dataProvider.addFilter(
                 client -> StringUtils.containsIgnoreCase(client.getDestination(),
                         phoneFilter.getValue())));
-        filterRow.getCell(phoneColum).setComponent(phoneFilter);
+//        filterRow.getCell(phoneColum).setComponent(phoneFilter);
 
         TextField carrierFilter = new TextField();
         carrierFilter.setPlaceholder("Filter");
@@ -544,7 +532,7 @@ public class SmsView extends LitTemplate {
         carrierFilter.addValueChangeListener(event -> dataProvider.addFilter(
                 client -> StringUtils.containsIgnoreCase(client.getCarrierCharCode(),
                         carrierFilter.getValue())));
-        filterRow.getCell(carrierColum).setComponent(carrierFilter);
+//        filterRow.getCell(carrierColum).setComponent(carrierFilter);
 
         TextField systemIdFilter = new TextField();
         systemIdFilter.setPlaceholder("Filter");
@@ -554,7 +542,7 @@ public class SmsView extends LitTemplate {
         systemIdFilter.addValueChangeListener(event -> dataProvider.addFilter(
                 client -> StringUtils.containsIgnoreCase(client.getSystemId(),
                         systemIdFilter.getValue())));
-        filterRow.getCell(systemIdColumn).setComponent(systemIdFilter);
+//        filterRow.getCell(systemIdColumn).setComponent(systemIdFilter);
 
         TextField messageTypeFilter = new TextField();
 //        messageTypeFilter.setItems(Arrays.asList("Pending", "Success", "Error"));
@@ -565,7 +553,7 @@ public class SmsView extends LitTemplate {
         messageTypeFilter.addValueChangeListener(event -> dataProvider.addFilter(
                 client -> StringUtils.containsIgnoreCase(client.getMessageType(),
                         messageTypeFilter.getValue())));
-        filterRow.getCell(messageTypeColum).setComponent(messageTypeFilter);
+//        filterRow.getCell(messageTypeColum).setComponent(messageTypeFilter);
 
         DatePicker dateFilter = new DatePicker();
         dateFilter.setPlaceholder("Filter");
@@ -573,7 +561,7 @@ public class SmsView extends LitTemplate {
         dateFilter.setWidth("100%");
         dateFilter.addValueChangeListener(event -> dataProvider
                 .addFilter(client -> areDatesEqual(client, dateFilter)));
-        filterRow.getCell(dateColumn).setComponent(dateFilter);
+//        filterRow.getCell(dateColumn).setComponent(dateFilter);
     }
 
     private boolean areDatesEqual(AbstractSMS client, DatePicker dateFilter) {
@@ -588,7 +576,7 @@ public class SmsView extends LitTemplate {
     private void createGrid() {
         createGridComponent();
         addColumnsToGrid();
-        addFiltersToGrid();
+//        addFiltersToGrid();
     }
 
     private void createGridComponent() {
@@ -598,14 +586,27 @@ public class SmsView extends LitTemplate {
                 GridVariant.LUMO_COLUMN_BORDERS);
         grid.setHeightFull();
         grid.setWidthFull();
-//        labs = getSms();
-//        if (labs == null) {
-        labs = new ArrayList<>();
-//        }
-        dataProvider = new ListDataProvider<>(labs);
+        abstractSMSList = new ArrayList<>();
+        dataProvider = new ListDataProvider<>(abstractSMSList);
         grid.setDataProvider(dataProvider);
-        grid.setPageSize(25);
-        grid.appendFooterRow();
+        grid.setPageSize(itemsPerPage);
+        footerRow = grid.appendFooterRow();
+    }
+
+    private Page<AbstractSMS> updateDataPage(int itemsPerPage, int page) {
+        Page<AbstractSMS> pageSms = sms_serv.findAll(page, itemsPerPage);
+        grid.setPageSize(itemsPerPage);
+        grid.setItems(pageSms.getContent());
+        return pageSms;
+    }
+
+    private void updateDataView(Page<? extends AbstractSMS> pageSms) {
+        /**/
+        currentPageTextbox.setValue(1);
+        currentPageTextbox.setMin(1);
+        currentPageTextbox.setMax(pageSms.getTotalPages());
+        /**/
+        totalAmountOfPagesLabel.setText(" de " + pageSms.getTotalPages());
     }
 
     private boolean isValidSearch() {

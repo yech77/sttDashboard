@@ -207,12 +207,6 @@
             <artifactId>multi-combo-box-flow</artifactId>
             <version>0.4.0</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version>
-        </dependency>
         <dependency>
             <groupId>org.vaadin.olli</groupId>
             <artifactId>file-download-wrapper</artifactId>
@@ -290,7 +284,7 @@
         <dependency>
             <groupId>com.vaadin.componentfactory</groupId>
             <artifactId>vcf-date-range-picker</artifactId>
-            <version>1.9.0</version>
+            <version>1.4.0</version>
         </dependency>
         <!-- Agregado el 14/07/21 Para que funcione lo anterior-->
         <dependency>
