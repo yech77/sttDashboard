@@ -18,6 +18,7 @@ public interface AgendaRepository extends JpaRepository<Agenda, Long> {
     public List<Agenda> getAllAgendasInFamily(List<User> users);
 
     public List<Agenda> findByName(String name);
+
     @Override
     Optional<Agenda> findById(Long aLong);
 
@@ -25,11 +26,13 @@ public interface AgendaRepository extends JpaRepository<Agenda, Long> {
             + "WHERE a.creator IN (:users) "
             + "AND a.status = :status")
     public List<Agenda> getAllValidAgendasInFamily(List<User> users, Agenda.Status status);
+
     /**/
     Agenda findByCreatorEmailIgnoreCase(String email);
 
     Page<Agenda> findBy(Pageable pageable);
-//    @Query("select f from Agenda f "
+
+    //    @Query("select f from Agenda f "
 //            + "WHERE lower(f.creator.email) like lower(concat('%', :filterText, '%')) "
 //            + "OR  lower(f.description) like lower(concat('%', :filterText, '%')) "
 //            + "OR  f.status = :filterText "

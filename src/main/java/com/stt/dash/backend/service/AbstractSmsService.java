@@ -65,7 +65,11 @@ public class AbstractSmsService {
     public Page<AbstractSMS> findByPhoneNumer(int year, int month, List<String> list_sid, String destination, Collection<String> messageType, String carrierCharCode, int page) {
         return findByPhoneNumer(year, month, list_sid, destination, messageType, carrierCharCode, page, pageSize);
     }
-    
+
+    public Page<AbstractSMS> findByPhoneNumer(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, String destination, Collection<String> messageType, String carrierCharCode, int page) {
+        return findByPhoneNumer(dateOne, dateTwo, list_sid, destination, messageType, carrierCharCode, page, pageSize);
+    }
+
     public Page<AbstractSMS> findBySystemIdIn(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, int page) {
         return findBySystemIdIn(dateOne, dateTwo, list_sid, page, pageSize);
     }
@@ -223,6 +227,35 @@ public class AbstractSmsService {
         return monthRepos[dateOne.getMonthValue() - 1].findByDateBetweenAndSystemIdInAndDestinationAndMessageTypeIn(
                 dateStart,
                 dateEnd, list_sid, destination, messageType, paging);
+    }
+
+    public Page<AbstractSMS> findByPhoneNumer(
+            LocalDate dateOne,
+            LocalDate dateTwo,
+            List<String> list_sid,
+            String destination,
+            Collection<String> messageType,
+            String carrierCharCode,
+            int page, int pageSize) {
+        Date dateEnd = null;
+        try {
+            /* DATE */
+            Date dateStart = ODateUitls.valueOf(dateOne);
+            dateEnd = ODateUitls.parseToDateTo(dateTwo);
+            Pageable paging = PageRequest.of(page, pageSize);
+
+            return monthRepos[dateOne.getMonthValue() - 1].findByDateBetweenAndSystemIdInAndDestinationAndMessageTypeInAndCarrierCharCode(
+                    dateStart,
+                    dateEnd,
+                    list_sid,
+                    destination,
+                    messageType,
+                    carrierCharCode,
+                    paging);
+        } catch (ParseException ex) {
+            log.error("Error parsing date " + dateEnd);
+            throw new UserFriendlyDataException("Error con la fecha final");
+        }
     }
 
     @Deprecated

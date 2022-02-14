@@ -323,6 +323,22 @@ public class SmsView extends LitTemplate {
                         valueOfMessageType(checkboxMessageType.getSelectedItems()),
                         0, 5000000);
                 break;
+            case 15:
+                smsPage = sms_serv.findByPhoneNumer(dateOne,
+                        dateTwo,
+                        getSystemIdString(multi_systemIds.getValue()),
+                        textPhoneNumer.getValue().trim(),
+                        valueOfMessageType(checkboxMessageType.getSelectedItems()),
+                        comboCarrier.getValue().getCarrierCharcode().trim(),
+                        actualpage);
+                smsPage2 = sms_serv.findByPhoneNumer(dateOne,
+                        dateTwo,
+                        getSystemIdString(multi_systemIds.getValue()),
+                        textPhoneNumer.getValue().trim(),
+                        valueOfMessageType(checkboxMessageType.getSelectedItems()),
+                        comboCarrier.getValue().getCarrierCharcode().trim(),
+                        actualpage);
+                break;
         }
         if (smsPage == null) {
             return null;
@@ -383,8 +399,9 @@ public class SmsView extends LitTemplate {
      * messagetype->8 -> siempre
      * **************************
      * 10: Tipo de mensaje y SystemId.
-     * 11: Tipo de mensaje, SystemId y num de telefono
-     * 14: tipo de mensaje, Systemid, num de telefono y operadora.
+     * 11: Tipo de mensaje, SystemId y num de telefono.
+     * 14: tipo de mensaje, Systemid y operadora.
+     * 15: tipo de mensaje, Systemid, num de telefono y operadora.
      *
      * @return
      */

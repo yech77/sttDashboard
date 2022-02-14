@@ -1,10 +1,8 @@
 package com.stt.dash.ui;
 
 import com.stt.dash.app.security.CurrentUser;
-import com.stt.dash.app.security.SecurityConfiguration;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.ui.smsview.SmsView;
-import com.stt.dash.ui.smsview.SmsViewTest;
 import com.stt.dash.ui.views.HasConfirmation;
 import com.stt.dash.ui.views.audit.AuditView;
 import com.stt.dash.ui.views.bulksms.BulkSmsView;
@@ -15,28 +13,22 @@ import com.stt.dash.ui.views.rol.ORolesView;
 import com.stt.dash.ui.views.dashboard.main.MainDashboardView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.avatar.AvatarVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
-import com.vaadin.flow.component.contextmenu.MenuItem;
-import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Nav;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.menubar.MenuBar;
-import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -47,7 +39,6 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
-import com.vaadin.flow.server.VaadinServlet;
 import com.stt.dash.app.security.SecurityUtils;
 import com.stt.dash.ui.views.admin.users.UsersView;
 import com.vaadin.flow.server.VaadinServletRequest;
@@ -380,7 +371,6 @@ public class MainView extends AppLayout {
         }
         if (SecurityUtils.isAccessGranted(BulkSmsView.class)) {
             tabs.add(createTab(VaadinIcon.USER, TITLE_BULKSMS, BulkSmsView.class));
-            tabs.add(createTab(VaadinIcon.USER, TITLE_BULKSMS + "Test", SmsViewTest.class));
         }
         if (SecurityUtils.isAccessGranted(ClientChartView.class)) {
             tabs.add(createTab(VaadinIcon.CHART_LINE, TITLE_CLIENT, ClientChartView.class));

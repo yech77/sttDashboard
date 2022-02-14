@@ -31,6 +31,8 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.shared.Registration;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -162,8 +164,8 @@ public class FileToSendEditor extends LitTemplate {
         dueDate.setMin(LocalDateTime.now());
         dueDate.setValue(LocalDateTime.now().plusMinutes(10));
         /**/
-        binder.addValueChangeListener(c->{
-            System.out.println("OLDVALUE ->" + c.getOldValue()+" VALUE ->" + c.getValue());
+        binder.addValueChangeListener(c -> {
+            System.out.println("OLDVALUE ->" + c.getOldValue() + " VALUE ->" + c.getValue());
             System.out.println("ADDVALUE BINDER->" + binder.hasChanges());
         });
     }
@@ -176,7 +178,7 @@ public class FileToSendEditor extends LitTemplate {
         });
 
         message.addInputListener(event -> {
-            int count = message.getValue().length();
+            int count = ObjectUtils.isNotEmpty(message.getValue()) ? message.getValue().length() : 0;
             int numMessages = (count - 1) / 160 + 1;
             charCounter.setText("(" + numMessages + ")  " + count + "/" + ((numMessages) * 160) + " caracteres");
             /* Validacion de que este toda la informacion de variables. */
@@ -218,7 +220,7 @@ public class FileToSendEditor extends LitTemplate {
                 /* El total de parametros sin la columna numero del celular.  */
                 varCount = firstLineValue.length - 1;
                 /* Si tiene solo un parametro ese valor se coloca en el mensaje */
-                if (varCount==0){
+                if (varCount == 0) {
                     messageBuilded.setVisible(false);
                     message.setEnabled(true);
                     message.setHelperText(SMS_MESSAGE_WITHOUT_PARAMETER);
@@ -226,7 +228,7 @@ public class FileToSendEditor extends LitTemplate {
                     /* Invisible messageBuilder*/
                     /* Habilitado message */
                 }
-                if (varCount==1){
+                if (varCount == 1) {
                     messageBuilded.setVisible(false);
                     message.setEnabled(false);
                     message.setValue(firstLineValue[1]);
@@ -235,7 +237,7 @@ public class FileToSendEditor extends LitTemplate {
                     /* Deshabilitado message */
                     /* Escribir el unico parametro en message */
                 }
-                if (varCount>1){
+                if (varCount > 1) {
                     messageBuilded.setVisible(true);
                     message.setEnabled(true);
                     message.setHelperText(String.format(SMS_MESSAGE_WITH_PARAMETER, varCount, "0"));
