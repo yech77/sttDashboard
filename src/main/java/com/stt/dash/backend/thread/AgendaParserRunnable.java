@@ -1,5 +1,7 @@
 package com.stt.dash.backend.thread;
 
+import com.google.gson.Gson;
+import com.googlecode.gentyref.TypeToken;
 import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.service.AgendaService;
 import com.stt.dash.backend.util.AgendaFileUtils;
@@ -7,7 +9,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,10 +16,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import java.lang.reflect.Type;
 
 public class AgendaParserRunnable {
 
@@ -40,6 +45,12 @@ public class AgendaParserRunnable {
     private List<String> agendaLog = new ArrayList<>();
     /* TODO: Descablear */
     private final static Pattern regexPattern = Pattern.compile("^(58)(412|414|416|424|426)([0-9]{7})$");
+    /**/
+    Map<Integer, Integer> lineSizeMap = new HashMap<>();
+
+    private final Gson gson = new Gson();
+    Type gsonType = new TypeToken<HashMap>() {
+    }.getType();
 
     public AgendaParserRunnable(Agenda agenda, AgendaService agenda_service, String userEmail) {
         Optional<Agenda> optional = agenda_service.findById(agenda.getId());
@@ -110,8 +121,8 @@ public class AgendaParserRunnable {
                 if (record.getRecordNumber() == 1) {
                     sizeOfFirsLine = record.size();
                     StringBuilder sb = new StringBuilder();
+                    /* recorriendo las columnas de la primera fila */
                     for (String string : record) {
-                        log.info("{} STRING {}", getStringLog(), string);
                         if (string.indexOf(',') > 0) {
                             sb.append('"').append(string).append('"').append(',');
                         } else {
@@ -143,13 +154,28 @@ public class AgendaParserRunnable {
 
                 /* Valida columnas vacias */
                 int errorOnColum = 0;
+                /* Recorrer las cloumnas  */
+                int totalSize = 0;
                 for (String string : record) {
                     if (string == null || "".equals(string.trim())) {
                         log.warn("{} LINE ({}) - HAS EMPTY COLUMN", getStringLog(), record.getRecordNumber());
                         logLine(record.getRecordNumber(), "Parametro Invalido; Tiene columna vacia");
                         errorOnColum++;
+                    } else {
+                        totalSize += string.length();
                     }
                 }
+                /* sustraer el size de la columna 0 (los numeros de telefono) */
+                totalSize -= record.get(0).length();
+                /**/
+                Integer lineCounter = lineSizeMap.get(totalSize);
+                if (lineCounter == null) {
+                    lineCounter = 1;
+                } else {
+                    lineCounter++;
+                }
+                lineSizeMap.put(totalSize, lineCounter);
+                /**/
                 if (errorOnColum > 0) {
                     invalidItemCounter++;
                 }
@@ -163,7 +189,7 @@ public class AgendaParserRunnable {
             agenda.setInvalidItemCount(invalidItemCounter);
             agenda.setItemCount(itemCounter);
             agenda.setStatus(invalidItemCounter > 0 ? Agenda.Status.HAS_WARNINGS : Agenda.Status.READY_TO_USE);
-
+            agenda.setSizeOfLines(gson.toJson(lineSizeMap, gsonType));
             if (agendaLog.size() < 1) {
                 agendaLog.add("No hay problemas.");
             }

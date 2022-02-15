@@ -44,7 +44,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -178,9 +182,19 @@ public class FileToSendEditor extends LitTemplate {
         });
 
         message.addInputListener(event -> {
-            int count = ObjectUtils.isNotEmpty(message.getValue()) ? message.getValue().length() : 0;
+            String m = message.getValue().replaceAll("$[0-9]", "");
+            int count = ObjectUtils.isNotEmpty(m) ? message.getValue().length() : 0;
             int numMessages = (count - 1) / 160 + 1;
-            charCounter.setText("(" + numMessages + ")  " + count + "/" + ((numMessages) * 160) + " caracteres");
+            String s = count + "/" + 160;
+            charCounter.setText(s + "\n");
+            Integer totsms = 0;
+            Map<Integer, Integer> smsToSendList = calculateNumberOfSms(count);
+            StringBuilder sb = new StringBuilder();
+            for (Map.Entry<Integer, Integer> entry : smsToSendList.entrySet()) {
+                sb.append("(" + entry.getValue() + ") registros de (" + entry.getKey() + ") sms. ");
+                totsms += entry.getValue() * entry.getKey();
+            }
+            charCounter.setText(count + "/160. " + sb.toString() + "Total Sms a enviar: " + totsms);
             /* Validacion de que este toda la informacion de variables. */
             int vars = 1;
             while (message.getValue().contains("$" + vars)) {
@@ -280,6 +294,29 @@ public class FileToSendEditor extends LitTemplate {
             review.setEnabled(binder.isValid());
 //            }
         });
+    }
+
+    private Map<Integer, Integer> calculateNumberOfSms(int actualSmsSize) {
+
+        Map<Integer, Integer> numOfSmsToSend = new HashMap<>();
+        Map<Integer, Integer> lines = new HashMap<>();
+        /*length, num of lines*/
+        lines.put(150, 10);
+        lines.put(140, 20);
+        lines.put(130, 40);
+        lines.forEach((k, v) -> {
+            Integer totLines = 0;
+            int numOfMessage = (actualSmsSize + k - 1) / 160 + 1;
+            Integer nLines = numOfSmsToSend.get(numOfMessage);
+
+            if (nLines == null) {
+                totLines = v;
+            } else {
+                totLines = v + nLines;
+            }
+            numOfSmsToSend.put(numOfMessage, totLines);
+        });
+        return numOfSmsToSend;
     }
 
     /**

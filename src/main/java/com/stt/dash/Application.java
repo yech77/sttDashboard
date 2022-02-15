@@ -20,30 +20,32 @@ import org.springframework.scheduling.annotation.Scheduled;
 /**
  * Spring boot web application initializer.
  */
-@SpringBootApplication(scanBasePackageClasses = { SecurityConfiguration.class, MainView.class, Application.class,
-		UserService.class }, exclude = ErrorMvcAutoConfiguration.class)
-@EnableJpaRepositories(basePackageClasses = { UserRepository.class })
-@EntityScan(basePackageClasses = { User.class })
+@SpringBootApplication(scanBasePackageClasses = {SecurityConfiguration.class, MainView.class, Application.class,
+        UserService.class}, exclude = ErrorMvcAutoConfiguration.class)
+@EnableJpaRepositories(basePackageClasses = {UserRepository.class})
+@EntityScan(basePackageClasses = {User.class})
 @EnableScheduling
 public class Application extends SpringBootServletInitializer {
-	@Autowired
-	TempSmsService temp_serv;
-	private static String APP_NAME = "ODASH";
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+    @Autowired
+    TempSmsService temp_serv;
+    private static String APP_NAME = "ODASH";
 
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(Application.class);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 
-	@Scheduled(cron = "0 */1 * * * ?")
-	public void runResumeSms(){
-		temp_serv.doResume();
-	}
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(Application.class);
+    }
 
-	public static String getAPP_NAME(){
-		return APP_NAME;
-	}
+    @Scheduled(cron = "0 */1 * * * ?")
+    /* TODO: Agregar ScheduledLock */
+    public void runResumeSms() {
+        temp_serv.doResume();
+    }
+
+    public static String getAPP_NAME() {
+        return APP_NAME;
+    }
 }

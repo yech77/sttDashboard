@@ -54,7 +54,13 @@ public class Agenda extends AbstractEntitySequence {
     @Column(length = 255)
     @Size(max = 255)
     private String firstLine;
+
     private int invalidItemCount;
+
+
+    @Column(length = 500)
+    @Size(max = 500)
+    private String sizeOfLines;
 
     public Agenda() {
         name = "";
@@ -204,6 +210,14 @@ public class Agenda extends AbstractEntitySequence {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getSizeOfLines() {
+        return sizeOfLines;
+    }
+
+    public void setSizeOfLines(String sizeOfLines) {
+        this.sizeOfLines = sizeOfLines;
     }
 
     @Override

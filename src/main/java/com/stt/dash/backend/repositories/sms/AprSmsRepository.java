@@ -11,6 +11,6 @@ import java.util.Date;
 import java.util.List;
 
 public interface AprSmsRepository extends BaseSmsRepository<AprSms, Long> {
-    Page<AprSms> findByDateBetweenAndMessageTypeInAndSystemIdInAndDestinationEquals(Date dateStart, Date dateEnd, Collection<String> messageTypes, Collection<String> systemIds, String destination, Pageable pageable);
+//    Page<AprSms> findByDateBetweenAndMessageTypeInAndSystemIdInAndDestinationEquals(Date dateStart, Date dateEnd, Collection<String> messageTypes, Collection<String> systemIds, String destination, Pageable pageable);
 
 }
