@@ -95,6 +95,9 @@ public class FileToSendEditor extends LitTemplate {
     @Id("charCounter")
     private Paragraph charCounter;
 
+    @Id("acceptCheckbox")
+    private Checkbox acceptCheckbox;
+
 //    @Id("warningSpan")
 //    private Span warningSpan;
 
@@ -122,12 +125,13 @@ public class FileToSendEditor extends LitTemplate {
     /**/
     private boolean hasEnougharmeters = false;
     private final Gson gson = new Gson();
+    private boolean hasMoreSms = false;
     Type gsonType = new TypeToken<HashMap<Integer, Integer>>() {
     }.getType();
 
     public FileToSendEditor(@Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
                             AgendaService agendaService, @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList) {
-        /*No existen Items*/
+        acceptCheckbox.setVisible(false);
         /**/
         cancel.addClickListener(e -> fireEvent(new CancelEvent(this, false)));
         review.addClickListener(e -> fireEvent(new BulkSmsReviewEvent(this)));
@@ -137,9 +141,9 @@ public class FileToSendEditor extends LitTemplate {
         message.setValueChangeMode(ValueChangeMode.EAGER);
         /*No necesito el binder a status */
         /**/
-        DataProvider<Agenda, String> agendaDataProvider = new CrudEntityDataProvider<>(agendaService);
-        agendaComboBox.setDataProvider(agendaDataProvider);
-        agendaComboBox.setItemLabelGenerator(Agenda::getName);
+        agendaComboBox.setItems(agendaService.getAllValidAgendasInFamily(userChildrenList.getList()));
+        agendaComboBox.setItemLabelGenerator(agenda -> agenda.getName() + (
+                StringUtils.isNotBlank(agenda.getDescription()) ? " - " + agenda.getDescription() : ""));
         /* contador de caracteres  */
         charCounter.setText("(1) 0/160 caracteres");
         /**/
@@ -181,29 +185,52 @@ public class FileToSendEditor extends LitTemplate {
     }
 
     private void addListeners() {
-        message.addValueChangeListener(listener -> {
-            int count = message.getValue().length();
-            int numMessages = (count - 1) / 160 + 1;
-            charCounter.setText("(" + numMessages + ")  " + count + "/" + ((numMessages) * 160) + " caracteres");
+        acceptCheckbox.addValueChangeListener(event -> {
+            if (!event.isFromClient()) {
+                return;
+            }
+            validateReview();
         });
-
         message.addInputListener(event -> {
             if (!event.isFromClient()) {
                 return;
             }
             String m = message.getValue().replaceAll("$[0-9]", "");
-            int count = ObjectUtils.isNotEmpty(m) ? message.getValue().length() : 0;
-            int numMessages = (count - 1) / 160 + 1;
-            String s = count + "/" + 160;
+            int smsBoxCharCounter = StringUtils.isNotEmpty(m) ? m.length() : 0;
+            int totSmsLineAgenda = 0;
+
+            if (ObjectUtils.isNotEmpty(agendaComboBox.getValue())) {
+                totSmsLineAgenda = agendaComboBox.getValue().getItemCount();
+            }
+
+            /* calcular el total asumiendo que la agenda no es variable */
+            String s = smsBoxCharCounter + " caracteres";
             charCounter.setText(s + "\n");
-            Integer totsms = 0;
-            Map<Integer, Integer> smsToSendList = calculateNumberOfSms(count);
-            StringBuilder sb = new StringBuilder();
+            int totsms = 0;
+            Map<Integer, Integer> smsToSendList = calculateNumberOfSms(smsBoxCharCounter);
+
+            /* Calcular total de Agenda no Variable */
+            if (ObjectUtils.isEmpty(smsToSendList)) {
+                totsms = ((smsBoxCharCounter - 1) / 160 + 1) * totSmsLineAgenda;
+            }
+            StringBuilder sb = new StringBuilder("");
             for (Map.Entry<Integer, Integer> entry : smsToSendList.entrySet()) {
                 sb.append("(" + entry.getValue() + ") registros de (" + entry.getKey() + ") sms. ");
+
+                /* Calcula total de Agenda Variable */
                 totsms += entry.getValue() * entry.getKey();
             }
-            charCounter.setText(count + "/160. " + sb.toString() + "Total Sms a enviar: " + totsms);
+            charCounter.setText(smsBoxCharCounter + "/160. " + sb.toString() + "Total Sms a enviar: " + totsms);
+
+            /* Tiene mas sms que lineas en la agenda */
+            if (totsms != totSmsLineAgenda) {
+                hasMoreSms = true;
+                acceptCheckbox.setVisible(true);
+                acceptCheckbox.setLabel("Acepto enviar: " + totsms + " sms.");
+            } else {
+                hasMoreSms = false;
+                acceptCheckbox.setVisible(false);
+            }
             /* Validacion de que este toda la informacion de variables. */
             int vars = 1;
             while (message.getValue().contains("$" + vars)) {
@@ -233,11 +260,18 @@ public class FileToSendEditor extends LitTemplate {
                 messageBuilded.getStyle().set("color", "var(--lumo-success-text-color)");
                 messageBuilded.getStyle().set("font-size", "var(--lumo-font-size-s)");
             }
+            validateReview();
         });
         agendaComboBox.addValueChangeListener(event -> {
+            if (!event.isFromClient()) {
+                return;
+            }
             hasEnougharmeters = false;
             /* clear cada vez que se cambia de agenda. */
             message.setValue("");
+            acceptCheckbox.setValue(false);
+            acceptCheckbox.setVisible(false);
+            messageBuilded.setValue("");
             if (agendaComboBox.getValue() != null) {
                 firstLineValue = getVariable(agendaComboBox.getValue().getFirstLine());
                 /* El total de parametros sin la columna numero del celular.  */
@@ -247,46 +281,21 @@ public class FileToSendEditor extends LitTemplate {
                     messageBuilded.setVisible(false);
                     message.setEnabled(true);
                     message.setHelperText(SMS_MESSAGE_WITHOUT_PARAMETER);
-//                    warningSpan.setText(SMS_MESSAGE_WITHOUT_PARAMETER);
-                    /* Invisible messageBuilder*/
-                    /* Habilitado message */
-                }
-                if (varCount == 1) {
+                } else if (varCount == 1) {
                     messageBuilded.setVisible(false);
                     message.setEnabled(false);
                     message.setValue(firstLineValue[1]);
                     message.setHelperText(SMS_MESSAGE_WITHOUT_PARAMETER);
-                    /* Invisible messageBuilder*/
-                    /* Deshabilitado message */
-                    /* Escribir el unico parametro en message */
-                }
-                if (varCount > 1) {
+                } else {
                     messageBuilded.setVisible(true);
                     message.setEnabled(true);
                     message.setHelperText(String.format(SMS_MESSAGE_WITH_PARAMETER, varCount, "0"));
-//                    warningSpan.setText(String.format(SMS_MESSAGE_WITH_PARAMETER, varCount));
-                    /* Visible messageBuilder */
-                    /* Habilitado message */
                 }
-//                if (varCount == 1) {
-//                    message.setValue(firstLineValue[1]);
-//                    warningSpan.setText("");
-//                } else if (varCount == 0) {
-//                    message.setValue(SMS_MESSAGE_WITHOUT_PARAMETER);
-//                } else if (varCount !=1 ){
-//                    hasEnougharmeters = true;
-//                    warningSpan.setText(String.format(SMS_MESSAGE_WITH_PARAMETER, varCount));
-//                }
-//                if (varCount < 2) {
-//                    messageBuilded.setVisible(false);
-//                    messageBuilded.setValue("");
-//                }
             } else {
                 firstLineValue = new String[1];
                 varCount = 0;
             }
             hasMessageAllParameter = !hasEnougharmeters;
-//            message.setEnabled(hasEnougharmeters);
             /**/
             binder.validate();
         });
@@ -297,15 +306,25 @@ public class FileToSendEditor extends LitTemplate {
             }
             dueDate.setValue(LocalDateTime.now());
         });
-//        ComponentUtil.addListener(itemsEditor, ValueChangeEvent.class, e -> review.setEnabled(hasChanges()));
         binder.addValueChangeListener(e -> {
-//            if (e.getOldValue() != null) {
-            review.setEnabled(binder.isValid());
-//            }
+            validateReview();
         });
     }
 
+    private void validateReview() {
+        if (hasMoreSms) {
+            review.setEnabled(binder.isValid() && acceptCheckbox.getValue());
+        } else {
+            review.setEnabled(binder.isValid());
+        }
+    }
+
     private Map<Integer, Integer> calculateNumberOfSms(int actualSmsSize) {
+
+        if (ObjectUtils.isEmpty(agendaComboBox.getValue()) || ObjectUtils.isEmpty(agendaComboBox.getValue().getSizeOfLines())) {
+            return new HashMap<>();
+        }
+
         Map<Integer, Integer> numOfSmsToSend = new HashMap<>();
         Map<Integer, Integer> lines = gson.fromJson(agendaComboBox.getValue().getSizeOfLines(), gsonType);
         lines.forEach((k, v) -> {
@@ -344,7 +363,6 @@ public class FileToSendEditor extends LitTemplate {
                 lineByValues = new String[record.size()];
                 int pos = 0;
                 for (String string : record) {
-                    System.out.println("POS y STRING: " + pos + ":" + string);
                     lineByValues[pos++] = string;
                 }
             }
@@ -393,7 +411,6 @@ public class FileToSendEditor extends LitTemplate {
     }
 
     public Registration addReviewListener(ComponentEventListener<BulkSmsReviewEvent> listener) {
-        System.out.println("ADDREVIEWLISTENER");
         return addListener(BulkSmsReviewEvent.class, listener);
     }
 

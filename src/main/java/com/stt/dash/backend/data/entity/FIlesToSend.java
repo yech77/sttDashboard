@@ -13,7 +13,7 @@ import java.util.Date;
  * @version 1.00
  */
 @Entity
-public class FIlesToSend extends AbstractEntitySequence implements FileToSendSummary{
+public class FIlesToSend extends AbstractEntitySequence implements FileToSendSummary {
 
 //    public enum Status {
 //        VALIDATING,
@@ -32,8 +32,8 @@ public class FIlesToSend extends AbstractEntitySequence implements FileToSendSum
     private int smsCount;
     private Status status;
 
-    @NotNull
-    @NotEmpty
+    @NotNull(message = "No puede estar vacio.")
+    @NotEmpty(message = "no puede estar vacio")
     @Size(max = 100)
     @Column(length = 100, unique = true)
     private String orderName;
@@ -50,8 +50,8 @@ public class FIlesToSend extends AbstractEntitySequence implements FileToSendSum
     @Size(max = 255)
     private String fileId;
 
-    @NotEmpty
-    @NotNull
+    @NotEmpty(message = "Seleccione una credencial")
+    @NotNull(message = "seleccione una credencial")
     @Size(min = 3, max = 20)
     @Column(length = 20)
     private String systemId;
@@ -60,14 +60,14 @@ public class FIlesToSend extends AbstractEntitySequence implements FileToSendSum
     @Size(max = 255)
     private String filePath;
 
-    @NotEmpty
-    @NotNull
-    @Size(min = 5, max = 255)
-    @Size(max = 255)
+    @NotEmpty(message = "Escriba su mensaje")
+    @NotNull(message = "escriba su mensaje")
+    @Size(message = "debe ser entre 5 y 255 caracteres", min = 5, max = 255)
+    @Size(message = "debe ser un maximo de 255 caracteres", max = 255)
     private String messageWithParam;
 
     @ManyToOne
-    @JoinColumn(name="agenda_id")
+    @JoinColumn(name = "agenda_id")
     private Agenda agenda;
 
     public FIlesToSend() {
@@ -108,23 +108,23 @@ public class FIlesToSend extends AbstractEntitySequence implements FileToSendSum
         this.agenda = agenda;
     }
 
-    public String getGeneratedProgress(){
+    public String getGeneratedProgress() {
         return getPercentGenerated() + " (" + getNumGenerated() + "/" + getSmsCount() + ")";
     }
 
-    public String getSentProgress(){
+    public String getSentProgress() {
         return getPercentSent() + " (" + getNumSent() + "/" + getSmsCount() + ")";
     }
 
     public String getPercentGenerated() {
-        int temp = (int)(1000*getRatioGenerated());
-        String str = temp/10 + "." + temp%10 + "%";
+        int temp = (int) (1000 * getRatioGenerated());
+        String str = temp / 10 + "." + temp % 10 + "%";
         return str;
     }
 
     public String getPercentSent() {
-        int temp = (int)(1000*getRatioSent());
-        String str = temp/10 + "." + temp%10 + "%";
+        int temp = (int) (1000 * getRatioSent());
+        String str = temp / 10 + "." + temp % 10 + "%";
         return str;
     }
 
@@ -142,8 +142,8 @@ public class FIlesToSend extends AbstractEntitySequence implements FileToSendSum
         return ((double) getNumSent()) / getSmsCount();
     }
 
-    public String getStatusText(){
-        switch(getStatus()){
+    public String getStatusText() {
+        switch (getStatus()) {
             case COMPLETED:
                 return "Completado";
             case GENERATING_MESSAGES:

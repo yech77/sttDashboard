@@ -63,17 +63,14 @@ export class FileToSendEditor extends LitElement {
                     </vaadin-form-layout>
 
                     <vaadin-form-layout id="form3" colspan="3" .responsiveSteps="${this.form3}">
-                        <vaadin-combo-box id="status" label="Agenda" class="status" colspan="2"></vaadin-combo-box>
+                        <vaadin-combo-box id="status" label="Agenda" class="status" colspan="2"
+                                          clear-button-visible></vaadin-combo-box>
                         <iron-icon slot="prefix" icon="vaadin:phone"></iron-icon>
                         </vaadin-combo-box>
-                        <vaadin-combo-box id="systemId" label="Credencial"></vaadin-combo-box>
+                        <vaadin-combo-box id="systemId" label="Credencial"
+                                          clear-button-visible></vaadin-combo-box>
                         <vaadin-text-field id="orderName" label="Nombre de Programacion" colspan="2"
                                            clear-button-visible></vaadin-text-field>
-
-                        <!--                        <multiselect-combo-box id="systemId" label="Credencial">-->
-                        <!--                            <iron-icon slot="prefix" icon="vaadin:phone"></iron-icon>-->
-                        <!--                        </multiselect-combo-box>-->
-
                         <vaadin-text-field id="orderDescription" label="Descripcion" colspan="2"
                                            clear-button-visible></vaadin-text-field>
                         <vaadin-text-area id="message" label="Escriba su mensaje" colspan="2" required
@@ -81,6 +78,8 @@ export class FileToSendEditor extends LitElement {
                         <vaadin-text-area id="messageBuilded" label="Mensaje" readonly="true"></vaadin-text-area>
 
                         <vaadin-form-item colspan="2">
+                            <hr>
+                            <vaadin-checkbox id="acceptCheckbox"></vaadin-checkbox>
                             <p id="charCounter"></p>
                             <span id="warningSpan"></span>
                         </vaadin-form-item>
