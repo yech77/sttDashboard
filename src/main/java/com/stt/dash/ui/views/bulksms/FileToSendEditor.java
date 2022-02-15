@@ -1,5 +1,7 @@
 package com.stt.dash.ui.views.bulksms;
 
+import com.google.gson.Gson;
+import com.googlecode.gentyref.TypeToken;
 import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.data.entity.FIlesToSend;
@@ -42,6 +44,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -118,6 +121,9 @@ public class FileToSendEditor extends LitTemplate {
     private boolean hasMessageAllParameter = false;
     /**/
     private boolean hasEnougharmeters = false;
+    private final Gson gson = new Gson();
+    Type gsonType = new TypeToken<HashMap<Integer, Integer>>() {
+    }.getType();
 
     public FileToSendEditor(@Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
                             AgendaService agendaService, @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList) {
@@ -182,6 +188,9 @@ public class FileToSendEditor extends LitTemplate {
         });
 
         message.addInputListener(event -> {
+            if (!event.isFromClient()) {
+                return;
+            }
             String m = message.getValue().replaceAll("$[0-9]", "");
             int count = ObjectUtils.isNotEmpty(m) ? message.getValue().length() : 0;
             int numMessages = (count - 1) / 160 + 1;
@@ -297,13 +306,8 @@ public class FileToSendEditor extends LitTemplate {
     }
 
     private Map<Integer, Integer> calculateNumberOfSms(int actualSmsSize) {
-
         Map<Integer, Integer> numOfSmsToSend = new HashMap<>();
-        Map<Integer, Integer> lines = new HashMap<>();
-        /*length, num of lines*/
-        lines.put(150, 10);
-        lines.put(140, 20);
-        lines.put(130, 40);
+        Map<Integer, Integer> lines = gson.fromJson(agendaComboBox.getValue().getSizeOfLines(), gsonType);
         lines.forEach((k, v) -> {
             Integer totLines = 0;
             int numOfMessage = (actualSmsSize + k - 1) / 160 + 1;

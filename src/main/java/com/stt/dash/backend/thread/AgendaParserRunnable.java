@@ -49,7 +49,7 @@ public class AgendaParserRunnable {
     Map<Integer, Integer> lineSizeMap = new HashMap<>();
 
     private final Gson gson = new Gson();
-    Type gsonType = new TypeToken<HashMap>() {
+    Type gsonType = new TypeToken<HashMap<Integer, Integer>>() {
     }.getType();
 
     public AgendaParserRunnable(Agenda agenda, AgendaService agenda_service, String userEmail) {
