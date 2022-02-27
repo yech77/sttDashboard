@@ -110,6 +110,7 @@ public class FileToSendEditor extends LitTemplate {
 
     @Id("review")
     private Button review;
+
     private final String SMS_MESSAGE_WITHOUT_PARAMETER = "Escriba directamente su mensaje";
     private final String SMS_MESSAGE_WITH_PARAMETER = "Mensaje contiene %s  parámetros; Tienes usados %s.";
 //    private FileToSendEditor fileToSendEditor;
@@ -130,7 +131,8 @@ public class FileToSendEditor extends LitTemplate {
     }.getType();
 
     public FileToSendEditor(@Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
-                            AgendaService agendaService, @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList) {
+                            AgendaService agendaService,
+                            @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList) {
         acceptCheckbox.setVisible(false);
         /**/
         cancel.addClickListener(e -> fireEvent(new CancelEvent(this, false)));
@@ -173,6 +175,7 @@ public class FileToSendEditor extends LitTemplate {
         binder.bind(systemIdMulti, "systemId");
         binder.bind(orderName, "orderName");
         binder.bind(orderDescription, "orderDescription");
+        binder.bind(acceptCheckbox, "smsAccepted");
         addListeners();
         /* date-to-send */
         dueDate.setMin(LocalDateTime.now());

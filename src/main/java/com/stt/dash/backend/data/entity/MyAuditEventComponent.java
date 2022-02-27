@@ -28,7 +28,6 @@ public class MyAuditEventComponent implements AuditEventRepository {
 
     @Override
     public void add(AuditEvent event) {
-//        System.out.println("ADDING EVENT OVERRIDE: " + event);
         l.add(event);
         /* Lista de eventos del servicio maximo de 500. */
         if (l.size() > 500) {
@@ -38,7 +37,7 @@ public class MyAuditEventComponent implements AuditEventRepository {
                 + " - " + event.getType());
         WebAuthenticationDetails details =
                 (WebAuthenticationDetails) event.getData().get("details");
-        if (details!=null) {
+        if (details != null) {
             System.out.println("Remote IP address: " + details.getRemoteAddress());
         }
         if (event.getType().equalsIgnoreCase(EVENT_AUTHENTICATION_FAILURE)
@@ -80,12 +79,36 @@ public class MyAuditEventComponent implements AuditEventRepository {
         add(e);
     }
 
+    public void add(List<ODashAuditEvent.OEVENT_TYPE> typeList, List<String> eventDescList) {
+        Map<String, Object> map = new HashMap<>();
+        List<ODashAuditEvent> oDashAuditEvent = new ArrayList<>(typeList.size());
+
+        for (int i = 0; i < typeList.size(); i++) {
+            ODashAuditEvent.OEVENT_TYPE type = typeList.get(i);
+            String eventDesc = eventDescList.get(i);
+            oDashAuditEvent.add(valueOf(type, eventDesc));
+            map.put("eventDesc", eventDesc);
+            try {
+                if (type == ODashAuditEvent.OEVENT_TYPE.LOGIN) {
+                    AuditEvent e = new AuditEvent(eventDesc, type.name(), map);
+                    add(e);
+                } else if (type == ODashAuditEvent.OEVENT_TYPE.LOGOUT) {
+                } else {
+                    AuditEvent e = new AuditEvent(getAuthenticationName(), type.name(), map);
+                    add(e);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.warn("{} EVENT DISCARTED BY NULL", e);
+            }
+        }
+        /**/
+        audit_serv.saveAll(oDashAuditEvent);
+    }
+
     public void add(ODashAuditEvent.OEVENT_TYPE type, String eventDesc) {
         Map<String, Object> map = new HashMap<>();
         map.put("eventDesc", eventDesc);
-//        String desc = "Nombre: '" + getAuthenticationName() + "'. Descripcion: " + type.name();
-//        log.info("xxxxxxxxxxxxxxxxxxxxxxxxx " + type.name() +" - " + desc);
-        /**/
 
         try {
             if (type == ODashAuditEvent.OEVENT_TYPE.LOGIN) {
@@ -93,7 +116,7 @@ public class MyAuditEventComponent implements AuditEventRepository {
                 add(e);
             } else if (type == ODashAuditEvent.OEVENT_TYPE.LOGOUT) {
             } else {
-                AuditEvent e = new AuditEvent(getAuthenticationName() , type.name(), map);
+                AuditEvent e = new AuditEvent(getAuthenticationName(), type.name(), map);
                 add(e);
             }
             /**/
@@ -107,8 +130,6 @@ public class MyAuditEventComponent implements AuditEventRepository {
     public void add(ODashAuditEvent.OEVENT_TYPE type, String eventDesc, String user) {
         Map<String, Object> map = new HashMap<>();
         map.put("eventDesc", eventDesc);
-//        String desc = "Nombre: '" + getAuthenticationName() + "'. Descripcion: " + type.name();
-//        log.info("xxxxxxxxxxxxxxxxxxxxxxxxx " + type.name() +" - " + desc);
         /**/
         AuditEvent e = new AuditEvent(user, type.name(), map);
         /* Ambos eventos son disparados por Springboot, asi que no llamo la metodo. */
@@ -121,7 +142,6 @@ public class MyAuditEventComponent implements AuditEventRepository {
 
     public void add(ODashAuditEvent.OEVENT_TYPE type, Agenda agenda) {
         String desc = "Nombre: " + agenda.getName() + ". Descripcion: " + agenda.getDescription();
-//        log.info("************************ " + type.name() + " - " + desc);
         add(type, desc);
     }
 
@@ -171,8 +191,15 @@ public class MyAuditEventComponent implements AuditEventRepository {
     }
 
     public void add(ODashAuditEvent.OEVENT_TYPE type, FIlesToSend fileToSend) {
-        String desc = "Nombre: " + fileToSend.getOrderName() + ". Descripcion" + fileToSend.getOrderDescription();
-        add(type, desc);
+        List<ODashAuditEvent.OEVENT_TYPE> typeList = new ArrayList<>(2);
+        List<String> descList = new ArrayList<>(2);
+        descList.add("Nombre: " + fileToSend.getOrderName() + ". Descripcion" + fileToSend.getOrderDescription());
+        typeList.add(type);
+        if (fileToSend.isSmsAccepted()) {
+            descList.add("Nombre: " + fileToSend.getOrderName() + ". Envio Aceptado.");
+            typeList.add(ODashAuditEvent.OEVENT_TYPE.ACCEPTED_SMS);
+        }
+        add(typeList, descList);
     }
 
     public void add(ODashAuditEvent.OEVENT_TYPE type, FIlesToSend fileToSend, String user) {
@@ -193,8 +220,9 @@ public class MyAuditEventComponent implements AuditEventRepository {
         }
         return d;
     }
-    private String getAuthenticationName(){
-        String name="anonimous";
+
+    private String getAuthenticationName() {
+        String name = "anonimous";
         try {
             name = SecurityContextHolder.getContext().getAuthentication().getName();
         } catch (Exception e) {

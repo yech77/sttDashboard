@@ -49,6 +49,7 @@ public class SmsPreparationManagerApplication {
     }
 
     @Scheduled(cron = "0 */1 * * * ?")
+    /* TODO: Agregar ScheduledLock */
     public void findNewFiles() {
         log.info("[{}] Looking for new files in {}", getAPP_NAME(), properties.getAgendafilePathBase());
         File base = new File(properties.getAgendafilePathBase());

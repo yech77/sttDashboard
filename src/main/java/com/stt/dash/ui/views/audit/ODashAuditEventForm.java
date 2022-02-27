@@ -19,8 +19,9 @@ import com.vaadin.flow.shared.Registration;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 
-public class ODashAuditEventForm  extends FormLayout {
+public class ODashAuditEventForm extends FormLayout {
 
     private ComboBox<User> userCombo = new ComboBox<>();
     private ComboBox<ODashAuditEvent.OEVENT_TYPE> eventCombo = new ComboBox<>();
@@ -31,6 +32,7 @@ public class ODashAuditEventForm  extends FormLayout {
     /**/
     private Checkbox allUserCheck = new Checkbox("todos los usuarios");
     private Checkbox allEventCheck = new Checkbox("todos los eventos");
+    private Locale esLocale = new Locale("es", "ES");
 
     public ODashAuditEventForm(List<User> userList) {
         initCombo(userList);
@@ -94,12 +96,13 @@ public class ODashAuditEventForm  extends FormLayout {
         binder.forField(secondDate)
                 .asRequired()
                 .bind(OdashAuditEventFormBean::getSecondDate, OdashAuditEventFormBean::setSecondDate);
-
         // Revalidate return date when departure date changes
         secondDate.addValueChangeListener(
                 event -> returningBinding.validate());
         binder.addStatusChangeListener(evt -> searchButton.setEnabled(isValid()));
         binder.setBean(new OdashAuditEventFormBean());
+        secondDate.setLocale(esLocale);
+        firstDate.setLocale(esLocale);
     }
 
     public OdashAuditEventFormBean getBinderBean() {

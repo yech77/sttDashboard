@@ -14,4 +14,6 @@
     <include file="db/changelog/scripts/changelog_1.sql"/>
     <!-- Crear el campo sizeLines -->
     <include file="db/changelog/scripts/changelog_2.sql"/>
+    <!-- Crear la tabla de configuracion  -->
+    <include file="db/changelog/scripts/changelog_3.sql"/>
 </databaseChangeLog>

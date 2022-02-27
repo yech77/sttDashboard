@@ -47,12 +47,14 @@ public class SmsTransferToQueueApplication extends SpringBootServletInitializer 
 
     // THREAD POOL, Ejecuta un maximo de 4 archivos a la vez.
     public static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(FILE_TO_SEND_POOL_SIZE);
+
     public static void main(String[] args) {
         SpringApplication.run(SmsTransferToQueueApplication.class, args);
         log.info("[{}] - Comenzando Ejecución", getAPP_NAME());
     }
 
     @Scheduled(cron = "0 */1 * * * ?")
+    /* TODO: Agregar ScheduledLock */
     public void checkRepo() {
         log.info("[{}] LOOKING FOR FILES TO SEND", getAPP_NAME());
         List<FilesToSend> filesToSendList = files_service.getUnsentOrders(LocalDateTime.now());

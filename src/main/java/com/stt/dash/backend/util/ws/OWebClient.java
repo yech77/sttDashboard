@@ -25,8 +25,13 @@ public class OWebClient<T> {
 //            .defaultHeaders(header -> header.setBasicAuth("orinoco", "0R1n0coRIv3r$"))
 //            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 //            .build();
-    protected Class<T> host;
+    protected Class<T> xClass;
     protected WebClient webClient;
+    final static String url_sync_cli = "/ws/data/sync/cli/{id}";
+    final static String url_sync_sys = "/ws/data/sync/sys/{id}";
+    public final static String url_sync_data = "/ws/data/sync/cliid/{idClient}/sysid/{idSys}";
+
+
     // TODO: Descablear
     final static String url_smsSave = "orinoco-admin/ws/data/sms/save/";
     final static String url_smsSaveAll = "orinoco-admin/ws/data/sms/saveall/";
@@ -61,94 +66,34 @@ public class OWebClient<T> {
 
     @Deprecated
     public OWebClient(Class<T> c) {
-        this.host = c;
+        this.xClass = c;
     }
 
     public OWebClient(WebClient webClient, Class<T> c) {
         this.webClient = webClient;
-        this.host = c;
+        this.xClass = c;
     }
 
     public Mono<T> getMonoOResponse(String charcode) throws IOException {
-        log.info("[WS] [CALL] [{}] [{}]..", host.getName(), charcode);
+        log.info("[WS] [CALL] [{}] [{}]..", xClass.getName(), charcode);
         T ir;
         Mono<T> createdEmployee = webClient.get()
                 .uri(charcode)
                 .retrieve()
-                .bodyToMono(host)
+                .bodyToMono(xClass)
                 .retryWhen(Retry.max(2));
         log.info("MONO {}", createdEmployee);
         return createdEmployee;
     }
 
     public Flux<T> getFluxOResponse(String charcode) throws IOException {
-        log.info("[WS] [CALL] [{}] [{}]..", host.getName(), charcode);
+        log.info("[WS] [CALL] [{}] [{}]..", xClass.getName(), charcode);
         T ir;
         Flux<T> createdEmployee = webClient.get()
                 .uri(charcode)
                 .retrieve()
-                .bodyToFlux(host)
+                .bodyToFlux(xClass)
                 .retryWhen(Retry.max(2));
         return createdEmployee;
-    }
-
-    public static void main(String[] args) throws Exception {
-//        OWebClient<CountryOResponse> httpClient = new OWebClient(CountryOResponse.class);
-//        Mono<CountryOResponse> m = httpClient.getMonoOResponse("ttvm3.eastus2.cloudapp.azure.com:8080/orinoco-admin/ws/data/country/iso2/VE");
-//        System.out.println("resp " + m.block());
-//
-//        Flux<CountryOResponse> f = httpClient.getFluxOResponse("ttvm3.eastus2.cloudapp.azure.com:8080/" + url_countryAll);
-//        f.buffer().blockFirst().stream().forEach((t) -> {
-//            System.out.println("Pais: " + t);
-//        });
-        /* AssignedShortCode */
-//        AssignedShortcodeOWebClient httpClient2 = new AssignedShortcodeOWebClient();
-//        List<AssignedShortcodeOResponse> m2 = httpClient2.getCountryAll();
-//        System.out.println("resp " + m2);
-//
-//        m2.stream().forEach((t) -> {
-//            System.out.println("Shortcode: " + t.getShortcode() + " "+t);
-//        });
-    }
-
-    static class OHTTPStatistic {
-
-        private long callStarted;
-        private long callEnded;
-        private String Response;
-
-        public OHTTPStatistic(long callStarted, long callEnded, String Response) {
-            this.callStarted = callStarted;
-            this.callEnded = callEnded;
-            this.Response = Response;
-        }
-
-        public long getCallStarted() {
-            return callStarted;
-        }
-
-        public void setCallStarted(long callStarted) {
-            this.callStarted = callStarted;
-        }
-
-        public long getCallEnded() {
-            return callEnded;
-        }
-
-        public void setCallEnded(long callEnded) {
-            this.callEnded = callEnded;
-        }
-
-        public String getResponse() {
-            return Response;
-        }
-
-        public void setResponse(String Response) {
-            this.Response = Response;
-        }
-
-        public long getDurationTime() {
-            return callEnded - callStarted;
-        }
     }
 }

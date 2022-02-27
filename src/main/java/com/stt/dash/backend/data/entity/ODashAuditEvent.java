@@ -12,24 +12,35 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-public class ODashAuditEvent extends AbstractEntitySequence{
+public class ODashAuditEvent extends AbstractEntitySequence {
 
 
     public static enum OEVENT_TYPE {
-        LOGIN,
-        LOGOUT,
-        CREATE_AGENDA,
-        CREATE_RECADO,
-        CREATE_USER,
-        UPDATE_AGENDA,
-        UPDATE_RECADO,
-        UPDATE_USER,
-        DELETE_AGENDA,
-        DELETE_RECADO,
-        DELETE_USER,
-        PASSWORD_CHANGED,
-        DOWNLOAD_FILE_AGENDA, DOWNLOAD_FILE_TRAFFIC_SMS, DOWNLOAD_FILE_SEARCH_SMS,
-        DOWNLOAD_FILE_AUDITEVENT
+        LOGIN(0, "LOGIN"),
+        LOGOUT(1, "LOGIN"),
+        CREATE_AGENDA(2, "agenda creada"),
+        CREATE_RECADO(3, "masivo programada"),
+        CREATE_USER(4, "usuario creado"),
+        UPDATE_AGENDA(5, "agenda actualizada"),
+        UPDATE_RECADO(6, "masivo actualizado"),
+        UPDATE_USER(7, "usuario actualizado"),
+        DELETE_AGENDA(8, "agenda borrada"),
+        DELETE_RECADO(9, "masivo borrado"),
+        DELETE_USER(10, "usuario borrado"),
+        PASSWORD_CHANGED(11, "clave cambiada"),
+        DOWNLOAD_FILE_AGENDA(12, "descarga de agenda"),
+        DOWNLOAD_FILE_TRAFFIC_SMS(13, "descarga de trafico"),
+        DOWNLOAD_FILE_SEARCH_SMS(14, "descarga de busqueda sms"),
+        DOWNLOAD_FILE_AUDITEVENT(15, "descarga de archivo de auditoria"),
+        ACCEPTED_SMS(16, "Aceptar envio de mensajes");
+
+        private int eventId;
+        private String eventName;
+
+        OEVENT_TYPE(int eventId, String eventName) {
+            this.eventId = eventId;
+            this.eventName = eventName;
+        }
     }
 
     @GridColumn(order = 2, columnName = "Date")

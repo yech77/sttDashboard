@@ -63,12 +63,14 @@ public class FIlesToSend extends AbstractEntitySequence implements FileToSendSum
     @NotEmpty(message = "Escriba su mensaje")
     @NotNull(message = "escriba su mensaje")
     @Size(message = "debe ser entre 5 y 255 caracteres", min = 5, max = 255)
-    @Size(message = "debe ser un maximo de 255 caracteres", max = 255)
     private String messageWithParam;
 
     @ManyToOne
     @JoinColumn(name = "agenda_id")
     private Agenda agenda;
+    
+    @Transient
+    private boolean smsAccepted = false;
 
     public FIlesToSend() {
         initDefaultValues();
@@ -274,5 +276,11 @@ public class FIlesToSend extends AbstractEntitySequence implements FileToSendSum
         this.userCreator = userCreator;
     }
 
+    public boolean isSmsAccepted() {
+        return smsAccepted;
+    }
 
+    public void setSmsAccepted(boolean smsAccepted) {
+        this.smsAccepted = smsAccepted;
+    }
 }

@@ -3,6 +3,8 @@ package com.stt.dash.backend.service;
 import com.stt.dash.backend.data.entity.ODashAuditEvent;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.ODashAuditEventRepository;
+import org.apache.commons.collections.ListUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ODashAuditEventService implements FilterableCrudService<ODashAuditEvent>{
+public class ODashAuditEventService implements FilterableCrudService<ODashAuditEvent> {
 
     /**/
     private ODashAuditEventRepository audit_repo;
@@ -45,19 +47,33 @@ public class ODashAuditEventService implements FilterableCrudService<ODashAuditE
         return null;
     }
 
+    public List<ODashAuditEvent> saveAll(List<ODashAuditEvent> dashEvent) {
+        if (ObjectUtils.isEmpty(dashEvent)) {
+            log.warn("{} ODashAuditEvent is null", getStringLog());
+            return null;
+        }
+        try {
+            return audit_repo.saveAll(dashEvent);
+        } catch (Exception d) {
+            log.error("{} Error on Save: {}", getStringLog(), dashEvent);
+            log.error("", d);
+        }
+        return null;
+    }
+
     public List<ODashAuditEvent> findAll() {
         return audit_repo.findAll();
     }
 
-    public List<ODashAuditEvent> findAll(String principal, Date one,Date two) {
-        if (principal==null || principal==""){
+    public List<ODashAuditEvent> findAll(String principal, Date one, Date two) {
+        if (principal == null || principal == "") {
             return new ArrayList<>();
         }
         return audit_repo.findAllByPrincipalAndEventDateBetweenOrderByEventDateDesc(principal, one, two).orElse(new ArrayList<>());
     }
 
     public List<ODashAuditEvent> findAll(List<String> principals, ODashAuditEvent.OEVENT_TYPE event, Date one, Date two) {
-        if (principals==null || principals.isEmpty()){
+        if (principals == null || principals.isEmpty()) {
             return new ArrayList<>();
         }
         return audit_repo.findAllByPrincipalInAndEventTypeAndEventDateBetweenOrderByEventDateDesc(
@@ -68,11 +84,11 @@ public class ODashAuditEventService implements FilterableCrudService<ODashAuditE
         return audit_repo.findAllByEventDateBetweenOrderByEventDateDesc(one, two).orElse(new ArrayList<>());
     }
 
-    public List<ODashAuditEvent> findAll(String principal, ODashAuditEvent.OEVENT_TYPE event, Date one,Date two) {
-        if (principal==null || principal==""){
+    public List<ODashAuditEvent> findAll(String principal, ODashAuditEvent.OEVENT_TYPE event, Date one, Date two) {
+        if (principal == null || principal == "") {
             return new ArrayList<>();
         }
-        return audit_repo.findAllByPrincipalAndEventTypeAndEventDateBetweenOrderByEventDateDesc(principal, event,  one, two).orElse(new ArrayList<>());
+        return audit_repo.findAllByPrincipalAndEventTypeAndEventDateBetweenOrderByEventDateDesc(principal, event, one, two).orElse(new ArrayList<>());
     }
 
     private String getStringLog() {
