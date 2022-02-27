@@ -4,8 +4,10 @@ import com.stt.dash.app.security.SecurityConfiguration;
 import com.stt.dash.backend.data.ClientCopycatDTO;
 import com.stt.dash.backend.data.SystemIdCopycatDTO;
 import com.stt.dash.backend.data.bean.SyncDTO;
+import com.stt.dash.backend.data.entity.Client;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.UserRepository;
+import com.stt.dash.backend.service.ClientService;
 import com.stt.dash.backend.service.TempSmsService;
 import com.stt.dash.backend.service.UserService;
 import com.stt.dash.backend.util.ws.SyncClientWebClient;
@@ -30,6 +32,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Spring boot web application initializer.
@@ -42,6 +45,9 @@ import java.util.List;
 public class Application extends SpringBootServletInitializer {
     @Autowired
     TempSmsService temp_serv;
+
+    @Autowired
+    ClientService clientService;
 
     public static WebClient webClient;
 
@@ -88,7 +94,20 @@ public class Application extends SpringBootServletInitializer {
                 });
             }).doOnEach(s -> {
                 if (s.hasValue()) {
-                    System.out.println("On: " + s.get().getClientName());
+                    ClientCopycatDTO clientCopycatDTO = s.get();
+                    Client client = new Client();
+                    if (clientCopycatDTO.getId() != null) {
+                        Optional<Client> optionalClient = clientService.findById(clientCopycatDTO.getId());
+                        if (optionalClient.isPresent()) {
+                            client = optionalClient.get();
+                        }
+                    }
+                    client.setId(clientCopycatDTO.getId());
+                    client.setClientCod(clientCopycatDTO.getClientCod());
+                    client.setClientName(clientCopycatDTO.getClientName());
+                    client.setCuadrante(Client.Cuandrante.valueOf(clientCopycatDTO.getCuadrante()));
+                    client.setEmail(clientCopycatDTO.getEmail());
+                    clientService.save(client);
                 }
             }).subscribe();
         } catch (IOException e) {
