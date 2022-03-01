@@ -3,10 +3,11 @@ package com.stt.dash.backend.service;
 import com.google.gson.Gson;
 import com.googlecode.gentyref.TypeToken;
 import com.stt.dash.backend.data.entity.ODashConf;
-import com.stt.dash.backend.repositories.ODashAuditEventRepository;
 import com.stt.dash.backend.repositories.OdashConfRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -15,13 +16,13 @@ import java.util.Optional;
 
 @Service
 public class OdashConfService {
-    public enum ODASH_CONF {
+    public enum ODASH_CONF_TYPE {
         SYNC(1, "SYNC");
 
         private Integer idConf;
         private String dscConf;
 
-        ODASH_CONF(Integer idConf, String dscConf) {
+        ODASH_CONF_TYPE(Integer idConf, String dscConf) {
             this.idConf = idConf;
             this.dscConf = dscConf;
         }
@@ -53,7 +54,11 @@ public class OdashConfService {
         this.repo_conf = repo_conf;
     }
 
-    public Map<String, String> findSyncConfData(ODASH_CONF odashConf) {
+    /**
+     * @param odashConf
+     * @return Map con variables o Map vacio.
+     */
+    public Map<String, String> findSyncConfData(ODASH_CONF_TYPE odashConf) {
         Optional<ODashConf> optionalODashConf = findSyncConf(odashConf);
         if (!optionalODashConf.isPresent()) {
             return new HashMap<>(1);
@@ -62,12 +67,27 @@ public class OdashConfService {
         return map;
     }
 
-    public Optional<ODashConf> findSyncConf(ODASH_CONF odashConf) {
+    public Optional<ODashConf> findSyncConf(ODASH_CONF_TYPE odashConf) {
         return repo_conf.findBySyncId(odashConf.getIdConf());
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public ODashConf save(ODASH_CONF_TYPE oDashConf, Map<String, String> values, Long id) {
+        Optional<ODashConf> odc = repo_conf.findBySyncId(oDashConf.getIdConf());
+        String v = gson.toJson(values);
+        /**/
+        ODashConf oDashConf1 = new ODashConf();
+        oDashConf1.setSyncId(oDashConf.getIdConf());
+//        oDashConf1.setId(id);
+        if (odc.isPresent()) {
+            oDashConf1 = odc.get();
+        }
+        oDashConf1.setSyncData(v);
+        return repo_conf.save(oDashConf1);
     }
 
     public ODashConf save(ODashConf oDashConf) {
         return repo_conf.save(oDashConf);
     }
-    
+
 }

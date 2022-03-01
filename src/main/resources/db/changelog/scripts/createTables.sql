@@ -83,18 +83,18 @@ alter table carrier
 
 create table if not exists client
 (
-    id          bigint       not null
-        constraint client_pkey
-            primary key,
-    version     integer default 0,
-    client_cod  varchar(20)
+    id                 bigint       not null
+        primary key,
+    version            integer default 0,
+    client_cod         varchar(20)
         constraint uk_mrkgta4fbmtmk6uvhqtdndjmb
             unique,
-    client_name varchar(100),
-    cuadrante   varchar(255) not null,
-    email       varchar(75)
+    client_name        varchar(100),
+    cuadrante          varchar(255) not null,
+    email              varchar(100)
         constraint uk_bfgjs3fem0hmjhvih80158x29
-            unique
+            unique,
+    last_modified_date timestamp
 );
 
 alter table client

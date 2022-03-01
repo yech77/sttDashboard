@@ -5,9 +5,13 @@ import com.stt.dash.backend.data.ClientCopycatDTO;
 import com.stt.dash.backend.data.SystemIdCopycatDTO;
 import com.stt.dash.backend.data.bean.SyncDTO;
 import com.stt.dash.backend.data.entity.Client;
+import com.stt.dash.backend.data.entity.ODashConf;
+import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.UserRepository;
 import com.stt.dash.backend.service.ClientService;
+import com.stt.dash.backend.service.OdashConfService;
+import com.stt.dash.backend.service.SystemIdService;
 import com.stt.dash.backend.service.TempSmsService;
 import com.stt.dash.backend.service.UserService;
 import com.stt.dash.backend.util.ws.SyncClientWebClient;
@@ -31,7 +35,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -48,6 +54,12 @@ public class Application extends SpringBootServletInitializer {
 
     @Autowired
     ClientService clientService;
+
+    @Autowired
+    SystemIdService systemidService;
+
+    @Autowired
+    OdashConfService odashService;
 
     public static WebClient webClient;
 
@@ -85,29 +97,58 @@ public class Application extends SpringBootServletInitializer {
         SyncSystemIdWebClient syncSystemIdWebClient = new SyncSystemIdWebClient(webClient, SystemIdCopycatDTO.class);
         SyncClientWebClient syncClientWebClient = new SyncClientWebClient(webClient, ClientCopycatDTO.class);
         /* TODO: Buscar los ultimos ids buscados en conf */
+        Map<String, String> ConfMap = odashService.findSyncConfData(OdashConfService.ODASH_CONF_TYPE.SYNC);
+        int i = 0;
+        int sy = 0;
+        if (ConfMap.containsKey("CLI_ID")) {
+            i = Integer.valueOf(ConfMap.get("CLI_ID"));
+        }
+        if (ConfMap.containsKey("SYS_ID")) {
+            sy = Integer.valueOf(ConfMap.get("SYS_ID"));
+        }
         try {
-            Flux<SystemIdCopycatDTO> syncDTOMono = syncSystemIdWebClient.callSyncData(0);
-            Flux<ClientCopycatDTO> syncCliDTO = syncClientWebClient.callSyncData(0);
+            Flux<SystemIdCopycatDTO> syncDTOMono = syncSystemIdWebClient.callSyncData(sy);
+            Flux<ClientCopycatDTO> syncCliDTO = syncClientWebClient.callSyncData(i);
             syncCliDTO.doOnTerminate(() -> {
-                syncDTOMono.subscribe(s -> {
-                    System.out.println("Este: " + s.getSystemId());
-                });
+                syncDTOMono
+                        .doOnEach(s -> {
+                            if (s.hasValue()) {
+                                SystemIdCopycatDTO systemIdCopycatDTO = s.get();
+                                SystemId systemId = new SystemId();
+                                if (systemIdCopycatDTO.getSytemidId() != null) {
+                                    Optional<SystemId> optionalSystemId = systemidService.findBySystemId(systemIdCopycatDTO.getSystemId());
+                                    if (optionalSystemId.isPresent()) {
+                                        systemId = optionalSystemId.get();
+                                    }
+                                }
+                                /* Buscar el cliente por id. */
+                                systemId.setId(systemIdCopycatDTO.getId());
+                                systemId.setSystemId(systemIdCopycatDTO.getSystemId());
+                                /* TODO: Valicacion de cliente no exist.*/
+                                systemId.setClient(clientService.findById(systemIdCopycatDTO.getClientId()).get());
+                                systemId.setPaymentType(SystemId.PaymentMode.valueOf(systemIdCopycatDTO.getPaymentType()));
+                                ConfMap.put("SYS_ID", String.valueOf(systemIdCopycatDTO.getId()));
+                                systemidService.sync(systemId, ConfMap, systemIdCopycatDTO.getId());
+                            }
+                        })
+                        .subscribe();
             }).doOnEach(s -> {
                 if (s.hasValue()) {
                     ClientCopycatDTO clientCopycatDTO = s.get();
                     Client client = new Client();
-                    if (clientCopycatDTO.getId() != null) {
-                        Optional<Client> optionalClient = clientService.findById(clientCopycatDTO.getId());
+                    if (clientCopycatDTO.getClientId() != null) {
+                        Optional<Client> optionalClient = clientService.findById(clientCopycatDTO.getClientId());
                         if (optionalClient.isPresent()) {
                             client = optionalClient.get();
                         }
                     }
-                    client.setId(clientCopycatDTO.getId());
+                    client.setId(clientCopycatDTO.getClientId());
                     client.setClientCod(clientCopycatDTO.getClientCod());
                     client.setClientName(clientCopycatDTO.getClientName());
                     client.setCuadrante(Client.Cuandrante.valueOf(clientCopycatDTO.getCuadrante()));
                     client.setEmail(clientCopycatDTO.getEmail());
-                    clientService.save(client);
+                    ConfMap.put("CLI_ID", String.valueOf(clientCopycatDTO.getId()));
+                    clientService.sync(client, ConfMap, clientCopycatDTO.getId());
                 }
             }).subscribe();
         } catch (IOException e) {
