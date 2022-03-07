@@ -1,5 +1,6 @@
 package com.stt.dash.backend.repositories.sms;
 
+import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.sms.AprSms;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -7,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -26,10 +28,11 @@ public interface BaseSmsRepository<T, ID> extends JpaRepository<T, ID> {
      * @param pageable
      * @return
      */
-    public Page<T> findByDateBetweenAndSystemIdIn(Date date1,
-                                                  Date date2,
-                                                  List<String> list_sid,
-                                                  Pageable pageable);
+    Page<T> findByDateBetweenAndSystemIdIn(Date date1,
+                                           Date date2,
+                                           List<String> list_sid,
+                                           Pageable pageable);
+
 
     /**
      * Buscar por SystemId
@@ -62,7 +65,7 @@ public interface BaseSmsRepository<T, ID> extends JpaRepository<T, ID> {
                                                                   Pageable pageable);
 
     /**
-     * Buscar numero de destino.
+     * Buscar numero de destino entre tipo de mensajes.
      *
      * @param date1
      * @param date2
@@ -80,7 +83,7 @@ public interface BaseSmsRepository<T, ID> extends JpaRepository<T, ID> {
                                                                                 Pageable pageable);
 
     /**
-     * Buscar numero de destino entre tipo de mensajes
+     * Buscar numero de destino
      *
      * @param date1
      * @param date2
@@ -97,6 +100,8 @@ public interface BaseSmsRepository<T, ID> extends JpaRepository<T, ID> {
 
 
     /**
+     * Buscar numero de destino entre tipo de mensajes y Operadora.
+     *
      * @param date1
      * @param date2
      * @param list_sid
@@ -150,14 +155,14 @@ public interface BaseSmsRepository<T, ID> extends JpaRepository<T, ID> {
      * @param pageable
      * @return
      */
-    public Page<T> findByDateBetweenAndSystemIdInAndCarrierCharCodeAndMessageTypeIn(Date date1,
-                                                                                    Date date2,
-                                                                                    Collection<String> list_sid,
-                                                                                    String carrierCharCode,
-                                                                                    Collection<String> messageTypeSms,
-                                                                                    Pageable pageable);
+    Page<T> findByDateBetweenAndSystemIdInAndCarrierCharCodeAndMessageTypeIn(Date date1,
+                                                                             Date date2,
+                                                                             Collection<String> list_sid,
+                                                                             String carrierCharCode,
+                                                                             Collection<String> messageTypeSms,
+                                                                             Pageable pageable);
 
-    public Page<T> findByDateBetweenAndSystemIdInAndSystemIdLikeAndMessagesTextLikeAndMessageTypeLikeAndIso2LikeAndCarrierCharCodeLikeAndSourceLikeAndDestinationLikeAndMsgSendedLikeAndMsgReceivedLike(
+    Page<T> findByDateBetweenAndSystemIdInAndSystemIdLikeAndMessagesTextLikeAndMessageTypeLikeAndIso2LikeAndCarrierCharCodeLikeAndSourceLikeAndDestinationLikeAndMsgSendedLikeAndMsgReceivedLike(
             Date date1,
             Date date2,
             List<String> list_sid,

@@ -1,5 +1,6 @@
 package com.stt.dash.backend.service;
 
+import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.sms.AbstractSMS;
 import com.stt.dash.backend.repositories.sms.*;
 import com.stt.dash.ui.MainView;
@@ -25,7 +26,13 @@ public class AbstractSmsService {
     private final int pageSize = 3000;
     private final BaseSmsRepository[] monthRepos;
 
-    public AbstractSmsService(JanSmsRepository jan_repo, FebSmsRepository feb_repo, MarSmsRepository mar_repo, AprSmsRepository apr_repo, MaySmsRepository may_repo, JunSmsRepository jun_repo, JulSmsRepository jul_repo, AugSmsRepository aug_repo, SepSmsRepository sep_repo, OctSmsRepository oct_repo, NovSmsRepository nov_repo, DecSmsRepository dec_repo) {
+    public AbstractSmsService(JanSmsRepository jan_repo, FebSmsRepository feb_repo,
+                              MarSmsRepository mar_repo, AprSmsRepository apr_repo,
+                              MaySmsRepository may_repo, JunSmsRepository jun_repo,
+                              JulSmsRepository jul_repo, AugSmsRepository aug_repo,
+                              SepSmsRepository sep_repo, OctSmsRepository oct_repo,
+                              NovSmsRepository nov_repo, DecSmsRepository dec_repo) {
+
         monthRepos = new BaseSmsRepository[12];
         monthRepos[0] = jan_repo;
         monthRepos[1] = feb_repo;
@@ -302,7 +309,10 @@ public class AbstractSmsService {
      * @param page
      * @return
      */
-    public Page<AbstractSMS> findBySystemIdIn(LocalDate dateOne, LocalDate dateTwo, List<String> list_sid, int page, int pageSize) {
+    public Page<AbstractSMS> findBySystemIdIn(LocalDate dateOne,
+                                              LocalDate dateTwo,
+                                              List<String> list_sid,
+                                              int page, int pageSize) {
         /* DATE */
         Date dateStart = ODateUitls.valueOf(dateOne);
         Date dateEnd = null;

@@ -289,6 +289,7 @@ public class SmsView extends LitTemplate {
                         getSystemIdString(multi_systemIds.getValue()),
                         valueOfMessageType(checkboxMessageType.getSelectedItems()),
                         actualpage, itemsPerPage);
+                /*TODO: ELIMINAR ESTA SEGUNDA BUSQUEDA PARA LA DESCARGA. */
                 smsPage2 = sms_serv.findByMessageType(dateOne,
                         dateTwo,
                         getSystemIdString(multi_systemIds.getValue()),

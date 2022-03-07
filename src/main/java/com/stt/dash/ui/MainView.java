@@ -365,6 +365,8 @@ public class MainView extends AppLayout {
 //		tabs.add(createTab(VaadinIcon.CLOCK,TITLE_DASHBOARD, DashboardView.class));
 //		if (SecurityUtils.isAccessGranted(MainDashboardView.class)) {
 //		}
+        tabs.add(createTab(VaadinIcon.HOME, TITLE_DASHBOARD_MAIN, MainDashboardView.class));
+        tabs.add(createTab(VaadinIcon.ACCORDION_MENU, "NO SE COMO LLAMARLA", SmsShowView.class));
         if (SecurityUtils.isAccessGranted(FileToSendFrontView.class)) {
             tabs.add(createTab(VaadinIcon.CALENDAR_ENVELOPE, TITLE_BULKSMS_SCHEDULER,
                     FileToSendFrontView.class));
@@ -378,16 +380,15 @@ public class MainView extends AppLayout {
         if (SecurityUtils.isAccessGranted(CarrierChartView.class)) {
             tabs.add(createTab(VaadinIcon.CHART_TIMELINE, TITLE_CARRIER, CarrierChartView.class));
         }
-        tabs.add(createTab(VaadinIcon.HOME, TITLE_DASHBOARD_MAIN, MainDashboardView.class));
-        if (SecurityUtils.isAccessGranted(AuditView.class)) {
-            tabs.add(createTab(VaadinIcon.CLOCK, TITLE_AUDIT,
-                    AuditView.class));
-        }
         if (SecurityUtils.isAccessGranted(UsersView.class)) {
             tabs.add(createTab(VaadinIcon.USER, TITLE_USERS, UsersView.class));
         }
         if (SecurityUtils.isAccessGranted(ORolesView.class)) {
             tabs.add(createTab(VaadinIcon.KEY, TITLE_ROLES, ORolesView.class));
+        }
+        if (SecurityUtils.isAccessGranted(AuditView.class)) {
+            tabs.add(createTab(VaadinIcon.CLOCK, TITLE_AUDIT,
+                    AuditView.class));
         }
 //		if (SecurityUtils.isAccessGranted(ProductsView.class)) {
 //			tabs.add(createTab(VaadinIcon.CALENDAR, TITLE_PRODUCTS, ProductsView.class));

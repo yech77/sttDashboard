@@ -91,6 +91,9 @@ public class Application extends SpringBootServletInitializer {
         temp_serv.doResume();
     }
 
+    /**
+     * Agrega los CLientes y Credenciales nuevas en Admin.
+     */
     @Scheduled(cron = "0 */1 * * * ?")
     /* TODO: Agregar ScheduledLock */
     public void runSyncData() {

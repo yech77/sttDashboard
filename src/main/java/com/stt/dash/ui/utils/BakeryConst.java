@@ -31,6 +31,7 @@ public class BakeryConst {
     public static final String PAGE_CARRIER = "carrier";
     public static final String PAGE_CLIENT = "client";
     public static final String PAGE_SMS_VIEW = "sms-view";
+    public static final String PAGE_SMS_SHOW_VIEW = "sms-show_view";
     public static final String PAGE_DASHBOARD_MAIN = "dashboard-main";
     public static final String PAGE_USERS = "users";
     public static final String PAGE_ROLES = "roles";
@@ -44,6 +45,7 @@ public class BakeryConst {
     public static final String TITLE_CARRIER = "Evolución Operadora";
     public static final String TITLE_CLIENT = "Evolución Cliente";
     public static final String TITLE_SMS_VIEW = "Busqueda de Mensajes";
+    public static final String TITLE_SMS_SHOW_VIEW = "Busqueda de Mensajes";
     public static final String TITLE_DASHBOARD_MAIN = "Dashboard";
     public static final String TITLE_USERS = "Usuarios";
     public static final String TITLE_AUDIT = "Auditoria";
