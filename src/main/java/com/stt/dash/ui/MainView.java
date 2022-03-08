@@ -366,7 +366,7 @@ public class MainView extends AppLayout {
 //		if (SecurityUtils.isAccessGranted(MainDashboardView.class)) {
 //		}
         tabs.add(createTab(VaadinIcon.HOME, TITLE_DASHBOARD_MAIN, MainDashboardView.class));
-        tabs.add(createTab(VaadinIcon.ACCORDION_MENU, "NO SE COMO LLAMARLA", SmsShowView.class));
+        tabs.add(createTab(VaadinIcon.ACCORDION_MENU, "Mensajes enviados", SmsShowView.class));
         if (SecurityUtils.isAccessGranted(FileToSendFrontView.class)) {
             tabs.add(createTab(VaadinIcon.CALENDAR_ENVELOPE, TITLE_BULKSMS_SCHEDULER,
                     FileToSendFrontView.class));

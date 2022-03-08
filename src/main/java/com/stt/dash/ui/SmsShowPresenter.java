@@ -11,35 +11,37 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SmsShowPresenter {
     private final AbstractSmsService service;
-    private final List<String> ouser_session;
     private final SmsShowView view;
     private ListDataProvider<AbstractSMS> dataProvider = new ListDataProvider<>(new ArrayList<>());
     private int totPages;
 
     public SmsShowPresenter(AbstractSmsService service,
-                            List<String> ouser_session,
                             SmsShowView view) {
         this.service = service;
-        this.ouser_session = ouser_session;
         this.view = view;
         view.setGridDataProvider(dataProvider);
     }
 
     public void updateDataProvider(LocalDate dateOne,
                                    LocalDate dateTwo,
+                                   List<SystemId> systemIdList,
                                    int actualpage,
                                    int itemsPerPage) {
         if (dateTwo.isBefore(dateOne)) {
             /* TODO: mensaje de error de fechas */
             return;
         }
+        /* Recorre los Carrier seleccionados. */
+        List<String> sysStringList =
+                systemIdList.stream().map(SystemId::getSystemId).collect(Collectors.toList());
         Page<AbstractSMS> smsPage = service.findBySystemIdIn(
                 dateOne,
                 dateTwo,
-                ouser_session,
+                sysStringList,
                 actualpage,
                 itemsPerPage);
         List<AbstractSMS> objects = smsPage.getContent() != null ? smsPage.getContent() : new ArrayList<>();
@@ -51,7 +53,7 @@ public class SmsShowPresenter {
         smsPage = service.findBySystemIdIn(
                 dateOne,
                 dateTwo,
-                ouser_session,
+                sysStringList,
                 0,
                 5000000);
         view.updateDownloadButton(smsPage.getContent());
@@ -59,9 +61,10 @@ public class SmsShowPresenter {
 
     public void updateDataProviderPagin(LocalDate dateOne,
                                         LocalDate dateTwo,
+                                        List<SystemId> systemIdList,
                                         int actualpage,
                                         int itemsPerPage) {
-        updateDataProvider(dateOne, dateTwo, actualpage, itemsPerPage);
+        updateDataProvider(dateOne, dateTwo, systemIdList, actualpage, itemsPerPage);
         view.updateTotalPage(totPages);
     }
 
