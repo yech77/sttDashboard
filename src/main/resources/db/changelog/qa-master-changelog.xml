@@ -10,7 +10,7 @@
     <include file="db/changelog/scripts/createTriggers.sql"/>
     <!-- Trunca las tablas y reinicia las secuencias. Crea la data base(roles, usuarios, etc) -->
     <include file="db/changelog/scripts/createDataBase.sql"/>
-    <!-- Trunca las tablas y reinicia las secuencias. Crea la data base(roles, usuarios, etc) -->
+    <!-- Cambia campo de tamano -->
     <include file="db/changelog/scripts/changelog_1.sql"/>
     <!-- Crear el campo sizeLines -->
     <include file="db/changelog/scripts/changelog_2.sql"/>
