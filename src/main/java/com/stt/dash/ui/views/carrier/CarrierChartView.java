@@ -16,11 +16,13 @@ import com.stt.dash.backend.service.CarrierService;
 import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.utils.BakeryConst;
+import com.vaadin.componentfactory.multiselect.MultiComboBox;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
+import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Div;
@@ -32,12 +34,10 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.templatemodel.TemplateModel;
-import org.apache.commons.collections4.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
-import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -80,9 +80,9 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     private ComboBox<Client> clientCombobox = new ComboBox<>("Clientes");
 
     /* OPERADORAS */
-    private MultiselectComboBox<Carrier> multi_carrier = new MultiselectComboBox<>("Operadoras");
+    private MultiComboBox<Carrier> carrierMultiComboBox = new MultiComboBox<>("Operadoras");
     /* Tipo de Mensaje */
-    private final MultiselectComboBox<OMessageType> multi_messagetype = new MultiselectComboBox<>("Mensajes");
+    private final CheckboxGroup<OMessageType> checkboxMessageType = new CheckboxGroup<>();
     /* Para Graficos y servicios */
     private List<Integer> monthToShowList;
     private List<Integer> hourList = new ArrayList<>();
@@ -129,23 +129,23 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
                 OMonths.valueOf(monthToShowList.get(1)).getMonthName(),
                 OMonths.valueOf(monthToShowList.get(2)).getMonthName()};
         /* Message type */
-        multi_messagetype.setItems(new HashSet<>(Arrays.asList(OMessageType.values())));
+        checkboxMessageType.setItems(new HashSet<>(Arrays.asList(OMessageType.values())));
         if (VaadinSession.getCurrent().getAttribute(CARRIER_VIEW_SELECTED_MESSAGETYPE) != null) {
-            multi_messagetype.setValue((Set<OMessageType>) VaadinSession.getCurrent().getAttribute(CARRIER_VIEW_SELECTED_MESSAGETYPE));
+            checkboxMessageType.setValue((Set<OMessageType>) VaadinSession.getCurrent().getAttribute(CARRIER_VIEW_SELECTED_MESSAGETYPE));
             VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_MESSAGETYPE, null);
         } else {
-            multi_messagetype.setValue(new HashSet<>(Arrays.asList(OMessageType.values())));
+            checkboxMessageType.setValue(new HashSet<>(Arrays.asList(OMessageType.values())));
         }
-        multi_messagetype.setItemLabelGenerator(OMessageType::name);
+        checkboxMessageType.setItemLabelGenerator(OMessageType::name);
         /* Carrier */
         Page<Carrier> carrierPage = carrierService.findAll();
-        multi_carrier.setItems(carrierPage.getContent());
-        multi_carrier.setItemLabelGenerator(Carrier::getCarrierCharcode);
+        carrierMultiComboBox.setItems(carrierPage.getContent());
+        carrierMultiComboBox.setItemLabelGenerator(Carrier::getCarrierCharcode);
         if (VaadinSession.getCurrent().getAttribute(CARRIER_VIEW_SELECTED_CARRIER) != null) {
-            multi_carrier.setValue((Set<Carrier>) VaadinSession.getCurrent().getAttribute(CARRIER_VIEW_SELECTED_CARRIER));
+            carrierMultiComboBox.setValue((Set<Carrier>) VaadinSession.getCurrent().getAttribute(CARRIER_VIEW_SELECTED_CARRIER));
             VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_CARRIER, null);
         } else {
-            multi_carrier.setValue(new HashSet<>(carrierPage.getContent()));
+            carrierMultiComboBox.setValue(new HashSet<>(carrierPage.getContent()));
         }
 
         /* HEADER */
@@ -154,12 +154,20 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         VerticalLayout vRight = new VerticalLayout();
         container.setWidthFull();
         container.add(vLeft, vRight);
-        vLeft.add(clientCombobox, multi_carrier);
-        vRight.add(multi_messagetype);
-        clientCombobox.setWidthFull();
-        multi_messagetype.setWidthFull();
+        vLeft.add(clientCombobox, carrierMultiComboBox);
+        vRight.add(checkboxMessageType);
 
-        divHeader.add(container, filterButton);
+        /* ******* Message type */
+        checkboxMessageType.setLabel("Tipo de Mensajes");
+        checkboxMessageType.setItems(OMessageType.values());
+        checkboxMessageType.setValue(new HashSet<OMessageType>(Arrays.asList(OMessageType.values())));
+        checkboxMessageType.setRequired(true);
+        checkboxMessageType.setErrorMessage("seleccionar al menos un tipo de sms");
+        divHeader.add(new HorizontalLayout(clientCombobox, checkboxMessageType),
+                new HorizontalLayout(carrierMultiComboBox), filterButton);
+        clientCombobox.setWidthFull();
+        checkboxMessageType.setWidthFull();
+        carrierMultiComboBox.setWidthFull();
         List<String> systemIdStringList;
         try {
             systemIdStringList = clientCombobox.getValue().getSystemids()
@@ -175,8 +183,8 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         updateHourlyChart(systemIdStringList);
         filterButton.addClickListener(click -> {
             filterButton.setEnabled(false);
-            VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_CARRIER, multi_carrier.getSelectedItems());
-            VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_MESSAGETYPE, multi_messagetype.getSelectedItems());
+            VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_CARRIER, carrierMultiComboBox.getValue());
+            VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_MESSAGETYPE, checkboxMessageType.getSelectedItems());
             VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_CLIENT, clientCombobox.getValue());
             UI.getCurrent().getPage().reload();
         });
@@ -208,7 +216,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">Hora: {point.key}</span><br/>");
         confHourlyChart.setTooltip(tooltip);
 
-        List<String> carrier_list = multi_carrier.getSelectedItems().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
+        List<String> carrier_list = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
         /* Column Chart*/
         List<SmsByYearMonthDayHour> l = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actual_year, actual_month, actual_day, sids);
         if (l == null || l.isEmpty()) {
@@ -222,7 +230,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
                 actual_month,
                 actual_day,
                 carrier_list,
-                multi_messagetype.getSelectedItems(), sids);
+                checkboxMessageType.getSelectedItems(), sids);
         List<SmsByYearMonthDayHour> l2 = new ArrayList<>(l);
         PlotOptionsLine plotLine = new PlotOptionsLine();
         LineDateSeriesList = paEntenderLine(l, hourList);
@@ -254,7 +262,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         List<Series> dataSeriesList = new ArrayList<>();
         /*TODO nullpointer*/
         /* Recorre los Carrier seleccionados. */
-        multi_carrier.getSelectedItems().forEach(carrier -> {
+        carrierMultiComboBox.getValue().forEach(carrier -> {
             ListSeries series = new ListSeries();
             series.setName(carrier.getCarrierCharcode());
             /* Recorre los meses del trimestre */
@@ -273,27 +281,27 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     }
 
     private void updateHourly(List<String> sids) {
-        List<String> carrier_list = multi_carrier.getSelectedItems().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
+        List<String> carrier_list = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
         /* --------------POR HORA */
         List<SmsByYearMonthDayHour> smsHourGroup = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actual_year, actual_month, actual_day, sids);
         List<SmsByYearMonthDayHour> carrierHourGroup = smsHourService.getGroupCarrierByYeMoDaHoWhYeMoDayEqMessageTypeIn(actual_year,
                 actual_month,
                 actual_day,
                 carrier_list,
-                multi_messagetype.getSelectedItems(), sids);
+                checkboxMessageType.getSelectedItems(), sids);
         populateHourChart(smsHourGroup, new ArrayList<>(carrierHourGroup));
         /* PIE */
         populateHourPieChart(carrierHourGroup);
     }
 
     private void updateDaily(List<String> sids) {
-        List<String> carrier_list = multi_carrier.getSelectedItems().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
+        List<String> carrier_list = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
         /* --------------DIARIO */
         List<SmsByYearMonthDay> smsDayGroup = smsHourService.getGroupSmsByYearMonthDayMessageType(actual_year, actual_month, sids);
         List<SmsByYearMonthDay> carrierDayGroup = smsHourService.getGroupCarrierByYeMoMe(actual_year,
                 actual_month,
                 carrier_list,
-                multi_messagetype.getSelectedItems(),
+                checkboxMessageType.getSelectedItems(),
                 sids);
         populateMonthChart(smsDayGroup, new ArrayList<>(carrierDayGroup));
         /* PIE */
@@ -307,8 +315,8 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
 
         List<SmsByYearMonth> carrierGroup = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(actual_year,
                 monthsIn(2),
-                multi_carrier.getSelectedItems(),
-                multi_messagetype.getSelectedItems(),
+                carrierMultiComboBox.getValue(),
+                checkboxMessageType.getSelectedItems(),
                 sids);
         populateTriChart(smsGroup, new ArrayList<>(carrierGroup));
         /* PIE */
@@ -678,7 +686,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         /*TODO nullpointer*/
         /* Recorre los Carrier seleccionados. */
         PlotOptionsColumn splinePlotOptions = new PlotOptionsColumn();
-        multi_messagetype.getSelectedItems().forEach(messageType -> {
+        checkboxMessageType.getSelectedItems().forEach(messageType -> {
             ListSeries series = new ListSeries();
             series.setName(messageType.name());
             /* Recorre los meses del trimestre */
@@ -738,7 +746,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
 
                 log.info("GRUPO INIC EN 0: {}, {}", smsByYearMonth.getGroupBy(), smsByYearMonth.getSomeCode());
                 /* Agragar al map cada uno de los carrier selecionados con 0. */
-                for (Carrier ocarrier : multi_carrier.getSelectedItems()) {
+                for (Carrier ocarrier : carrierMultiComboBox.getValue()) {
                     carrierTotalMap.put(ocarrier.getCarrierCharcode(), 0l);
                 }
                 /* Agregar al Month/day/Hour el map con los 0l*/
@@ -763,7 +771,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
             System.out.println("Month/Day/Hour: " + integer + " " + carrierTotalMap);
 
             /* Agragar al map los carrier selecionados. */
-            for (Carrier ocarrier : multi_carrier.getSelectedItems()) {
+            for (Carrier ocarrier : carrierMultiComboBox.getValue()) {
                 if (!list.containsKey(ocarrier.getCarrierCharcode())) {
                     list.put(ocarrier.getCarrierCharcode(), new ArrayList<>());
                 }
@@ -777,7 +785,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         long total = 0;
         for (Integer integer : lmonth) {
             carrierTotalMap = data_monthly.get(integer);
-            for (Carrier ocarrier : multi_carrier.getSelectedItems()) {
+            for (Carrier ocarrier : carrierMultiComboBox.getValue()) {
                 total += carrierTotalMap.get(ocarrier.getCarrierCharcode());
             }
             list_total.add(total);
@@ -786,7 +794,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
 
         List<DataSeries> list_series = new ArrayList<>();
         PlotOptionsSpline splinePlotOptions = new PlotOptionsSpline();
-        for (Carrier ocarrier : multi_carrier.getSelectedItems()) {
+        for (Carrier ocarrier : carrierMultiComboBox.getValue()) {
             DataSeries series = new DataSeries();
             series.setPlotOptions(splinePlotOptions);
             series.setName(ocarrier.getCarrierCharcode());
@@ -876,7 +884,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         Map<String, Long> mapMx = new HashMap<>();
 
         /* Agregar al Map e inicializar a 0 los carrier selecionados. */
-        multi_carrier.getSelectedItems().forEach(oCarrier -> {
+        carrierMultiComboBox.getValue().forEach(oCarrier -> {
             mapMx.put(oCarrier.getCarrierCharcode(), 0l);
         });
         DataSeries pieSeries = new DataSeries();
