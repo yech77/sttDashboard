@@ -61,23 +61,24 @@ public class Application extends SpringBootServletInitializer {
     @Autowired
     OdashConfService odashService;
 
-    public static WebClient webClient;
+    @Autowired
+    public WebClient webClient;
 
     private final static String ORINOCO_HOST = "http://localhost:8081";
 
-    private static void builderWebclient(String host) {
-        webClient = WebClient.builder()
-                .baseUrl(host)
-                .defaultHeaders(header -> header.setBasicAuth("orinoco", "0R1n0coRIv3r$"))
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .build();
-    }
+//    private static void builderWebclient(String host) {
+//        webClient = WebClient.builder()
+//                .baseUrl(host)
+//                .defaultHeaders(header -> header.setBasicAuth("orinoco", "0R1n0coRIv3r$"))
+//                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+//                .build();
+//    }
 
     private static String APP_NAME = "ODASH";
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
-        builderWebclient(ORINOCO_HOST);
+//        builderWebclient(ORINOCO_HOST);
     }
 
     @Override
@@ -99,7 +100,6 @@ public class Application extends SpringBootServletInitializer {
     public void runSyncData() {
         SyncSystemIdWebClient syncSystemIdWebClient = new SyncSystemIdWebClient(webClient, SystemIdCopycatDTO.class);
         SyncClientWebClient syncClientWebClient = new SyncClientWebClient(webClient, ClientCopycatDTO.class);
-        /* TODO: Buscar los ultimos ids buscados en conf */
         Map<String, String> ConfMap = odashService.findSyncConfData(OdashConfService.ODASH_CONF_TYPE.SYNC);
         int i = 0;
         int sy = 0;
