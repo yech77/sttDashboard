@@ -43,19 +43,19 @@ public class ODashAuditEvent extends AbstractEntitySequence {
         }
     }
 
-    @GridColumn(order = 2, columnName = "Date")
+    @GridColumn(order = 2, columnName = "Fecha")
     private Date eventDate;
 
     @Size(min = 3, max = 100)
     @Column(length = 100)
-    @GridColumn(order = 0, columnName = "USUARIO")
+    @GridColumn(order = 0, columnName = "Usuario")
     private String principal;
 
-    @GridColumn(order = 1, columnName = "TIPO")
+    @GridColumn(order = 1, columnName = "Tipo")
     @Enumerated(EnumType.ORDINAL)
     private OEVENT_TYPE eventType;
 
-    @GridColumn(order = 3, columnName = "DESSCRIPCION")
+    @GridColumn(order = 3, columnName = "Descripcion")
     @Size(min = 3)
     private String eventDesc;
 

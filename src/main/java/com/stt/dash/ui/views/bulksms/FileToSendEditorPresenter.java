@@ -4,18 +4,29 @@ import com.stt.dash.app.OProperties;
 import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.AgendaService;
+import com.stt.dash.backend.util.ws.OWebClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class FileToSendEditorPresenter {
+    private final static Logger log = LoggerFactory.getLogger(FileToSendEditorPresenter.class);
     private final FileToSendEditor view;
     private final AgendaService agendaService;
     private final ListGenericBean<User> userChildrenList;
     private final ListGenericBean<String> systemIdList;
     private final OProperties properties;
+    private final WebClient webClient;
 
-    /* TODO: ACA ESTOY AGREGANDO PARA BUSCAR LA URL DEL SERVICO DE SALDO DE CREDENCIAL */
+    public final static String yyyy_MM_dd = "yyyy-MM-dd";
+
     public FileToSendEditorPresenter(FileToSendEditor view,
                                      @Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
                                      AgendaService agendaService,
@@ -27,6 +38,7 @@ public class FileToSendEditorPresenter {
         this.userChildrenList = userChildrenList;
         this.systemIdList = systemIdList;
         this.properties = properties;
+        this.webClient = webClient;
     }
 
     public void setAgendaItems() {
@@ -35,5 +47,19 @@ public class FileToSendEditorPresenter {
 
     public void setSystemIdItems() {
         view.setComboSystemidItems(systemIdList.getList());
+    }
+
+    public Integer callBalance(String systemid, LocalDateTime dateTime) throws IOException {
+        String stringDate = dateTime.format(DateTimeFormatter.ofPattern(yyyy_MM_dd));
+        OWebClient<Integer> we = new OWebClient<>(webClient, Integer.class);
+        Mono<Integer> monoOResponse;
+        try {
+            log.info("Llamando: [{}]", properties.getOrinocoHost() + "ws/data/sid/balance/cod/" + systemid + "/date/" + stringDate);
+            monoOResponse = we.getMonoOResponse(properties.getOrinocoHost() + "ws/data/sid/balance/cod/" + systemid + "/date/" + stringDate);
+            return monoOResponse.block();
+        } catch (Exception e) {
+            log.error("", e);
+            throw e;
+        }
     }
 }
