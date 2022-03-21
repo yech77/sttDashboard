@@ -12,6 +12,7 @@ import com.stt.dash.backend.data.entity.Product;
 import com.stt.dash.backend.service.OrderService;
 import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
+import com.stt.dash.ui.SmsShowGridView;
 import com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider;
 import com.stt.dash.ui.dataproviders.OrdersGridDataProvider;
 import com.stt.dash.ui.utils.BakeryConst;
@@ -24,10 +25,12 @@ import com.stt.dash.ui.views.storefront.beans.OrdersCountDataWithChart;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.events.ChartLoadEvent;
 import com.vaadin.flow.component.charts.model.*;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
@@ -363,6 +366,17 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
      *
      */
     private void populateMonthlySmsChart() {
+        monthlySmsGraph.addChartClickListener(click -> {
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            Button closeButton = new Button("Cerrar");
+            closeButton.addClickListener(c -> {
+                d.close();
+            });
+            SmsShowGridView view = new SmsShowGridView(smsHourService, monthsIn(2), stingListGenericBean);
+            d.add(view, closeButton);
+            d.open();
+        });
         Configuration conf = monthlySmsGraph.getConfiguration();
         conf.getChart().setType(ChartType.AREASPLINE);
         conf.getChart().setBorderRadius(4);
@@ -471,10 +485,6 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         }
         /* Sustituir en la lista los dias con valores. Solos los tipo 'typeOfMessage' */
         for (SmsByYearMonthDay smsByYearMonthDay : smsDayList) {
-//            /*Valida que no mostrara data mayor al dia de hoy.*/
-//            if (smsByYearMonthDay.getDaySms() > 31) {
-//                continue;
-//            }
             if (typeOfMessage.equals(smsByYearMonthDay.getSomeCode())) {
                 numberList.add(smsByYearMonthDay.getDaySms() - 1, smsByYearMonthDay.getTotal());
             }

@@ -64,28 +64,28 @@ $_documentContainer.innerHTML = `<dom-module id="bakery-charts-theme" theme-for=
         fill: #1bca66;
       }
       
-      :host(.column-chart) .highcharts-color-0 {
-        stroke: #a99f7e;
-        fill: #d7a011;
-      }
+      /*:host(.column-chart) .highcharts-color-0 {*/
+      /*  stroke: #a99f7e;*/
+      /*  fill: #d7a011;*/
+      /*}*/
       
-      :host(.column-chart) .highcharts-color-1 {
-        stroke: #082244;
-        fill: #387eda;
-      }
+      /*:host(.column-chart) .highcharts-color-1 {*/
+      /*  stroke: #082244;*/
+      /*  fill: #387eda;*/
+      /*}*/
       
-      :host(.column-chart) .highcharts-color-2 {
-        stroke: #1bca66;
-        fill: #17b95c;
-      }
+      /*:host(.column-chart) .highcharts-color-2 {*/
+      /*  stroke: #1bca66;*/
+      /*  fill: #17b95c;*/
+      /*}*/
       
-      :host(.column-chart) .highcharts-grid-line {
-        stroke: rgba(23, 68, 128, 0.1);
-      }
+      /*:host(.column-chart) .highcharts-grid-line {*/
+      /*  stroke: rgba(23, 68, 128, 0.1);*/
+      /*}*/
       
-      :host(.column-chart) .highcharts-area {
-        fill-opacity: 0.1;
-      }
+      /*:host(.column-chart) .highcharts-area {*/
+      /*  fill-opacity: 0.1;*/
+      /*}*/
       
       :host(.daily-sales) .highcharts-color-0 {
         stroke: #3a9aa4;
