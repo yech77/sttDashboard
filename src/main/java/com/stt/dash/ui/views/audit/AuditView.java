@@ -291,6 +291,7 @@ public class AuditView extends VerticalLayout {
         StringWriter output = new StringWriter();
         StatefulBeanToCsv<ODashAuditEvent> writer = new StatefulBeanToCsvBuilder<ODashAuditEvent>(output)
                 .withSeparator(separatorText.getValue().toCharArray()[0])
+                .withQuotechar(quoteDelimiterText.getValue().toCharArray()[0])
                 .build();
         try {
             writer.write(persons);

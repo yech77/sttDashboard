@@ -12,6 +12,8 @@ import com.stt.dash.backend.data.entity.Product;
 import com.stt.dash.backend.service.OrderService;
 import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
+import com.stt.dash.ui.SmsShowGridDailyPresenter;
+import com.stt.dash.ui.SmsShowGridDailyView;
 import com.stt.dash.ui.SmsShowGridView;
 import com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider;
 import com.stt.dash.ui.dataproviders.OrdersGridDataProvider;
@@ -292,6 +294,17 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
 
     private void populateDeliveriesCharts(DashboardData data) {
         LocalDate today = LocalDate.now();
+        deliveriesThisYearChart.addChartClickListener(click -> {
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            Button closeButton = new Button("Cerrar");
+            closeButton.addClickListener(c -> {
+                d.close();
+            });
+            SmsShowGridDailyView view = new SmsShowGridDailyView(smsHourService, actualYear, actualMonth, actualDay, stingListGenericBean);
+            d.add(view, closeButton);
+            d.open();
+        });
 
         // init the 'Deliveries in [this year]' chart
         Configuration yearConf = deliveriesThisYearChart.getConfiguration();

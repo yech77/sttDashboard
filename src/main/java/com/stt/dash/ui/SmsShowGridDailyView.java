@@ -18,21 +18,22 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.template.Id;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.List;
 
 
 @Tag("sms-show-grid-view")
 @JsModule("./src/views/smsgridview/sms-show-grid-view.ts")
 //@Route(value = BakeryConst.PAGE_SMS_SHOW_GRID_VIEW, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_SMS_SHOW_VIEW)
-public class SmsShowGridView extends LitTemplate implements Viewnable<AbstractSmsByYearMonth> {
+public class SmsShowGridDailyView extends LitTemplate implements Viewnable<AbstractSmsByYearMonth> {
 
     @Id("row-header")
     Div rowHeader;
@@ -46,22 +47,25 @@ public class SmsShowGridView extends LitTemplate implements Viewnable<AbstractSm
     @Id("smsGrid")
     Grid<AbstractSmsByYearMonth> grid;
     /**/
-    private final SmsShowGridTrimestralPresenter presenter;
+    private final SmsShowGridDailyPresenter presenter;
     /**/
     private Grid.Column<AbstractSmsByYearMonth> groupByColum;
     private Grid.Column<AbstractSmsByYearMonth> someCodeColum;
     private Grid.Column<AbstractSmsByYearMonth> totalColumn;
     private Grid.Column<AbstractSmsByYearMonth> messageTypeColum;
     private Grid.Column<AbstractSmsByYearMonth> dateColumn;
+    private String stringDate;
 
-    public SmsShowGridView(SmsHourService smsHourService, List<Integer> monthToShowList, ListGenericBean<String> stringListGenericBean) {
-        presenter = new SmsShowGridTrimestralPresenter(smsHourService, monthToShowList, stringListGenericBean, this);
-        rowHeader.add(new H3("Últimos tres meses"));
+    public SmsShowGridDailyView(SmsHourService smsHourService, int actualYear, int actualMonth, int actualDay, ListGenericBean<String> stringListGenericBean) {
+        presenter = new SmsShowGridDailyPresenter(smsHourService, actualYear, actualMonth, actualDay, stringListGenericBean, this);
+        stringDate = actualDay + "/" + actualMonth + "/" + actualYear;
+        rowHeader.add(new H3("Dia de hoy"));
         createColumns();
         grid.setHeight("75%");
     }
 
     private void createColumns() {
+        createTodayColumn();
         createGroupByColumn();
         createSomeCodeColumn();
         createTotalColumn();
@@ -79,7 +83,7 @@ public class SmsShowGridView extends LitTemplate implements Viewnable<AbstractSm
     }
 
     private Component getDownloadButton(Collection<AbstractSmsByYearMonth> messages) {
-        String fileName = "trimestre-Mensajes.csv";
+        String fileName = "dia-Mensajes.csv";
         Button download = new Button("Descargar");
 
         FileDownloadWrapper buttonWrapper = new FileDownloadWrapper(
@@ -99,9 +103,10 @@ public class SmsShowGridView extends LitTemplate implements Viewnable<AbstractSm
             System.out.println("Daily message limit reached. Code not able to handle this size of string.");
             return "";
         }
-        StringBuilder sb = new StringBuilder("mes,\"tipo de mensjae\",total\n");
+        StringBuilder sb = new StringBuilder("dia,\"hora\",\"tipo de mensaje\",total\n");
         for (AbstractSmsByYearMonth msg : messages) {
-            sb.append(OMonths.valueOf(msg.getGroupBy()).name()).append(",");
+            sb.append(stringDate).append(",");
+            sb.append(msg.getGroupBy()).append(",");
             sb.append(msg.getSomeCode()).append(",");
             sb.append(msg.getTotal());
             sb.append("\n");
@@ -109,12 +114,20 @@ public class SmsShowGridView extends LitTemplate implements Viewnable<AbstractSm
         return sb.toString();
     }
 
+    private void createTodayColumn() {
+        dateColumn = grid.addColumn(c -> {
+                    return stringDate;
+                })
+                .setHeader("Dia")
+                .setAutoWidth(true);
+    }
+
     private void createGroupByColumn() {
         groupByColum = grid.addColumn(o -> {
-                    return OMonths.valueOf(o.getGroupBy()).getMonthName();
+                    return o.getGroupBy() + ":00";
                 })
                 .setComparator(com -> com.getGroupBy())
-                .setHeader("Mes")
+                .setHeader("Hora")
                 .setAutoWidth(true);
     }
 
