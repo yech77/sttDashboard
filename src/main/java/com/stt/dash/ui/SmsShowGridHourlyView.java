@@ -29,7 +29,7 @@ import java.util.Collection;
 @JsModule("./src/views/smsgridview/sms-show-grid-view.ts")
 //@Route(value = BakeryConst.PAGE_SMS_SHOW_GRID_VIEW, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_SMS_SHOW_VIEW)
-public class SmsShowGridDailyView extends LitTemplate implements Viewnable<AbstractSmsByYearMonth> {
+public class SmsShowGridHourlyView extends LitTemplate implements Viewnable<AbstractSmsByYearMonth> {
 
     @Id("row-header")
     Div rowHeader;
@@ -43,24 +43,25 @@ public class SmsShowGridDailyView extends LitTemplate implements Viewnable<Abstr
     @Id("smsGrid")
     Grid<AbstractSmsByYearMonth> grid;
     /**/
-    private final SmsShowGridDailyPresenter presenter;
+    private final SmsShowGridHourlyPresenter presenter;
     /**/
     private Grid.Column<AbstractSmsByYearMonth> groupByColum;
     private Grid.Column<AbstractSmsByYearMonth> someCodeColum;
     private Grid.Column<AbstractSmsByYearMonth> totalColumn;
     private Grid.Column<AbstractSmsByYearMonth> messageTypeColum;
     private Grid.Column<AbstractSmsByYearMonth> dateColumn;
-//    private String stringDate;
+    private String stringDate;
 
-    public SmsShowGridDailyView(SmsHourService smsHourService, int actualYear, int actualMonth, ListGenericBean<String> stringListGenericBean) {
-        presenter = new SmsShowGridDailyPresenter(smsHourService, actualYear, actualMonth, stringListGenericBean, this);
-//        stringDate = actualDay + "/" + actualMonth + "/" + actualYear;
-        rowHeader.add(new H3("Mes Actual"));
+    public SmsShowGridHourlyView(SmsHourService smsHourService, int actualYear, int actualMonth, int actualDay, ListGenericBean<String> stringListGenericBean) {
+        presenter = new SmsShowGridHourlyPresenter(smsHourService, actualYear, actualMonth, actualDay, stringListGenericBean, this);
+        stringDate = actualDay + "/" + actualMonth + "/" + actualYear;
+        rowHeader.add(new H3("Dia de hoy"));
         createColumns();
         grid.setHeight("75%");
     }
 
     private void createColumns() {
+        createTodayColumn();
         createGroupByColumn();
         createSomeCodeColumn();
         createTotalColumn();
@@ -78,7 +79,7 @@ public class SmsShowGridDailyView extends LitTemplate implements Viewnable<Abstr
     }
 
     private Component getDownloadButton(Collection<AbstractSmsByYearMonth> messages) {
-        String fileName = "mes-actual-Mensajes.csv";
+        String fileName = "dia-Mensajes.csv";
         Button download = new Button("Descargar");
 
         FileDownloadWrapper buttonWrapper = new FileDownloadWrapper(
@@ -98,8 +99,9 @@ public class SmsShowGridDailyView extends LitTemplate implements Viewnable<Abstr
             System.out.println("Daily message limit reached. Code not able to handle this size of string.");
             return "";
         }
-        StringBuilder sb = new StringBuilder("dia,\"tipo de mensaje\",total\n");
+        StringBuilder sb = new StringBuilder("dia,\"hora\",\"tipo de mensaje\",total\n");
         for (AbstractSmsByYearMonth msg : messages) {
+            sb.append(stringDate).append(",");
             sb.append(msg.getGroupBy()).append(",");
             sb.append(msg.getSomeCode()).append(",");
             sb.append(msg.getTotal());
@@ -108,12 +110,20 @@ public class SmsShowGridDailyView extends LitTemplate implements Viewnable<Abstr
         return sb.toString();
     }
 
+    private void createTodayColumn() {
+        dateColumn = grid.addColumn(c -> {
+                    return stringDate;
+                })
+                .setHeader("Dia")
+                .setAutoWidth(true);
+    }
+
     private void createGroupByColumn() {
         groupByColum = grid.addColumn(o -> {
-                    return o.getGroupBy();
+                    return o.getGroupBy() + ":00";
                 })
                 .setComparator(com -> com.getGroupBy())
-                .setHeader("Dia")
+                .setHeader("Hora")
                 .setAutoWidth(true);
     }
 

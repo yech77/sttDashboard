@@ -2,22 +2,22 @@ package com.stt.dash.ui;
 
 import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.AbstractSmsByYearMonth;
-import com.stt.dash.backend.data.SmsByYearMonthDay;
+import com.stt.dash.backend.data.SmsByYearMonthDayHour;
 import com.stt.dash.backend.service.SmsHourService;
 import com.vaadin.flow.data.provider.ListDataProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SmsShowGridDailyPresenter {
+public class SmsShowGridHourlyPresenter {
     private final Viewnable view;
     private ListDataProvider<AbstractSmsByYearMonth> dataProvider = new ListDataProvider<>(new ArrayList<>());
     private final SmsHourService smsHourService;
 
-    public SmsShowGridDailyPresenter(SmsHourService smsHourService, int actualYear, int actualMonth, ListGenericBean<String> stringListGenericBean, Viewnable<AbstractSmsByYearMonth> view) {
+    public SmsShowGridHourlyPresenter(SmsHourService smsHourService, int actualYear, int actualMonth, int actualDay, ListGenericBean<String> stringListGenericBean, Viewnable<AbstractSmsByYearMonth> view) {
         this.view = view;
         this.smsHourService = smsHourService;
-        List<SmsByYearMonthDay> smsHourList = smsHourService.getGroupSmsByYearMonthDayMessageType(actualYear, actualMonth, stringListGenericBean.getList());
+        List<SmsByYearMonthDayHour> smsHourList = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actualYear, actualMonth, actualDay, stringListGenericBean.getList());
         updateDataProvider(smsHourList);
         updateInView(dataProvider);
     }

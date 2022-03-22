@@ -6,22 +6,17 @@ import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.*;
 import com.stt.dash.backend.data.entity.FIlesToSend;
-import com.stt.dash.backend.data.entity.Order;
 import com.stt.dash.backend.data.entity.OrderSummary;
 import com.stt.dash.backend.data.entity.Product;
 import com.stt.dash.backend.service.OrderService;
 import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
-import com.stt.dash.ui.SmsShowGridDailyPresenter;
 import com.stt.dash.ui.SmsShowGridDailyView;
+import com.stt.dash.ui.SmsShowGridHourlyView;
 import com.stt.dash.ui.SmsShowGridView;
 import com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider;
-import com.stt.dash.ui.dataproviders.OrdersGridDataProvider;
 import com.stt.dash.ui.utils.BakeryConst;
-import com.stt.dash.ui.utils.FormattingUtils;
 import com.stt.dash.ui.views.bulksms.FileToSendCard;
-import com.stt.dash.ui.views.dashboard.DataSeriesItemWithRadius;
-import com.stt.dash.ui.views.storefront.OrderCard;
 import com.stt.dash.ui.views.storefront.beans.OrdersCountData;
 import com.stt.dash.ui.views.storefront.beans.OrdersCountDataWithChart;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -40,7 +35,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.templatemodel.TemplateModel;
-import liquibase.pro.packaged.O;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -301,7 +295,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
             closeButton.addClickListener(c -> {
                 d.close();
             });
-            SmsShowGridDailyView view = new SmsShowGridDailyView(smsHourService, actualYear, actualMonth, actualDay, stingListGenericBean);
+            SmsShowGridHourlyView view = new SmsShowGridHourlyView(smsHourService, actualYear, actualMonth, actualDay, stingListGenericBean);
             d.add(view, closeButton);
             d.open();
         });
@@ -330,6 +324,17 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         yearConf.setTooltip(tooltip);
         /**/
         // init the 'Deliveries in [this month]' chart
+        deliveriesThisMonthChart.addChartClickListener(click -> {
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            Button closeButton = new Button("Cerrar");
+            closeButton.addClickListener(c -> {
+                d.close();
+            });
+            SmsShowGridDailyView view = new SmsShowGridDailyView(smsHourService, actualYear, actualMonth, stingListGenericBean);
+            d.add(view, closeButton);
+            d.open();
+        });
         Configuration monthConf = deliveriesThisMonthChart.getConfiguration();
         configureColumnChart(monthConf);
         /**/
