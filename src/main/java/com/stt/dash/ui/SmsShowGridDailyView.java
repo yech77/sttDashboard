@@ -45,8 +45,8 @@ public class SmsShowGridDailyView extends LitTemplate implements Viewnable<SmsBy
     @Id("smsGrid")
     Grid<SmsByYearMonthDay> grid;
     /**/
-//    private final SmsShowGridDailyPresenter presenter;
-    private final SmsShowGridDailyPresenter presenter;
+//    private final DailySmsShowGridPresenter presenter;
+    private final DailySmsShowGridPresenter presenter;
     /**/
     private Grid.Column<SmsByYearMonthDay> groupByColum;
     private Grid.Column<SmsByYearMonthDay> someCodeColum;
@@ -56,8 +56,8 @@ public class SmsShowGridDailyView extends LitTemplate implements Viewnable<SmsBy
 //    private String stringDate;
 
     public SmsShowGridDailyView(SmsHourService smsHourService, int actualYear, int actualMonth, ListGenericBean<String> stringListGenericBean) {
-//        presenter = new SmsShowGridDailyPresenter(smsHourService, actualYear, actualMonth, stringListGenericBean, this);
-        presenter = new SmsShowGridDailyPresenter(smsHourService, Arrays.asList(actualYear, actualMonth), stringListGenericBean, this);
+//        presenter = new DailySmsShowGridPresenter(smsHourService, actualYear, actualMonth, stringListGenericBean, this);
+        presenter = new DailySmsShowGridPresenter(smsHourService, Arrays.asList(actualYear, actualMonth), stringListGenericBean, this);
 //        stringDate = actualDay + "/" + actualMonth + "/" + actualYear;
         rowHeader.add(new H3("Mes Actual nuevo todo dizque general"));
         createColumns();

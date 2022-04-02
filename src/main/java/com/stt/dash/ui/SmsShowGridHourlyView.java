@@ -44,7 +44,7 @@ public class SmsShowGridHourlyView extends LitTemplate implements Viewnable<SmsB
     @Id("smsGrid")
     Grid<SmsByYearMonthDayHour> grid;
     /**/
-    private final SmsShowGridAbstractPresenter<SmsByYearMonthDayHour> presenter;
+    private final SmsShowGridPresenter<SmsByYearMonthDayHour> presenter;
     /**/
     private Grid.Column<SmsByYearMonthDayHour> groupByColum;
     private Grid.Column<SmsByYearMonthDayHour> someCodeColum;
@@ -54,7 +54,7 @@ public class SmsShowGridHourlyView extends LitTemplate implements Viewnable<SmsB
     private String stringDate;
 
     public SmsShowGridHourlyView(SmsHourService smsHourService, int actualYear, int actualMonth, int actualDay, ListGenericBean<String> stringListGenericBean) {
-        presenter = new SmsShowGridHourlyPresenter(smsHourService, actualYear, actualMonth, actualDay, stringListGenericBean, this);
+        presenter = new HourlySmsShowGridPresenter(smsHourService, actualYear, actualMonth, actualDay, stringListGenericBean, this);
         stringDate = actualDay + "/" + actualMonth + "/" + actualYear;
         rowHeader.add(new H3("Dia de hoy"));
         createColumns();

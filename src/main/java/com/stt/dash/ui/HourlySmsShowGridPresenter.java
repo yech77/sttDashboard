@@ -1,19 +1,16 @@
 package com.stt.dash.ui;
 
 import com.stt.dash.app.session.ListGenericBean;
-import com.stt.dash.backend.data.AbstractSmsByYearMonth;
 import com.stt.dash.backend.data.SmsByYearMonthDayHour;
 import com.stt.dash.backend.service.SmsHourService;
-import com.vaadin.flow.data.provider.ListDataProvider;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SmsShowGridHourlyPresenter extends SmsShowGridAbstractPresenter<SmsByYearMonthDayHour> {
+public class HourlySmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearMonthDayHour> {
 
 
-    public SmsShowGridHourlyPresenter(SmsHourService smsHourService, int actualYear, int actualMonth, int actualDay, ListGenericBean<String> stringListGenericBean, Viewnable<SmsByYearMonthDayHour> view) {
+    public HourlySmsShowGridPresenter(SmsHourService smsHourService, int actualYear, int actualMonth, int actualDay, ListGenericBean<String> stringListGenericBean, Viewnable<SmsByYearMonthDayHour> view) {
         super(smsHourService, Arrays.asList(actualYear, actualMonth, actualDay), stringListGenericBean, view);
         List<SmsByYearMonthDayHour> smsHourList = getGroupSmsBy(stringListGenericBean.getList(), Arrays.asList(actualYear, actualMonth, actualDay));
         updateDataProvider(smsHourList);

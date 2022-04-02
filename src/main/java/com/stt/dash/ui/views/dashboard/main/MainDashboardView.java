@@ -89,13 +89,13 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
     private MainCounterLabel totalCounterLabel;
 
     @Id("deliveriesThisMonth")
-    private Chart deliveriesThisMonthChart;
+    private Chart smsThisMonthChart;
 
     @Id("deliveriesThisYear")
-    private Chart deliveriesThisYearChart;
+    private Chart smsThisDayChart;
 
     @Id("yearlySalesGraph")
-    private Chart monthlySmsGraph;
+    private Chart smsLastThreeMonthChart;
 
     @Id("ordersGrid")
     private Grid<FIlesToSend> grid;
@@ -157,9 +157,9 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         };
 
         todayCountChart.addChartLoadListener(chartLoadListener);
-        deliveriesThisMonthChart.addChartLoadListener(chartLoadListener);
-        deliveriesThisYearChart.addChartLoadListener(chartLoadListener);
-        monthlySmsGraph.addChartLoadListener(chartLoadListener);
+        smsThisMonthChart.addChartLoadListener(chartLoadListener);
+        smsThisDayChart.addChartLoadListener(chartLoadListener);
+        smsLastThreeMonthChart.addChartLoadListener(chartLoadListener);
         monthlyProductSplit.addChartLoadListener(chartLoadListener);
     }
 
@@ -288,7 +288,18 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
 
     private void populateDeliveriesCharts(DashboardData data) {
         LocalDate today = LocalDate.now();
-        deliveriesThisYearChart.addChartClickListener(click -> {
+        smsThisDayChart.addSeriesClickListener(click -> {
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            Button closeButton = new Button("Cerrar");
+            closeButton.addClickListener(c -> {
+                d.close();
+            });
+            SmsShowGridDailyView view = new SmsShowGridDailyView(smsHourService, actualYear, actualMonth, stingListGenericBean);
+            d.add(view, closeButton);
+            d.open();
+        });
+        smsThisDayChart.addChartClickListener(click -> {
             Dialog d = new Dialog();
             d.setWidth("75%");
             Button closeButton = new Button("Cerrar");
@@ -301,10 +312,10 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         });
 
         // init the 'Deliveries in [this year]' chart
-        Configuration yearConf = deliveriesThisYearChart.getConfiguration();
+        Configuration yearConf = smsThisDayChart.getConfiguration();
         configureColumnChart(yearConf);
-
         yearConf.setTitle("Enviados hoy");
+        yearConf.setExporting(true);
         yearConf.getxAxis().setCategories(MILITARY_HOURS);
         List<SmsByYearMonthDayHour> smsHourList = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actualYear, actualMonth, actualDay, stingListGenericBean.getList());
 
@@ -324,7 +335,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
         yearConf.setTooltip(tooltip);
         /**/
         // init the 'Deliveries in [this month]' chart
-        deliveriesThisMonthChart.addChartClickListener(click -> {
+        smsThisMonthChart.addSeriesClickListener(click -> {
             Dialog d = new Dialog();
             d.setWidth("75%");
             Button closeButton = new Button("Cerrar");
@@ -335,7 +346,18 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
             d.add(view, closeButton);
             d.open();
         });
-        Configuration monthConf = deliveriesThisMonthChart.getConfiguration();
+        smsThisMonthChart.addChartClickListener(click -> {
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            Button closeButton = new Button("Cerrar");
+            closeButton.addClickListener(c -> {
+                d.close();
+            });
+            SmsShowGridDailyView view = new SmsShowGridDailyView(smsHourService, actualYear, actualMonth, stingListGenericBean);
+            d.add(view, closeButton);
+            d.open();
+        });
+        Configuration monthConf = smsThisMonthChart.getConfiguration();
         configureColumnChart(monthConf);
         /**/
         List<SmsByYearMonthDay> groupSmsByYearMonthDayMessageType = smsHourService.getGroupSmsByYearMonthDayMessageType(actualYear, actualMonth, stingListGenericBean.getList());
@@ -351,6 +373,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
                 .mapToObj(String::valueOf).toArray(String[]::new);
 //        DataProviderSeries<SmsByYearMonthDay> series = new DataProviderSeries<>(dataProvider, SmsByYearMonthDay::getTotal);
         monthConf.setTitle("Mensajes este mes");
+        monthConf.setExporting(true);
         monthConf.getxAxis().setCategories(deliveriesThisMonthCategories);
         monthConf.getxAxis().setCrosshair(new Crosshair());
         ListSeries mtListSeries = new ListSeries("MT");
@@ -384,7 +407,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
      *
      */
     private void populateMonthlySmsChart() {
-        monthlySmsGraph.addChartClickListener(click -> {
+        smsLastThreeMonthChart.addSeriesClickListener(click -> {
             Dialog d = new Dialog();
             d.setWidth("75%");
             Button closeButton = new Button("Cerrar");
@@ -395,10 +418,22 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
             d.add(view, closeButton);
             d.open();
         });
-        Configuration conf = monthlySmsGraph.getConfiguration();
+        smsLastThreeMonthChart.addChartClickListener(click -> {
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            Button closeButton = new Button("Cerrar");
+            closeButton.addClickListener(c -> {
+                d.close();
+            });
+            SmsShowGridView view = new SmsShowGridView(smsHourService, monthsIn(2), stingListGenericBean);
+            d.add(view, closeButton);
+            d.open();
+        });
+        Configuration conf = smsLastThreeMonthChart.getConfiguration();
         conf.getChart().setType(ChartType.AREASPLINE);
         conf.getChart().setBorderRadius(4);
         conf.setTitle("Enviados en los Últimos tres Meses");
+        conf.setExporting(true);
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.x}</span><br/>");

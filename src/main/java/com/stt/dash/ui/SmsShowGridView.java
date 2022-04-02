@@ -46,7 +46,7 @@ public class SmsShowGridView extends LitTemplate implements Viewnable<SmsByYearM
     @Id("smsGrid")
     Grid<SmsByYearMonth> grid;
     /**/
-    private final SmsShowGridAbstractPresenter<SmsByYearMonth> presenter;
+    private final SmsShowGridPresenter<SmsByYearMonth> presenter;
     /**/
     private Grid.Column<SmsByYearMonth> groupByColum;
     private Grid.Column<SmsByYearMonth> someCodeColum;
@@ -55,7 +55,7 @@ public class SmsShowGridView extends LitTemplate implements Viewnable<SmsByYearM
     private Grid.Column<SmsByYearMonth> dateColumn;
 
     public SmsShowGridView(SmsHourService smsHourService, List<Integer> monthToShowList, ListGenericBean<String> stringListGenericBean) {
-        presenter = new SmsShowGridTrimestralPresenter(smsHourService, monthToShowList, stringListGenericBean, this);
+        presenter = new TrimesterSmsShowGridPresenter(smsHourService, monthToShowList, stringListGenericBean, this);
         rowHeader.add(new H3("Últimos tres meses nuevo"));
         createColumns();
         grid.setHeight("75%");

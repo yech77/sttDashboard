@@ -8,9 +8,9 @@ import com.stt.dash.backend.service.SmsHourService;
 import java.util.Calendar;
 import java.util.List;
 
-public class SmsShowGridTrimestralPresenter extends SmsShowGridAbstractPresenter<SmsByYearMonth> {
+public class TrimesterSmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearMonth> {
 
-    public SmsShowGridTrimestralPresenter(SmsHourService smsHourService, List<Integer> monthToShowList, ListGenericBean<String> stringListGenericBean, Viewnable<SmsByYearMonth> view) {
+    public TrimesterSmsShowGridPresenter(SmsHourService smsHourService, List<Integer> monthToShowList, ListGenericBean<String> stringListGenericBean, Viewnable<SmsByYearMonth> view) {
         super(smsHourService, monthToShowList, stringListGenericBean, view);
         List<SmsByYearMonth>
                 monthToShowDataList = getGroupSmsBy(stringListGenericBean.getList(), monthToShowList);
