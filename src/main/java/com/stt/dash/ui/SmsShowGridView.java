@@ -3,6 +3,7 @@ package com.stt.dash.ui;
 import com.stt.dash.app.OMonths;
 import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.AbstractSmsByYearMonth;
+import com.stt.dash.backend.data.SmsByYearMonth;
 import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.FormattingUtils;
@@ -19,7 +20,6 @@ import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.template.Id;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import org.vaadin.olli.FileDownloadWrapper;
 
@@ -32,7 +32,7 @@ import java.util.List;
 @JsModule("./src/views/smsgridview/sms-show-grid-view.ts")
 //@Route(value = BakeryConst.PAGE_SMS_SHOW_GRID_VIEW, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_SMS_SHOW_VIEW)
-public class SmsShowGridView extends LitTemplate implements Viewnable<AbstractSmsByYearMonth> {
+public class SmsShowGridView extends LitTemplate implements Viewnable<SmsByYearMonth> {
 
     @Id("row-header")
     Div rowHeader;
@@ -44,19 +44,19 @@ public class SmsShowGridView extends LitTemplate implements Viewnable<AbstractSm
     Div rowFooter;
 
     @Id("smsGrid")
-    Grid<AbstractSmsByYearMonth> grid;
+    Grid<SmsByYearMonth> grid;
     /**/
-    private final SmsShowGridTrimestralPresenter presenter;
+    private final SmsShowGridAbstractPresenter<SmsByYearMonth> presenter;
     /**/
-    private Grid.Column<AbstractSmsByYearMonth> groupByColum;
-    private Grid.Column<AbstractSmsByYearMonth> someCodeColum;
-    private Grid.Column<AbstractSmsByYearMonth> totalColumn;
-    private Grid.Column<AbstractSmsByYearMonth> messageTypeColum;
-    private Grid.Column<AbstractSmsByYearMonth> dateColumn;
+    private Grid.Column<SmsByYearMonth> groupByColum;
+    private Grid.Column<SmsByYearMonth> someCodeColum;
+    private Grid.Column<SmsByYearMonth> totalColumn;
+    private Grid.Column<SmsByYearMonth> messageTypeColum;
+    private Grid.Column<SmsByYearMonth> dateColumn;
 
     public SmsShowGridView(SmsHourService smsHourService, List<Integer> monthToShowList, ListGenericBean<String> stringListGenericBean) {
         presenter = new SmsShowGridTrimestralPresenter(smsHourService, monthToShowList, stringListGenericBean, this);
-        rowHeader.add(new H3("Últimos tres meses"));
+        rowHeader.add(new H3("Últimos tres meses nuevo"));
         createColumns();
         grid.setHeight("75%");
     }
@@ -69,16 +69,16 @@ public class SmsShowGridView extends LitTemplate implements Viewnable<AbstractSm
     }
 
     @Override
-    public void setGridDataProvider(ListDataProvider<AbstractSmsByYearMonth> dataProvider) {
+    public void setGridDataProvider(ListDataProvider<SmsByYearMonth> dataProvider) {
         grid.setDataProvider(dataProvider);
     }
 
     @Override
-    public void updateDownloadButton(Collection<AbstractSmsByYearMonth> messages) {
+    public void updateDownloadButton(Collection<SmsByYearMonth> messages) {
         rowBody.add(getDownloadButton(messages));
     }
 
-    private Component getDownloadButton(Collection<AbstractSmsByYearMonth> messages) {
+    private Component getDownloadButton(Collection<SmsByYearMonth> messages) {
         String fileName = "trimestre-Mensajes.csv";
         Button download = new Button("Descargar");
 
@@ -94,7 +94,7 @@ public class SmsShowGridView extends LitTemplate implements Viewnable<AbstractSm
         return buttonWrapper;
     }
 
-    public String getStringData(Collection<AbstractSmsByYearMonth> messages) {
+    public String getStringData(Collection<SmsByYearMonth> messages) {
         if (messages.size() > 5000000) {
             System.out.println("Daily message limit reached. Code not able to handle this size of string.");
             return "";

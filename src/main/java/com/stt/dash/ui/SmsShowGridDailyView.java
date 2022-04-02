@@ -2,6 +2,7 @@ package com.stt.dash.ui;
 
 import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.AbstractSmsByYearMonth;
+import com.stt.dash.backend.data.SmsByYearMonthDay;
 import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.FormattingUtils;
@@ -22,6 +23,7 @@ import com.vaadin.flow.server.StreamResource;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
+import java.util.Arrays;
 import java.util.Collection;
 
 
@@ -29,7 +31,7 @@ import java.util.Collection;
 @JsModule("./src/views/smsgridview/sms-show-grid-view.ts")
 //@Route(value = BakeryConst.PAGE_SMS_SHOW_GRID_VIEW, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_SMS_SHOW_VIEW)
-public class SmsShowGridDailyView extends LitTemplate implements Viewnable<AbstractSmsByYearMonth> {
+public class SmsShowGridDailyView extends LitTemplate implements Viewnable<SmsByYearMonthDay> {
 
     @Id("row-header")
     Div rowHeader;
@@ -41,21 +43,23 @@ public class SmsShowGridDailyView extends LitTemplate implements Viewnable<Abstr
     Div rowFooter;
 
     @Id("smsGrid")
-    Grid<AbstractSmsByYearMonth> grid;
+    Grid<SmsByYearMonthDay> grid;
     /**/
+//    private final SmsShowGridDailyPresenter presenter;
     private final SmsShowGridDailyPresenter presenter;
     /**/
-    private Grid.Column<AbstractSmsByYearMonth> groupByColum;
-    private Grid.Column<AbstractSmsByYearMonth> someCodeColum;
-    private Grid.Column<AbstractSmsByYearMonth> totalColumn;
-    private Grid.Column<AbstractSmsByYearMonth> messageTypeColum;
-    private Grid.Column<AbstractSmsByYearMonth> dateColumn;
+    private Grid.Column<SmsByYearMonthDay> groupByColum;
+    private Grid.Column<SmsByYearMonthDay> someCodeColum;
+    private Grid.Column<SmsByYearMonthDay> totalColumn;
+    private Grid.Column<SmsByYearMonthDay> messageTypeColum;
+    private Grid.Column<SmsByYearMonthDay> dateColumn;
 //    private String stringDate;
 
     public SmsShowGridDailyView(SmsHourService smsHourService, int actualYear, int actualMonth, ListGenericBean<String> stringListGenericBean) {
-        presenter = new SmsShowGridDailyPresenter(smsHourService, actualYear, actualMonth, stringListGenericBean, this);
+//        presenter = new SmsShowGridDailyPresenter(smsHourService, actualYear, actualMonth, stringListGenericBean, this);
+        presenter = new SmsShowGridDailyPresenter(smsHourService, Arrays.asList(actualYear, actualMonth), stringListGenericBean, this);
 //        stringDate = actualDay + "/" + actualMonth + "/" + actualYear;
-        rowHeader.add(new H3("Mes Actual"));
+        rowHeader.add(new H3("Mes Actual nuevo todo dizque general"));
         createColumns();
         grid.setHeight("75%");
     }
@@ -68,16 +72,16 @@ public class SmsShowGridDailyView extends LitTemplate implements Viewnable<Abstr
     }
 
     @Override
-    public void setGridDataProvider(ListDataProvider<AbstractSmsByYearMonth> dataProvider) {
+    public void setGridDataProvider(ListDataProvider<SmsByYearMonthDay> dataProvider) {
         grid.setDataProvider(dataProvider);
     }
 
     @Override
-    public void updateDownloadButton(Collection<AbstractSmsByYearMonth> messages) {
+    public void updateDownloadButton(Collection<SmsByYearMonthDay> messages) {
         rowBody.add(getDownloadButton(messages));
     }
 
-    private Component getDownloadButton(Collection<AbstractSmsByYearMonth> messages) {
+    private Component getDownloadButton(Collection<SmsByYearMonthDay> messages) {
         String fileName = "mes-actual-Mensajes.csv";
         Button download = new Button("Descargar");
 
@@ -93,7 +97,7 @@ public class SmsShowGridDailyView extends LitTemplate implements Viewnable<Abstr
         return buttonWrapper;
     }
 
-    public String getStringData(Collection<AbstractSmsByYearMonth> messages) {
+    public String getStringData(Collection<SmsByYearMonthDay> messages) {
         if (messages.size() > 5000000) {
             System.out.println("Daily message limit reached. Code not able to handle this size of string.");
             return "";

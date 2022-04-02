@@ -1,5 +1,6 @@
 package com.stt.dash.app.session;
 
+import com.stt.dash.app.OProperties;
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.security.SecurityUtils;
 import com.stt.dash.backend.data.entity.SystemId;
@@ -8,6 +9,7 @@ import com.stt.dash.backend.repositories.SystemIdRepository;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -116,9 +118,9 @@ public class STTConfiguration {
 
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public WebClient builderWebclient() {
+    public WebClient builderWebclient(@Autowired OProperties prop) {
         return WebClient.builder()
-                .baseUrl("http://localhost:8081")
+                .baseUrl(prop.getOrinocoHost())
                 .defaultHeaders(header -> header.setBasicAuth("orinoco", "0R1n0coRIv3r$"))
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();

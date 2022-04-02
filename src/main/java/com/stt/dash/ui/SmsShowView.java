@@ -2,9 +2,8 @@ package com.stt.dash.ui;
 
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.ListGenericBean;
-import com.stt.dash.backend.data.OUserSession;
-import com.stt.dash.backend.data.entity.Carrier;
 import com.stt.dash.backend.data.entity.Client;
+import com.stt.dash.backend.data.entity.ORole;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.data.entity.sms.AbstractSMS;
@@ -15,7 +14,6 @@ import com.vaadin.componentfactory.DateRange;
 import com.vaadin.componentfactory.EnhancedDateRangePicker;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -30,16 +28,15 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.template.Id;
 import com.vaadin.flow.component.textfield.IntegerField;
-import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
+import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
@@ -49,12 +46,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Tag("sms-show-view")
 @JsModule("./src/views/smsview/sms-show-view.ts")
@@ -91,11 +84,14 @@ public class SmsShowView extends LitTemplate {
     private Grid.Column<AbstractSMS> systemIdColumn;
     private Grid.Column<AbstractSMS> messageTypeColum;
     private Grid.Column<AbstractSMS> dateColumn;
+    /**/
+    private boolean hasAuthToViewMsgTextColumn = false;
 
     public SmsShowView(@Autowired CurrentUser currentUser,
                        @Autowired AbstractSmsService service,
                        @Qualifier("getUserSystemIdString") ListGenericBean<String> stringListGenericBean) {
         presenter = new SmsShowPresenter(service, this);
+        hasAuthToViewMsgTextColumn = isGrantedMsgTextColumn(currentUser.getUser().getRoles());
         /**/
         dateOne.setMin(LocalDate.now().minusMonths(1));
         dateOne.setMax(LocalDate.now());
@@ -160,6 +156,16 @@ public class SmsShowView extends LitTemplate {
         secondline.add(searchButton);
         footer.add(comboItemsPerPage, currentPageTextbox, totalAmountOfPagesLabel);
         addValueChangeListener();
+    }
+
+    private boolean isGrantedMsgTextColumn(Set<ORole> roles) {
+        return roles.stream().filter(rol -> {
+            return rol.getAuthorities().stream().filter(auth -> {
+                        return auth.getAuthName().equalsIgnoreCase("VIEW_MSG_TEXT");
+                    })
+                    .findFirst()
+                    .isPresent();
+        }).findFirst().isPresent();
     }
 
     private void addValueChangeListener() {
@@ -269,35 +275,62 @@ public class SmsShowView extends LitTemplate {
         createPhoneNumberColumn();
         createCarrierColumn();
         createSystemIdColumn();
-        createMessageypeColumn();
+        if (!hasAuthToViewMsgTextColumn) {
+            createMessageypeColumn();
+        } else {
+            createMessageypeAndMsgTExtColumn();
+        }
         createDateColumn();
     }
 
     private void createPhoneNumberColumn() {
-        phoneColum = grid
-                .addColumn(AbstractSMS::getDestination)
-                .setComparator(client -> client.getDestination()).setHeader("Telefono")
+        phoneColum = grid.addColumn(TemplateRenderer.<AbstractSMS>of(
+                                "<div><b>[[item.dest]]</b><br><small>[[item.source]]</small></div>")
+                        .withProperty("dest", col -> {
+                            return col.getDestination();
+                        })
+                        .withProperty("source", AbstractSMS::getSource))
+                .setComparator(client -> client.getDestination()).setHeader("destino / source")
                 .setWidth("180px").setFlexGrow(0);
     }
 
     private void createCarrierColumn() {
         carrierColum = grid
-                .addColumn(AbstractSMS::getCarrierCharCode)
-                .setHeader("Operadora")
+                .addColumn(TemplateRenderer.<AbstractSMS>of(
+                                "<div><b>[[item.systemid]]</b><br><small>[[item.carriercode]]</small></div>")
+                        .withProperty("systemid", col -> {
+                            return col.getSystemId();
+                        })
+                        .withProperty("carriercode", AbstractSMS::getCarrierCharCode))
+                .setHeader("credencial / operadora")
                 .setAutoWidth(true);
     }
 
     private void createSystemIdColumn() {
-        systemIdColumn = grid
-                .addColumn(AbstractSMS::getSystemId)
-                .setComparator(client -> client.getSystemId()).setHeader("Credencial")
-                .setAutoWidth(true);
+//        systemIdColumn = grid
+//                .addColumn(AbstractSMS::getSystemId)
+//                .setComparator(client -> client.getSystemId()).setHeader("Credencial")
+//                .setAutoWidth(true);
     }
 
     private void createMessageypeColumn() {
+
         messageTypeColum = grid
                 .addColumn(AbstractSMS::getMessageType)
-                .setComparator(client -> client.getMessageType()).setHeader("Tipo de Mensaje")
+                .setComparator(client -> client.getMessageType())
+                .setHeader("tipo de mensaje")
+                .setAutoWidth(true);
+    }
+
+    private void createMessageypeAndMsgTExtColumn() {
+        messageTypeColum = grid
+                .addColumn(TemplateRenderer.<AbstractSMS>of(
+                                "<div><small><b>[[item.msgtype]]</b></small><br><small>[[item.msgtext]]</small></div>")
+                        .withProperty("msgtype", col -> {
+                            return col.getMessageType();
+                        })
+                        .withProperty("msgtext", AbstractSMS::getMessagesText))
+                .setComparator(client -> client.getMessageType()).setHeader("tipo de mensaje / mensaje")
                 .setAutoWidth(true);
     }
 
@@ -306,7 +339,7 @@ public class SmsShowView extends LitTemplate {
                 .addColumn(new LocalDateTimeRenderer<>(
                         client -> client.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
                         DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")))
-                .setComparator(AbstractSMS::getDate).setHeader("Fecha de envío")
+                .setComparator(AbstractSMS::getDate).setHeader("fecha de envío")
                 .setAutoWidth(true);
     }
 

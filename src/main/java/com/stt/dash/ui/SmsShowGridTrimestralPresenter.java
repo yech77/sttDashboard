@@ -4,23 +4,16 @@ import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.AbstractSmsByYearMonth;
 import com.stt.dash.backend.data.SmsByYearMonth;
 import com.stt.dash.backend.service.SmsHourService;
-import com.vaadin.flow.data.provider.ListDataProvider;
-import liquibase.pro.packaged.T;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class SmsShowGridTrimestralPresenter {
-    private final Viewnable view;
-    private ListDataProvider<AbstractSmsByYearMonth> dataProvider = new ListDataProvider<>(new ArrayList<>());
-    private final SmsHourService smsHourService;
+public class SmsShowGridTrimestralPresenter extends SmsShowGridAbstractPresenter<SmsByYearMonth> {
 
-    public SmsShowGridTrimestralPresenter(SmsHourService smsHourService, List<Integer> monthToShowList, ListGenericBean<String> stringListGenericBean, Viewnable<AbstractSmsByYearMonth> view) {
-        this.view = view;
-        this.smsHourService = smsHourService;
+    public SmsShowGridTrimestralPresenter(SmsHourService smsHourService, List<Integer> monthToShowList, ListGenericBean<String> stringListGenericBean, Viewnable<SmsByYearMonth> view) {
+        super(smsHourService, monthToShowList, stringListGenericBean, view);
         List<SmsByYearMonth>
-                monthToShowDataList = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(2022, monthToShowList, stringListGenericBean.getList());
+                monthToShowDataList = getGroupSmsBy(stringListGenericBean.getList(), monthToShowList);
         Calendar c = Calendar.getInstance();
         /* Completar MONTH faltante con 0 */
         for (int monthRunner = 1; monthRunner <= 3; monthRunner++) {
@@ -45,14 +38,8 @@ public class SmsShowGridTrimestralPresenter {
         updateInView(dataProvider);
     }
 
-    public void updateDataProvider(List<? extends AbstractSmsByYearMonth> smsByYearMonthList) {
-        dataProvider.getItems().clear();
-        dataProvider.getItems().addAll(smsByYearMonthList);
-        dataProvider.refreshAll();
-    }
-
-    private void updateInView(ListDataProvider<AbstractSmsByYearMonth> dataProvider) {
-        view.setGridDataProvider(dataProvider);
-        view.updateDownloadButton(dataProvider.getItems());
+    @Override
+    public List<SmsByYearMonth> getGroupSmsBy(List<String> stringList, List<Integer> integerList) {
+        return smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(2022, integerList, stringList);
     }
 }

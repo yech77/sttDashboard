@@ -27,9 +27,9 @@ public class OWebClient<T> {
 //            .build();
     protected Class<T> xClass;
     protected WebClient webClient;
-    final static String url_sync_cli = "/ws/data/sync/cli/{id}";
-    final static String url_sync_sys = "/ws/data/sync/sys/{id}";
-    public final static String url_sync_data = "/ws/data/sync/cliid/{idClient}/sysid/{idSys}";
+    final static String url_sync_cli = "orinoco-admin/ws/data/sync/cli/{id}";
+    final static String url_sync_sys = "orinoco-admin/ws/data/sync/sys/{id}";
+    public final static String url_sync_data = "orinoco-admin/ws/data/sync/cliid/{idClient}/sysid/{idSys}";
 
 
     // TODO: Descablear

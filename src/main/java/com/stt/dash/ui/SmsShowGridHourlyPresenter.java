@@ -7,29 +7,21 @@ import com.stt.dash.backend.service.SmsHourService;
 import com.vaadin.flow.data.provider.ListDataProvider;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class SmsShowGridHourlyPresenter {
-    private final Viewnable view;
-    private ListDataProvider<AbstractSmsByYearMonth> dataProvider = new ListDataProvider<>(new ArrayList<>());
-    private final SmsHourService smsHourService;
+public class SmsShowGridHourlyPresenter extends SmsShowGridAbstractPresenter<SmsByYearMonthDayHour> {
 
-    public SmsShowGridHourlyPresenter(SmsHourService smsHourService, int actualYear, int actualMonth, int actualDay, ListGenericBean<String> stringListGenericBean, Viewnable<AbstractSmsByYearMonth> view) {
-        this.view = view;
-        this.smsHourService = smsHourService;
-        List<SmsByYearMonthDayHour> smsHourList = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actualYear, actualMonth, actualDay, stringListGenericBean.getList());
+
+    public SmsShowGridHourlyPresenter(SmsHourService smsHourService, int actualYear, int actualMonth, int actualDay, ListGenericBean<String> stringListGenericBean, Viewnable<SmsByYearMonthDayHour> view) {
+        super(smsHourService, Arrays.asList(actualYear, actualMonth, actualDay), stringListGenericBean, view);
+        List<SmsByYearMonthDayHour> smsHourList = getGroupSmsBy(stringListGenericBean.getList(), Arrays.asList(actualYear, actualMonth, actualDay));
         updateDataProvider(smsHourList);
         updateInView(dataProvider);
     }
 
-    public void updateDataProvider(List<? extends AbstractSmsByYearMonth> smsByYearMonthList) {
-        dataProvider.getItems().clear();
-        dataProvider.getItems().addAll(smsByYearMonthList);
-        dataProvider.refreshAll();
-    }
-
-    private void updateInView(ListDataProvider<AbstractSmsByYearMonth> dataProvider) {
-        view.setGridDataProvider(dataProvider);
-        view.updateDownloadButton(dataProvider.getItems());
+    @Override
+    public List<SmsByYearMonthDayHour> getGroupSmsBy(List<String> stringList, List<Integer> integerList) {
+        return smsHourService.getGroupSmsByYearMonthDayHourMessageType(integerList.get(0), integerList.get(1), integerList.get(2), stringList);
     }
 }
