@@ -9,9 +9,12 @@ import com.stt.dash.backend.data.entity.Carrier;
 import com.stt.dash.backend.data.entity.Client;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
+import com.stt.dash.backend.service.AbstractSmsService;
 import com.stt.dash.backend.service.CarrierService;
 import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
+import com.stt.dash.ui.SmsShowGridAllView;
+import com.stt.dash.ui.SmsShowGridHourlyView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
 import com.vaadin.flow.component.Tag;
@@ -22,6 +25,7 @@ import com.vaadin.flow.component.charts.model.*;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
@@ -30,6 +34,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.templatemodel.TemplateModel;
+import org.apache.commons.compress.utils.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -73,6 +78,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     /**/
     Logger log = LoggerFactory.getLogger(ClientChartView.class);
     private final SmsHourService smsHourService;
+    private final AbstractSmsService abstractSmsService;
     private final ListGenericBean<String> allUserStringSystemId;
     private final CurrentUser currentUser;
     /*Fechas */
@@ -94,10 +100,12 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     private List<Integer> dayList = new ArrayList<>();
     private List<Carrier> carrierList;
 
-    public ClientChartView(SmsHourService smsHourService,
+    public ClientChartView(AbstractSmsService abstractSmsService,
+                           SmsHourService smsHourService,
                            CarrierService carrierService,
                            @Qualifier("getUserSystemIdString") ListGenericBean<String> allUserStringSystemId,
                            CurrentUser currentUser) {
+        this.abstractSmsService = abstractSmsService;
         this.smsHourService = smsHourService;
         this.allUserStringSystemId = allUserStringSystemId;
         this.currentUser = currentUser;
@@ -282,6 +290,40 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
 
     private void updateHourlyChart() {
         Configuration confHourlyChart = clientHourlyChart.getConfiguration();
+
+        clientHourlyChart.addPointClickListener(listener -> {
+            int seriesItemIndex = listener.getItemIndex();
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            Button closeButton = new Button("Cerrar");
+            closeButton.addClickListener(c -> {
+                d.close();
+            });
+            /* Convertir Set<SystemId> seleccionados en un List<String>*/
+            List<String> selectedSystemIdList = systemIdMultiCombo.getValue().stream().map(SystemId::getSystemId).collect(Collectors.toList());
+            SmsShowGridAllView view = new SmsShowGridAllView(abstractSmsService,
+                    smsHourService, seriesItemIndex,
+                    selectedSystemIdList);
+            view.extracted("Hora de: " + selectedSystemIdList.toString());
+            d.add(view, closeButton);
+            d.open();
+
+        });
+//        clientHourlyChart.addSeriesClickListener(listener -> {
+//            int seriesItemIndex = listener.getSeriesItemIndex();
+//            Dialog d = new Dialog();
+//            d.setWidth("75%");
+//            Button closeButton = new Button("Cerrar");
+//            closeButton.addClickListener(c -> {
+//                d.close();
+//            });
+//            SmsShowGridAllView view = new SmsShowGridAllView(abstractSmsService,
+//                    smsHourService, seriesItemIndex,
+//                    allUserStringSystemId);
+//            d.add(view, closeButton);
+//            d.open();
+//
+//        });
         confHourlyChart.setTitle(OMonths.valueOf(actual_month).getMonthName() + " - dia de hoy");
         confHourlyChart.setSubTitle("por hora");
         confHourlyChart.getyAxis().setTitle("SMS");

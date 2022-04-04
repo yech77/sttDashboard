@@ -576,6 +576,26 @@ public class AbstractSmsService {
         return p;
     }
 
+    public Page<AbstractSMS> getAllMessages(List<String> systemIds, LocalDate dateOne, int hour, int page, int pageSize) {
+        /* DATE */
+        Date dateStart = null;
+        Date dateEnd = null;
+        try {
+            dateStart = ODateUitls.parseToDateFrom(dateOne, hour);
+            dateEnd = ODateUitls.parseToDateTo(dateOne, hour);
+        } catch (ParseException e) {
+            log.error("Error parsing date " + dateEnd);
+            throw new UserFriendlyDataException("Error con la fecha");
+        }
+
+        Pageable paging = PageRequest.of(page, pageSize);
+        Page<AbstractSMS> p = monthRepos[dateOne.getMonthValue() - 1].findByDateBetweenAndSystemIdIn(dateStart,
+                dateEnd,
+                systemIds,
+                paging);
+        return p;
+    }
+
     public List<AbstractSMS> getAllMessages(int year, int month, int day, List<String> systemIds, int page) {
         List<AbstractSMS> list = new ArrayList<>();
 

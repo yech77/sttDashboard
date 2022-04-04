@@ -12,7 +12,7 @@ public abstract class SmsShowGridPresenter<T> {
     ListDataProvider<T> dataProvider = new ListDataProvider<>(new ArrayList<>());
     final SmsHourService smsHourService;
 
-    public SmsShowGridPresenter(SmsHourService smsHourService, List<Integer> integerList, ListGenericBean<String> stringListGenericBean, Viewnable<T> view) {
+    public SmsShowGridPresenter(SmsHourService smsHourService, List<Integer> integerList, List<String> stringListGenericBean, Viewnable<T> view) {
         this.view = view;
         this.smsHourService = smsHourService;
     }
@@ -29,5 +29,9 @@ public abstract class SmsShowGridPresenter<T> {
     }
 
     public abstract List<T> getGroupSmsBy(List<String> stringList, List<Integer> integerList);
+
+    public List<T> getGroupSmsBy(List<String> stringList, List<Integer> integerList, int page, int pageSize) {
+        return null;
+    }
 
 }

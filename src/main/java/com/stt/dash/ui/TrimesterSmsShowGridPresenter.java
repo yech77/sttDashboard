@@ -11,7 +11,7 @@ import java.util.List;
 public class TrimesterSmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearMonth> {
 
     public TrimesterSmsShowGridPresenter(SmsHourService smsHourService, List<Integer> monthToShowList, ListGenericBean<String> stringListGenericBean, Viewnable<SmsByYearMonth> view) {
-        super(smsHourService, monthToShowList, stringListGenericBean, view);
+        super(smsHourService, monthToShowList, stringListGenericBean.getList(), view);
         List<SmsByYearMonth>
                 monthToShowDataList = getGroupSmsBy(stringListGenericBean.getList(), monthToShowList);
         Calendar c = Calendar.getInstance();

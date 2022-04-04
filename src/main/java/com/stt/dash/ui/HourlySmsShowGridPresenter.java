@@ -11,7 +11,7 @@ public class HourlySmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearMo
 
 
     public HourlySmsShowGridPresenter(SmsHourService smsHourService, int actualYear, int actualMonth, int actualDay, ListGenericBean<String> stringListGenericBean, Viewnable<SmsByYearMonthDayHour> view) {
-        super(smsHourService, Arrays.asList(actualYear, actualMonth, actualDay), stringListGenericBean, view);
+        super(smsHourService, Arrays.asList(actualYear, actualMonth, actualDay), stringListGenericBean.getList(), view);
         List<SmsByYearMonthDayHour> smsHourList = getGroupSmsBy(stringListGenericBean.getList(), Arrays.asList(actualYear, actualMonth, actualDay));
         updateDataProvider(smsHourList);
         updateInView(dataProvider);
