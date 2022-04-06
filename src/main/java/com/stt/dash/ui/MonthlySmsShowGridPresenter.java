@@ -8,12 +8,12 @@ import com.stt.dash.backend.service.SmsHourService;
 import java.util.Calendar;
 import java.util.List;
 
-public class TrimesterSmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearMonth> {
+public class MonthlySmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearMonth> {
 
-    public TrimesterSmsShowGridPresenter(SmsHourService smsHourService, List<Integer> monthToShowList, ListGenericBean<String> stringListGenericBean, Viewnable<SmsByYearMonth> view) {
-        super(smsHourService, monthToShowList, stringListGenericBean.getList(), view);
+    public MonthlySmsShowGridPresenter(SmsHourService smsHourService, List<Integer> monthToShowList, List<String> stringListGenericBean, Viewnable<SmsByYearMonth> view) {
+        super(smsHourService, monthToShowList, stringListGenericBean, view);
         List<SmsByYearMonth>
-                monthToShowDataList = getGroupSmsBy(stringListGenericBean.getList(), monthToShowList);
+                monthToShowDataList = getGroupSmsBy(stringListGenericBean, monthToShowList);
         Calendar c = Calendar.getInstance();
         /* Completar MONTH faltante con 0 */
         for (int monthRunner = 1; monthRunner <= 3; monthRunner++) {
@@ -39,7 +39,7 @@ public class TrimesterSmsShowGridPresenter extends SmsShowGridPresenter<SmsByYea
     }
 
     @Override
-    public List<SmsByYearMonth> getGroupSmsBy(List<String> stringList, List<Integer> integerList) {
-        return smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(2022, integerList, stringList);
+    public List<SmsByYearMonth> getGroupSmsBy(List<String> systemidList, List<Integer> monthList) {
+        return smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(2022, monthList, systemidList);
     }
 }

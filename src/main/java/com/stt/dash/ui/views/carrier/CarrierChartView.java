@@ -297,7 +297,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     private void updateDaily(List<String> sids) {
         List<String> carrier_list = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
         /* --------------DIARIO */
-        List<SmsByYearMonthDay> smsDayGroup = smsHourService.getGroupSmsByYearMonthDayMessageType(actual_year, actual_month, sids);
+        List<SmsByYearMonthDay> smsDayGroup = smsHourService.groupByYearMonthDayMessageTypeWhereYearAndMonth(actual_year, actual_month, sids);
         List<SmsByYearMonthDay> carrierDayGroup = smsHourService.getGroupCarrierByYeMoMe(actual_year,
                 actual_month,
                 carrier_list,

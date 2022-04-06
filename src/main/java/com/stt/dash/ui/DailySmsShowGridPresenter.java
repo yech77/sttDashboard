@@ -6,6 +6,9 @@ import com.stt.dash.backend.service.SmsHourService;
 
 import java.util.List;
 
+/**
+ * Presenta la data por dia, del mes seleccionado.
+ */
 public class DailySmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearMonthDay> {
 
     public DailySmsShowGridPresenter(SmsHourService smsHourService, List<Integer> integerList, ListGenericBean<String> stringListGenericBean, Viewnable<SmsByYearMonthDay> view) {
@@ -17,7 +20,7 @@ public class DailySmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearMon
 
     @Override
     public List<SmsByYearMonthDay> getGroupSmsBy(List<String> stringList, List<Integer> integerList) {
-        return smsHourService.getGroupSmsByYearMonthDayMessageType(
+        return smsHourService.groupByYearMonthDayMessageTypeWhereYearAndMonth(
                 integerList.get(0),
                 integerList.get(1),
                 stringList);

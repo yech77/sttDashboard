@@ -5,6 +5,11 @@ import liquibase.pro.packaged.T;
 
 import java.util.Collection;
 
+/**
+ * Metodos para la asignacion de Provider y para data de sms
+ *
+ * @param <T>
+ */
 public interface Viewnable<T> {
     void setGridDataProvider(ListDataProvider<T> dataProvider);
 

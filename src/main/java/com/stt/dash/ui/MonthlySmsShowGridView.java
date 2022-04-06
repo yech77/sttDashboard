@@ -32,7 +32,7 @@ import java.util.List;
 @JsModule("./src/views/smsgridview/sms-show-grid-view.ts")
 //@Route(value = BakeryConst.PAGE_SMS_SHOW_GRID_VIEW, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_SMS_SHOW_VIEW)
-public class SmsShowGridView extends LitTemplate implements Viewnable<SmsByYearMonth> {
+public class MonthlySmsShowGridView extends LitTemplate implements Viewnable<SmsByYearMonth> {
 
     @Id("row-header")
     Div rowHeader;
@@ -54,9 +54,9 @@ public class SmsShowGridView extends LitTemplate implements Viewnable<SmsByYearM
     private Grid.Column<SmsByYearMonth> messageTypeColum;
     private Grid.Column<SmsByYearMonth> dateColumn;
 
-    public SmsShowGridView(SmsHourService smsHourService, List<Integer> monthToShowList, ListGenericBean<String> stringListGenericBean) {
-        presenter = new TrimesterSmsShowGridPresenter(smsHourService, monthToShowList, stringListGenericBean, this);
-        rowHeader.add(new H3("Últimos tres meses nuevo"));
+    public MonthlySmsShowGridView(SmsHourService smsHourService, List<Integer> monthToShowList, List<String> systemidList) {
+        presenter = new MonthlySmsShowGridPresenter(smsHourService, monthToShowList, systemidList, this);
+        setRowHeader("Últimos tres meses");
         createColumns();
         grid.setHeight("75%");
     }
@@ -66,6 +66,10 @@ public class SmsShowGridView extends LitTemplate implements Viewnable<SmsByYearM
         createSomeCodeColumn();
         createTotalColumn();
         grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+    }
+
+    public void setRowHeader(String title) {
+        rowHeader.add(new H3(title));
     }
 
     @Override

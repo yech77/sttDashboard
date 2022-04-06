@@ -11,9 +11,9 @@ import com.stt.dash.backend.data.entity.Product;
 import com.stt.dash.backend.service.OrderService;
 import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
-import com.stt.dash.ui.SmsShowGridDailyView;
+import com.stt.dash.ui.DailySmsShowGridView;
 import com.stt.dash.ui.SmsShowGridHourlyView;
-import com.stt.dash.ui.SmsShowGridView;
+import com.stt.dash.ui.MonthlySmsShowGridView;
 import com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.views.bulksms.FileToSendCard;
@@ -295,7 +295,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
             closeButton.addClickListener(c -> {
                 d.close();
             });
-            SmsShowGridDailyView view = new SmsShowGridDailyView(smsHourService, actualYear, actualMonth, stingListGenericBean);
+            DailySmsShowGridView view = new DailySmsShowGridView(smsHourService, actualYear, actualMonth, stingListGenericBean);
             d.add(view, closeButton);
             d.open();
         });
@@ -342,7 +342,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
             closeButton.addClickListener(c -> {
                 d.close();
             });
-            SmsShowGridDailyView view = new SmsShowGridDailyView(smsHourService, actualYear, actualMonth, stingListGenericBean);
+            DailySmsShowGridView view = new DailySmsShowGridView(smsHourService, actualYear, actualMonth, stingListGenericBean);
             d.add(view, closeButton);
             d.open();
         });
@@ -353,14 +353,14 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
             closeButton.addClickListener(c -> {
                 d.close();
             });
-            SmsShowGridDailyView view = new SmsShowGridDailyView(smsHourService, actualYear, actualMonth, stingListGenericBean);
+            DailySmsShowGridView view = new DailySmsShowGridView(smsHourService, actualYear, actualMonth, stingListGenericBean);
             d.add(view, closeButton);
             d.open();
         });
         Configuration monthConf = smsThisMonthChart.getConfiguration();
         configureColumnChart(monthConf);
         /**/
-        List<SmsByYearMonthDay> groupSmsByYearMonthDayMessageType = smsHourService.getGroupSmsByYearMonthDayMessageType(actualYear, actualMonth, stingListGenericBean.getList());
+        List<SmsByYearMonthDay> groupSmsByYearMonthDayMessageType = smsHourService.groupByYearMonthDayMessageTypeWhereYearAndMonth(actualYear, actualMonth, stingListGenericBean.getList());
         System.out.println("DEVUELTOS: " + groupSmsByYearMonthDayMessageType.size());
         List<Number> mt = fillDays(groupSmsByYearMonthDayMessageType, "MT");
         List<Number> mo = fillDays(groupSmsByYearMonthDayMessageType, "MO");
@@ -414,7 +414,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
             closeButton.addClickListener(c -> {
                 d.close();
             });
-            SmsShowGridView view = new SmsShowGridView(smsHourService, monthsIn(2), stingListGenericBean);
+            MonthlySmsShowGridView view = new MonthlySmsShowGridView(smsHourService, monthsIn(2), stingListGenericBean.getList());
             d.add(view, closeButton);
             d.open();
         });
@@ -425,7 +425,7 @@ public class MainDashboardView extends PolymerTemplate<TemplateModel> {
             closeButton.addClickListener(c -> {
                 d.close();
             });
-            SmsShowGridView view = new SmsShowGridView(smsHourService, monthsIn(2), stingListGenericBean);
+            MonthlySmsShowGridView view = new MonthlySmsShowGridView(smsHourService, monthsIn(2), stingListGenericBean.getList());
             d.add(view, closeButton);
             d.open();
         });

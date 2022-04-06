@@ -5,16 +5,9 @@ import com.stt.dash.backend.data.SmsByYearMonth;
 import com.stt.dash.backend.data.SmsByYearMonthDay;
 import com.stt.dash.backend.data.SmsByYearMonthDayHour;
 import com.stt.dash.backend.data.entity.Carrier;
-import com.stt.dash.backend.data.entity.SmsHour;
-import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.SmsHourRepository;
-import org.apache.commons.collections4.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -390,8 +383,8 @@ public class SmsHourService {
         return l;
     }
 
-    public List<SmsByYearMonthDay> getGroupSmsByYearMonthDayMessageType(int yearSms, int monthSms, List<String> list_sid) {
-        return smshour_repo.groupMessageTypeByYearMonthDay(yearSms, monthSms, list_sid);
+    public List<SmsByYearMonthDay> groupByYearMonthDayMessageTypeWhereYearAndMonth(int yearSms, int monthSms, List<String> list_sid) {
+        return smshour_repo.groupByYearMonthDayMessageTypeWhereYearAndMonth(yearSms, monthSms, list_sid);
     }
 
     public List<SmsByYearMonthDayHour> getGroupSmsByYearMonthDayHourMessageType(int yearSms, int monthSms, int daySms, List<String> list_sid) {

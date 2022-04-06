@@ -17,19 +17,41 @@ public abstract class SmsShowGridPresenter<T> {
         this.smsHourService = smsHourService;
     }
 
+    /**
+     * Actualizan la data en el dataProvider
+     *
+     * @param smsByYearMonthList
+     */
     public void updateDataProvider(List<T> smsByYearMonthList) {
         dataProvider.getItems().clear();
         dataProvider.getItems().addAll(smsByYearMonthList);
         dataProvider.refreshAll();
     }
 
+    /**
+     * @param dataProvider
+     */
     void updateInView(ListDataProvider<T> dataProvider) {
         view.setGridDataProvider(dataProvider);
         view.updateDownloadButton(dataProvider.getItems());
     }
 
+    /**
+     * Se realiza el llamado al servicio segun quien lo implemente.
+     *
+     * @param stringList
+     * @param integerList
+     * @return
+     */
     public abstract List<T> getGroupSmsBy(List<String> stringList, List<Integer> integerList);
 
+    /**
+     * Se realiza el llamado al servicio, que implementa paginacion, segun quien lo implemente.
+     *
+     * @param stringList
+     * @param integerList
+     * @return
+     */
     public List<T> getGroupSmsBy(List<String> stringList, List<Integer> integerList, int page, int pageSize) {
         return null;
     }

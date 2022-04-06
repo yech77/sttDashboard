@@ -13,8 +13,8 @@ import com.stt.dash.backend.service.AbstractSmsService;
 import com.stt.dash.backend.service.CarrierService;
 import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
+import com.stt.dash.ui.MonthlySmsShowGridView;
 import com.stt.dash.ui.SmsShowGridAllView;
-import com.stt.dash.ui.SmsShowGridHourlyView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
 import com.vaadin.flow.component.Tag;
@@ -34,7 +34,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.templatemodel.TemplateModel;
-import org.apache.commons.compress.utils.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -58,10 +57,10 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     Div divHeader;
 
     @Id("deliveriesThisMonth")
-    private Chart clientTriMixChart;
+    private Chart smsLastThreeMonthChart;
 
     @Id("carrierTriLineChart")
-    private Chart clientHourlyChart;
+    private Chart smsThisDayChart;
 
     @Id("carrierDailyChart")
     private Chart clientMonthlyChart;
@@ -289,9 +288,9 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     }
 
     private void updateHourlyChart() {
-        Configuration confHourlyChart = clientHourlyChart.getConfiguration();
+        Configuration confHourlyChart = smsThisDayChart.getConfiguration();
 
-        clientHourlyChart.addPointClickListener(listener -> {
+        smsThisDayChart.addPointClickListener(listener -> {
             int seriesItemIndex = listener.getItemIndex();
             Dialog d = new Dialog();
             d.setWidth("75%");
@@ -304,7 +303,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
             SmsShowGridAllView view = new SmsShowGridAllView(abstractSmsService,
                     smsHourService, seriesItemIndex,
                     selectedSystemIdList);
-            view.extracted("Hora de: " + selectedSystemIdList.toString());
+            view.extracted("Hora item - category - selected" + listener.getItemId() + listener.getCategory() + " " + selectedSystemIdList.toString());
             d.add(view, closeButton);
             d.open();
 
@@ -383,7 +382,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">Dia: {point.key}</span><br/>");
         confMonthlyLineChart.setTooltip(tooltip);
         /* Column Chart*/
-        List<SmsByYearMonthDay> l = smsHourService.getGroupSmsByYearMonthDayMessageType(LocalDate.now().getYear(), actual_month, allUserStringSystemId.getList());
+        List<SmsByYearMonthDay> l = smsHourService.groupByYearMonthDayMessageTypeWhereYearAndMonth(LocalDate.now().getYear(), actual_month, allUserStringSystemId.getList());
         List<Series> LineDateSeriesList = paEntender(l, dayList);
         addToChart(confMonthlyLineChart, LineDateSeriesList, plotColum);
         /* Line Chart */
@@ -394,8 +393,39 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     }
 
     private void updateTriMixChart() {
-        Configuration confTriMixChart = clientTriMixChart.getConfiguration();
+        /* Convertir Set<SystemId> seleccionados en un List<String>*/
+        systemIdMultiCombo
+                .getOptionalValue()
+                .ifPresent(value ->
+                        selectedSystemIdList = value.stream().map(SystemId::getSystemId).collect(Collectors.toList())
+                );
         /**/
+        Configuration confTriMixChart = smsLastThreeMonthChart.getConfiguration();
+        /**/
+        smsLastThreeMonthChart.addSeriesClickListener(click -> {
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            Button closeButton = new Button("Cerrar");
+            closeButton.addClickListener(c -> {
+                d.close();
+            });
+            MonthlySmsShowGridView view = new MonthlySmsShowGridView(smsHourService, monthsIn(2), selectedSystemIdList);
+            view.setRowHeader("addSeriesClickListener :" + click.getSeriesItemIndex());
+            d.add(view, closeButton);
+            d.open();
+        });
+        smsLastThreeMonthChart.addChartClickListener(click -> {
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            Button closeButton = new Button("Cerrar");
+            closeButton.addClickListener(c -> {
+                d.close();
+            });
+            MonthlySmsShowGridView view = new MonthlySmsShowGridView(smsHourService, monthsIn(2), selectedSystemIdList);
+            view.setRowHeader("addChartClick");
+            d.add(view, closeButton);
+            d.open();
+        });
         confTriMixChart.getyAxis().setTitle("SMS");
         confTriMixChart.setTitle("Trimestral - " + LocalDate.now().getYear());
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
@@ -406,12 +436,6 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         tooltip.setValueDecimals(0);
         tooltip.setShared(true);
         confTriMixChart.setTooltip(tooltip);
-        /* Convertir Set<SystemId> seleccionados en un List<String>*/
-        systemIdMultiCombo
-                .getOptionalValue()
-                .ifPresent(value ->
-                        selectedSystemIdList = value.stream().map(SystemId::getSystemId).collect(Collectors.toList())
-                );
 
         /* Buscar con todos los systemids del usuario. */
         List<SmsByYearMonth> l = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actual_year, monthsIn(2), allUserStringSystemId.getList());

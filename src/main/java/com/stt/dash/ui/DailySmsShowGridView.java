@@ -31,7 +31,7 @@ import java.util.Collection;
 @JsModule("./src/views/smsgridview/sms-show-grid-view.ts")
 //@Route(value = BakeryConst.PAGE_SMS_SHOW_GRID_VIEW, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_SMS_SHOW_VIEW)
-public class SmsShowGridDailyView extends LitTemplate implements Viewnable<SmsByYearMonthDay> {
+public class DailySmsShowGridView extends LitTemplate implements Viewnable<SmsByYearMonthDay> {
 
     @Id("row-header")
     Div rowHeader;
@@ -44,9 +44,8 @@ public class SmsShowGridDailyView extends LitTemplate implements Viewnable<SmsBy
 
     @Id("smsGrid")
     Grid<SmsByYearMonthDay> grid;
-    /**/
-//    private final DailySmsShowGridPresenter presenter;
-    private final DailySmsShowGridPresenter presenter;
+
+    private final SmsShowGridPresenter presenter;
     /**/
     private Grid.Column<SmsByYearMonthDay> groupByColum;
     private Grid.Column<SmsByYearMonthDay> someCodeColum;
@@ -55,11 +54,9 @@ public class SmsShowGridDailyView extends LitTemplate implements Viewnable<SmsBy
     private Grid.Column<SmsByYearMonthDay> dateColumn;
 //    private String stringDate;
 
-    public SmsShowGridDailyView(SmsHourService smsHourService, int actualYear, int actualMonth, ListGenericBean<String> stringListGenericBean) {
-//        presenter = new DailySmsShowGridPresenter(smsHourService, actualYear, actualMonth, stringListGenericBean, this);
+    public DailySmsShowGridView(SmsHourService smsHourService, int actualYear, int actualMonth, ListGenericBean<String> stringListGenericBean) {
         presenter = new DailySmsShowGridPresenter(smsHourService, Arrays.asList(actualYear, actualMonth), stringListGenericBean, this);
-//        stringDate = actualDay + "/" + actualMonth + "/" + actualYear;
-        rowHeader.add(new H3("Mes Actual nuevo todo dizque general"));
+        rowHeader.add(new H3("Mes Actual"));
         createColumns();
         grid.setHeight("75%");
     }
