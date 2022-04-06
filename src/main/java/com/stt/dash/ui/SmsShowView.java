@@ -16,6 +16,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.grid.FooterRow;
 import com.vaadin.flow.component.grid.Grid;
@@ -47,6 +48,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 @Tag("sms-show-view")
@@ -63,12 +65,18 @@ public class SmsShowView extends LitTemplate {
     @Id("smsGrid")
     Grid<AbstractSMS> grid;
     /**/
+    private Locale esLocale = new Locale("es", "ES");
+    /**/
     private final SmsShowPresenter presenter;
     /**/
     private Component componentWrapper;
     /* Hora del servidor para establecer busquedas de YYYY-MM-DD*/
     public static LocalDateTime localDateTime = LocalDateTime.now();
+    /**/
     private EnhancedDateRangePicker dateOne = new EnhancedDateRangePicker();
+    private DatePicker firstDate = new DatePicker();
+    private DatePicker secondDate = new DatePicker();
+    /**/
     private Button searchButton = new Button("Buscar");
     private IntegerField currentPageTextbox = new IntegerField("Página actual");
     private Label totalAmountOfPagesLabel = new Label();
@@ -102,6 +110,15 @@ public class SmsShowView extends LitTemplate {
         dateOne.setSidePanelVisible(false);
         dateOne.setLabel("Rango de busqueda");
         dateOne.setPattern(" dd-MM-yyyy");
+        /**/
+        firstDate.setLabel("Desde");
+        firstDate.setRequired(true);
+        firstDate.setLocale(esLocale);
+        secondDate.setLabel("Hasta");
+        secondDate.setRequired(true);
+        secondDate.setLocale(esLocale);
+        /**/
+
 //        dateOne.setWidthFull();
         /**/
         createGridComponent();
@@ -124,8 +141,8 @@ public class SmsShowView extends LitTemplate {
         comboItemsPerPage.addValueChangeListener(change -> {
             if (change.isFromClient()) {
                 itemsPerPage = change.getValue();
-                presenter.updateDataProviderPagin(dateOne.getValue().getStartDate(),
-                        dateOne.getValue().getEndDate(),
+                presenter.updateDataProviderPagin(firstDate.getValue(),
+                        secondDate.getValue(),
                         systemIdList,
                         currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
                 try {
@@ -142,8 +159,8 @@ public class SmsShowView extends LitTemplate {
         currentPageTextbox.addValueChangeListener(change -> {
             if (change.isFromClient()) {
                 try {
-                    presenter.updateDataProvider(dateOne.getValue().getStartDate(),
-                            dateOne.getValue().getEndDate(),
+                    presenter.updateDataProvider(firstDate.getValue(),
+                            secondDate.getValue(),
                             systemIdList,
                             currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
                 } catch (Exception e) {
@@ -152,7 +169,7 @@ public class SmsShowView extends LitTemplate {
             }
         });
         /**/
-        firstline.add(new HorizontalLayout(dateOne, clientCombobox));
+        firstline.add(new HorizontalLayout(firstDate, secondDate), clientCombobox);
         secondline.add(searchButton);
         footer.add(comboItemsPerPage, currentPageTextbox, totalAmountOfPagesLabel);
         addValueChangeListener();
@@ -171,8 +188,8 @@ public class SmsShowView extends LitTemplate {
     private void addValueChangeListener() {
         searchButton.addClickListener(click -> {
             click.getSource().setEnabled(false);
-            presenter.updateDataProviderPagin(dateOne.getValue().getStartDate(),
-                    dateOne.getValue().getEndDate(),
+            presenter.updateDataProviderPagin(firstDate.getValue(),
+                    secondDate.getValue(),
                     systemIdList,
                     currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
             grid.setPageSize(itemsPerPage);
@@ -273,8 +290,8 @@ public class SmsShowView extends LitTemplate {
 
     private void addColumnsToGrid() {
         createPhoneNumberColumn();
-        createCarrierColumn();
         createSystemIdColumn();
+        createCarrierColumn();
         if (!hasAuthToViewMsgTextColumn) {
             createMessageypeColumn();
         } else {
@@ -296,21 +313,16 @@ public class SmsShowView extends LitTemplate {
 
     private void createCarrierColumn() {
         carrierColum = grid
-                .addColumn(TemplateRenderer.<AbstractSMS>of(
-                                "<div><b>[[item.systemid]]</b><br><small>[[item.carriercode]]</small></div>")
-                        .withProperty("systemid", col -> {
-                            return col.getSystemId();
-                        })
-                        .withProperty("carriercode", AbstractSMS::getCarrierCharCode))
+                .addColumn(AbstractSMS::getCarrierCharCode)
                 .setHeader("credencial / operadora")
                 .setAutoWidth(true);
     }
 
     private void createSystemIdColumn() {
-//        systemIdColumn = grid
-//                .addColumn(AbstractSMS::getSystemId)
-//                .setComparator(client -> client.getSystemId()).setHeader("Credencial")
-//                .setAutoWidth(true);
+        systemIdColumn = grid
+                .addColumn(AbstractSMS::getSystemId)
+                .setComparator(client -> client.getSystemId()).setHeader("Credencial")
+                .setAutoWidth(true);
     }
 
     private void createMessageypeColumn() {
