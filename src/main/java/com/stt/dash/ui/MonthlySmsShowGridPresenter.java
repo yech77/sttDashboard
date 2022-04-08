@@ -19,25 +19,25 @@ public class MonthlySmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearM
         List<SmsByYearMonth>
                 monthToShowDataList = getGroupSmsBy(stringListGenericBean, monthToShowList);
         Calendar c = Calendar.getInstance();
-        /* Completar MONTH faltante con 0 */
-        for (int monthRunner = 1; monthRunner <= 3; monthRunner++) {
-            boolean thisHasIt = false;
-            for (AbstractSmsByYearMonth smsByYearMonth : monthToShowDataList) {
-                /* Si tengo el Month me salgo del ciclo. */
-                if (smsByYearMonth.getGroupBy() == monthRunner) {
-                    thisHasIt = true;
-                    break;
+        /* INcluir los MONTH faltantes con 0 */
+        /* Recorro la lista por cada tipo de mensaje */
+        messageType.forEach(smstype -> {
+            /* Recorro la lista por cada mes */
+            monthToShowList.forEach(monthRunner -> {
+                /* Busco en toda la lista */
+                Optional<SmsByYearMonth> first = monthToShowDataList
+                        .stream()
+                        .filter(sms -> {
+                            return sms.getGroupBy() == monthRunner &&
+                                    sms.getMessageType().equalsIgnoreCase(smstype);
+                        })
+                        .findFirst();
+                /* si la combinacion mes y tipo de mensaje no existe se crea con 0 */
+                if (!first.isPresent()) {
+                    monthToShowDataList.add(new SmsByYearMonth(0, 2022, monthRunner, smstype));
                 }
-            }
-            /* Agregar el MONTH faltante a la respuesta. */
-            if (!thisHasIt) {
-                /* TODO Descablear year*/
-                SmsByYearMonth de = new SmsByYearMonth(0, 2022, monthRunner, "MT");
-                monthToShowDataList.add(de);
-                de = new SmsByYearMonth(0, 2022, monthRunner, "MO");
-                monthToShowDataList.add(de);
-            }
-        }
+            });
+        });
         updateDataProvider(monthToShowDataList);
         updateInView(dataProvider);
     }
@@ -47,10 +47,11 @@ public class MonthlySmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearM
         this.messageType = messageType;
         List<SmsByYearMonth>
                 monthToShowDataList = getGroupSmsBy(stringListGenericBean, monthToShow);
-        /* Completar SystemID con 0 */
+        /* Incluir los SystemID que no estan en la lista con 0 */
+        /* Recorro la lista por cada tipo de mensaje */
         messageType.forEach(smstype -> {
             stringListGenericBean.forEach(systemid -> {
-                        /* Recorro la lista por cada tipo de mensaje */
+                        /* Busco en toda la lista */
                         Optional<SmsByYearMonth> first = monthToShowDataList
                                 .stream()
                                 .filter(sms -> {

@@ -81,6 +81,7 @@ public class MonthlySmsShowGridView extends LitTemplate implements Viewnable<Sms
     }
 
     public void setRowHeader(String title) {
+        rowHeader.removeAll();
         rowHeader.add(new H3(title));
     }
 
