@@ -12,9 +12,11 @@ import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.AbstractSmsService;
 import com.stt.dash.backend.service.CarrierService;
 import com.stt.dash.backend.service.SmsHourService;
+import com.stt.dash.ui.DailySmsShowGridView;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.MonthlySmsShowGridView;
 import com.stt.dash.ui.SmsShowGridAllView;
+import com.stt.dash.ui.SmsShowGridHourlyView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
 import com.vaadin.flow.component.Tag;
@@ -303,26 +305,24 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
             SmsShowGridAllView view = new SmsShowGridAllView(abstractSmsService,
                     smsHourService, seriesItemIndex,
                     selectedSystemIdList);
-            view.extracted("Hora item - category - selected" + listener.getItemId() + listener.getCategory() + " " + selectedSystemIdList.toString());
+            view.extracted("Hora" + listener.getItemId() + listener.getCategory() + " " + selectedSystemIdList.toString());
             d.add(view, closeButton);
             d.open();
-
         });
-//        clientHourlyChart.addSeriesClickListener(listener -> {
-//            int seriesItemIndex = listener.getSeriesItemIndex();
-//            Dialog d = new Dialog();
-//            d.setWidth("75%");
-//            Button closeButton = new Button("Cerrar");
-//            closeButton.addClickListener(c -> {
-//                d.close();
-//            });
-//            SmsShowGridAllView view = new SmsShowGridAllView(abstractSmsService,
-//                    smsHourService, seriesItemIndex,
-//                    allUserStringSystemId);
-//            d.add(view, closeButton);
-//            d.open();
-//
-//        });
+
+        smsThisDayChart.addChartClickListener(listener -> {
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            Button closeButton = new Button("Cerrar");
+            closeButton.addClickListener(c -> {
+                d.close();
+            });
+            /* Convertir Set<SystemId> seleccionados en un List<String>*/
+            List<String> selectedSystemIdList = systemIdMultiCombo.getValue().stream().map(SystemId::getSystemId).collect(Collectors.toList());
+            SmsShowGridHourlyView view = new SmsShowGridHourlyView(smsHourService, actual_year, actual_month, actual_day, selectedSystemIdList);
+            d.add(view, closeButton);
+            d.open();
+        });
         confHourlyChart.setTitle(OMonths.valueOf(actual_month).getMonthName() + " - dia de hoy");
         confHourlyChart.setSubTitle("por hora");
         confHourlyChart.getyAxis().setTitle("SMS");
@@ -412,7 +412,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
             Integer integer = integers.get(click.getItemIndex());
             List<String> messageTypeList = checkboxMessageType.getSelectedItems().stream().map(OMessageType::name).collect(Collectors.toList());
             MonthlySmsShowGridView view = new MonthlySmsShowGridView(smsHourService, integer, selectedSystemIdList, messageTypeList);
-            view.setRowHeader("Mes.");
+            view.setRowHeader("Mes");
             d.add(view, closeButton);
             d.open();
         });
@@ -424,7 +424,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
                 d.close();
             });
             MonthlySmsShowGridView view = new MonthlySmsShowGridView(smsHourService, monthsIn(2), selectedSystemIdList);
-            view.setRowHeader("Últimos tres meses.");
+            view.setRowHeader("Últimos tres meses");
             d.add(view, closeButton);
             d.open();
         });

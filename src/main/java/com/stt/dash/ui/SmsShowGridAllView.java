@@ -89,8 +89,8 @@ public class SmsShowGridAllView extends LitTemplate implements Viewnable<Abstrac
 
     private void addColumnsToGrid() {
         createPhoneNumberColumn();
-        createCarrierColumn();
         createSystemIdColumn();
+        createCarrierColumn();
         if (!hasAuthToViewMsgTextColumn) {
             createMessageypeColumn();
         } else {
@@ -112,21 +112,16 @@ public class SmsShowGridAllView extends LitTemplate implements Viewnable<Abstrac
 
     private void createCarrierColumn() {
         carrierColum = grid
-                .addColumn(TemplateRenderer.<AbstractSMS>of(
-                                "<div><b>[[item.systemid]]</b><br><small>[[item.carriercode]]</small></div>")
-                        .withProperty("systemid", col -> {
-                            return col.getSystemId();
-                        })
-                        .withProperty("carriercode", AbstractSMS::getCarrierCharCode))
-                .setHeader("credencial / operadora")
+                .addColumn(AbstractSMS::getCarrierCharCode)
+                .setHeader("operadora")
                 .setAutoWidth(true);
     }
 
     private void createSystemIdColumn() {
-//        systemIdColumn = grid
-//                .addColumn(AbstractSMS::getSystemId)
-//                .setComparator(client -> client.getSystemId()).setHeader("Credencial")
-//                .setAutoWidth(true);
+        systemIdColumn = grid
+                .addColumn(AbstractSMS::getSystemId)
+                .setComparator(client -> client.getSystemId()).setHeader("Credencial")
+                .setAutoWidth(true);
     }
 
     private void createMessageypeColumn() {

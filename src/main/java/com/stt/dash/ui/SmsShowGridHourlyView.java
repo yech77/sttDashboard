@@ -24,6 +24,7 @@ import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
+import java.util.List;
 
 
 @Tag("sms-show-grid-view")
@@ -53,8 +54,30 @@ public class SmsShowGridHourlyView extends LitTemplate implements Viewnable<SmsB
     private Grid.Column<SmsByYearMonthDayHour> dateColumn;
     private String stringDate;
 
+    /**
+     * Constructor cuando se trabaja con todos los systemid del usuario.
+     *
+     * @param smsHourService
+     * @param actualYear
+     * @param actualMonth
+     * @param actualDay
+     * @param stringListGenericBean
+     */
     public SmsShowGridHourlyView(SmsHourService smsHourService, int actualYear, int actualMonth, int actualDay, ListGenericBean<String> stringListGenericBean) {
-        presenter = new HourlySmsShowGridPresenter(smsHourService, actualYear, actualMonth, actualDay, stringListGenericBean, this);
+        this(smsHourService, actualYear, actualMonth, actualDay, stringListGenericBean.getList());
+    }
+
+    /**
+     * Constructor cuando se trabaja con los systemids seleccionados.
+     *
+     * @param smsHourService
+     * @param actualYear
+     * @param actualMonth
+     * @param actualDay
+     * @param systemidStringList
+     */
+    public SmsShowGridHourlyView(SmsHourService smsHourService, int actualYear, int actualMonth, int actualDay, List<String> systemidStringList) {
+        presenter = new HourlySmsShowGridPresenter(smsHourService, actualYear, actualMonth, actualDay, systemidStringList, this);
         stringDate = actualDay + "/" + actualMonth + "/" + actualYear;
         rowHeader.add(new H3("Dia de hoy"));
         createColumns();
