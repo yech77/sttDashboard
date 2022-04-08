@@ -53,6 +53,7 @@ public class MonthlySmsShowGridView extends LitTemplate implements Viewnable<Sms
     private Grid.Column<SmsByYearMonth> totalColumn;
     private Grid.Column<SmsByYearMonth> messageTypeColum;
     private Grid.Column<SmsByYearMonth> dateColumn;
+    private boolean isOneMonth = false;
 
     public MonthlySmsShowGridView(SmsHourService smsHourService, List<Integer> monthToShowList, List<String> systemidList) {
         presenter = new MonthlySmsShowGridPresenter(smsHourService, monthToShowList, systemidList, this);
@@ -61,9 +62,20 @@ public class MonthlySmsShowGridView extends LitTemplate implements Viewnable<Sms
         grid.setHeight("75%");
     }
 
+    public MonthlySmsShowGridView(SmsHourService smsHourService, Integer monthToShow, List<String> systemidList, List<String> messageType) {
+        isOneMonth = true;
+        presenter = new MonthlySmsShowGridPresenter(smsHourService, monthToShow, systemidList, messageType, this);
+        setRowHeader("Últimos tres meses");
+        createColumns();
+        grid.setHeight("75%");
+    }
+
     private void createColumns() {
         createGroupByColumn();
         createSomeCodeColumn();
+        if (isOneMonth) {
+            createMessageType();
+        }
         createTotalColumn();
         grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
     }
@@ -123,7 +135,21 @@ public class MonthlySmsShowGridView extends LitTemplate implements Viewnable<Sms
     }
 
     private void createSomeCodeColumn() {
-        someCodeColum = grid.addColumn(AbstractSmsByYearMonth::getSomeCode)
+        if (isOneMonth) {
+            someCodeColum = grid.addColumn(AbstractSmsByYearMonth::getSomeCode)
+                    .setComparator(com -> com.getSomeCode())
+                    .setHeader("Credencial")
+                    .setAutoWidth(true);
+        } else {
+            someCodeColum = grid.addColumn(AbstractSmsByYearMonth::getSomeCode)
+                    .setComparator(com -> com.getSomeCode())
+                    .setHeader("Tipo de Mensaje")
+                    .setAutoWidth(true);
+        }
+    }
+
+    private void createMessageType() {
+        someCodeColum = grid.addColumn(AbstractSmsByYearMonth::getMessageType)
                 .setComparator(com -> com.getSomeCode())
                 .setHeader("Tipo de Mensaje")
                 .setAutoWidth(true);

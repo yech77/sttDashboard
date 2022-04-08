@@ -402,15 +402,30 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
         /**/
         Configuration confTriMixChart = smsLastThreeMonthChart.getConfiguration();
         /**/
-        smsLastThreeMonthChart.addSeriesClickListener(click -> {
+//        smsLastThreeMonthChart.addSeriesClickListener(click -> {
+//            Dialog d = new Dialog();
+//            d.setWidth("75%");
+//            Button closeButton = new Button("Cerrar");
+//            closeButton.addClickListener(c -> {
+//                d.close();
+//            });
+//            MonthlySmsShowGridView view = new MonthlySmsShowGridView(smsHourService, monthsIn(2), selectedSystemIdList);
+//            view.setRowHeader("addSeriesClickListener :" + click.getSeriesItemIndex() + " " + click.getSeries().getName() + " " + click.getSeries().getId());
+//            d.add(view, closeButton);
+//            d.open();
+//        });
+        smsLastThreeMonthChart.addPointClickListener(click -> {
             Dialog d = new Dialog();
             d.setWidth("75%");
             Button closeButton = new Button("Cerrar");
             closeButton.addClickListener(c -> {
                 d.close();
             });
-            MonthlySmsShowGridView view = new MonthlySmsShowGridView(smsHourService, monthsIn(2), selectedSystemIdList);
-            view.setRowHeader("addSeriesClickListener :" + click.getSeriesItemIndex());
+            List<Integer> integers = monthsIn(2);
+            Integer integer = integers.get(click.getItemIndex());
+            List<String> messageTypeList = checkboxMessageType.getSelectedItems().stream().map(OMessageType::name).collect(Collectors.toList());
+            MonthlySmsShowGridView view = new MonthlySmsShowGridView(smsHourService, integer, selectedSystemIdList, messageTypeList);
+            view.setRowHeader("addPointClick: itemId " + click.getItemId() + " ItemIndex " + click.getItemIndex() + " series name " + click.getSeries().getName());
             d.add(view, closeButton);
             d.open();
         });

@@ -17,6 +17,11 @@ public abstract class SmsShowGridPresenter<T> {
         this.smsHourService = smsHourService;
     }
 
+    public SmsShowGridPresenter(SmsHourService smsHourService, Viewnable<T> view) {
+        this.view = view;
+        this.smsHourService = smsHourService;
+    }
+
     /**
      * Actualizan la data en el dataProvider
      *
@@ -44,6 +49,19 @@ public abstract class SmsShowGridPresenter<T> {
      * @return
      */
     public abstract List<T> getGroupSmsBy(List<String> stringList, List<Integer> integerList);
+
+    /**
+     * Se realiza el llamado al servicio segun quien lo implemente.
+     *
+     * @param stringList
+     * @param month
+     * @return
+     */
+    public List<T> getGroupSmsBy(List<String> stringList, Integer month) {
+        return null;
+    }
+
+    ;
 
     /**
      * Se realiza el llamado al servicio, que implementa paginacion, segun quien lo implemente.
