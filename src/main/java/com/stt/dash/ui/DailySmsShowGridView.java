@@ -25,6 +25,7 @@ import org.vaadin.olli.FileDownloadWrapper;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 
 @Tag("sms-show-grid-view")
@@ -55,7 +56,11 @@ public class DailySmsShowGridView extends LitTemplate implements Viewnable<SmsBy
 //    private String stringDate;
 
     public DailySmsShowGridView(SmsHourService smsHourService, int actualYear, int actualMonth, ListGenericBean<String> stringListGenericBean) {
-        presenter = new DailySmsShowGridPresenter(smsHourService, Arrays.asList(actualYear, actualMonth), stringListGenericBean, this);
+        this(smsHourService, actualYear, actualMonth, stringListGenericBean.getList());
+    }
+
+    public DailySmsShowGridView(SmsHourService smsHourService, int actualYear, int actualMonth, List<String> systemidStringList) {
+        presenter = new DailySmsShowGridPresenter(smsHourService, Arrays.asList(actualYear, actualMonth), systemidStringList, this);
         rowHeader.add(new H3("Mes Actual"));
         createColumns();
         grid.setHeight("75%");

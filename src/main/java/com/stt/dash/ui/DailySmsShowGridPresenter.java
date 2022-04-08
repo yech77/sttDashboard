@@ -12,8 +12,12 @@ import java.util.List;
 public class DailySmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearMonthDay> {
 
     public DailySmsShowGridPresenter(SmsHourService smsHourService, List<Integer> integerList, ListGenericBean<String> stringListGenericBean, Viewnable<SmsByYearMonthDay> view) {
-        super(smsHourService, integerList, stringListGenericBean.getList(), view);
-        List<SmsByYearMonthDay> smsHourList = getGroupSmsBy(stringListGenericBean.getList(), integerList);
+        this(smsHourService, integerList, stringListGenericBean.getList(), view);
+    }
+
+    public DailySmsShowGridPresenter(SmsHourService smsHourService, List<Integer> integerList, List<String> systemidStringList, Viewnable<SmsByYearMonthDay> view) {
+        super(smsHourService, integerList, systemidStringList, view);
+        List<SmsByYearMonthDay> smsHourList = getGroupSmsBy(systemidStringList, integerList);
         updateDataProvider(smsHourList);
         updateInView(dataProvider);
     }

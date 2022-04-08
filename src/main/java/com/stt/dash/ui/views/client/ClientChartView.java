@@ -65,7 +65,7 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     private Chart smsThisDayChart;
 
     @Id("carrierDailyChart")
-    private Chart clientMonthlyChart;
+    private Chart smsThisMonthChart;
 
     @Id("carrierTriPieChart")
     private Chart clientTriPieChart;
@@ -362,7 +362,22 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
      *
      */
     private void updateMonthlyLineChart() {
-        Configuration confMonthlyLineChart = clientMonthlyChart.getConfiguration();
+        Configuration confMonthlyLineChart = smsThisMonthChart.getConfiguration();
+        /**/
+        smsThisMonthChart.addChartClickListener(click -> {
+            /* Convertir Set<SystemId> seleccionados en un List<String>*/
+            List<String> selectedSystemIdList = systemIdMultiCombo.getValue().stream().map(SystemId::getSystemId).collect(Collectors.toList());
+
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            Button closeButton = new Button("Cerrar");
+            closeButton.addClickListener(c -> {
+                d.close();
+            });
+            DailySmsShowGridView view = new DailySmsShowGridView(smsHourService, actual_year, actual_month, selectedSystemIdList);
+            d.add(view, closeButton);
+            d.open();
+        });
         /**/
         confMonthlyLineChart.getyAxis().setTitle("SMS");
         confMonthlyLineChart.getxAxis().setTitle("Dia");
