@@ -364,6 +364,18 @@ public class SmsHourService {
         return smshour_repo.groupYeMoSyTyWhYeMoInSyInTyIn(yearSms, Arrays.asList(month), messageType, systemidStringList);
     }
 
+    /**
+     * Busca Year, Month, Day, sids IN y message-type IN
+     *
+     * @param yearSms
+     * @param month
+     * @param systemidStringList
+     * @return
+     */
+    public List<SmsByYearMonthDay> groupYeMoSyTyWhYeMoInSyInTyIn(int yearSms, int month, int day, List<String> messageType, List<String> systemidStringList) {
+        return smshour_repo.groupSystemIdByYeMoDaTy(yearSms, month, day, messageType, systemidStringList);
+    }
+
     ///////////////////////
 
     /**

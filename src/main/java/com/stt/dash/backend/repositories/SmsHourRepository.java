@@ -675,6 +675,32 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
                                                  @Param("listSid") List<String> listSid);
 
     /**
+     * AGRUPACION SYSTEMID DEL DIA: Por YEAR, MONTH, DAY, SYSTEMID, MESSAGE_TYPE. WHERE
+     * MESSAGETYPE
+     *
+     * @param yearSms
+     * @param monthSms
+     * @param messageType a buscar
+     * @param listSid
+     * @return EXACTAMENTE IGUAL A : groupSystemIdByYearMonthDay
+     */
+    @Query("SELECT  new com.stt.dash.backend.data.SmsByYearMonthDay("
+            + "SUM(h.total), h.year, h.month, h.day, h.systemId, h.messageType) "
+            + "FROM  SmsHour h "
+            + "WHERE h.year = :yearSms AND "
+            + "h.month = :monthSms AND "
+            + "h.day = :daySms AND "
+            + "h.messageType IN (:messageType) AND "
+            + "h.systemId IN (:listSid) "
+            + "GROUP BY h.year, h.month, h.day, h.systemId, h.messageType "
+            + "ORDER BY h.year, h.month, h.day, h.systemId, h.messageType")
+    List<SmsByYearMonthDay> groupSystemIdByYeMoDaTy(@Param("yearSms") int yearSms,
+                                                    @Param("monthSms") int monthSms,
+                                                    @Param("daySms") int daySms,
+                                                    @Param("messageType") List<String> messageType,
+                                                    @Param("listSid") List<String> listSid);
+
+    /**
      * AGRUPACION SYSTEMID MENSUAL: Por YEAR, MONTH, DAY, SYSTEMID. WHERE
      * MESSAGETYPE
      *

@@ -66,6 +66,13 @@ public class DailySmsShowGridView extends LitTemplate implements Viewnable<SmsBy
         grid.setHeight("75%");
     }
 
+    public DailySmsShowGridView(SmsHourService smsHourService, int actualYear, int actualMonth, int actualDay, List<String> systemidStringList, List<String> messageType) {
+        presenter = new DailySmsShowGridPresenter(smsHourService, Arrays.asList(actualYear, actualMonth, actualDay), systemidStringList, messageType, this);
+        rowHeader.add(new H3("Mes Actual"));
+        createColumns();
+        grid.setHeight("75%");
+    }
+
     private void createColumns() {
         createGroupByColumn();
         createSomeCodeColumn();
@@ -105,8 +112,8 @@ public class DailySmsShowGridView extends LitTemplate implements Viewnable<SmsBy
             return "";
         }
         StringBuilder sb = new StringBuilder("dia,\"tipo de mensaje\",total\n");
-        for (AbstractSmsByYearMonth msg : messages) {
-            sb.append(msg.getGroupBy()).append(",");
+        for (SmsByYearMonthDay msg : messages) {
+            sb.append(msg.getDaySms()).append("/").append(msg.getMonthSms()).append("/").append(msg.getYearSms());
             sb.append(msg.getSomeCode()).append(",");
             sb.append(msg.getTotal());
             sb.append("\n");
@@ -116,7 +123,7 @@ public class DailySmsShowGridView extends LitTemplate implements Viewnable<SmsBy
 
     private void createGroupByColumn() {
         groupByColum = grid.addColumn(o -> {
-                    return o.getGroupBy();
+                    return o.getDaySms() + "/" + o.getMonthSms() + "/" + o.getYearSms();
                 })
                 .setComparator(com -> com.getGroupBy())
                 .setHeader("Dia")

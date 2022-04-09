@@ -15,9 +15,33 @@ public class DailySmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearMon
         this(smsHourService, integerList, stringListGenericBean.getList(), view);
     }
 
+    /**
+     * Cuando se desea que la agrupacion se Day-messageType
+     *
+     * @param smsHourService
+     * @param integerList
+     * @param systemidStringList
+     * @param view
+     */
     public DailySmsShowGridPresenter(SmsHourService smsHourService, List<Integer> integerList, List<String> systemidStringList, Viewnable<SmsByYearMonthDay> view) {
         super(smsHourService, integerList, systemidStringList, view);
         List<SmsByYearMonthDay> smsHourList = getGroupSmsBy(systemidStringList, integerList);
+        updateDataProvider(smsHourList);
+        updateInView(dataProvider);
+    }
+
+    /**
+     * Cuando se desea que la agrupacion se Day-systemid-messageType
+     *
+     * @param smsHourService
+     * @param integerList
+     * @param systemidStringList
+     * @param messageType
+     * @param view
+     */
+    public DailySmsShowGridPresenter(SmsHourService smsHourService, List<Integer> integerList, List<String> systemidStringList, List<String> messageType, Viewnable<SmsByYearMonthDay> view) {
+        super(smsHourService, view);
+        List<SmsByYearMonthDay> smsHourList = getGroupSmsBy(integerList, messageType, systemidStringList);
         updateDataProvider(smsHourList);
         updateInView(dataProvider);
     }
@@ -28,5 +52,14 @@ public class DailySmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearMon
                 integerList.get(0),
                 integerList.get(1),
                 stringList);
+    }
+
+    public List<SmsByYearMonthDay> getGroupSmsBy(List<Integer> integerList, List<String> messageTypeList, List<String> systemidStringList) {
+        return smsHourService.groupYeMoSyTyWhYeMoInSyInTyIn(
+                integerList.get(0),
+                integerList.get(1),
+                integerList.get(2),
+                messageTypeList,
+                systemidStringList);
     }
 }

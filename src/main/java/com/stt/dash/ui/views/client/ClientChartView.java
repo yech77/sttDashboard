@@ -364,6 +364,34 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
     private void updateMonthlyLineChart() {
         Configuration confMonthlyLineChart = smsThisMonthChart.getConfiguration();
         /**/
+        smsThisMonthChart.addPointClickListener(click -> {
+            /* El dia comienza en 1. */
+            int seriesItemIndex = click.getItemIndex() + 1;
+            /* Convertir Set<SystemId> seleccionados en un List<String>*/
+            List<String> selectedSystemIdList = systemIdMultiCombo
+                    .getValue()
+                    .stream()
+                    .map(SystemId::getSystemId)
+                    .collect(Collectors.toList());
+
+            List<String> messageTypeList = checkboxMessageType
+                    .getSelectedItems()
+                    .stream()
+                    .map(OMessageType::name)
+                    .collect(Collectors.toList());
+
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            Button closeButton = new Button("Cerrar");
+            closeButton.addClickListener(c -> {
+                d.close();
+            });
+            DailySmsShowGridView view = new DailySmsShowGridView(smsHourService, actual_year, actual_month, seriesItemIndex,
+                    selectedSystemIdList, messageTypeList);
+
+            d.add(view, closeButton);
+            d.open();
+        });
         smsThisMonthChart.addChartClickListener(click -> {
             /* Convertir Set<SystemId> seleccionados en un List<String>*/
             List<String> selectedSystemIdList = systemIdMultiCombo.getValue().stream().map(SystemId::getSystemId).collect(Collectors.toList());
