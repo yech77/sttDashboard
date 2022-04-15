@@ -152,11 +152,7 @@ public class User extends AbstractEntitySequence {
     }
 
     public Client getClient() {
-        Client cl = null;
-        for (Client c : clients) {
-            cl = c;
-        }
-        return cl;
+        return clients != null && clients.size() > 0 ? clients.stream().findFirst().get() : null;
     }
 
     public void setClient(Client client) {
@@ -165,10 +161,10 @@ public class User extends AbstractEntitySequence {
             return;
         }
         /* Por algun motivo daba error de null, asi que si
-        * es un tipo de useuario distinto de has, cada vez que
-        * asigne el cliente instancia el hash. */
+         * es un tipo de useuario distinto de has, cada vez que
+         * asigne el cliente instancia el hash. */
         this.clients = new HashSet<>();
-        System.out.println("VALOR DEL CLIENTE: " + clients +" ---- "+client);
+        System.out.println("VALOR DEL CLIENTE: " + clients + " ---- " + client);
         clients.add(client);
     }
 

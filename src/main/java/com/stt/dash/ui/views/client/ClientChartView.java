@@ -17,6 +17,7 @@ import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.MonthlySmsShowGridView;
 import com.stt.dash.ui.SmsShowGridAllView;
 import com.stt.dash.ui.SmsShowGridHourlyView;
+import com.stt.dash.ui.SmsShowGridViewV2;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
 import com.vaadin.flow.component.Tag;
@@ -386,8 +387,11 @@ public class ClientChartView extends PolymerTemplate<TemplateModel> {
             closeButton.addClickListener(c -> {
                 d.close();
             });
-            DailySmsShowGridView view = new DailySmsShowGridView(smsHourService, actual_year, actual_month, seriesItemIndex,
+
+            SmsShowGridViewV2 view = new SmsShowGridViewV2(smsHourService, actual_year, actual_month, seriesItemIndex,
                     selectedSystemIdList, messageTypeList);
+//            DailySmsShowGridView view = new DailySmsShowGridView(smsHourService, actual_year, actual_month, seriesItemIndex,
+//                    selectedSystemIdList, messageTypeList);
 
             d.add(view, closeButton);
             d.open();

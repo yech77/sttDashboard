@@ -6,6 +6,7 @@ import com.stt.dash.backend.data.entity.Client;
 import com.stt.dash.backend.data.entity.ORole;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
+import com.vaadin.componentfactory.multiselect.MultiComboBox;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -32,14 +33,14 @@ public class UserForm extends FormLayout {
     /**/
     BeanValidationBinder<User> binder = new BeanValidationBinder<>(User.class);
     HorizontalLayout h = new HorizontalLayout();
-    MultiselectComboBox<Client> clients = new MultiselectComboBox<>();
-    MultiselectComboBox<SystemId> systemids = new MultiselectComboBox<>();
+    MultiComboBox<Client> clients = new MultiComboBox<>();
+    MultiComboBox<SystemId> systemids = new MultiComboBox<>();
     ComboBox<Client> comboClient = new ComboBox<>();
-    MultiselectComboBox<ORole> roles = new MultiselectComboBox<>();
+    MultiComboBox<ORole> roles = new MultiComboBox<>();
     Checkbox isActive = new Checkbox("ACTIVO");
     ConfirmDialog dialog;
-    ComboBox<User> userParent = new ComboBox<>();
-    ComboBox<User.OUSER_TYPE_ORDINAL> userTypeOrd = new ComboBox<>();
+    ComboBox<User> userParentCombobox = new ComboBox<>();
+    ComboBox<User.OUSER_TYPE_ORDINAL> userTypeOrdCombo = new ComboBox<>();
     ComboBox<User.OUSER_TYPE> userType = new ComboBox<>();
     ComboBox<String> role = new ComboBox<>();
 
@@ -62,8 +63,8 @@ public class UserForm extends FormLayout {
                 new ResponsiveStep("25em", 1, ResponsiveStep.LabelsPosition.TOP),
                 new ResponsiveStep("32em", 2, ResponsiveStep.LabelsPosition.TOP));
         userType.setWidthFull();
-        userTypeOrd.setWidthFull();
-        userParent.setWidthFull();
+        userTypeOrdCombo.setWidthFull();
+        userParentCombobox.setWidthFull();
         first.setWidthFull();
         last.setWidthFull();
         email.setWidthFull();
@@ -76,8 +77,8 @@ public class UserForm extends FormLayout {
         systemids.setWidthFull();
         email.setPlaceholder("user@something.com");
 //        formItem.add(isActive);
-        setColspan(addFormItem(userTypeOrd, "Tipo de Usuario"), 1);
-        setColspan(addFormItem(userParent, "Creador"), 1);
+        setColspan(addFormItem(userTypeOrdCombo, "Tipo de Usuario"), 1);
+        setColspan(addFormItem(userParentCombobox, "Creador"), 1);
         setColspan(addFormItem(first, "Nombre"), 1);
         setColspan(addFormItem(last, "Apellido"), 1);
 //        setColspan(addFormItem(createdDate, "Fecha de Creación"), 1);
@@ -94,13 +95,13 @@ public class UserForm extends FormLayout {
         /**/
         binder.bind(first, "firstName");
         binder.bind(last, "lastName");
-        binder.forField(userTypeOrd).bind(User::getUserTypeOrd, User::setUserTypeOrd);
+        binder.forField(userTypeOrdCombo).bind(User::getUserTypeOrd, User::setUserTypeOrd);
         binder.forField(userType).bind(User::getUserType, User::setUserType);
         binder.forField(isActive).bind(User::isActive, User::setActive);
         binder.bind(email, "email");
         binder.bind(role, "role");
         binder.bind(roles, "roles");
-        binder.forField(userParent)
+        binder.forField(userParentCombobox)
                 .asRequired("Seleccione un usuario")
                 .bind(User::getUserParent, User::setUserParent);
         /**/
@@ -108,8 +109,8 @@ public class UserForm extends FormLayout {
                 .asRequired(new Validator<Set<Client>>() {
                     @Override
                     public ValidationResult apply(Set<Client> clients, ValueContext valueContext) {
-                        if (userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
-                            System.out.println("En Clients devuelvo ok poruqe no es comercial: " + userTypeOrd.getValue());
+                        if (userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+                            System.out.println("En Clients devuelvo ok poruqe no es comercial: " + userTypeOrdCombo.getValue());
                             return ValidationResult.ok();
                         }
                         if (clients != null && clients.size() > 0) {
@@ -124,8 +125,8 @@ public class UserForm extends FormLayout {
                 .asRequired(new Validator<Set<SystemId>>() {
                     @Override
                     public ValidationResult apply(Set<SystemId> systemIds, ValueContext valueContext) {
-                        if (userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.USUARIO &&
-                                userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.EMPRESA) {
+                        if (userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.USUARIO &&
+                                userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.EMPRESA) {
                             return ValidationResult.ok();
                         }
                         if (systemIds != null && systemIds.size() > 0) {
@@ -139,8 +140,8 @@ public class UserForm extends FormLayout {
                 .asRequired(new Validator<Client>() {
                     @Override
                     public ValidationResult apply(Client client, ValueContext valueContext) {
-                        if (userTypeOrd.getValue() != User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
-                            System.out.println("Devuelvo OK porque no es tipo empresa: " + userTypeOrd.getValue());
+                        if (userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
+                            System.out.println("Devuelvo OK porque no es tipo empresa: " + userTypeOrdCombo.getValue());
                             return ValidationResult.ok();
                         }
                         if (client != null) {
@@ -160,7 +161,7 @@ public class UserForm extends FormLayout {
                     }
                 });
         /**/
-        userTypeOrd.setItems(User.OUSER_TYPE_ORDINAL.values());
+        userTypeOrdCombo.setItems(User.OUSER_TYPE_ORDINAL.values());
         userType.setItems(User.OUSER_TYPE.values());
         /**/
         clients.setItems(parClients);
@@ -179,16 +180,16 @@ public class UserForm extends FormLayout {
         roles.setItems(allRoles);
         roles.setItemLabelGenerator(ORole::getRolName);
         /**/
-        userParent.setItems(allUsers);
+        userParentCombobox.setItems(allUsers);
         setUserParentList(User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS);
-        userParent.setItemLabelGenerator(User::getEmail);
+        userParentCombobox.setItemLabelGenerator(User::getEmail);
         /**/
         ListDataProvider<String> roleProvider = DataProvider.ofItems(Role.getAllRoles());
         role.setLabel("Role");
         role.setItemLabelGenerator(s -> s != null ? s : "");
         role.setDataProvider(roleProvider);
         /* CHANGE LISTENER */
-        userParent.addValueChangeListener(listener -> {
+        userParentCombobox.addValueChangeListener(listener -> {
             if (!listener.isFromClient()) {
                 return;
             }
@@ -218,25 +219,25 @@ public class UserForm extends FormLayout {
                 dialog.open();
             }
         });
-        userTypeOrd.addValueChangeListener((evt) -> {
+        userTypeOrdCombo.addValueChangeListener((evt) -> {
             System.out.println("OCURRIO UN VALUE CHANGEDLISTENER DE USERTYPEORD");
             User.OUSER_TYPE type;
 //            if (!evt.isFromClient()) {
 //                return;
 //            }
-            userParent.setValue(null);
+            userParentCombobox.setValue(null);
             if (evt.getSource().getValue() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
                 type = User.OUSER_TYPE.HAS;
-                userParent.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.COMERCIAL));
+                userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.COMERCIAL));
             } else if (evt.getSource().getValue() == User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
                 type = User.OUSER_TYPE.IS;
-                userParent.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.COMERCIAL));
+                userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.COMERCIAL));
             } else if (evt.getSource().getValue() == User.OUSER_TYPE_ORDINAL.EMPRESA) {
                 type = User.OUSER_TYPE.BY;
-                userParent.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS));
+                userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS));
             } else {
                 type = User.OUSER_TYPE.BY;
-                userParent.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.EMPRESA, User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS));
+                userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.EMPRESA, User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS));
             }
             userType.setValue(type);
             doShowClientOrd(evt.getSource().getValue());
@@ -245,7 +246,7 @@ public class UserForm extends FormLayout {
         /**/
         fillUserType(currentUser.getUser().getUserType(),
                 currentUser.getUser().getUserTypeOrd(),
-                userType, userTypeOrd);
+                userType, userTypeOrdCombo);
         doShowClientOrd(currentUser.getUser().getUserTypeOrd());
     }
 
@@ -260,6 +261,7 @@ public class UserForm extends FormLayout {
             /* USUARIO SOLO SELECCIONA CREDENCIALES */
             systemidsFormItem.setVisible(true);
             comboClientFormItem.setVisible(false);
+            binder.removeBinding(comboClient);
             clientsFormItem.setVisible(false);
         } else if (changeListener == User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
             /* ADMIN SOLO SELECCIONA CLIENTE */
@@ -271,6 +273,7 @@ public class UserForm extends FormLayout {
             systemidsFormItem.setVisible(false);
             comboClientFormItem.setVisible(false);
             clientsFormItem.setVisible(true);
+            binder.removeBinding(comboClient);
         }
     }
 
@@ -286,21 +289,21 @@ public class UserForm extends FormLayout {
 
     private void setUserParentList(User.OUSER_TYPE_ORDINAL type) {
         if (null == type) {
-            userParent.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.EMPRESA, User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS));
+            userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.EMPRESA, User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS));
             return;
         }
         switch (type) {
             case COMERCIAL:
-                userParent.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.COMERCIAL));
+                userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.COMERCIAL));
                 break;
             case ADMIN_EMPRESAS:
-                userParent.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.COMERCIAL));
+                userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.COMERCIAL));
                 break;
             case EMPRESA:
-                userParent.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS));
+                userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS));
                 break;
             default:
-                userParent.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.EMPRESA, User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS));
+                userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.EMPRESA, User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS));
                 break;
         }
     }
@@ -314,14 +317,14 @@ public class UserForm extends FormLayout {
         binder.setBean(user);
         System.out.println("Seting usertype: " + user.getUserType());
         userType.setValue(user.getUserType());
-        userTypeOrd.setValue(user.getUserTypeOrd());
+        userTypeOrdCombo.setValue(user.getUserTypeOrd());
         setUserParentList(user.getUserTypeOrd());
         doShowClientOrd(user.getUserTypeOrd());
 
         // No permite que el usuario pueda cambiar sus propios datos criticos
         if (user.equals(currentUser.getUser())) {
-            userParent.setReadOnly(true);
-            userTypeOrd.setReadOnly(true);
+            userParentCombobox.setReadOnly(true);
+            userTypeOrdCombo.setReadOnly(true);
             roles.setReadOnly(true);
             userType.setReadOnly(true);
             systemids.setReadOnly(true);
@@ -329,8 +332,8 @@ public class UserForm extends FormLayout {
             comboClient.setReadOnly(true);
             isActive.setReadOnly(true);
         } else {
-            userParent.setReadOnly(false);
-            userTypeOrd.setReadOnly(false);
+            userParentCombobox.setReadOnly(false);
+            userTypeOrdCombo.setReadOnly(false);
             roles.setReadOnly(false);
             systemids.setReadOnly(false);
             clients.setReadOnly(false);
@@ -372,7 +375,7 @@ public class UserForm extends FormLayout {
         List<User> values = new ArrayList<>();
         for (User user : users) {
             for (User.OUSER_TYPE_ORDINAL type : targetTypes) {
-                System.out.println("Usuario: " + user.getEmail() + ":" + user.getUserTypeOrd() +" - "+type);
+                System.out.println("Usuario: " + user.getEmail() + ":" + user.getUserTypeOrd() + " - " + type);
                 if (user.getUserTypeOrd() == type) {
                     values.add(user);
                     break;

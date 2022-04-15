@@ -15,6 +15,7 @@ import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.CarrierService;
 import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
+import com.stt.dash.ui.MonthlySmsShowGridView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
 import com.vaadin.flow.component.Tag;
@@ -25,6 +26,7 @@ import com.vaadin.flow.component.charts.model.*;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -52,16 +54,16 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     @Id("divHeader")
     Div divHeader;
     @Id("deliveriesThisMonth")
-    private Chart carrierTriMixChart;
+    private Chart smsLastThreeMonthChart;
 
     @Id("carrierTriLineChart")
     private Chart carrierTriLineChart;
 
-    @Id("carrierTriPieChart")
-    private Chart carrierTriPieChart;
-
     @Id("carrierDailyChart")
     private Chart carrierDailyChart;
+
+    @Id("carrierTriPieChart")
+    private Chart carrierTriPieChart;
 
     @Id("carrierMonthlyPieChart")
     private Chart carrierMonthlyPieChart;
@@ -95,6 +97,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     private int actual_hour;
     /* Button */
     private Button filterButton = new Button("Actualizar");
+    List<String> clientSystemIdStringList;
 
     public CarrierChartView(SmsHourService smsHourService,
                             CarrierService carrierService,
@@ -168,19 +171,18 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         clientCombobox.setWidthFull();
         checkboxMessageType.setWidthFull();
         carrierMultiComboBox.setWidthFull();
-        List<String> systemIdStringList;
         try {
-            systemIdStringList = clientCombobox.getValue().getSystemids()
+            clientSystemIdStringList = clientCombobox.getValue().getSystemids()
                     .stream()
                     .map(SystemId::getSystemId)
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            systemIdStringList = new ArrayList<>();
+            clientSystemIdStringList = new ArrayList<>();
         }
         /*Actualiza trimestra al entrar en la pantalla. */
-        updateTrimestral(systemIdStringList);
-        updateDaily(systemIdStringList);
-        updateHourlyChart(systemIdStringList);
+        updateTrimestral(clientSystemIdStringList);
+        updateDaily(clientSystemIdStringList);
+        updateHourlyChart(clientSystemIdStringList);
         filterButton.addClickListener(click -> {
             filterButton.setEnabled(false);
             VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_CARRIER, carrierMultiComboBox.getValue());
@@ -417,7 +419,33 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
      * @param carrierGroup Data agrupada por Year-Month-Carrier-MessageType
      */
     private void populateTriChart(List<? extends AbstractSmsByYearMonth> smsGroup, List<SmsByYearMonth> carrierGroup) {
-        Configuration confTriChart = carrierTriMixChart.getConfiguration();
+        Configuration confTriChart = smsLastThreeMonthChart.getConfiguration();
+
+        smsLastThreeMonthChart.addChartClickListener(click -> {
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            Button closeButton = new Button("Cerrar");
+            closeButton.addClickListener(c -> {
+                d.close();
+            });
+            List<SmsByYearMonth> as = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(
+                    actual_year,
+                    monthsIn(2),
+                    carrierMultiComboBox.getValue(),
+                    checkboxMessageType.getSelectedItems(),
+                    clientSystemIdStringList);
+//            smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actual_year, monthsIn(2), sids);
+            MonthlySmsShowGridView view = new MonthlySmsShowGridView(
+                    smsHourService,
+                    actual_year,
+                    monthsIn(2),
+                    clientSystemIdStringList,
+                    checkboxMessageType.getSelectedItems(),
+                    carrierMultiComboBox.getValue());
+            view.setRowHeader("Últimos tres meses");
+            d.add(view, closeButton);
+            d.open();
+        });
         /* Column */
         Tooltip tooltip = new Tooltip();
         tooltip.setShared(true);
@@ -441,7 +469,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
      * @param carrierGroup Data agrupada por Year-Month-Carrier-MessageType
      */
     private void populateTriColumnLineChart(List<? extends AbstractSmsByYearMonth> smsGroup, List<SmsByYearMonth> carrierGroup) {
-        Configuration confTriChart = carrierTriMixChart.getConfiguration();
+        Configuration confTriChart = smsLastThreeMonthChart.getConfiguration();
         /**/
         Tooltip tooltip = new Tooltip();
         tooltip.setShared(true);
@@ -680,7 +708,6 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     }
 
     public List<Series> paEntender(List<? extends AbstractSmsByYearMonth> l, List<Integer> integerList) {
-        l.stream().forEach(System.out::println);
 
         List<Series> dataSeriesList = new ArrayList<>();
         /*TODO nullpointer*/

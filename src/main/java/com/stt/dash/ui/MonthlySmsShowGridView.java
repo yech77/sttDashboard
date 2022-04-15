@@ -1,9 +1,11 @@
 package com.stt.dash.ui;
 
+import com.stt.dash.app.OMessageType;
 import com.stt.dash.app.OMonths;
 import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.AbstractSmsByYearMonth;
 import com.stt.dash.backend.data.SmsByYearMonth;
+import com.stt.dash.backend.data.entity.Carrier;
 import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.FormattingUtils;
@@ -26,6 +28,7 @@ import org.vaadin.olli.FileDownloadWrapper;
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 
 @Tag("sms-show-grid-view")
@@ -54,6 +57,7 @@ public class MonthlySmsShowGridView extends LitTemplate implements Viewnable<Sms
     private Grid.Column<SmsByYearMonth> messageTypeColum;
     private Grid.Column<SmsByYearMonth> dateColumn;
     private boolean isOneMonth = false;
+    private boolean isCarrier = false;
 
     public MonthlySmsShowGridView(SmsHourService smsHourService, List<Integer> monthToShowList, List<String> systemidList) {
         presenter = new MonthlySmsShowGridPresenter(smsHourService, monthToShowList, systemidList, this);
@@ -69,6 +73,15 @@ public class MonthlySmsShowGridView extends LitTemplate implements Viewnable<Sms
         createColumns();
         grid.setHeight("75%");
     }
+
+    public MonthlySmsShowGridView(SmsHourService smsHourService, Integer actualYear, List<Integer> monthToShowList, List<String> systemidList, Set<OMessageType> messageTypeSet, Set<Carrier> carrierSet) {
+        isCarrier = true;
+        presenter = new MonthlySmsShowGridPresenter(smsHourService, actualYear, monthToShowList, systemidList, messageTypeSet, carrierSet, this);
+        setRowHeader("Últimos tres meses");
+        createColumns();
+        grid.setHeight("75%");
+    }
+
 
     private void createColumns() {
         createGroupByColumn();
@@ -141,10 +154,15 @@ public class MonthlySmsShowGridView extends LitTemplate implements Viewnable<Sms
                     .setComparator(com -> com.getSomeCode())
                     .setHeader("Credencial")
                     .setAutoWidth(true);
-        } else {
+        } else if (!isOneMonth) {
             someCodeColum = grid.addColumn(AbstractSmsByYearMonth::getSomeCode)
                     .setComparator(com -> com.getSomeCode())
                     .setHeader("Tipo de Mensaje")
+                    .setAutoWidth(true);
+        } else if (isCarrier) {
+            someCodeColum = grid.addColumn(AbstractSmsByYearMonth::getSomeCode)
+                    .setComparator(com -> com.getSomeCode())
+                    .setHeader("Operadora")
                     .setAutoWidth(true);
         }
     }
