@@ -209,9 +209,9 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
             + "h.systemId IN (:listSid) "
             + "GROUP BY  h.year, h.month, h.messageType "
             + "ORDER BY h.year, h.month, h.messageType")
-    List<SmsByYearMonth> groupMessageTypeByYeMoWhMoIn(@Param("yearSms") int yearSms,
-                                                      @Param("monthSms") List<Integer> monthSms,
-                                                      @Param("listSid") List<String> listSid);
+    List<SmsByYearMonth> groupByYearMonthMessageTypeWhYeMoInSyIn(@Param("yearSms") int yearSms,
+                                                                 @Param("monthSms") List<Integer> monthSms,
+                                                                 @Param("listSid") List<String> listSid);
 
     /**
      * GROUP: YEAR, MONTH, CARRIER WHERE: YEAR, LIST-MONTH, LIST-SID

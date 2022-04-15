@@ -342,13 +342,13 @@ public class SmsHourService {
         if (monthsOfPrevYear != null) {
             log.info("Month ({}) before actual year detected. Searching year[{}] month[{}] sid[{}]",
                     monthsOfPrevYear, yearSms - 1, monthsOfPrevYear, list_sid);
-            yearBefore = smshour_repo.groupMessageTypeByYeMoWhMoIn(yearSms - 1, monthsOfPrevYear, list_sid);
+            yearBefore = smshour_repo.groupByYearMonthMessageTypeWhYeMoInSyIn(yearSms - 1, monthsOfPrevYear, list_sid);
         }
         if (yearBefore == null) {
             yearBefore = new ArrayList<>();
         }
         log.info("Searching: year[{}] months[{}] sids[{}]", yearSms, monthSms, list_sid);
-        yearBefore.addAll(smshour_repo.groupMessageTypeByYeMoWhMoIn(yearSms, monthSms, list_sid));
+        yearBefore.addAll(smshour_repo.groupByYearMonthMessageTypeWhYeMoInSyIn(yearSms, monthSms, list_sid));
         return yearBefore;
     }
 

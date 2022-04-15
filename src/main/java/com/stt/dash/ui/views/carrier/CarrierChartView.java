@@ -102,7 +102,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     public CarrierChartView(SmsHourService smsHourService,
                             CarrierService carrierService,
                             @Qualifier("getUserSystemIdString")
-                                    ListGenericBean<String> stringListGenericBean,
+                            ListGenericBean<String> stringListGenericBean,
                             CurrentUser currentUser) {
 
         this.userSystemIdList = stringListGenericBean;

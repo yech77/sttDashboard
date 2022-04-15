@@ -312,21 +312,6 @@ $_documentContainer.innerHTML = `<dom-module id="bakery-app-layout-theme" theme-
     </style>
   </template>
 </dom-module>
-<!--&lt;!&ndash; GLERY &ndash;&gt;-->
-<!--<dom-module id="button-style" theme-for="vaadin-button">-->
-<!--  <template>-->
-<!--    <style>:host(:not([theme~="tertiary"])){background-image:linear-gradient(var(&#45;&#45;lumo-tint-5pct), var(&#45;&#45;lumo-shade-5pct));box-shadow:inset 0 0 0 1px var(&#45;&#45;lumo-contrast-20pct);}:host(:not([theme~="tertiary"]):not([theme~="primary"]):not([theme~="error"]):not([theme~="success"])){color:var(&#45;&#45;lumo-body-text-color);}:host([theme~="primary"]){text-shadow:0 -1px 0 var(&#45;&#45;lumo-shade-20pct);}-->
-<!--    </style>-->
-<!--  </template>-->
-<!--</dom-module>-->
-
-<!-- GLERY -->
-<dom-module id="text-field-style" theme-for="vaadin-text-field">
-  <template>
-    <style>[part="input-field"]{box-shadow:inset 0 0 0 1px var(--lumo-contrast-30pct);background-color:var(--lumo-base-color);}:host([invalid]) [part="input-field"]{box-shadow:inset 0 0 0 1px var(--lumo-error-color);}
-    </style>
-  </template>
-</dom-module>
 
 <custom-style>
   <style>
@@ -439,61 +424,6 @@ $_documentContainer.innerHTML = `<dom-module id="bakery-app-layout-theme" theme-
         padding-right: 1em;
       }
     }
-<!-- GLERY -->
-    html {
-      --lumo-font-family: "Segoe UI", Candara, "Bitstream Vera Sans", "DejaVu Sans", "Bitstream Vera Sans", "Trebuchet MS", Verdana, "Verdana Ref", sans-serif;
-      --lumo-line-height-m: 1.8;
-      --lumo-line-height-s: 1.5;
-      --lumo-line-height-xs: 1.3;
-      --lumo-border-radius: calc(var(--lumo-size-m) / 2);
-      --lumo-space-xl: 2.5rem;
-      --lumo-space-l: 1.75rem;
-      --lumo-space-m: 1.125rem;
-      --lumo-space-s: 0.75rem;
-      --lumo-space-xs: 0.375rem;
-      --lumo-shade-5pct: rgba(44, 38, 22, 0.05);
-      --lumo-shade-10pct: rgba(44, 38, 22, 0.1);
-      --lumo-shade-20pct: rgba(44, 38, 22, 0.2);
-      --lumo-shade-30pct: rgba(44, 38, 22, 0.3);
-      --lumo-shade-40pct: rgba(44, 38, 22, 0.4);
-      --lumo-shade-50pct: rgba(44, 38, 22, 0.5);
-      --lumo-shade-60pct: rgba(44, 38, 22, 0.6);
-      --lumo-shade-70pct: rgba(44, 38, 22, 0.7);
-      --lumo-shade-80pct: rgba(44, 38, 22, 0.8);
-      --lumo-shade-90pct: rgba(44, 38, 22, 0.9);
-      --lumo-primary-text-color: rgb(96, 147, 190);
-      --lumo-primary-color-50pct: rgba(96, 147, 190, 0.5);
-      --lumo-primary-color-10pct: rgba(96, 147, 190, 0.1);
-      --lumo-success-text-color: rgb(147, 190, 96);
-      --lumo-success-color-50pct: rgba(147, 190, 96, 0.5);
-      --lumo-success-color-10pct: rgba(147, 190, 96, 0.1);
-      --lumo-shade: hsl(42, 33%, 13%);
-      --lumo-primary-color: #6093be;
-      --lumo-success-color: #93BE60;
-      --lumo-tint-5pct: rgba(244, 238, 225, 0.05);
-      --lumo-tint-10pct: rgba(244, 238, 225, 0.1);
-      --lumo-tint-20pct: rgba(244, 238, 225, 0.2);
-      --lumo-tint-30pct: rgba(244, 238, 225, 0.3);
-      --lumo-tint-40pct: rgba(244, 238, 225, 0.4);
-      --lumo-tint-50pct: rgba(244, 238, 225, 0.5);
-      --lumo-tint-60pct: rgba(244, 238, 225, 0.6);
-      --lumo-tint-70pct: rgba(244, 238, 225, 0.7);
-      --lumo-tint-80pct: rgba(244, 238, 225, 0.8);
-      --lumo-tint-90pct: rgba(244, 238, 225, 0.9);
-      --lumo-tint: #f4eee1;
-      --lumo-header-text-color: #6093be;
-      --lumo-body-text-color: rgba(48, 74, 95, 0.9);
-      --lumo-secondary-text-color: rgba(36, 55, 71, 0.7);
-      --lumo-disabled-text-color: rgba(235, 242, 247, 0.3);
-      --lumo-error-text-color: rgb(225, 22, 9);
-      --lumo-error-color-50pct: rgba(225, 22, 9, 0.5);
-      --lumo-error-color-10pct: rgba(225, 22, 9, 0.1);
-      --lumo-error-color: rgb(225,22,9);
-    }
-
-    [theme~="dark"] {
-    }
-
   </style>
 </custom-style>`;
 

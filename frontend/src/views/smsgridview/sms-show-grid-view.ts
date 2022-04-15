@@ -10,16 +10,16 @@ export class SmsShowGridView extends LitElement {
 
     render() {
         return html`
-            <vaadin-board style="max-width: 100%; margin-right: auto; margin-left: auto">
+            <vaadin-board>
                 <vaadin-row>
-                    <div id="row-header"></div>
+                    <div id="row-header" class="vaadin-board-cell"></div>
                 </vaadin-row>
                 <vaadin-row>
-                    <div id="row-body"></div>
+                    <div id="row-body" class="vaadin-board-cell"></div>
                     <vaadin-grid id="smsGrid" style="min-height: 500px"></vaadin-grid>
                 </vaadin-row>
                 <vaadin-row>
-                    <div id="row-footer"></div>
+                    <div id="row-footer" class="vaadin-board-cell"></div>
                 </vaadin-row>
             </vaadin-board>
         `;
