@@ -17,6 +17,7 @@ import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.MonthlySmsShowGridView;
 import com.stt.dash.ui.utils.BakeryConst;
+import com.stt.dash.ui.views.dashboard.DashboardBase;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
@@ -32,11 +33,9 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -51,7 +50,7 @@ import java.util.stream.Collectors;
 @JsModule("./src/views/carrier/carrier-chart-view.js")
 @Route(value = BakeryConst.PAGE_CARRIER, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_CARRIER)
-public class CarrierChartView extends PolymerTemplate<TemplateModel> {
+public class CarrierChartView extends DashboardBase {
     @Id("divHeader")
     Div divHeader;
     @Id("deliveriesThisMonth")
@@ -64,13 +63,13 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     private Chart carrierDailyChart;
 
     @Id("carrierTriPieChart")
-    private Chart carrierTriPieChart;
+    private Chart smsLastMonthsPieChart;
 
     @Id("carrierMonthlyPieChart")
-    private Chart carrierMonthlyPieChart;
+    private Chart smsThisMonthPieChart;
 
     @Id("carrierHourlyPieChart")
-    private Chart carrierHourlyPieChart;
+    private Chart smsHourPieChart;
     /**/
     private static String CARRIER_VIEW_SELECTED_CARRIER = "carrier_view_selected_carrier";
     private static String CARRIER_VIEW_SELECTED_MESSAGETYPE = "carrier_view_selected_messageType";
@@ -88,14 +87,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     private final CheckboxGroup<OMessageType> checkboxMessageType = new CheckboxGroup<>();
     /* Para Graficos y servicios */
     private List<Integer> monthToShowList;
-    private List<Integer> hourList = new ArrayList<>();
-    private List<Integer> dayList = new ArrayList<>();
     private String[] ml;
-    /*Fechas */
-    private int actual_month;
-    private int actual_day;
-    private int actual_year;
-    private int actual_hour;
     /* Button */
     private Button filterButton = new Button("Actualizar");
     List<String> clientSystemIdStringList;
@@ -105,7 +97,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
                             @Qualifier("getUserSystemIdString")
                             ListGenericBean<String> stringListGenericBean,
                             CurrentUser currentUser) {
-
+        super();
         this.userSystemIdList = stringListGenericBean;
         this.smsHourService = smsHourService;
         setActualDate();
@@ -151,27 +143,21 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         } else {
             carrierMultiComboBox.setValue(new HashSet<>(carrierPage.getContent()));
         }
-
+        /* ******* */
         /* HEADER */
-        HorizontalLayout container = new HorizontalLayout();
-        VerticalLayout vLeft = new VerticalLayout();
-        VerticalLayout vRight = new VerticalLayout();
-        container.setWidthFull();
-        container.add(vLeft, vRight);
-        vLeft.add(clientCombobox, carrierMultiComboBox);
-        vRight.add(checkboxMessageType);
+        divHeader.add(new HorizontalLayout(clientCombobox, checkboxMessageType),
+                new HorizontalLayout(carrierMultiComboBox), filterButton);
+        clientCombobox.setWidthFull();
+        checkboxMessageType.setWidthFull();
+        carrierMultiComboBox.setWidthFull();
+        checkboxMessageType.setErrorMessage("seleccionar al menos un tipo de sms");
 
         /* ******* Message type */
         checkboxMessageType.setLabel("Tipo de Mensajes");
         checkboxMessageType.setItems(OMessageType.values());
         checkboxMessageType.setValue(new HashSet<OMessageType>(Arrays.asList(OMessageType.values())));
         checkboxMessageType.setRequired(true);
-        checkboxMessageType.setErrorMessage("seleccionar al menos un tipo de sms");
-        divHeader.add(new HorizontalLayout(clientCombobox, checkboxMessageType),
-                new HorizontalLayout(carrierMultiComboBox), filterButton);
-        clientCombobox.setWidthFull();
-        checkboxMessageType.setWidthFull();
-        carrierMultiComboBox.setWidthFull();
+
         try {
             clientSystemIdStringList = clientCombobox.getValue().getSystemids()
                     .stream()
@@ -202,7 +188,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
      */
     private void updateHourlyChart(List<String> sids) {
         Configuration confHourlyChart = smsThisDayChart.getConfiguration();
-        confHourlyChart.setTitle(OMonths.valueOf(actual_month).getMonthName() + " - dia de hoy");
+        confHourlyChart.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - dia de hoy");
         confHourlyChart.setSubTitle("por hora");
         confHourlyChart.getyAxis().setTitle("SMS");
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
@@ -222,17 +208,17 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
 
         List<String> carrier_list = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
         /* Column Chart*/
-        List<SmsByYearMonthDayHour> l = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actual_year, actual_month, actual_day, sids);
+        List<SmsByYearMonthDayHour> l = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actualYear, actualMonth, actualDay, sids);
         if (l == null || l.isEmpty()) {
             log.info("Hourly Chart Without data to show");
             return;
         }
-        List<Series> LineDateSeriesList = paEntender(l, hourList);
+        List<Series> LineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), l, hourList);
         addToChart(confHourlyChart, LineDateSeriesList, plotColum);
         /* Line Chart */
-        l = smsHourService.getGroupCarrierByYeMoDaHoWhYeMoDayEqMessageTypeIn(actual_year,
-                actual_month,
-                actual_day,
+        l = smsHourService.getGroupCarrierByYeMoDaHoWhYeMoDayEqMessageTypeIn(actualYear,
+                actualMonth,
+                actualDay,
                 carrier_list,
                 checkboxMessageType.getSelectedItems(), sids);
         List<SmsByYearMonthDayHour> l2 = new ArrayList<>(l);
@@ -287,10 +273,10 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     private void updateHourly(List<String> sids) {
         List<String> carrier_list = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
         /* --------------POR HORA */
-        List<SmsByYearMonthDayHour> smsHourGroup = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actual_year, actual_month, actual_day, sids);
-        List<SmsByYearMonthDayHour> carrierHourGroup = smsHourService.getGroupCarrierByYeMoDaHoWhYeMoDayEqMessageTypeIn(actual_year,
-                actual_month,
-                actual_day,
+        List<SmsByYearMonthDayHour> smsHourGroup = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actualYear, actualMonth, actualDay, sids);
+        List<SmsByYearMonthDayHour> carrierHourGroup = smsHourService.getGroupCarrierByYeMoDaHoWhYeMoDayEqMessageTypeIn(actualYear,
+                actualMonth,
+                actualDay,
                 carrier_list,
                 checkboxMessageType.getSelectedItems(), sids);
         populateHourChart(smsHourGroup, new ArrayList<>(carrierHourGroup));
@@ -301,9 +287,9 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     private void updateDaily(List<String> sids) {
         List<String> carrier_list = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
         /* --------------DIARIO */
-        List<SmsByYearMonthDay> smsDayGroup = smsHourService.groupByYearMonthDayMessageTypeWhereYearAndMonth(actual_year, actual_month, sids);
-        List<SmsByYearMonthDay> carrierDayGroup = smsHourService.getGroupCarrierByYeMoMe(actual_year,
-                actual_month,
+        List<SmsByYearMonthDay> smsDayGroup = smsHourService.groupByYearMonthDayMessageTypeWhereYearAndMonth(actualYear, actualMonth, sids);
+        List<SmsByYearMonthDay> carrierDayGroup = smsHourService.getGroupCarrierByYeMoMe(actualYear,
+                actualMonth,
                 carrier_list,
                 checkboxMessageType.getSelectedItems(),
                 sids);
@@ -315,9 +301,9 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     private void updateTrimestral(List<String> sids) {
         /* ------------- TRIMESTRAL: SMS
          * Ejem: SmsByYearMonth{total=2775, yearSms=2021, monthSms=3, someCode=MO}*/
-        List<SmsByYearMonth> smsGroup = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actual_year, monthsIn(2), sids);
+        List<SmsByYearMonth> smsGroup = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actualYear, monthsIn(2), sids);
 
-        List<SmsByYearMonth> carrierGroup = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(actual_year,
+        List<SmsByYearMonth> carrierGroup = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(actualYear,
                 monthsIn(2),
                 carrierMultiComboBox.getValue(),
                 checkboxMessageType.getSelectedItems(),
@@ -328,7 +314,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     }
 
     private void populateHourPieChart(List<SmsByYearMonthDayHour> carrierHourGroup) {
-        Configuration confOut = carrierHourlyPieChart.getConfiguration();
+        Configuration confOut = smsHourPieChart.getConfiguration();
         /**/
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
@@ -349,7 +335,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     private void populateHourChart(List<? extends AbstractSmsByYearMonth> smsHourGroup, List<SmsByYearMonthDayHour> carrierHourGroup) {
         Configuration confIn = smsThisDayChart.getConfiguration();
 
-        confIn.setTitle(OMonths.valueOf(actual_month).getMonthName() + "- dia de hoy");
+        confIn.setTitle(OMonths.valueOf(actualMonth).getMonthName() + "- dia de hoy");
         confIn.setSubTitle("por hora");
         confIn.getyAxis().setTitle("SMS");
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
@@ -397,7 +383,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     }
 
     private void populateMonthlyPieChart(List<SmsByYearMonthDay> carrierDayGroup) {
-        Configuration confOut = carrierMonthlyPieChart.getConfiguration();
+        Configuration confOut = smsThisMonthPieChart.getConfiguration();
         /**/
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
@@ -413,7 +399,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         for (DataSeries list_sery : list_series) {
             confOut.addSeries(list_sery);
         }
-        confOut.setTitle(OMonths.valueOf(actual_month).getMonthName());
+        confOut.setTitle(OMonths.valueOf(actualMonth).getMonthName());
     }
 
     /**
@@ -431,7 +417,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
                 d.close();
             });
             List<SmsByYearMonth> as = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(
-                    actual_year,
+                    actualYear,
                     monthsIn(2),
                     carrierMultiComboBox.getValue(),
                     checkboxMessageType.getSelectedItems(),
@@ -439,7 +425,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
 //            smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actual_year, monthsIn(2), sids);
             MonthlySmsShowGridView view = new MonthlySmsShowGridView(
                     smsHourService,
-                    actual_year,
+                    actualYear,
                     monthsIn(2),
                     clientSystemIdStringList,
                     checkboxMessageType.getSelectedItems(),
@@ -458,7 +444,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         /* Averiguar cuales son los tres meses a calular. */
         confTriChart.getxAxis().setCategories(ml);
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
-        List<Series> LineDateSeriesList = paEntender(smsGroup, monthToShowList);
+        List<Series> LineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), smsGroup, monthToShowList);
         addToChart(confTriChart, LineDateSeriesList, plotColum);
         /**/
         PlotOptionsLine plotLine = new PlotOptionsLine();
@@ -544,7 +530,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     }
 
     private void populatePieChart(List<SmsByYearMonth> smsByYearMonth) {
-        Configuration conf = carrierTriPieChart.getConfiguration();
+        Configuration conf = smsLastMonthsPieChart.getConfiguration();
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
         innerPieOptions.setSize("70%");
         /**/
@@ -572,7 +558,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         Configuration confIn = carrierDailyChart.getConfiguration();
         /**/
         confIn.getyAxis().setTitle("SMS");
-        confIn.setTitle(OMonths.valueOf(actual_month).getMonthName() + " - " + actual_year);
+        confIn.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - " + actualYear);
         confIn.setSubTitle("por dia");
         String[] da = new String[LocalDate.now().getMonth().maxLength()];
         for (int i = 1; i <= LocalDate.now().getMonth().maxLength(); i++) {
@@ -709,51 +695,51 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         return list_series;
     }
 
-    public List<Series> paEntender(List<? extends AbstractSmsByYearMonth> l, List<Integer> integerList) {
-
-        List<Series> dataSeriesList = new ArrayList<>();
-        /*TODO nullpointer*/
-        /* Recorre los Carrier seleccionados. */
-        PlotOptionsColumn splinePlotOptions = new PlotOptionsColumn();
-        checkboxMessageType.getSelectedItems().forEach(messageType -> {
-            ListSeries series = new ListSeries();
-            series.setName(messageType.name());
-            /* Recorre los meses del trimestre */
-            integerList.forEach(month -> {
-                /* Total por Month y Carrier*/
-                Long tot = l.stream()
-                        .filter(sms -> sms.getGroupBy() == month
-                                && messageType.name().equalsIgnoreCase(sms.getSomeCode()))
-                        .mapToLong(sms -> sms.getTotal()).sum();
-                System.out.println("MONTH-> " + month + ". Message Type: " + messageType + " - TOTAL: " + tot);
-                series.addData(tot);
-                series.setPlotOptions(splinePlotOptions);
-            });
-            dataSeriesList.add(series);
-        });
-//        ListSeries digitelSerie = new ListSeries("DIGITel", 100,200,300);
-//        ListSeries movilnetSerie = new ListSeries("MOVILnet", 200,300,400);
-//        ListSeries movistarSerie = new ListSeries("MOVistar", 300,400,500);
-//        List<ListSeries> dataSeriesList = new ArrayList<>();
-//        dataSeriesList.add(digitelSerie);
-//        dataSeriesList.add(movilnetSerie);
-//        dataSeriesList.add(movistarSerie);
-        /* FORMA 2 */
-//        List<DataSeries> dataSeriesList = new ArrayList<>();
-//        DataSeries series = new DataSeries();
-//        series.setName("DIGITEL");
-//        series.setData(1427, 11383, 0);
-//        dataSeriesList.add(series);
-//        series = new DataSeries();
-//        series.setName("MOVILNET");
-//        series.setData(2710, 23030, 0);
-//        dataSeriesList.add(series);
-//        series = new DataSeries();
-//        series.setName("MOVISTAR");
-//        series.setData(2795, 22520, 0);
-//        dataSeriesList.add(series);
-        return dataSeriesList;
-    }
+//    public List<Series> paEntender(List<? extends AbstractSmsByYearMonth> l, List<Integer> integerList) {
+//
+//        List<Series> dataSeriesList = new ArrayList<>();
+//        /*TODO nullpointer*/
+//        /* Recorre los Carrier seleccionados. */
+//        PlotOptionsColumn splinePlotOptions = new PlotOptionsColumn();
+//        checkboxMessageType.getSelectedItems().forEach(messageType -> {
+//            ListSeries series = new ListSeries();
+//            series.setName(messageType.name());
+//            /* Recorre los meses del trimestre */
+//            integerList.forEach(month -> {
+//                /* Total por Month y Carrier*/
+//                Long tot = l.stream()
+//                        .filter(sms -> sms.getGroupBy() == month
+//                                && messageType.name().equalsIgnoreCase(sms.getSomeCode()))
+//                        .mapToLong(sms -> sms.getTotal()).sum();
+//                System.out.println("MONTH-> " + month + ". Message Type: " + messageType + " - TOTAL: " + tot);
+//                series.addData(tot);
+//                series.setPlotOptions(splinePlotOptions);
+//            });
+//            dataSeriesList.add(series);
+//        });
+////        ListSeries digitelSerie = new ListSeries("DIGITel", 100,200,300);
+////        ListSeries movilnetSerie = new ListSeries("MOVILnet", 200,300,400);
+////        ListSeries movistarSerie = new ListSeries("MOVistar", 300,400,500);
+////        List<ListSeries> dataSeriesList = new ArrayList<>();
+////        dataSeriesList.add(digitelSerie);
+////        dataSeriesList.add(movilnetSerie);
+////        dataSeriesList.add(movistarSerie);
+//        /* FORMA 2 */
+////        List<DataSeries> dataSeriesList = new ArrayList<>();
+////        DataSeries series = new DataSeries();
+////        series.setName("DIGITEL");
+////        series.setData(1427, 11383, 0);
+////        dataSeriesList.add(series);
+////        series = new DataSeries();
+////        series.setName("MOVILNET");
+////        series.setData(2710, 23030, 0);
+////        dataSeriesList.add(series);
+////        series = new DataSeries();
+////        series.setName("MOVISTAR");
+////        series.setData(2795, 22520, 0);
+////        dataSeriesList.add(series);
+//        return dataSeriesList;
+//    }
 
 
     public List<DataSeries> findDataSeriesLineBase(List<? extends AbstractSmsByYearMonth> l) {
@@ -847,19 +833,6 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         return list_series;
     }
 
-    private void configureColumnChart(Configuration conf) {
-        conf.getChart().setType(ChartType.COLUMN);
-        conf.getChart().setBorderRadius(4);
-
-        conf.getxAxis().setTickInterval(1);
-        conf.getxAxis().setMinorTickLength(0);
-        conf.getxAxis().setTickLength(0);
-
-        conf.getyAxis().getTitle().setText(null);
-
-        conf.getLegend().setEnabled(false);
-    }
-
     private String getStringLog() {
         return "";
 //        return "[" + Application.getAPP_NAME() + "] [" + ouser_session.getUserEmail() + "]"
@@ -883,7 +856,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
             }
             if (hasToFill) {
                 log.info("TRIMESTRE COLUMN DATA - ADDING MONTH({}) WITH 0 ", monthLoop);
-                AbstractSmsByYearMonth o = listToFill.get(0).getObject(0, actual_year, monthLoop, "N/A");
+                AbstractSmsByYearMonth o = listToFill.get(0).getObject(0, actualYear, monthLoop, "N/A");
                 l.add(o);
             }
         }
@@ -948,45 +921,10 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
                         System.out.println("Este " + c.getKey() + " " + tc);
 
                     });
-//                    carrier.getValue().forEach(mt -> {
-//                        series.add(new DataSeriesItem(mt.getMessageType(), mt.getTotal()));
-//                        log.info("{} **C** {}", mt.getMessageType(), mt.getTotal());
-//                    });
-//                    System.out.println("Este "+carrier.getKey() + " " + carrier.getValue());
                 }
         );
         System.out.println("SE TARDO: " + (System.currentTimeMillis() - startTime));
         pieSeries.setPlotOptions(plotOptionsPie);
-
-//        /* Guardar los totales del Mes*/
-//        for (SmsByYearMonth smsByYearMonth : l) {
-//            /*TODO: El repo debe devolver solo los Carrier Seleccionados*/
-//            /*if (!mapMx.containsKey(smsByYearMonth.getSomeCode())) {
-//                continue;
-//            }*/
-//            log.info("ELE {}  ************************* ", smsByYearMonth);
-//            mapMx.put(smsByYearMonth.getSomeCode(), smsByYearMonth.getTotal() + mapMx.get(smsByYearMonth.getSomeCode()));
-//        }
-//
-//        DataSeries series = new DataSeries();
-//        series.setName(serieName);
-//        mapMx.forEach((cod, ocarrier) -> {
-//            DataSeriesItem item = new DataSeriesItem(cod, ocarrier);
-//            log.info("Serie:{} Cod: {} Long:{} ************************* ", serieName, cod, ocarrier);
-//            series.add(item);
-//        });
-////        PlotOptionsPie plotOptionsPie = new PlotOptionsPie();
-////        plotOptionsPie.setInnerSize("60%");
-////        plotOptionsPie.getDataLabels().setCrop(false);
-//        series.setPlotOptions(plotOptionsPie);
-////        conf.addSeries(deliveriesPerProductSeries);
-//
-////        PlotOptionsPie plotOptionsPie = new PlotOptionsPie();
-////        plotOptionsPie.setSize("100px");
-////        plotOptionsPie.setCenter("100px", "80px");
-////        plotOptionsPie.setShowInLegend(false);
-////        plotOptionsPie.setDepth(5);
-////        series.setPlotOptions(plotOptionsPie);
         PlotOptionsPie plotOptionsPie2 = new PlotOptionsPie();
         plotOptionsPie2.setInnerSize("75%");
         plotOptionsPie2.getDataLabels().setEnabled(false);
@@ -999,35 +937,5 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
         pieSeries.setName("SMS");
         donutSeries.setName("SMS");
         return list_series;
-    }
-
-    /**
-     * Devuelve un listado de los meses atras, segun monthback.
-     *
-     * @param monthback
-     * @return
-     */
-    private List<Integer> monthsIn(int monthback) {
-        List<Integer> lm = new ArrayList<>(monthback);
-        for (int i = monthback; i > 0; i--) {
-            lm.add(LocalDate.now().getMonth().minus(i).getValue());
-        }
-        lm.add(LocalDate.now().getMonth().getValue());
-        return lm;
-    }
-
-    private void setActualDate() {
-        Calendar c = Calendar.getInstance();
-        actual_day = c.get(Calendar.DAY_OF_MONTH);
-        actual_month = c.get(Calendar.MONTH) + 1;
-        actual_year = c.get(Calendar.YEAR);
-        log.info("{} HOUR OF DAY {} HOUR {}", getStringLog(), c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.HOUR));
-        actual_hour = c.get(Calendar.HOUR_OF_DAY);
-        for (int i = 0; i <= actual_hour; i++) {
-            hourList.add(i);
-        }
-        for (int i = 1; i <= actual_day; i++) {
-            dayList.add(i);
-        }
     }
 }

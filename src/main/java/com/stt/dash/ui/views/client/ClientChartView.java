@@ -58,6 +58,9 @@ public class ClientChartView extends DashboardBase {
     @Id("divHeader")
     Div divHeader;
 
+    @Id("test")
+    MultiComboBox mu;
+
     @Id("deliveriesThisMonth")
     private Chart smsLastThreeMonthChart;
 
@@ -68,13 +71,13 @@ public class ClientChartView extends DashboardBase {
     private Chart smsThisMonthChart;
 
     @Id("carrierTriPieChart")
-    private Chart clientTriPieChart;
+    private Chart smsLastMonthsPieChart;
 
     @Id("carrierMonthlyPieChart")
-    private Chart clientMonthlyPieChart;
+    private Chart smsThisMonthPieChart;
 
     @Id("carrierHourlyPieChart")
-    private Chart carrierHourlyPieChart;
+    private Chart smsHourPieChart;
 
     /**/
     Logger log = LoggerFactory.getLogger(ClientChartView.class);
@@ -136,6 +139,7 @@ public class ClientChartView extends DashboardBase {
         /* ******* */
         /* ******* SystemId */
         systemIdMultiCombo.setItemLabelGenerator(SystemId::getSystemId);
+        mu.setItems(currentUser.getUser().getClient().getSystemids());
         /* ******* */
         /* ******* Client */
         clientCombobox.setItemLabelGenerator(Client::getClientName);
@@ -211,7 +215,7 @@ public class ClientChartView extends DashboardBase {
     }
 
     private void updateDailyPie() {
-        Configuration confHourlyChart = carrierHourlyPieChart.getConfiguration();
+        Configuration confHourlyChart = smsHourPieChart.getConfiguration();
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
         confHourlyChart.setTitle("Hoy");
         confHourlyChart.setSubTitle("por operadoras");
@@ -226,7 +230,7 @@ public class ClientChartView extends DashboardBase {
     }
 
     private void updateMonthlyPie() {
-        Configuration confMonthlyChart = clientMonthlyPieChart.getConfiguration();
+        Configuration confMonthlyChart = smsThisMonthPieChart.getConfiguration();
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
 
         confMonthlyChart.setTitle("Este Mes");
@@ -242,7 +246,7 @@ public class ClientChartView extends DashboardBase {
     }
 
     private void updateTrimestrePie() {
-        Configuration confHourlyChart = clientTriPieChart.getConfiguration();
+        Configuration confHourlyChart = smsLastMonthsPieChart.getConfiguration();
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
 //        innerPieOptions.setSize("70%")
 //

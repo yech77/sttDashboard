@@ -69,6 +69,7 @@ class CarrierChartView extends PolymerElement {
             </style>
             <vaadin-board>
                 <vaadin-board-row>
+                    <vcf-multiselect-combo-box id="test"></vcf-multiselect-combo-box>
                     <div id="divHeader" class="vaadin-board-cell"></div>
                 </vaadin-board-row>
                 <vaadin-board-row>
