@@ -380,7 +380,7 @@ public class MainDashboardView extends DashboardBase {
         String[] ml = new String[]{OMonths.valueOf(monthToShowList.get(0)).getMonthName(), OMonths.valueOf(monthToShowList.get(1)).getMonthName(), OMonths.valueOf(monthToShowList.get(2)).getMonthName()};
         conf.getxAxis().setCategories(ml);
         List<? extends AbstractSmsByYearMonth> monthToShowDataList = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actualYear, monthToShowList, stingListGenericBean.getList());
-        List<Series> lineDateSeriesList = messageTypeAndMonthlyTotal(monthToShowDataList, monthsIn(2));
+        List<Series> lineDateSeriesList = messageTypeAndMonthlyTotal(Arrays.asList(OMessageType.values()), monthToShowDataList, monthsIn(2));
         PlotOptionsLine plotLine = new PlotOptionsLine();
         addToChart(conf, lineDateSeriesList, plotLine);
     }
@@ -444,58 +444,5 @@ public class MainDashboardView extends DashboardBase {
         /* Se limita la lista a la hora actual. */
         numberList = numberList.subList(0, actualHour + 1);
         return numberList;
-    }
-
-    /**
-     * Calcula y agrupa los totales del mes por messageType.
-     *
-     * @param smsList
-     * @param monthToShowList
-     * @return
-     */
-    public List<Series> messageTypeAndMonthlyTotal(List<? extends AbstractSmsByYearMonth> smsList, List<Integer> monthToShowList) {
-
-        if (smsList == null) {
-            return new ArrayList<>();
-        }
-
-        Map<String, List<Long>> serieToChartMap = new HashMap<>();
-        /* Recorre todos los MessageType  */
-        Arrays.asList(OMessageType.values()).stream().forEach(actualMessageTypeForeach -> {
-            List<Long> totalList = new ArrayList<>();
-            /* Recorre los meses a mostrar */
-            monthToShowList.forEach(actualMonthInForeach -> {
-                /* Recorre toda la lista para Total filtrado por Month y MessageType */
-                Long tot = smsList.stream().filter(sms -> sms.getGroupBy() == actualMonthInForeach && actualMessageTypeForeach.name().equalsIgnoreCase(sms.getSomeCode())).mapToLong(sms -> sms.getTotal()).sum();
-                totalList.add(tot);
-            });
-            serieToChartMap.put(actualMessageTypeForeach.name(), totalList);
-        });
-
-        List<Series> seriesList = convertToSeries(serieToChartMap);
-
-
-//        ListSeries digitelSerie = new ListSeries("DIGITel", 100,200,300);
-//        ListSeries movilnetSerie = new ListSeries("MOVILnet", 200,300,400);
-//        ListSeries movistarSerie = new ListSeries("MOVistar", 300,400,500);
-//        List<ListSeries> dataSeriesList = new ArrayList<>();
-//        dataSeriesList.add(digitelSerie);
-//        dataSeriesList.add(movilnetSerie);
-//        dataSeriesList.add(movistarSerie);
-        /* FORMA 2 */
-//        List<DataSeries> dataSeriesList = new ArrayList<>();
-//        DataSeries series = new DataSeries();
-//        series.setName("DIGITEL");
-//        series.setData(1427, 11383, 0);
-//        dataSeriesList.add(series);
-//        series = new DataSeries();
-//        series.setName("MOVILNET");
-//        series.setData(2710, 23030, 0);
-//        dataSeriesList.add(series);
-//        series = new DataSeries();
-//        series.setName("MOVISTAR");
-//        series.setData(2795, 22520, 0);
-//        dataSeriesList.add(series);
-        return seriesList;
     }
 }

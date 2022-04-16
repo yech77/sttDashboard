@@ -133,12 +133,6 @@ public class ClientChartView extends DashboardBase {
             }
 //            searchButton.setEnabled(isValidSearch());
         });
-//        op.ifPresentOrElse(o -> {
-//            messageTypeMultiCombo.setValue((Set<OMessageType>) o);
-//        }, () -> {
-//            messageTypeMultiCombo.setValue(new HashSet<>(Arrays.asList(OMessageType.values())));
-//        });
-//        checkboxMessageType.setItemLabelGenerator(OMessageType::name);
         /* ******* */
         /* ******* SystemId */
         systemIdMultiCombo.setItemLabelGenerator(SystemId::getSystemId);
@@ -189,15 +183,8 @@ public class ClientChartView extends DashboardBase {
             if (op.isPresent()) {
                 systemIdMultiCombo.setValue((Set<SystemId>) op.get());
             } else {
-//                systemIdMultiCombo.setValue(null);
                 systemIdMultiCombo.setValue(new HashSet<>(clientListener.getValue().getSystemids()));
             }
-//            op.ifPresentOrElse(o -> {
-//                systemIdMultiCombo.setValue((Set<SystemId>) o);
-//            }, () -> {
-////                systemIdMultiCombo.setValue(null);
-//                systemIdMultiCombo.setValue(new HashSet<>(clientListener.getValue().getSystemids()));
-//            });
         });
         filterButton.addClickListener(clickEvent -> {
             filterButton.setEnabled(false);
@@ -270,17 +257,6 @@ public class ClientChartView extends DashboardBase {
         List<SmsByYearMonth> l = smsHourService.getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(LocalDate.now().getYear(), monthsIn(2), checkboxMessageType.getSelectedItems(), allUserStringSystemId.getList());
         List<DataSeries> LineDateSeriesList = paEntenderPie(l, monthsIn(2));
         addToPieChart(confHourlyChart, LineDateSeriesList, innerPieOptions);
-        /* Line Chart */
-//        for (SystemId s : systemIdMultiCombo.getSelectedItems()) {
-//            systemIdStringList.add(s.getSystemId());
-//        }
-//        l = smsHourService.getGroupSystemIdByYeMoDaHoWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), 5, 2, messageTypeMultiCombo.getSelectedItems(), systemIdStringList);
-//        PlotOptionsLine plotLine = new PlotOptionsLine();
-//        LineDateSeriesList = paEntenderLine(l,
-//                Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-//                        13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24));
-//        addToChart(confHourlyChart, LineDateSeriesList, plotLine);
-
     }
 
     private void updateHourlyChart() {
@@ -323,11 +299,6 @@ public class ClientChartView extends DashboardBase {
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /**/
         confHourlyChart.getxAxis().setTitle("Hora");
-//        String[] da = new String[LocalDateTime.now().getHour())];
-//        for (int i = 0; i <= LocalDateTime.now().getHour(); i++) {
-//            da[i] = i + ":";
-//        }
-//        confHourlyChart.getxAxis().setCategories(da);
         /**/
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
@@ -340,15 +311,15 @@ public class ClientChartView extends DashboardBase {
             return;
         }
         /* Column Chart*/
-        List<SmsByYearMonthDayHour> l = smsHourService.getGroupSmsByYearMonthDayHourMessageType(LocalDate.now().getYear(), actualMonth, actualDay, allUserStringSystemId.getList());
-        List<Series> LineDateSeriesList = paEntender(l, hourList);
+        List<SmsByYearMonthDayHour> smsList = smsHourService.getGroupSmsByYearMonthDayHourMessageType(LocalDate.now().getYear(), actualMonth, actualDay, allUserStringSystemId.getList());
+        List<Series> LineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), smsList, hourList);
         addToChart(confHourlyChart, LineDateSeriesList, plotColum);
         /* Convertir Set<SystemId> seleccionados en un List<String>*/
         List<String> selectedSystemIdList = systemIdMultiCombo.getValue().stream().map(SystemId::getSystemId).collect(Collectors.toList());
         /* Line Chart */
-        l = smsHourService.getGroupSystemIdByYeMoDaHoWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), actualMonth, actualDay, checkboxMessageType.getSelectedItems(), selectedSystemIdList);
+        smsList = smsHourService.getGroupSystemIdByYeMoDaHoWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), actualMonth, actualDay, checkboxMessageType.getSelectedItems(), selectedSystemIdList);
         PlotOptionsLine plotLine = new PlotOptionsLine();
-        LineDateSeriesList = paEntenderLine(l, hourList);
+        LineDateSeriesList = systemidAndTimeTotal(systemIdMultiCombo.getValue(), smsList, hourList);
         addToChart(confHourlyChart, LineDateSeriesList, plotLine);
     }
 
@@ -423,12 +394,12 @@ public class ClientChartView extends DashboardBase {
         confMonthlyLineChart.setTooltip(tooltip);
         /* Column Chart*/
         List<SmsByYearMonthDay> l = smsHourService.groupByYearMonthDayMessageTypeWhereYearAndMonth(LocalDate.now().getYear(), actualMonth, allUserStringSystemId.getList());
-        List<Series> LineDateSeriesList = paEntender(l, dayList);
+        List<Series> LineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), l, dayList);
         addToChart(confMonthlyLineChart, LineDateSeriesList, plotColum);
         /* Line Chart */
         l = smsHourService.getGroupSystemIdByYeMoDa(LocalDate.now().getYear(), actualMonth, checkboxMessageType.getSelectedItems(), allUserStringSystemId.getList());
         PlotOptionsLine plotLine = new PlotOptionsLine();
-        LineDateSeriesList = paEntenderLine(l, dayList);
+        LineDateSeriesList = systemidAndTimeTotal(systemIdMultiCombo.getValue(), l, dayList);
         addToChart(confMonthlyLineChart, LineDateSeriesList, plotLine);
     }
 
@@ -481,14 +452,14 @@ public class ClientChartView extends DashboardBase {
 
         /* Buscar con todos los systemids del usuario. */
         List<SmsByYearMonth> l = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actualYear, monthsIn(2), allUserStringSystemId.getList());
-        List<Series> LineDateSeriesList = paEntender(l, monthsIn(2));
+        List<Series> LineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), l, monthsIn(2));
         addToChart(confTriMixChart, LineDateSeriesList, plotColum);
         /* LINE CHART */
         l = smsHourService.
                 getGroupSystemIdByYeMoWhMoInMessageTypeIn(LocalDate.now().getYear(), monthsIn(2), checkboxMessageType.getSelectedItems(), selectedSystemIdList);
 
         PlotOptionsLine plotLine = new PlotOptionsLine();
-        LineDateSeriesList = paEntenderLine(l, monthsIn(2));
+        LineDateSeriesList = systemidAndTimeTotal(systemIdMultiCombo.getValue(), l, monthsIn(2));
         addToChart(confTriMixChart, LineDateSeriesList, plotLine);
     }
 
@@ -497,9 +468,7 @@ public class ClientChartView extends DashboardBase {
             log.info("{} NO DATA FOR CARRIER CHART LINE");
         } else {
             for (int i = 0; i < LineDateSeriesList.size(); i++) {
-                System.out.println("ADDING LINE********" + LineDateSeriesList.get(i).getName());
                 Series series = LineDateSeriesList.get(i);
-                System.out.println("ADDING LINE COPY********" + series.getName());
                 series.setPlotOptions(plot);
                 configuration.addSeries(series);
             }
@@ -519,59 +488,7 @@ public class ClientChartView extends DashboardBase {
         }
     }
 
-    public List<Series> paEntender(List<? extends AbstractSmsByYearMonth> l, List<Integer> integerList) {
-        System.out.println("************ pa entender I - KKK");
-        l.stream().forEach(System.out::println);
-        System.out.println("************ pa entender II - KKK");
-
-        List<Series> dataSeriesList = new ArrayList<>();
-        /*TODO nullpointer*/
-        PlotOptionsColumn splinePlotOptions = new PlotOptionsColumn();
-        /* Recorre los MessageType seleccionados. */
-        checkboxMessageType.getSelectedItems().forEach(messageType -> {
-            ListSeries series = new ListSeries();
-            series.setName(messageType.name());
-            /* Recorre los meses del trimestre */
-            integerList.forEach(month -> {
-                /* Total por Month y MessageType */
-                Long tot = l.stream()
-                        .filter(sms -> sms.getGroupBy() == month
-                                && messageType.name().equalsIgnoreCase(sms.getSomeCode()))
-                        .mapToLong(sms -> sms.getTotal()).sum();
-                System.out.println("MONTH-> " + month + ". Message Type: " + messageType + " - TOTAL: " + tot);
-                series.addData(tot);
-                series.setPlotOptions(splinePlotOptions);
-            });
-            dataSeriesList.add(series);
-        });
-//        ListSeries digitelSerie = new ListSeries("DIGITel", 100,200,300);
-//        ListSeries movilnetSerie = new ListSeries("MOVILnet", 200,300,400);
-//        ListSeries movistarSerie = new ListSeries("MOVistar", 300,400,500);
-//        List<ListSeries> dataSeriesList = new ArrayList<>();
-//        dataSeriesList.add(digitelSerie);
-//        dataSeriesList.add(movilnetSerie);
-//        dataSeriesList.add(movistarSerie);
-        /* FORMA 2 */
-//        List<DataSeries> dataSeriesList = new ArrayList<>();
-//        DataSeries series = new DataSeries();
-//        series.setName("DIGITEL");
-//        series.setData(1427, 11383, 0);
-//        dataSeriesList.add(series);
-//        series = new DataSeries();
-//        series.setName("MOVILNET");
-//        series.setData(2710, 23030, 0);
-//        dataSeriesList.add(series);
-//        series = new DataSeries();
-//        series.setName("MOVISTAR");
-//        series.setData(2795, 22520, 0);
-//        dataSeriesList.add(series);
-        return dataSeriesList;
-    }
-
-    public List<DataSeries> paEntenderPie(List<? extends AbstractSmsByYearMonth> l, List<Integer> integerList) {
-        System.out.println("PA ENTENDER PIE ----------------");
-        l.stream().forEach(System.out::println);
-
+    public List<DataSeries> paEntenderPie(List<? extends AbstractSmsByYearMonth> smsList, List<Integer> integerList) {
         List<DataSeries> dataSeriesList = new ArrayList<>();
         /*TODO nullpointer*/
         /* Recorre los Carrier seleccionados. */
@@ -579,23 +496,23 @@ public class ClientChartView extends DashboardBase {
                 carrierList.stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
         DataSeries pieSeries = new DataSeries();
         DataSeries donutSeries = new DataSeries();
-        carriers.forEach(carrier -> {
+        carriers.forEach(actualCarrierForeach -> {
             /* Total por Carrier */
-            Long tot = l.parallelStream()
-                    .filter(sms -> carrier.equalsIgnoreCase(sms.getMessageType()))
-                    .mapToLong(sms -> sms.getTotal()).sum();
-            System.out.println("OPERADORA-> " + carrier + ". - TOTAL: " + tot);
-            pieSeries.add(new DataSeriesItem(carrier, tot), false, false);
+            Long carrierTot = smsList.parallelStream()
+                    .filter(sms -> actualCarrierForeach.equalsIgnoreCase(sms.getMessageType()))
+                    .mapToLong(sms -> sms.getTotal())
+                    .sum();
+            pieSeries.add(new DataSeriesItem(actualCarrierForeach, carrierTot), false, false);
             /* Total por S*/
             systemIdMultiCombo.getOptionalValue()
-                    .ifPresent(value ->
-                            value.forEach(systemId -> {
-                                Long totSid = l.parallelStream()
-                                        .filter(sms -> sms.getMessageType().equalsIgnoreCase(carrier)
-                                                && systemId.getSystemId().equalsIgnoreCase(sms.getSomeCode()))
+                    .ifPresent(systemIdSet ->
+                            systemIdSet.forEach(actualSystemIdForeach -> {
+                                Long totSid = smsList.parallelStream()
+                                        .filter(sms -> sms.getMessageType().equalsIgnoreCase(actualCarrierForeach)
+                                                && actualSystemIdForeach.getSystemId().equalsIgnoreCase(sms.getSomeCode()))
                                         .mapToLong(sms -> sms.getTotal())
                                         .sum();
-                                donutSeries.add(new DataSeriesItem(systemId.getSystemId(), totSid));
+                                donutSeries.add(new DataSeriesItem(actualSystemIdForeach.getSystemId(), totSid));
                             }));
         });
         PlotOptionsPie plotPie = new PlotOptionsPie();
@@ -615,31 +532,30 @@ public class ClientChartView extends DashboardBase {
         return dataSeriesList;
     }
 
-    public List<Series> paEntenderLine(List<? extends AbstractSmsByYearMonth> l,
-                                       List<Integer> integerList) {
-        l.stream().forEach(System.out::println);
-
+    public List<Series> systemidAndTimeTotal(Collection<SystemId> systemidSet, List<? extends AbstractSmsByYearMonth> smsList,
+                                             List<Integer> integerList) {
+        if (smsList == null || systemidSet == null) {
+            return new ArrayList<>();
+        }
+        Map<String, List<Long>> serieToChartMap = new HashMap<>();
         List<Series> dataSeriesList = new ArrayList<>();
-        /*TODO nullpointer*/
-        /* Recorre los Carrier seleccionados. */
-        systemIdMultiCombo.getOptionalValue().ifPresent(value ->
-                value.forEach(systemId -> {
-                    ListSeries series = new ListSeries();
-                    series.setName(systemId.getSystemId());
-                    /* Recorre los meses del trimestre */
-                    integerList.forEach(month -> {
-                        /* Total por Month y Carrier*/
-                        Long tot = l.stream()
-                                .filter(sms -> sms.getGroupBy() == month
-                                        && systemId.getSystemId().equalsIgnoreCase(sms.getSomeCode()))
-                                .mapToLong(sms -> sms.getTotal())
-                                .sum();
-                        System.out.println("MONTH-> " + month + ". Message Type: " + systemId.getSystemId() + " - TOTAL: " + tot);
-                        series.addData(tot);
-                    });
-                    dataSeriesList.add(series);
-                }));
-        return dataSeriesList;
+        /* Recorre los carrier seleccionados. */
+        systemidSet.forEach(actualSystemIdForeach -> {
+            List<Long> totalList = new ArrayList<>();
+            /* Recorre los meses del trimestre */
+            integerList.forEach(actualMonthForeach -> {
+                /* Total por Month y Carrier*/
+                Long tot = smsList.stream()
+                        .filter(sms -> sms.getGroupBy() == actualMonthForeach
+                                && actualSystemIdForeach.getSystemId().equalsIgnoreCase(sms.getSomeCode()))
+                        .mapToLong(sms -> sms.getTotal())
+                        .sum();
+                totalList.add(tot);
+            });
+            serieToChartMap.put(actualSystemIdForeach.getSystemId(), totalList);
+
+        });
+        return convertToSeries(serieToChartMap);
     }
 
     private String getStringLog() {
