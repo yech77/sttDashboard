@@ -67,14 +67,16 @@ class CarrierChartView extends PolymerElement {
                 }
 
             </style>
-            <div class="vaadin-board-cell" id="divHeader"></div>
             <vaadin-board>
+                <vaadin-board-row>
+                    <div id="divHeader" class="vaadin-board-cell"></div>
+                </vaadin-board-row>
                 <vaadin-board-row>
                     <div class="vaadin-board-cell">
                         <vaadin-chart id="deliveriesThisMonth" class="column-chart"></vaadin-chart>
                     </div>
                     <div class="vaadin-board-cell" board-cols="2">
-                        <vaadin-chart id="carrierTriLineChart" class="column-chart"></vaadin-chart>
+                        <vaadin-chart id="smsThisDayChart" class="column-chart"></vaadin-chart>
                     </div>
                 </vaadin-board-row>
                 <vaadin-board-row>

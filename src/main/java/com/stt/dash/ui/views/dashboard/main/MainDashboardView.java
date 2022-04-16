@@ -110,6 +110,7 @@ public class MainDashboardView extends DashboardBase {
 
     @Autowired
     public MainDashboardView(OrderService orderService, FilesToSendGridDataProvider gridDataProvider, SmsHourService smsHourService, @Qualifier("getUserSystemIdString") ListGenericBean<String> stringListGenericBean, CurrentUser currentUser) {
+        super();
         this.orderService = orderService;
         this.smsHourService = smsHourService;
         this.stingListGenericBean = stringListGenericBean;

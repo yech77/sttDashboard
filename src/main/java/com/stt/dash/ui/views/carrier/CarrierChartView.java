@@ -21,6 +21,7 @@ import com.vaadin.componentfactory.multiselect.MultiComboBox;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
@@ -56,8 +57,8 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     @Id("deliveriesThisMonth")
     private Chart smsLastThreeMonthChart;
 
-    @Id("carrierTriLineChart")
-    private Chart carrierTriLineChart;
+    @Id("smsThisDayChart")
+    private Chart smsThisDayChart;
 
     @Id("carrierDailyChart")
     private Chart carrierDailyChart;
@@ -191,6 +192,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
             UI.getCurrent().getPage().reload();
         });
         filterButton.setEnabled(true);
+        filterButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
     }
 
     /**
@@ -199,7 +201,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
      * @param sids
      */
     private void updateHourlyChart(List<String> sids) {
-        Configuration confHourlyChart = carrierTriLineChart.getConfiguration();
+        Configuration confHourlyChart = smsThisDayChart.getConfiguration();
         confHourlyChart.setTitle(OMonths.valueOf(actual_month).getMonthName() + " - dia de hoy");
         confHourlyChart.setSubTitle("por hora");
         confHourlyChart.getyAxis().setTitle("SMS");
@@ -345,7 +347,7 @@ public class CarrierChartView extends PolymerTemplate<TemplateModel> {
     }
 
     private void populateHourChart(List<? extends AbstractSmsByYearMonth> smsHourGroup, List<SmsByYearMonthDayHour> carrierHourGroup) {
-        Configuration confIn = carrierTriLineChart.getConfiguration();
+        Configuration confIn = smsThisDayChart.getConfiguration();
 
         confIn.setTitle(OMonths.valueOf(actual_month).getMonthName() + "- dia de hoy");
         confIn.setSubTitle("por hora");
