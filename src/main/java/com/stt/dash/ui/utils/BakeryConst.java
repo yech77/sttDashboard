@@ -54,6 +54,7 @@ public class BakeryConst {
     public static final String TITLE_BULKSMS_SCHEDULER = "Programar Masivos";
     public static final String TITLE_BULKSMS = "Masivos";
     public static final String TITLE_ROLES = "Roles";
+    public static final String TITLE_STOREFRONT = "Storefront";
     public static final String TITLE_PRODUCTS = "Products";
     public static final String TITLE_LOGOUT = "Logout";
     public static final String TITLE_NOT_FOUND = "Page was not found";
