@@ -55,30 +55,26 @@ public class ClientChartView extends DashboardBase {
     private static final String CLIENT_VIEW_SELECTED_SYSTEMID = "client_view_selected_systemid";
     private static final String CLIENT_VIEW_SELECTED_MESSAGETYPE = "client_view_selected_messageType";
     private static final String CLIENT_VIEW_SELECTED_CLIENT = "client_view_selected_client";
-    @Id("divHeader")
-    Div divHeader;
-
-    @Id("test")
-    MultiComboBox mu;
-
     @Id("deliveriesThisMonth")
     private Chart smsLastThreeMonthChart;
-
     @Id("smsThisDayChart")
     private Chart smsThisDayChart;
-
     @Id("carrierDailyChart")
     private Chart smsThisMonthChart;
-
     @Id("carrierTriPieChart")
     private Chart smsLastMonthsPieChart;
-
     @Id("carrierMonthlyPieChart")
     private Chart smsThisMonthPieChart;
-
     @Id("carrierHourlyPieChart")
     private Chart smsHourPieChart;
-
+    @Id("beanComboBox")
+    private ComboBox<Client> clientCombobox;
+    @Id("beanMultiComboBox")
+    private MultiComboBox<SystemId> systemIdMultiCombo;
+    @Id("beanCheckboxGroup")
+    private CheckboxGroup<OMessageType> checkboxMessageType;
+    @Id("filterButton")
+    private Button filterButton;
     /**/
     Logger log = LoggerFactory.getLogger(ClientChartView.class);
     private final SmsHourService smsHourService;
@@ -86,15 +82,15 @@ public class ClientChartView extends DashboardBase {
     private final ListGenericBean<String> allUserStringSystemId;
     private final CurrentUser currentUser;
     /* CLIENTE */
-    private ComboBox<Client> clientCombobox = new ComboBox<>("Clientes");
-    private MultiComboBox<SystemId> systemIdMultiCombo = new MultiComboBox<>("Credenciales");
-    private final CheckboxGroup<OMessageType> checkboxMessageType = new CheckboxGroup<>();
+//    private ComboBox<Client> clientCombobox = new ComboBox<>("Clientes");
+//    private MultiComboBox<SystemId> systemIdMultiCombo = new MultiComboBox<>("Credenciales");
+    //    private final CheckboxGroup<OMessageType> checkboxMessageType = new CheckboxGroup<>();
     /* Para Graficos y servicios */
     private List<Integer> monthToShowList;
     private List<String> selectedSystemIdList;
     private String[] ml;
     /* Button */
-    private Button filterButton = new Button("Actualizar");
+//    private Button filterButton = new Button("Actualizar");
     private List<Carrier> carrierList;
 
     public ClientChartView(AbstractSmsService abstractSmsService,
@@ -139,7 +135,6 @@ public class ClientChartView extends DashboardBase {
         /* ******* */
         /* ******* SystemId */
         systemIdMultiCombo.setItemLabelGenerator(SystemId::getSystemId);
-        mu.setItems(currentUser.getUser().getClient().getSystemids());
         /* ******* */
         /* ******* Client */
         clientCombobox.setItemLabelGenerator(Client::getClientName);
@@ -158,8 +153,8 @@ public class ClientChartView extends DashboardBase {
         });
         /* ******* */
         /* HEADER */
-        divHeader.add(new HorizontalLayout(clientCombobox, checkboxMessageType),
-                new HorizontalLayout(systemIdMultiCombo), filterButton);
+//        divHeader.add(new HorizontalLayout(clientCombobox, checkboxMessageType),
+//                new HorizontalLayout(systemIdMultiCombo), filterButton);
         clientCombobox.setWidthFull();
         checkboxMessageType.setWidthFull();
         systemIdMultiCombo.setWidthFull();

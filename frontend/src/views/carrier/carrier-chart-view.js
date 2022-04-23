@@ -68,10 +68,39 @@ class CarrierChartView extends PolymerElement {
 
             </style>
             <vaadin-board>
-                <vaadin-board-row>
-                    <vcf-multiselect-combo-box id="test"></vcf-multiselect-combo-box>
-                    <div id="divHeader" class="vaadin-board-cell"></div>
+                <vaadin-board-row class="vaadin-board-cell">
+                    <vaadin-form-layout>
+                        <vaadin-combo-box id="beanComboBox"></vaadin-combo-box>
+                        <vcf-multiselect-combo-box id="beanMultiComboBox"></vcf-multiselect-combo-box>
+                        <vaadin-checkbox-group id="beanCheckboxGroup"></vaadin-checkbox-group>
+                    </vaadin-form-layout>
                 </vaadin-board-row>
+                <buttons-bar id="footer" class="vaadin-board-cell">
+                    <vaadin-button slot="right" id="filterButton" theme="primary">Buscar</vaadin-button>
+                </buttons-bar>
+
+                <!--                <vaadin-board-row class="vaadin-board-cell">-->
+                <!--                    <vaadin-vertical-layout>-->
+                <!--                        <vaadin-horizontal-layout>-->
+                <!--                            <vaadin-combo-box id="beanComboBox"></vaadin-combo-box>-->
+                <!--                            <vcf-multiselect-combo-box id="beanMultiComboBox"></vcf-multiselect-combo-box>-->
+                <!--                        </vaadin-horizontal-layout>-->
+                <!--                        <vaadin-checkbox-group id="beanCheckboxGroup"></vaadin-checkbox-group>-->
+                <!--                        <vaadin-button id="filterButton">Buscar</vaadin-button>-->
+                <!--                    </vaadin-vertical-layout>-->
+                <!--                </vaadin-board-row>-->
+                <!--                <vaadin-board-row class="vaadin-board-cell">-->
+                <!--                    <vaadin-vertical-layout>-->
+                <!--                        <vaadin-horizontal-layout style="background: white; width: 100%">-->
+                <!--                            <vaadin-combo-box id="beanComboBox"></vaadin-combo-box>-->
+                <!--                            <vcf-multiselect-combo-box id="beanMultiComboBox"></vcf-multiselect-combo-box>-->
+                <!--                            <vaadin-checkbox-group id="beanCheckboxGroup"></vaadin-checkbox-group>-->
+                <!--                        </vaadin-horizontal-layout>-->
+                <!--                        <vaadin-button id="filterButton" theme="primary"-->
+                <!--                                       style="margin-inline-start: auto;">Buscar-->
+                <!--                        </vaadin-button>-->
+                <!--                    </vaadin-vertical-layout>-->
+                <!--                </vaadin-board-row>-->
                 <vaadin-board-row>
                     <div class="vaadin-board-cell">
                         <vaadin-chart id="deliveriesThisMonth" class="column-chart"></vaadin-chart>

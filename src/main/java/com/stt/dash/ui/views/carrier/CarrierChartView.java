@@ -51,8 +51,6 @@ import java.util.stream.Collectors;
 @Route(value = BakeryConst.PAGE_CARRIER, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_CARRIER)
 public class CarrierChartView extends DashboardBase {
-    @Id("divHeader")
-    Div divHeader;
     @Id("deliveriesThisMonth")
     private Chart smsLastThreeMonthChart;
 
@@ -64,12 +62,18 @@ public class CarrierChartView extends DashboardBase {
 
     @Id("carrierTriPieChart")
     private Chart smsLastMonthsPieChart;
-
     @Id("carrierMonthlyPieChart")
     private Chart smsThisMonthPieChart;
-
     @Id("carrierHourlyPieChart")
     private Chart smsHourPieChart;
+    @Id("beanComboBox")
+    private ComboBox<Client> clientCombobox;
+    @Id("beanMultiComboBox")
+    private MultiComboBox<Carrier> carrierMultiComboBox;
+    @Id("beanCheckboxGroup")
+    private CheckboxGroup<OMessageType> checkboxMessageType;
+    @Id("filterButton")
+    private Button filterButton;
     /**/
     private static String CARRIER_VIEW_SELECTED_CARRIER = "carrier_view_selected_carrier";
     private static String CARRIER_VIEW_SELECTED_MESSAGETYPE = "carrier_view_selected_messageType";
@@ -79,17 +83,17 @@ public class CarrierChartView extends DashboardBase {
     private final SmsHourService smsHourService;
     private final ListGenericBean<String> userSystemIdList;
     /* CLIENTE */
-    private ComboBox<Client> clientCombobox = new ComboBox<>("Clientes");
+//    private ComboBox<Client> clientCombobox = new ComboBox<>("Clientes");
 
     /* OPERADORAS */
-    private MultiComboBox<Carrier> carrierMultiComboBox = new MultiComboBox<>("Operadoras");
+//    private MultiComboBox<Carrier> carrierMultiComboBox = new MultiComboBox<>("Operadoras");
     /* Tipo de Mensaje */
-    private final CheckboxGroup<OMessageType> checkboxMessageType = new CheckboxGroup<>();
+//    private final CheckboxGroup<OMessageType> checkboxMessageType = new CheckboxGroup<>();
     /* Para Graficos y servicios */
     private List<Integer> monthToShowList;
     private String[] ml;
     /* Button */
-    private Button filterButton = new Button("Actualizar");
+//    private Button filterButton = new Button("Actualizar");
     List<String> clientSystemIdStringList;
 
     public CarrierChartView(SmsHourService smsHourService,
@@ -145,8 +149,8 @@ public class CarrierChartView extends DashboardBase {
         }
         /* ******* */
         /* HEADER */
-        divHeader.add(new HorizontalLayout(clientCombobox, checkboxMessageType),
-                new HorizontalLayout(carrierMultiComboBox), filterButton);
+//        divHeader.add(new HorizontalLayout(clientCombobox, checkboxMessageType),
+//                new HorizontalLayout(carrierMultiComboBox), filterButton);
         clientCombobox.setWidthFull();
         checkboxMessageType.setWidthFull();
         carrierMultiComboBox.setWidthFull();
@@ -245,9 +249,6 @@ public class CarrierChartView extends DashboardBase {
 
     public List<Series> paEntenderLine(List<? extends AbstractSmsByYearMonth> l,
                                        List<Integer> integerList) {
-        System.out.println("************ carrier pa entender I - KKK");
-        l.stream().forEach(System.out::println);
-        System.out.println("************ carrier pa entender II - KKK");
 
         List<Series> dataSeriesList = new ArrayList<>();
         /*TODO nullpointer*/
