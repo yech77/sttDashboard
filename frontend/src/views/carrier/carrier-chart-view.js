@@ -79,28 +79,6 @@ class CarrierChartView extends PolymerElement {
                     <vaadin-button slot="right" id="filterButton" theme="primary">Buscar</vaadin-button>
                 </buttons-bar>
 
-                <!--                <vaadin-board-row class="vaadin-board-cell">-->
-                <!--                    <vaadin-vertical-layout>-->
-                <!--                        <vaadin-horizontal-layout>-->
-                <!--                            <vaadin-combo-box id="beanComboBox"></vaadin-combo-box>-->
-                <!--                            <vcf-multiselect-combo-box id="beanMultiComboBox"></vcf-multiselect-combo-box>-->
-                <!--                        </vaadin-horizontal-layout>-->
-                <!--                        <vaadin-checkbox-group id="beanCheckboxGroup"></vaadin-checkbox-group>-->
-                <!--                        <vaadin-button id="filterButton">Buscar</vaadin-button>-->
-                <!--                    </vaadin-vertical-layout>-->
-                <!--                </vaadin-board-row>-->
-                <!--                <vaadin-board-row class="vaadin-board-cell">-->
-                <!--                    <vaadin-vertical-layout>-->
-                <!--                        <vaadin-horizontal-layout style="background: white; width: 100%">-->
-                <!--                            <vaadin-combo-box id="beanComboBox"></vaadin-combo-box>-->
-                <!--                            <vcf-multiselect-combo-box id="beanMultiComboBox"></vcf-multiselect-combo-box>-->
-                <!--                            <vaadin-checkbox-group id="beanCheckboxGroup"></vaadin-checkbox-group>-->
-                <!--                        </vaadin-horizontal-layout>-->
-                <!--                        <vaadin-button id="filterButton" theme="primary"-->
-                <!--                                       style="margin-inline-start: auto;">Buscar-->
-                <!--                        </vaadin-button>-->
-                <!--                    </vaadin-vertical-layout>-->
-                <!--                </vaadin-board-row>-->
                 <vaadin-board-row>
                     <div class="vaadin-board-cell">
                         <vaadin-chart id="deliveriesThisMonth" class="column-chart"></vaadin-chart>
@@ -109,9 +87,11 @@ class CarrierChartView extends PolymerElement {
                         <vaadin-chart id="smsThisDayChart" class="column-chart"></vaadin-chart>
                     </div>
                 </vaadin-board-row>
+
                 <vaadin-board-row>
                     <vaadin-chart id="carrierDailyChart" class="yearly-sales"></vaadin-chart>
                 </vaadin-board-row>
+
                 <vaadin-board-row>
                     <div class="vaadin-board-cell">
                         <vaadin-chart id="carrierTriPieChart" class="pie-chart"></vaadin-chart>

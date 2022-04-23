@@ -32,37 +32,37 @@ public class SmsHourService {
 
     public List<SmsByYearMonth> getClientGroupByYearMonth(int yearSms, int monthSms, List<String> list_sid) {
 //        my.add("ClientGroupByYearMonth", yearSms, monthSms, list_sid);
-        return smshour_repo.groupClientByYeMoWhereYeMo(yearSms, monthSms, list_sid);
+        return smshour_repo.groupSmsClientByYeMoWhYeMoSyIn(yearSms, monthSms, list_sid);
     }
 
     public List<SmsByYearMonthDay> getClientGroupByYearMonthDay(int yearSms, int monthSms, int daySms, List<String> list_sid) {
-        return smshour_repo.groupClientByYeMoDaWhereYeMoDa(yearSms, monthSms, daySms, list_sid);
+        return smshour_repo.groupSmsClientByYeMoDaWhYeMoDaSyIn(yearSms, monthSms, daySms, list_sid);
     }
 
     public List<SmsByYearMonth> getGroupByYearMonth(int yearSms, String messageType, List<String> list_sid) {
-        return smshour_repo.groupByYeMoWhereYeType(yearSms, messageType, list_sid);
+        return smshour_repo.groupSmsByYeMoWhYeTySyIn(yearSms, messageType, list_sid);
     }
 
     public List<SmsByYearMonth> getGroupByYearMonth(int yearSms, int monthSms, List<String> list_sid) {
 //        my.add("getGroupByYearMonth", yearSms, monthSms, list_sid);
-        return smshour_repo.groupByYeMoWhereYeMo(yearSms, monthSms, list_sid);
+        return smshour_repo.groupSmsByYeMoWhYeMoSyIn(yearSms, monthSms, list_sid);
     }
 
     public List<SmsByYearMonthDay> getGroupByYearMonthDay(int yearSms, int monthSms, String messageType, List<String> list_sid) {
-        return smshour_repo.groupByYeMoDaWhereYeMoType(yearSms, monthSms, messageType, list_sid);
+        return smshour_repo.groupSmsByYeMoDaWhYeMoTySyIn(yearSms, monthSms, messageType, list_sid);
     }
 
     public List<SmsByYearMonthDay> getGroupByYearMonthDay(int yearSms, int monthSms, List<String> list_sid) {
 //        my.add("getGroupByYearMonthDay", yearSms, monthSms, list_sid);
-        return smshour_repo.groupByYeMoDaWhereYeMo(yearSms, monthSms, list_sid);
+        return smshour_repo.groupSmsByYeMoDaWhYeMoSyIn(yearSms, monthSms, list_sid);
     }
 
     public List<SmsByYearMonthDayHour> getGroupByYearMonthDayHour(int yearSms, int monthSms, int daySms, String messageType, List<String> list_sid) {
-        return smshour_repo.groupByYeMoDaHoWhereYeMoDaType(yearSms, monthSms, daySms, messageType, list_sid);
+        return smshour_repo.groupSmsByYeMoDaHoWhYeMoDaTySyIn(yearSms, monthSms, daySms, messageType, list_sid);
     }
 
     public List<SmsByYearMonthDayHour> getGroupByYearMonthDayHour(int yearSms, int monthSms, int daySms, List<String> list_sid) {
-        List<SmsByYearMonthDayHour> hourList = smshour_repo.groupByYeMoDaHoWhereYeMoDa(yearSms, monthSms, daySms, list_sid);
+        List<SmsByYearMonthDayHour> hourList = smshour_repo.groupSmsByYeMoDaHoWhYeMoDaSyIn(yearSms, monthSms, daySms, list_sid);
         Calendar c = Calendar.getInstance();
 
         /* Completar HOUR faltantes con 0, hasta lal hora actual */
@@ -88,7 +88,7 @@ public class SmsHourService {
     public List<SmsByYearMonth> getGroupByYearMonth(int yearSms, List<String> list_sid) {
 //        return smshour_repo.groupByYeMoWhereYe(yearSms, list_sid);
 
-        List<SmsByYearMonth> monthlyList = smshour_repo.groupByYeMoWhereYe(yearSms, list_sid);
+        List<SmsByYearMonth> monthlyList = smshour_repo.groupSmsByYeMoWhYeSyIn(yearSms, list_sid);
 //        Calendar c = Calendar.getInstance();
 //        /* Completar MONTH faltantes con 0 */
 //        for (int monthRunner = 1; monthRunner <= c.get(Calendar.MONTH + 1); monthRunner++) {
@@ -111,11 +111,11 @@ public class SmsHourService {
     }
 
     public List<SmsByYearMonth> getGroupCarrierByYeMoWhMoIn(int yearSms, List<Integer> monthSms, List<String> list_sid) {
-        return smshour_repo.groupCarrierByYeMoWhMoIn(yearSms, monthSms, list_sid);
+        return smshour_repo.groupSmsCarrierByYeMoWhYeMoInSyIn(yearSms, monthSms, list_sid);
     }
 
-    public List<SmsByYearMonth> getGroupCarrierByYeMoWhMoInMessageTypeIn(int yearSms, List<Integer> monthSms, List<String> messageTypeSms, List<String> list_sid) {
-        return smshour_repo.groupCarrierByYeMoWhMoInMessageTypeIn(yearSms, monthSms, messageTypeSms, list_sid);
+    public List<SmsByYearMonth> groupCarrierByYeMoWhMoInMessageTypeIn(int yearSms, List<Integer> monthSms, List<String> messageTypeSms, List<String> list_sid) {
+        return smshour_repo.groupSmsCarrierAndMessageTypeByYeMoWhYeMoSyIn_TyIn(yearSms, monthSms, messageTypeSms, list_sid);
     }
 
     public List<SmsByYearMonthDay> getGroupCarrierByYeMoDaWhYeMoDayEqMessageTypeIn(int yearSms, int monthSms, int daySms, List<String> messageTypeSms, List<String> list_sid) {
@@ -147,9 +147,9 @@ public class SmsHourService {
         return smshour_repo.groupCarrierByYeMoDaHoWhMessageTypeIn(yearSms, monthSms, daySms, l, list_sid);
     }
 
-    public List<SmsByYearMonthDayHour> getGroupCarrierByYeMoDaHoWhYeMoDayEqMessageTypeIn(int yearSms, int monthSms, int daySms, Collection<String> carrier_list, Set<OMessageType> messageTypeSms, List<String> list_sid) {
+    public List<SmsByYearMonthDayHour> groupSmsCarrierAndMessageTypeByYeMoDaHoWhYeMoDaSyIn_CarrierTyIn(int yearSms, int monthSms, int daySms, Collection<String> carrier_list, Set<OMessageType> messageTypeSms, List<String> list_sid) {
         Collection<String> l = messageTypeSms.stream().map(OMessageType::name).collect(Collectors.toList());
-        return smshour_repo.groupCarrierByYeMoDaHoWhCaInMessageTypeIn(yearSms, monthSms, daySms, carrier_list, l, list_sid);
+        return smshour_repo.groupSmsCarrierAndMessageTypeByYeMoDaHoWhYeMoDaSyIn_CarrierTyIn(yearSms, monthSms, daySms, carrier_list, l, list_sid);
     }
 
     public List<SmsByYearMonthDayHour> getGroupSystemIdByYeMoDaHoWhYeMoDayEqMessageTypeIn(int yearSms, int monthSms, int daySms, Set<OMessageType> messageTypeSms, List<String> list_sid) {
@@ -177,7 +177,7 @@ public class SmsHourService {
      * @param list_sid
      * @return
      */
-    public List<SmsByYearMonth> getGroupCarrierByYeMoWhMoInMessageTypeIn(int yearSms, List<Integer> monthSms, Set<OMessageType> messageTypeSms, List<String> list_sid) {
+    public List<SmsByYearMonth> groupCarrierByYeMoWhMoInMessageTypeIn(int yearSms, List<Integer> monthSms, Set<OMessageType> messageTypeSms, List<String> list_sid) {
         List<String> messagesType = new ArrayList<>(messageTypeSms.size());
         for (OMessageType messageTypeSm : messageTypeSms) {
             messagesType.add(messageTypeSm.name());
@@ -190,13 +190,13 @@ public class SmsHourService {
         if (monthsOfPrevYear != null) {
             log.info("Month ({}) before actual year detected. Searching year[{}] month[{}] Message Type [{}] sid[{}]",
                     monthsOfPrevYear, yearSms - 1, monthsOfPrevYear, messageTypeSms, list_sid);
-            yearBefore = smshour_repo.groupCarrierByYeMoWhMoInMessageTypeIn(yearSms - 1, monthsOfPrevYear, messagesType, list_sid);
+            yearBefore = smshour_repo.groupSmsCarrierAndMessageTypeByYeMoWhYeMoSyIn_TyIn(yearSms - 1, monthsOfPrevYear, messagesType, list_sid);
         }
         if (yearBefore == null) {
             yearBefore = new ArrayList<>();
         }
         log.info("Searching: year[{}] months[{}] message type[{}] sids[{}]", yearSms, monthSms, messagesType, list_sid);
-        yearBefore.addAll(smshour_repo.groupCarrierByYeMoWhMoInMessageTypeIn(yearSms, monthSms, messagesType, list_sid));
+        yearBefore.addAll(smshour_repo.groupSmsCarrierAndMessageTypeByYeMoWhYeMoSyIn_TyIn(yearSms, monthSms, messagesType, list_sid));
         return yearBefore;
     }
 
@@ -209,7 +209,7 @@ public class SmsHourService {
      * @param list_sid
      * @return
      */
-    public List<SmsByYearMonth> getGroupCarrierByYeMoWhMoInMessageTypeIn(int yearSms, List<Integer> monthSms, Set<Carrier> carrierSet, Set<OMessageType> messageTypeSms, List<String> list_sid) {
+    public List<SmsByYearMonth> groupSmsCarrierAndMessageTypeByYeMoWhYeMoSyIn_CarrierInTyIn(int yearSms, List<Integer> monthSms, Set<Carrier> carrierSet, Set<OMessageType> messageTypeSms, List<String> list_sid) {
         List<String> messagesTypeList = messageTypeSms.stream().map(OMessageType::name).collect(Collectors.toList());
         List<String> carrierList = carrierSet.stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
         log.info("Preparing Searching: year[{}] months[{}] Message Type [{}] sids[{}]",
@@ -220,13 +220,13 @@ public class SmsHourService {
         if (monthsOfPrevYear != null) {
             log.info("Month ({}) before actual year detected. Searching year[{}] month[{}] Message Type [{}] sid[{}]",
                     monthsOfPrevYear, yearSms - 1, monthsOfPrevYear, messageTypeSms, list_sid);
-            yearBefore = smshour_repo.groupCarrierByYeMoWhMoInMessageTypeIn(yearSms - 1, monthsOfPrevYear, carrierList, messagesTypeList, list_sid);
+            yearBefore = smshour_repo.groupSmsCarrierAndMessageTypeByYeMoWhYeMoSyIn_CarrierInTyIn(yearSms - 1, monthsOfPrevYear, carrierList, messagesTypeList, list_sid);
         }
         if (yearBefore == null) {
             yearBefore = new ArrayList<>();
         }
         log.info("Searching: year[{}] months[{}] carrier [{}] message type[{}] sids[{}]", yearSms, monthSms, carrierList, messagesTypeList, list_sid);
-        yearBefore.addAll(smshour_repo.groupCarrierByYeMoWhMoInMessageTypeIn(yearSms, monthSms, carrierList, messagesTypeList, list_sid));
+        yearBefore.addAll(smshour_repo.groupSmsCarrierAndMessageTypeByYeMoWhYeMoSyIn_CarrierInTyIn(yearSms, monthSms, carrierList, messagesTypeList, list_sid));
         return yearBefore;
     }
 
@@ -286,7 +286,7 @@ public class SmsHourService {
     }
 
     public List<SmsByYearMonth> groupCarrierByYeMoMeWhMoEqMessageTypeIn(int yearSms, int monthSms, List<String> messageType, List<String> list_sid) {
-        return smshour_repo.groupCarrierByYeMoMeWhMoEqMessageTypeIn(yearSms, monthSms, messageType, list_sid);
+        return smshour_repo.groupSmsCarrierAndMessageTypeByYeMoWhYeMoSyIn_TyIn(yearSms, monthSms, messageType, list_sid);
     }
 
     public List<SmsByYearMonthDay> getGroupCarrierByYearMonthDayMessageType(int yearSms, int monthSms, int daySms, String messageType, List<String> list_sid) {
@@ -308,9 +308,9 @@ public class SmsHourService {
         return smshour_repo.groupCarrierByYeMoDaWhMessageTypeIn(yearSms, monthSms, l, list_sid);
     }
 
-    public List<SmsByYearMonthDay> getGroupCarrierByYeMoMe(int yearSms, int monthSms, Collection<String> carrier_list, Collection<OMessageType> messageTypeSms, List<String> list_sid) {
+    public List<SmsByYearMonthDay> groupSmsCarrierMessageTypeByYeMoDaWhYeMoSyIn_CarrierTyIn(int yearSms, int monthSms, Collection<String> carrier_list, Collection<OMessageType> messageTypeSms, List<String> list_sid) {
         List<String> l = messageTypeSms.stream().map(OMessageType::name).collect(Collectors.toList());
-        return smshour_repo.groupCarrierByYeMoDaWhMessageTypeIn(yearSms, monthSms, carrier_list, l, list_sid);
+        return smshour_repo.groupSmsCarrierMessageTypeByYeMoDaWhYeMoSyIn_CarrierTyIn(yearSms, monthSms, carrier_list, l, list_sid);
     }
 
     public List<SmsByYearMonthDay> getGroupSystemIdByYeMoDa(int yearSms, int monthSms, Set<OMessageType> messageTypeSms, List<String> list_sid) {
@@ -322,7 +322,7 @@ public class SmsHourService {
     }
 
     public List<SmsByYearMonth> getGroupSmsByYearMonthMessageType(int yearSms, int monthSms, List<String> list_sid) {
-        return smshour_repo.groupMessageTypeByYearMonth(yearSms, monthSms, list_sid);
+        return smshour_repo.groupSmsMessageTypeByYeMoWhYeMoSyIn(yearSms, monthSms, list_sid);
     }
 
     ////////////////////
@@ -335,20 +335,20 @@ public class SmsHourService {
      * @param list_sid
      * @return
      */
-    public List<SmsByYearMonth> getGroupSmsByYearMonthMessageTypeWhMo(int yearSms, List<Integer> monthSms, List<String> list_sid) {
+    public List<SmsByYearMonth> groupSmsMessageTypeByYeMoWhYeMoInSyIn(int yearSms, List<Integer> monthSms, List<String> list_sid) {
         log.info("Preparing Searching: year[{}] months[{}] sids[{}]", yearSms, monthSms, list_sid);
         List<SmsByYearMonth> yearBefore = null;
         List<Integer> monthsOfPrevYear = findMonthsOfPreviousYear(monthSms);
         if (monthsOfPrevYear != null) {
             log.info("Month ({}) before actual year detected. Searching year[{}] month[{}] sid[{}]",
                     monthsOfPrevYear, yearSms - 1, monthsOfPrevYear, list_sid);
-            yearBefore = smshour_repo.groupByYearMonthMessageTypeWhYeMoInSyIn(yearSms - 1, monthsOfPrevYear, list_sid);
+            yearBefore = smshour_repo.groupSmsMessageTypeByYeMoWhYeMoInSyIn(yearSms - 1, monthsOfPrevYear, list_sid);
         }
         if (yearBefore == null) {
             yearBefore = new ArrayList<>();
         }
         log.info("Searching: year[{}] months[{}] sids[{}]", yearSms, monthSms, list_sid);
-        yearBefore.addAll(smshour_repo.groupByYearMonthMessageTypeWhYeMoInSyIn(yearSms, monthSms, list_sid));
+        yearBefore.addAll(smshour_repo.groupSmsMessageTypeByYeMoWhYeMoInSyIn(yearSms, monthSms, list_sid));
         return yearBefore;
     }
 
@@ -407,12 +407,12 @@ public class SmsHourService {
         return l;
     }
 
-    public List<SmsByYearMonthDay> groupByYearMonthDayMessageTypeWhereYearAndMonth(int yearSms, int monthSms, List<String> list_sid) {
-        return smshour_repo.groupByYearMonthDayMessageTypeWhereYearAndMonth(yearSms, monthSms, list_sid);
+    public List<SmsByYearMonthDay> groupSmsByYeMoDaTyWhYeMoSyIn(int yearSms, int monthSms, List<String> list_sid) {
+        return smshour_repo.groupSmsByYeMoDaTyWhYeMoSyIn(yearSms, monthSms, list_sid);
     }
 
-    public List<SmsByYearMonthDayHour> getGroupSmsByYearMonthDayHourMessageType(int yearSms, int monthSms, int daySms, List<String> list_sid) {
-        List<SmsByYearMonthDayHour> hourList = smshour_repo.groupMessageTypeByYearMonthDayHour(yearSms, monthSms, daySms, list_sid);
+    public List<SmsByYearMonthDayHour> groupSmsYeMoDaHoTyWhYeMoDaSyIn(int yearSms, int monthSms, int daySms, List<String> list_sid) {
+        List<SmsByYearMonthDayHour> hourList = smshour_repo.groupSmsYeMoDaHoTyWhYeMoDaSyIn(yearSms, monthSms, daySms, list_sid);
         Calendar c = Calendar.getInstance();
         /* Completar HOUR faltantes con 0 */
         for (int hourRunner = 0; hourRunner <= c.get(Calendar.HOUR_OF_DAY); hourRunner++) {

@@ -23,6 +23,6 @@ public class HourlySmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearMo
 
     @Override
     public List<SmsByYearMonthDayHour> getGroupSmsBy(List<String> stringList, List<Integer> integerList) {
-        return smsHourService.getGroupSmsByYearMonthDayHourMessageType(integerList.get(0), integerList.get(1), integerList.get(2), stringList);
+        return smsHourService.groupSmsYeMoDaHoTyWhYeMoDaSyIn(integerList.get(0), integerList.get(1), integerList.get(2), stringList);
     }
 }

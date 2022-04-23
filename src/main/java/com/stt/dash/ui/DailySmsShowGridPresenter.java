@@ -48,7 +48,7 @@ public class DailySmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearMon
 
     @Override
     public List<SmsByYearMonthDay> getGroupSmsBy(List<String> stringList, List<Integer> integerList) {
-        return smsHourService.groupByYearMonthDayMessageTypeWhereYearAndMonth(
+        return smsHourService.groupSmsByYeMoDaTyWhYeMoSyIn(
                 integerList.get(0),
                 integerList.get(1),
                 stringList);

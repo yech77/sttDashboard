@@ -29,9 +29,6 @@ import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -58,7 +55,7 @@ public class CarrierChartView extends DashboardBase {
     private Chart smsThisDayChart;
 
     @Id("carrierDailyChart")
-    private Chart carrierDailyChart;
+    private Chart smsThisMonthChart;
 
     @Id("carrierTriPieChart")
     private Chart smsLastMonthsPieChart;
@@ -212,7 +209,7 @@ public class CarrierChartView extends DashboardBase {
 
         List<String> carrier_list = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
         /* Column Chart*/
-        List<SmsByYearMonthDayHour> l = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actualYear, actualMonth, actualDay, sids);
+        List<SmsByYearMonthDayHour> l = smsHourService.groupSmsYeMoDaHoTyWhYeMoDaSyIn(actualYear, actualMonth, actualDay, sids);
         if (l == null || l.isEmpty()) {
             log.info("Hourly Chart Without data to show");
             return;
@@ -220,7 +217,7 @@ public class CarrierChartView extends DashboardBase {
         List<Series> LineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), l, hourList);
         addToChart(confHourlyChart, LineDateSeriesList, plotColum);
         /* Line Chart */
-        l = smsHourService.getGroupCarrierByYeMoDaHoWhYeMoDayEqMessageTypeIn(actualYear,
+        l = smsHourService.groupSmsCarrierAndMessageTypeByYeMoDaHoWhYeMoDaSyIn_CarrierTyIn(actualYear,
                 actualMonth,
                 actualDay,
                 carrier_list,
@@ -274,8 +271,8 @@ public class CarrierChartView extends DashboardBase {
     private void updateHourly(List<String> sids) {
         List<String> carrier_list = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
         /* --------------POR HORA */
-        List<SmsByYearMonthDayHour> smsHourGroup = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actualYear, actualMonth, actualDay, sids);
-        List<SmsByYearMonthDayHour> carrierHourGroup = smsHourService.getGroupCarrierByYeMoDaHoWhYeMoDayEqMessageTypeIn(actualYear,
+        List<SmsByYearMonthDayHour> smsHourGroup = smsHourService.groupSmsYeMoDaHoTyWhYeMoDaSyIn(actualYear, actualMonth, actualDay, sids);
+        List<SmsByYearMonthDayHour> carrierHourGroup = smsHourService.groupSmsCarrierAndMessageTypeByYeMoDaHoWhYeMoDaSyIn_CarrierTyIn(actualYear,
                 actualMonth,
                 actualDay,
                 carrier_list,
@@ -288,8 +285,8 @@ public class CarrierChartView extends DashboardBase {
     private void updateDaily(List<String> sids) {
         List<String> carrier_list = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
         /* --------------DIARIO */
-        List<SmsByYearMonthDay> smsDayGroup = smsHourService.groupByYearMonthDayMessageTypeWhereYearAndMonth(actualYear, actualMonth, sids);
-        List<SmsByYearMonthDay> carrierDayGroup = smsHourService.getGroupCarrierByYeMoMe(actualYear,
+        List<SmsByYearMonthDay> smsDayGroup = smsHourService.groupSmsByYeMoDaTyWhYeMoSyIn(actualYear, actualMonth, sids);
+        List<SmsByYearMonthDay> carrierDayGroup = smsHourService.groupSmsCarrierMessageTypeByYeMoDaWhYeMoSyIn_CarrierTyIn(actualYear,
                 actualMonth,
                 carrier_list,
                 checkboxMessageType.getSelectedItems(),
@@ -302,9 +299,9 @@ public class CarrierChartView extends DashboardBase {
     private void updateTrimestral(List<String> sids) {
         /* ------------- TRIMESTRAL: SMS
          * Ejem: SmsByYearMonth{total=2775, yearSms=2021, monthSms=3, someCode=MO}*/
-        List<SmsByYearMonth> smsGroup = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actualYear, monthsIn(2), sids);
+        List<SmsByYearMonth> smsGroup = smsHourService.groupSmsMessageTypeByYeMoWhYeMoInSyIn(actualYear, monthsIn(2), sids);
 
-        List<SmsByYearMonth> carrierGroup = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(actualYear,
+        List<SmsByYearMonth> carrierGroup = smsHourService.groupSmsCarrierAndMessageTypeByYeMoWhYeMoSyIn_CarrierInTyIn(actualYear,
                 monthsIn(2),
                 carrierMultiComboBox.getValue(),
                 checkboxMessageType.getSelectedItems(),
@@ -417,13 +414,6 @@ public class CarrierChartView extends DashboardBase {
             closeButton.addClickListener(c -> {
                 d.close();
             });
-            List<SmsByYearMonth> as = smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(
-                    actualYear,
-                    monthsIn(2),
-                    carrierMultiComboBox.getValue(),
-                    checkboxMessageType.getSelectedItems(),
-                    clientSystemIdStringList);
-//            smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actual_year, monthsIn(2), sids);
             MonthlySmsShowGridView view = new MonthlySmsShowGridView(
                     smsHourService,
                     actualYear,
@@ -556,7 +546,14 @@ public class CarrierChartView extends DashboardBase {
      * @param carrierGroup
      */
     private void populateMonthChart(List<? extends AbstractSmsByYearMonth> smsGroup, List<SmsByYearMonthDay> carrierGroup) {
-        Configuration confIn = carrierDailyChart.getConfiguration();
+
+//        List<SmsByYearMonthDay> smsDayGroup = smsHourService.groupByYearMonthDayMessageTypeWhereYearAndMonth(actualYear, actualMonth, sids);
+//        List<SmsByYearMonthDay> carrierDayGroup = smsHourService.getGroupCarrierByYeMoMe(actualYear,
+//                actualMonth,
+//                carrier_list,
+//                checkboxMessageType.getSelectedItems(),
+//                sids);
+        Configuration confIn = smsThisMonthChart.getConfiguration();
         /**/
         confIn.getyAxis().setTitle("SMS");
         confIn.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - " + actualYear);

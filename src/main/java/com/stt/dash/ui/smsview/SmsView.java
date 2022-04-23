@@ -199,6 +199,7 @@ public class SmsView extends LitTemplate {
             if (!listener.isFromClient()) {
                 return;
             }
+            /* Todo: usar el servicio de admin.*/
             if (StringUtils.startsWith(listener.getValue(), "58414") ||
                     StringUtils.startsWith(listener.getValue(), "58424")) {
                 Carrier carrier = searchCarrierbyName(carrierSet, "movistar");

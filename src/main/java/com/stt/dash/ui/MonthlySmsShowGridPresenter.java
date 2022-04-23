@@ -1,14 +1,11 @@
 package com.stt.dash.ui;
 
 import com.stt.dash.app.OMessageType;
-import com.stt.dash.app.session.ListGenericBean;
-import com.stt.dash.backend.data.AbstractSmsByYearMonth;
 import com.stt.dash.backend.data.SmsByYearMonth;
 import com.stt.dash.backend.data.entity.Carrier;
 import com.stt.dash.backend.service.SmsHourService;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -103,7 +100,7 @@ public class MonthlySmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearM
 
     @Override
     public List<SmsByYearMonth> getGroupSmsBy(List<String> systemidList, List<Integer> monthList) {
-        return smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(2022, monthList, systemidList);
+        return smsHourService.groupSmsMessageTypeByYeMoWhYeMoInSyIn(2022, monthList, systemidList);
     }
 
     @Override
@@ -112,7 +109,7 @@ public class MonthlySmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearM
     }
 
     public List<SmsByYearMonth> getGroupSmsBy(Integer actualYear, List<Integer> monthToShowList, List<String> systemidList, Set<OMessageType> messageTypeSet, Set<Carrier> carrierSet) {
-        return smsHourService.getGroupCarrierByYeMoWhMoInMessageTypeIn(
+        return smsHourService.groupSmsCarrierAndMessageTypeByYeMoWhYeMoSyIn_CarrierInTyIn(
                 actualYear,
                 monthToShowList,
                 carrierSet,

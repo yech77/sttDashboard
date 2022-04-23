@@ -55,7 +55,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -258,7 +257,7 @@ public class MainDashboardView extends DashboardBase {
 
         // init the 'Deliveries in [this year]' chart
         /**/
-        List<SmsByYearMonthDayHour> smsHourList = smsHourService.getGroupSmsByYearMonthDayHourMessageType(actualYear, actualMonth, actualDay, stingListGenericBean.getList());
+        List<SmsByYearMonthDayHour> smsHourList = smsHourService.groupSmsYeMoDaHoTyWhYeMoDaSyIn(actualYear, actualMonth, actualDay, stingListGenericBean.getList());
         /**/
         List<Number> mtHourCompletedWithCeroList = fillHouList(smsHourList, "MT");
         List<Number> moHourCompletedWithCeroList = fillHouList(smsHourList, "MO");
@@ -307,7 +306,7 @@ public class MainDashboardView extends DashboardBase {
         Configuration monthConf = smsThisMonthChart.getConfiguration();
         configureColumnChart(monthConf);
         /**/
-        List<SmsByYearMonthDay> smsDailyList = smsHourService.groupByYearMonthDayMessageTypeWhereYearAndMonth(actualYear, actualMonth, stingListGenericBean.getList());
+        List<SmsByYearMonthDay> smsDailyList = smsHourService.groupSmsByYeMoDaTyWhYeMoSyIn(actualYear, actualMonth, stingListGenericBean.getList());
         System.out.println("DEVUELTOS: " + smsDailyList.size());
         List<Number> mt = fillDays(smsDailyList, "MT");
         List<Number> mo = fillDays(smsDailyList, "MO");
@@ -379,7 +378,7 @@ public class MainDashboardView extends DashboardBase {
         List<Integer> monthToShowList = monthsIn(2);
         String[] ml = new String[]{OMonths.valueOf(monthToShowList.get(0)).getMonthName(), OMonths.valueOf(monthToShowList.get(1)).getMonthName(), OMonths.valueOf(monthToShowList.get(2)).getMonthName()};
         conf.getxAxis().setCategories(ml);
-        List<? extends AbstractSmsByYearMonth> monthToShowDataList = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actualYear, monthToShowList, stingListGenericBean.getList());
+        List<? extends AbstractSmsByYearMonth> monthToShowDataList = smsHourService.groupSmsMessageTypeByYeMoWhYeMoInSyIn(actualYear, monthToShowList, stingListGenericBean.getList());
         List<Series> lineDateSeriesList = messageTypeAndMonthlyTotal(Arrays.asList(OMessageType.values()), monthToShowDataList, monthsIn(2));
         PlotOptionsLine plotLine = new PlotOptionsLine();
         addToChart(conf, lineDateSeriesList, plotLine);

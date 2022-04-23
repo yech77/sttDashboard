@@ -30,8 +30,6 @@ import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -310,7 +308,7 @@ public class ClientChartView extends DashboardBase {
             return;
         }
         /* Column Chart*/
-        List<SmsByYearMonthDayHour> smsList = smsHourService.getGroupSmsByYearMonthDayHourMessageType(LocalDate.now().getYear(), actualMonth, actualDay, allUserStringSystemId.getList());
+        List<SmsByYearMonthDayHour> smsList = smsHourService.groupSmsYeMoDaHoTyWhYeMoDaSyIn(LocalDate.now().getYear(), actualMonth, actualDay, allUserStringSystemId.getList());
         List<Series> LineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), smsList, hourList);
         addToChart(confHourlyChart, LineDateSeriesList, plotColum);
         /* Convertir Set<SystemId> seleccionados en un List<String>*/
@@ -392,7 +390,7 @@ public class ClientChartView extends DashboardBase {
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">Dia: {point.key}</span><br/>");
         confMonthlyLineChart.setTooltip(tooltip);
         /* Column Chart*/
-        List<SmsByYearMonthDay> l = smsHourService.groupByYearMonthDayMessageTypeWhereYearAndMonth(LocalDate.now().getYear(), actualMonth, allUserStringSystemId.getList());
+        List<SmsByYearMonthDay> l = smsHourService.groupSmsByYeMoDaTyWhYeMoSyIn(LocalDate.now().getYear(), actualMonth, allUserStringSystemId.getList());
         List<Series> LineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), l, dayList);
         addToChart(confMonthlyLineChart, LineDateSeriesList, plotColum);
         /* Line Chart */
@@ -450,7 +448,7 @@ public class ClientChartView extends DashboardBase {
         confTriMixChart.setTooltip(tooltip);
 
         /* Buscar con todos los systemids del usuario. */
-        List<SmsByYearMonth> l = smsHourService.getGroupSmsByYearMonthMessageTypeWhMo(actualYear, monthsIn(2), allUserStringSystemId.getList());
+        List<SmsByYearMonth> l = smsHourService.groupSmsMessageTypeByYeMoWhYeMoInSyIn(actualYear, monthsIn(2), allUserStringSystemId.getList());
         List<Series> LineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), l, monthsIn(2));
         addToChart(confTriMixChart, LineDateSeriesList, plotColum);
         /* LINE CHART */
