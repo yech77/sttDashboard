@@ -10,6 +10,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -21,12 +22,14 @@ import com.vaadin.flow.component.template.Id;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.server.StreamResource;
+import org.apache.commons.lang3.StringUtils;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 
 @Tag("sms-show-grid-view-v2")
@@ -49,6 +52,7 @@ public class SmsShowGridViewV2 extends LitTemplate implements Viewnable<SmsByYea
     @Id("smsGrid")
     Grid<SmsByYearMonthDay> grid;
 
+    private Consumer<String> consumer;
     private final SmsShowGridPresenter presenter;
     /**/
     private Grid.Column<SmsByYearMonthDay> groupByColum;
@@ -147,5 +151,16 @@ public class SmsShowGridViewV2 extends LitTemplate implements Viewnable<SmsByYea
                 .setHeader("TOTAL")
                 .setTextAlign(ColumnTextAlign.END)
                 .setAutoWidth(true);
+    }
+
+    public void setConsumer(Consumer<String> c) {
+        consumer = c;
+        closeButton.setEnabled(true);
+        closeButton.addClickListener(buttonClickEvent -> consumer.accept("Cerrando"));
+    }
+
+    public void setTitles(String mainTitle, String subT) {
+        title.setText(StringUtils.isEmpty(mainTitle) ? "" : mainTitle);
+        subtitle.setText(StringUtils.isEmpty(subT) ? "" : subT);
     }
 }

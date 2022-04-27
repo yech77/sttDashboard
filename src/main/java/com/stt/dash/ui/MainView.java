@@ -97,34 +97,31 @@ public class MainView extends AppLayout {
         menuBar.addThemeVariants(MenuBarVariant.LUMO_TERTIARY_INLINE);
         MenuItem menuItem = menuBar.addItem(avatar);
         SubMenu subMenu = menuItem.getSubMenu();
-        subMenu.addItem("Profile");
-        subMenu.addItem("Settings");
-        subMenu.addItem("Help");
-        subMenu.addItem("Sign out");
+        subMenu.addItem("Logout", menuItemClickEvent -> logout());
         /**/
         VerticalLayout verticalLayout = new VerticalLayout(menuBar);
         verticalLayout.setAlignItems(FlexComponent.Alignment.END);
         this.addToNavbar(new DrawerToggle(), title, verticalLayout);
         this.addToDrawer(menu);
 
-//		this.getElement().appendChild(confirmDialog.getElement());
+        this.getElement().appendChild(confirmDialog.getElement());
 
-//		getElement().addEventListener("search-focus", e -> {
-//			getElement().getClassList().add("hide-navbar");
-//		});
-//
-//		getElement().addEventListener("search-blur", e -> {
-//			getElement().getClassList().remove("hide-navbar");
-//		});
+        getElement().addEventListener("search-focus", e -> {
+            getElement().getClassList().add("hide-navbar");
+        });
+
+        getElement().addEventListener("search-blur", e -> {
+            getElement().getClassList().remove("hide-navbar");
+        });
     }
 
     @Override
     protected void afterNavigation() {
         super.afterNavigation();
-//		confirmDialog.setOpened(false);
-//		if (getContent() instanceof HasConfirmation) {
-//			((HasConfirmation) getContent()).setConfirmDialog(confirmDialog);
-//		}
+        confirmDialog.setOpened(false);
+        if (getContent() instanceof HasConfirmation) {
+            ((HasConfirmation) getContent()).setConfirmDialog(confirmDialog);
+        }
         RouteConfiguration configuration = RouteConfiguration.forSessionScope();
         if (configuration.isRouteRegistered(this.getContent().getClass())) {
             String target = configuration.getUrl(this.getContent().getClass());
@@ -147,8 +144,8 @@ public class MainView extends AppLayout {
 
     private static Tab[] getAvailableTabs() {
         final List<Tab> tabs = new ArrayList<>(6);
-        tabs.add(createTab(VaadinIcon.ENVELOPES_O, TITLE_SMS_VIEW, SmsView.class));
         tabs.add(createTab(VaadinIcon.HOME, TITLE_DASHBOARD_MAIN, MainDashboardView.class));
+        tabs.add(createTab(VaadinIcon.ENVELOPES_O, TITLE_SMS_VIEW, SmsView.class));
         tabs.add(createTab(VaadinIcon.ACCORDION_MENU, "Mensajes enviados", SmsShowView.class));
         if (SecurityUtils.isAccessGranted(FileToSendFrontView.class)) {
             tabs.add(createTab(VaadinIcon.CALENDAR_ENVELOPE, TITLE_BULKSMS_SCHEDULER, FileToSendFrontView.class));
@@ -176,7 +173,7 @@ public class MainView extends AppLayout {
         }
         final String contextPath = VaadinServlet.getCurrent().getServletContext().getContextPath();
         final Tab logoutTab = createTab(createLogoutLink(contextPath));
-        tabs.add(logoutTab);
+//        tabs.add(logoutTab);
         return tabs.toArray(new Tab[tabs.size()]);
     }
 
@@ -186,9 +183,13 @@ public class MainView extends AppLayout {
 
     private static Tab createTab(Component content) {
         final Tab tab = new Tab();
-//		tab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
         tab.add(content);
         return tab;
+    }
+
+    public void logout() {
+        SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+        logoutHandler.logout(VaadinServletRequest.getCurrent().getHttpServletRequest(), null, null);
     }
 
     private static Anchor createLogoutLink(String contextPath) {

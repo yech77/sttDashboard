@@ -16,7 +16,9 @@ import com.stt.dash.backend.service.CarrierService;
 import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.MonthlySmsShowGridView;
+import com.stt.dash.ui.SmsShowGridViewV2;
 import com.stt.dash.ui.utils.BakeryConst;
+import com.stt.dash.ui.views.HasNotifications;
 import com.stt.dash.ui.views.dashboard.DashboardBase;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
 import com.vaadin.flow.component.Tag;
@@ -47,7 +49,7 @@ import java.util.stream.Collectors;
 @JsModule("./src/views/carrier/carrier-chart-view.js")
 @Route(value = BakeryConst.PAGE_CARRIER, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_CARRIER)
-public class CarrierChartView extends DashboardBase {
+public class CarrierChartView extends DashboardBase implements HasNotifications {
     @Id("deliveriesThisMonth")
     private Chart smsLastThreeMonthChart;
 
@@ -104,6 +106,7 @@ public class CarrierChartView extends DashboardBase {
         setActualDate();
         /* ******* */
         /* ******* Client */
+        clientCombobox.setLabel("Cliente");
         clientCombobox.setItemLabelGenerator(Client::getClientName);
         /* Client & Systemids*/
         if (currentUser.getUser().getUserType() == User.OUSER_TYPE.HAS) {
@@ -136,6 +139,7 @@ public class CarrierChartView extends DashboardBase {
         checkboxMessageType.setItemLabelGenerator(OMessageType::name);
         /* Carrier */
         Page<Carrier> carrierPage = carrierService.findAll();
+        carrierMultiComboBox.setLabel("Operadora");
         carrierMultiComboBox.setItems(carrierPage.getContent());
         carrierMultiComboBox.setItemLabelGenerator(Carrier::getCarrierCharcode);
         if (VaadinSession.getCurrent().getAttribute(CARRIER_VIEW_SELECTED_CARRIER) != null) {
@@ -195,6 +199,7 @@ public class CarrierChartView extends DashboardBase {
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /**/
         confHourlyChart.getxAxis().setTitle("Hora");
+        /**/
         String[] da = new String[LocalDateTime.now().getHour() + 1];
         for (int i = 0; i <= LocalDateTime.now().getHour(); i++) {
             da[i] = i + ":";
@@ -206,25 +211,26 @@ public class CarrierChartView extends DashboardBase {
         tooltip.setShared(true);
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">Hora: {point.key}</span><br/>");
         confHourlyChart.setTooltip(tooltip);
-
-        List<String> carrier_list = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
-        /* Column Chart*/
-        List<SmsByYearMonthDayHour> l = smsHourService.groupSmsYeMoDaHoTyWhYeMoDaSyIn(actualYear, actualMonth, actualDay, sids);
-        if (l == null || l.isEmpty()) {
-            log.info("Hourly Chart Without data to show");
+        /**/
+        if (carrierMultiComboBox.getValue() == null) {
+            showNotification("Por favor seleccione una Operadora");
             return;
         }
-        List<Series> LineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), l, hourList);
+        /* Convertir Set<Carrier> seleccionados en un List<String>*/
+        List<String> carrier_list = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
+        /* Column Chart*/
+        List<SmsByYearMonthDayHour> smsByYearMonthDayHourList = smsHourService.groupSmsYeMoDaHoTyWhYeMoDaSyIn(actualYear, actualMonth, actualDay, sids);
+        List<Series> LineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), smsByYearMonthDayHourList, hourList);
         addToChart(confHourlyChart, LineDateSeriesList, plotColum);
         /* Line Chart */
-        l = smsHourService.groupSmsCarrierAndMessageTypeByYeMoDaHoWhYeMoDaSyIn_CarrierTyIn(actualYear,
+        smsByYearMonthDayHourList = smsHourService.groupSmsCarrierAndMessageTypeByYeMoDaHoWhYeMoDaSyIn_CarrierTyIn(actualYear,
                 actualMonth,
                 actualDay,
                 carrier_list,
                 checkboxMessageType.getSelectedItems(), sids);
-        List<SmsByYearMonthDayHour> l2 = new ArrayList<>(l);
+        List<SmsByYearMonthDayHour> l2 = new ArrayList<>(smsByYearMonthDayHourList);
         PlotOptionsLine plotLine = new PlotOptionsLine();
-        LineDateSeriesList = paEntenderLine(l, hourList);
+        LineDateSeriesList = paEntenderLine(smsByYearMonthDayHourList, hourList);
         addToChart(confHourlyChart, LineDateSeriesList, plotLine);
         /* DAY PIE*/
         populateHourPieChart(l2);
@@ -250,17 +256,16 @@ public class CarrierChartView extends DashboardBase {
         List<Series> dataSeriesList = new ArrayList<>();
         /*TODO nullpointer*/
         /* Recorre los Carrier seleccionados. */
-        carrierMultiComboBox.getValue().forEach(carrier -> {
+        carrierMultiComboBox.getValue().forEach(actualCarrierInForeach -> {
             ListSeries series = new ListSeries();
-            series.setName(carrier.getCarrierCharcode());
+            series.setName(actualCarrierInForeach.getCarrierCharcode());
             /* Recorre los meses del trimestre */
-            integerList.forEach(month -> {
+            integerList.forEach(actualMonthInForeach -> {
                 /* Total por Month y Carrier*/
                 Long tot = l.stream()
-                        .filter(sms -> sms.getGroupBy() == month
-                                && carrier.getCarrierCharcode().equalsIgnoreCase(sms.getSomeCode()))
+                        .filter(sms -> sms.getGroupBy() == actualMonthInForeach
+                                && actualCarrierInForeach.getCarrierCharcode().equalsIgnoreCase(sms.getSomeCode()))
                         .mapToLong(sms -> sms.getTotal()).sum();
-                System.out.println("MONTH-> " + month + ". Message Type: " + carrier.getCarrierCharcode() + " - TOTAL: " + tot);
                 series.addData(tot);
             });
             dataSeriesList.add(series);
@@ -285,15 +290,15 @@ public class CarrierChartView extends DashboardBase {
     private void updateDaily(List<String> sids) {
         List<String> carrier_list = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
         /* --------------DIARIO */
-        List<SmsByYearMonthDay> smsDayGroup = smsHourService.groupSmsByYeMoDaTyWhYeMoSyIn(actualYear, actualMonth, sids);
-        List<SmsByYearMonthDay> carrierDayGroup = smsHourService.groupSmsCarrierMessageTypeByYeMoDaWhYeMoSyIn_CarrierTyIn(actualYear,
+        List<SmsByYearMonthDay> smsByDayList = smsHourService.groupSmsByYeMoDaTyWhYeMoSyIn(actualYear, actualMonth, sids);
+        List<SmsByYearMonthDay> smsByCarrierAndTypeList = smsHourService.groupSmsCarrierMessageTypeByYeMoDaWhYeMoSyIn_CarrierTyIn(actualYear,
                 actualMonth,
                 carrier_list,
                 checkboxMessageType.getSelectedItems(),
                 sids);
-        populateMonthChart(smsDayGroup, new ArrayList<>(carrierDayGroup));
+        populateMonthChart(smsByDayList, new ArrayList<>(smsByCarrierAndTypeList));
         /* PIE */
-        populateMonthlyPieChart(carrierDayGroup);
+        populateMonthlyPieChart(smsByCarrierAndTypeList);
     }
 
     private void updateTrimestral(List<String> sids) {
@@ -542,22 +547,16 @@ public class CarrierChartView extends DashboardBase {
     /**
      * Grafico operadora Mensual
      *
-     * @param smsGroup
-     * @param carrierGroup
+     * @param smsByDayList
+     * @param smsByCarrierAndTypeList
      */
-    private void populateMonthChart(List<? extends AbstractSmsByYearMonth> smsGroup, List<SmsByYearMonthDay> carrierGroup) {
-
-//        List<SmsByYearMonthDay> smsDayGroup = smsHourService.groupByYearMonthDayMessageTypeWhereYearAndMonth(actualYear, actualMonth, sids);
-//        List<SmsByYearMonthDay> carrierDayGroup = smsHourService.getGroupCarrierByYeMoMe(actualYear,
-//                actualMonth,
-//                carrier_list,
-//                checkboxMessageType.getSelectedItems(),
-//                sids);
+    private void populateMonthChart(List<? extends AbstractSmsByYearMonth> smsByDayList, List<SmsByYearMonthDay> smsByCarrierAndTypeList) {
         Configuration confIn = smsThisMonthChart.getConfiguration();
         /**/
         confIn.getyAxis().setTitle("SMS");
-        confIn.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - " + actualYear);
         confIn.setSubTitle("por dia");
+        confIn.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - " + actualYear);
+        /**/
         String[] da = new String[LocalDate.now().getMonth().maxLength()];
         for (int i = 1; i <= LocalDate.now().getMonth().maxLength(); i++) {
             da[i - 1] = i + "";
@@ -573,9 +572,9 @@ public class CarrierChartView extends DashboardBase {
         confIn.setTooltip(tooltip);
         /**/
         configureColumnChart(confIn);
-        smsGroup = orderGroup(fillWithCero(smsGroup, monthToShowList));
+        smsByDayList = orderGroup(fillWithCero(smsByDayList, monthToShowList));
         /**/
-        List<DataSeries> list_series1 = findDataSeriesColumnsBase(smsGroup);
+        List<DataSeries> list_series1 = findDataSeriesColumnsBase(smsByDayList);
         for (DataSeries list_sery : list_series1) {
             confIn.addSeries(list_sery);
         }
@@ -584,12 +583,13 @@ public class CarrierChartView extends DashboardBase {
 //        DataProviderSeries<SmsByYearMonth> series = new DataProviderSeries<>(dataProvider, SmsByYearMonth::getTotal);
 //        confIn.addSeries(series);
 
-        List<? extends AbstractSmsByYearMonth> l = carrierGroup;
+        List<? extends AbstractSmsByYearMonth> l = smsByCarrierAndTypeList;
         log.info("MONTH CHART: {}", l);
         /* Averiguar cuales son los tres meses a calular. */
         List<Integer> monthList = monthToShowList;
-
+        /* TODO: revisar no trae los MO*/
         l = orderGroup(fillWithCero(l, monthToShowList));
+        l = orderGroup(smsByCarrierAndTypeList);
         List<DataSeries> list_series2 = findDataSeriesLineBase(l);
         if (list_series2 == null || list_series2.size() == 0) {
             log.info("{} NO DATA FOR CARRIER CHART LINE", getStringLog());
@@ -613,7 +613,6 @@ public class CarrierChartView extends DashboardBase {
         }
         Map<Integer, Map<String, Long>> monthlyDataToShowMap = new HashMap<>();
         int m = 0;
-        System.out.println("CarrierEvolution: Columns size() " + smsGroupList.size());
         List<Integer> monthToShowList = new ArrayList<>(4);
 
         Map<String, Long> messageTypeToShowMap;
@@ -744,20 +743,14 @@ public class CarrierChartView extends DashboardBase {
 
         Map<Integer, Map<String, Long>> data_monthly = new HashMap<>();
         List<Integer> lmonth = new ArrayList<>(4);
-
+        /* TODO: Parece ser aca que el total es mal calculado y solo suma los MT*/
         Map<String, Long> carrierTotalMap = new HashMap<>();
         /* Agrega 0 a todos los carrier en toda la agrupacion (MONTH/DAY) */
         for (AbstractSmsByYearMonth smsByYearMonth : l) {
-            log.info("GROUP BY: {}  - SOMECODE: {} ", smsByYearMonth.getSomeCode(), smsByYearMonth.getGroupBy());
-
             /* Si no esta el Month/day/Hour agregarlos carrier seleccionados en 0l */
             if (!data_monthly.containsKey(smsByYearMonth.getGroupBy())) {
-                log.info("GRUPO AGREGADO: {}, {}", smsByYearMonth.getGroupBy(), smsByYearMonth.getSomeCode());
-
                 lmonth.add(smsByYearMonth.getGroupBy());
                 carrierTotalMap = new HashMap<>();
-
-                log.info("GRUPO INIC EN 0: {}, {}", smsByYearMonth.getGroupBy(), smsByYearMonth.getSomeCode());
                 /* Agragar al map cada uno de los carrier selecionados con 0. */
                 for (Carrier ocarrier : carrierMultiComboBox.getValue()) {
                     carrierTotalMap.put(ocarrier.getCarrierCharcode(), 0l);

@@ -10,7 +10,7 @@ export class SmsShowGridViewV2 extends LitElement {
 
     render() {
         return html`
-            <vaadin-board style="max-width: 100%; margin-right: auto; margin-left: auto">
+            <vaadin-board>
                 <vaadin-board-row>
                     <vaadin-vertical-layout>
                         <h3 id="grid-title"></h3>
@@ -21,15 +21,11 @@ export class SmsShowGridViewV2 extends LitElement {
                     <vaadin-grid id="smsGrid" style="min-height: 500px"></vaadin-grid>
                 </vaadin-board-row>
                 <vaadin-board-row>
-                    <vaadin-horizontal-layout>
-                        <vaadin-horizontal-layout>
-                            <vaadin-button id="grid-btn-download" class="action-btn" theme="secondary">Download
-                        </vaadin-horizontal-layout>
-                        <vaadin-horizontal-layout>
-                            <vaadin-button id="grid-btn-close" class="action-btn" theme="primary success">Cerrarr
-                            </vaadin-button>
-                        </vaadin-horizontal-layout>
-                    </vaadin-horizontal-layout>
+                    <buttons-bar id="footer" class="vaadin-board-cell">
+                        <vaadin-button slot="right" id="grid-btn-close" theme="primary">Cerrar</vaadin-button>
+                        <vaadin-button slot="left" id="grid-btn-download" theme="secondary">Preparar descarga
+                        </vaadin-button>
+                    </buttons-bar>
                 </vaadin-board-row>
             </vaadin-board>
         `;

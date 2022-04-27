@@ -105,7 +105,7 @@ public class MonthlySmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearM
 
     @Override
     public List<SmsByYearMonth> getGroupSmsBy(List<String> stringList, Integer month) {
-        return smsHourService.groupYeMoSyTyWhYeMoInSyInTyIn(2022, month, messageType, stringList);
+        return smsHourService.groupSmsSyTyByYeMoWhYeMoSyInTyIn(2022, month, messageType, stringList);
     }
 
     public List<SmsByYearMonth> getGroupSmsBy(Integer actualYear, List<Integer> monthToShowList, List<String> systemidList, Set<OMessageType> messageTypeSet, Set<Carrier> carrierSet) {

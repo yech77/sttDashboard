@@ -46,6 +46,22 @@ public class DailySmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearMon
         updateInView(dataProvider);
     }
 
+    /**
+     * Cuando se desea que la agrupacion se Day-systemid-messageType-carrier
+     *
+     * @param smsHourService
+     * @param integerList
+     * @param systemidStringList
+     * @param messageType
+     * @param view
+     */
+    public DailySmsShowGridPresenter(SmsHourService smsHourService, List<Integer> integerList, List<String> systemidStringList, List<String> messageType, List<String> carrier, Viewnable<SmsByYearMonthDay> view) {
+        super(smsHourService, view);
+        List<SmsByYearMonthDay> smsHourList = getGroupSmsBy(integerList, messageType, systemidStringList, carrier);
+        updateDataProvider(smsHourList);
+        updateInView(dataProvider);
+    }
+
     @Override
     public List<SmsByYearMonthDay> getGroupSmsBy(List<String> stringList, List<Integer> integerList) {
         return smsHourService.groupSmsByYeMoDaTyWhYeMoSyIn(
@@ -55,11 +71,21 @@ public class DailySmsShowGridPresenter extends SmsShowGridPresenter<SmsByYearMon
     }
 
     public List<SmsByYearMonthDay> getGroupSmsBy(List<Integer> integerList, List<String> messageTypeList, List<String> systemidStringList) {
-        return smsHourService.groupYeMoSyTyWhYeMoInSyInTyIn(
+        return smsHourService.groupSmsMessageTypeByYeMoDaSyWhYeMoDaSyIn_TyIn(
                 integerList.get(0),
                 integerList.get(1),
                 integerList.get(2),
                 messageTypeList,
+                systemidStringList);
+    }
+
+    public List<SmsByYearMonthDay> getGroupSmsBy(List<Integer> integerList, List<String> messageTypeList, List<String> systemidStringList, List<String> carrier) {
+        return smsHourService.groupSmsCarrierTyByYeMoDaWhYeMoDaSyIn_CarrierInTyIn(
+                integerList.get(0),
+                integerList.get(1),
+                integerList.get(2),
+                messageTypeList,
+                carrier,
                 systemidStringList);
     }
 }
