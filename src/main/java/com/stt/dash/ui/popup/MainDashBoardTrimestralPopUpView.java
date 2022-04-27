@@ -25,7 +25,7 @@ public class MainDashBoardTrimestralPopUpView extends TrimestralSmsPopupView {
         presenter = new TrimestralSmsPopupPresenter(smsHourService, yearSms, monthToShowList, systemidStringList, this);
         createColumns(grid);
         grid.setHeight("75%");
-        setTitles("Últimos tres meses", "Dashboard");
+        setTitles("Gráfico - Últimos tres meses", "Dashboard");
         downloadButton.addClickListener(buttonClickEvent -> {
             if (buttonClickEvent.isFromClient()) {
                 downloadButton.setEnabled(false);
@@ -39,7 +39,7 @@ public class MainDashBoardTrimestralPopUpView extends TrimestralSmsPopupView {
         presenter = new TrimestralSmsPopupPresenter(smsHourService, yearSms, monthSms, systemidStringList, this);
         createColumns(grid);
         grid.setHeight("75%");
-        setTitles("Últimos tres meses", "Dashboard");
+        setTitles("Gráfico - Últimos tres meses", "Dashboard");
         downloadButton.addClickListener(buttonClickEvent -> {
             if (buttonClickEvent.isFromClient()) {
                 downloadButton.setEnabled(false);
@@ -57,7 +57,7 @@ public class MainDashBoardTrimestralPopUpView extends TrimestralSmsPopupView {
     }
 
     private Component getDownloadButton(Collection<SmsByYearMonth> messages) {
-        String fileName = "trimestre-Mensajes.csv";
+        String fileName = "trimestre-Mensajes-dashboard.csv";
         Button download = new Button("Descargar", VaadinIcon.ARROW_DOWN.create());
         download.setIconAfterText(true);
 

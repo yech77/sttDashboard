@@ -17,6 +17,8 @@ import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.MonthlySmsShowGridView;
 import com.stt.dash.ui.SmsShowGridViewV2;
+import com.stt.dash.ui.popup.CarrierTrimestralPopUpView;
+import com.stt.dash.ui.popup.ClientTrimestralPopUpView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.views.HasNotifications;
 import com.stt.dash.ui.views.dashboard.DashboardBase;
@@ -412,23 +414,36 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
     private void populateTriChart(List<? extends AbstractSmsByYearMonth> smsGroup, List<SmsByYearMonth> carrierGroup) {
         Configuration confTriChart = smsLastThreeMonthChart.getConfiguration();
 
+        Configuration confTriMixChart = smsLastThreeMonthChart.getConfiguration();
+        smsLastThreeMonthChart.addPointClickListener(click -> {
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            List<Integer> month = monthsIn(2);
+            Integer selectedMonth = month.get(click.getItemIndex());
+            CarrierTrimestralPopUpView view = new CarrierTrimestralPopUpView(
+                    smsHourService,
+                    actualYear,
+                    selectedMonth,
+                    clientSystemIdStringList,
+                    checkboxMessageType.getSelectedItems(),
+                    carrierMultiComboBox.getValue());
+            d.add(view);
+            d.open();
+            view.setConsumer((s) -> d.close());
+        });
         smsLastThreeMonthChart.addChartClickListener(click -> {
             Dialog d = new Dialog();
             d.setWidth("75%");
-            Button closeButton = new Button("Cerrar");
-            closeButton.addClickListener(c -> {
-                d.close();
-            });
-            MonthlySmsShowGridView view = new MonthlySmsShowGridView(
+            CarrierTrimestralPopUpView view = new CarrierTrimestralPopUpView(
                     smsHourService,
                     actualYear,
                     monthsIn(2),
                     clientSystemIdStringList,
                     checkboxMessageType.getSelectedItems(),
                     carrierMultiComboBox.getValue());
-            view.setRowHeader("Últimos tres meses");
-            d.add(view, closeButton);
+            d.add(view);
             d.open();
+            view.setConsumer((s) -> d.close());
         });
         /* Column */
         Tooltip tooltip = new Tooltip();

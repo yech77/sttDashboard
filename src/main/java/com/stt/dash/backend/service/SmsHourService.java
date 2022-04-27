@@ -220,14 +220,20 @@ public class SmsHourService {
         if (monthsOfPrevYear != null) {
             log.info("Month ({}) before actual year detected. Searching year[{}] month[{}] Message Type [{}] sid[{}]",
                     monthsOfPrevYear, yearSms - 1, monthsOfPrevYear, messageTypeSms, list_sid);
-            yearBefore = smshour_repo.groupSmsCarrierAndMessageTypeByYeMoWhYeMoSyIn_CarrierInTyIn(yearSms - 1, monthsOfPrevYear, carrierList, messagesTypeList, list_sid);
+            yearBefore = smshour_repo.groupSmsCarrierAndMessageTypeByYeMoWhYeMoInSyIn_CarrierInTyIn(yearSms - 1, monthsOfPrevYear, carrierList, messagesTypeList, list_sid);
         }
         if (yearBefore == null) {
             yearBefore = new ArrayList<>();
         }
         log.info("Searching: year[{}] months[{}] carrier [{}] message type[{}] sids[{}]", yearSms, monthSms, carrierList, messagesTypeList, list_sid);
-        yearBefore.addAll(smshour_repo.groupSmsCarrierAndMessageTypeByYeMoWhYeMoSyIn_CarrierInTyIn(yearSms, monthSms, carrierList, messagesTypeList, list_sid));
+        yearBefore.addAll(smshour_repo.groupSmsCarrierAndMessageTypeByYeMoWhYeMoInSyIn_CarrierInTyIn(yearSms, monthSms, carrierList, messagesTypeList, list_sid));
         return yearBefore;
+    }
+
+    public List<SmsByYearMonth> groupSmsCarrierAndMessageTypeByYeMoWhYeMoSyIn_CarrierInTyIn(int yearSms, int monthSms, Set<Carrier> carrierSet, Set<OMessageType> messageTypeSms, List<String> list_sid) {
+        List<String> messagesTypeList = messageTypeSms.stream().map(OMessageType::name).collect(Collectors.toList());
+        List<String> carrierList = carrierSet.stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
+        return smshour_repo.groupSmsCarrierAndMessageTypeByYeMoWhYeMoSyIn_CarrierInTyIn(yearSms, monthSms, carrierList, messagesTypeList, list_sid);
     }
 
     ////////////////

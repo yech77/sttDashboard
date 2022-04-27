@@ -317,8 +317,24 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
             + "h.systemId IN (:listSid) "
             + "GROUP BY  h.year, h.month, h.carrierCharCode, h.messageType  "
             + "ORDER BY h.year, h.month, h.carrierCharCode, h.messageType  ")
+    List<SmsByYearMonth> groupSmsCarrierAndMessageTypeByYeMoWhYeMoInSyIn_CarrierInTyIn(@Param("yearSms") int yearSms,
+                                                                                       @Param("monthSms") List<Integer> monthSms,
+                                                                                       @Param("carrierList") List<String> carrierList,
+                                                                                       @Param("messageTypeSms") List<String> messageTypeSms,
+                                                                                       @Param("listSid") List<String> listSid);
+
+    @Query("SELECT  new com.stt.dash.backend.data.SmsByYearMonth("
+            + "sum(h.total), h.year, h.month, h.carrierCharCode, h.messageType ) "
+            + "FROM  SmsHour h "
+            + "WHERE h.year = :yearSms AND "
+            + "h.month = :monthSms AND "
+            + "h.carrierCharCode IN (:carrierList) AND "
+            + "h.messageType IN (:messageTypeSms) AND "
+            + "h.systemId IN (:listSid) "
+            + "GROUP BY  h.year, h.month, h.carrierCharCode, h.messageType  "
+            + "ORDER BY h.year, h.month, h.carrierCharCode, h.messageType  ")
     List<SmsByYearMonth> groupSmsCarrierAndMessageTypeByYeMoWhYeMoSyIn_CarrierInTyIn(@Param("yearSms") int yearSms,
-                                                                                     @Param("monthSms") List<Integer> monthSms,
+                                                                                     @Param("monthSms") int monthSms,
                                                                                      @Param("carrierList") List<String> carrierList,
                                                                                      @Param("messageTypeSms") List<String> messageTypeSms,
                                                                                      @Param("listSid") List<String> listSid);
