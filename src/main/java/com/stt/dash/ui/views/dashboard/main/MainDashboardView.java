@@ -20,6 +20,7 @@ import com.stt.dash.ui.SmsShowGridViewV2;
 import com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider;
 import com.stt.dash.ui.popup.MainDashBoardMonthlyPopUpView;
 import com.stt.dash.ui.popup.MainDashBoardTrimestralPopUpView;
+import com.stt.dash.ui.popup.MainDashboardDailyPopUpView;
 import com.stt.dash.ui.popup.MonthlySmsPopupView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.views.bulksms.FileToSendCard;
@@ -57,6 +58,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -236,15 +239,16 @@ public class MainDashboardView extends DashboardBase {
     }
 
     private void populateThisDayChart() {
-        smsThisDayChart.addSeriesClickListener(click -> {
+        smsThisDayChart.addPointClickListener(click -> {
+            int seriesItemIndex = click.getItemIndex();
             Dialog d = new Dialog();
             d.setWidth("75%");
             Button closeButton = new Button("Cerrar");
             closeButton.addClickListener(c -> {
                 d.close();
             });
-            SmsShowGridViewV2 view = new SmsShowGridViewV2(smsHourService, actualYear, actualMonth, stingListGenericBean);
-            view.setTitles("Gráfico: Enviados Hoy", "");
+            MainDashboardDailyPopUpView view = new MainDashboardDailyPopUpView(smsHourService, actualYear, actualMonth, actualDay, seriesItemIndex, stingListGenericBean.getList());
+            view.setTitles("Gráfico: Enviados Hoy", LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             d.add(view);
             d.open();
             view.setConsumer((s) -> d.close());
@@ -252,13 +256,11 @@ public class MainDashboardView extends DashboardBase {
         smsThisDayChart.addChartClickListener(click -> {
             Dialog d = new Dialog();
             d.setWidth("75%");
-            Button closeButton = new Button("Cerrar");
-            closeButton.addClickListener(c -> {
-                d.close();
-            });
-            SmsShowGridHourlyView view = new SmsShowGridHourlyView(smsHourService, actualYear, actualMonth, actualDay, stingListGenericBean);
-            d.add(view, closeButton);
+            MainDashboardDailyPopUpView view = new MainDashboardDailyPopUpView(smsHourService, actualYear, actualMonth, actualDay, stingListGenericBean.getList());
+            view.setTitles("Gráfico: Enviados Hoy", LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            d.add(view);
             d.open();
+            view.setConsumer((s) -> d.close());
         });
 
         // init the 'Deliveries in [this year]' chart
@@ -287,25 +289,15 @@ public class MainDashboardView extends DashboardBase {
         thisDayChartConf.setTooltip(tooltip);
         /**/
         // init the 'Deliveries in [this month]' chart
-        smsThisMonthChart.addSeriesClickListener(click -> {
-            Dialog d = new Dialog();
-            d.setWidth("75%");
-            Button closeButton = new Button("Cerrar");
-            closeButton.addClickListener(c -> {
-                d.close();
-            });
-            DailySmsShowGridView view = new DailySmsShowGridView(smsHourService, actualYear, actualMonth, stingListGenericBean);
-            d.add(view, closeButton);
-            d.open();
+        smsThisMonthChart.addPointClickListener(click -> {
+            /* El dia comienza en 1. */
+            int seriesItemIndex = click.getItemIndex() + 1;
+            MainDashBoardMonthlyPopUpView view = new MainDashBoardMonthlyPopUpView(smsHourService, actualYear, actualMonth, seriesItemIndex, stingListGenericBean.getList());
+            popup(view);
         });
         smsThisMonthChart.addChartClickListener(click -> {
-            Dialog d = new Dialog();
-            d.setWidth("75%");
             MainDashBoardMonthlyPopUpView view = new MainDashBoardMonthlyPopUpView(smsHourService, actualYear, actualMonth, stingListGenericBean.getList());
-//            DailySmsShowGridView view = new DailySmsShowGridView(smsHourService, actualYear, actualMonth, stingListGenericBean);
-            d.add(view);
-            d.open();
-            view.setConsumer((s) -> d.close());
+            popup(view);
         });
         Configuration monthConf = smsThisMonthChart.getConfiguration();
         configureColumnChart(monthConf);
@@ -340,6 +332,22 @@ public class MainDashboardView extends DashboardBase {
         monthConf.setTooltip(tooltip2);
     }
 
+    private void popup(MainDashBoardMonthlyPopUpView view) {
+        Dialog d = new Dialog();
+        d.setWidth("75%");
+        d.add(view);
+        d.open();
+        view.setConsumer((s) -> d.close());
+    }
+
+    private void popup(MainDashBoardTrimestralPopUpView view) {
+        Dialog d = new Dialog();
+        d.setWidth("75%");
+        d.add(view);
+        d.open();
+        view.setConsumer((s) -> d.close());
+    }
+
     /**
      *
      */
@@ -347,20 +355,12 @@ public class MainDashboardView extends DashboardBase {
         smsLastThreeMonthChart.addPointClickListener(click -> {
             List<Integer> integers = monthsIn(2);
             Integer month = integers.get(click.getItemIndex());
-            Dialog d = new Dialog();
-            d.setWidth("75%");
             MainDashBoardTrimestralPopUpView view = new MainDashBoardTrimestralPopUpView(smsHourService, actualYear, month, stingListGenericBean.getList());
-            d.add(view);
-            d.open();
-            view.setConsumer((s) -> d.close());
+            popup(view);
         });
         smsLastThreeMonthChart.addChartClickListener(click -> {
-            Dialog d = new Dialog();
-            d.setWidth("75%");
             MainDashBoardTrimestralPopUpView view = new MainDashBoardTrimestralPopUpView(smsHourService, actualYear, monthsIn(2), stingListGenericBean.getList());
-            d.add(view);
-            d.open();
-            view.setConsumer((s) -> d.close());
+            popup(view);
         });
         Configuration conf = smsLastThreeMonthChart.getConfiguration();
         conf.getChart().setType(ChartType.AREASPLINE);

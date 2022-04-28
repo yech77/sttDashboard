@@ -448,11 +448,15 @@ public class SmsHourService {
     }
 
     public List<SmsByYearMonthDay> groupSmsByYeMoDaTyWhYeMoSyIn(int yearSms, int monthSms, List<String> list_sid) {
-        return smshour_repo.groupSmsByYeMoDaTyWhYeMoSyIn(yearSms, monthSms, list_sid);
+        return smshour_repo.groupSmsMessageTypeByYeMoDaWhYeMoSyIn(yearSms, monthSms, list_sid);
+    }
+
+    public List<SmsByYearMonthDay> groupSmsMessageTypeByYeMoDaWhYeMoDaSyIn(int yearSms, int monthSms, int daySms, List<String> list_sid) {
+        return smshour_repo.groupSmsMessageTypeByYeMoDaWhYeMoDaSyIn(yearSms, monthSms, daySms, list_sid);
     }
 
     public List<SmsByYearMonthDayHour> groupSmsYeMoDaHoTyWhYeMoDaSyIn(int yearSms, int monthSms, int daySms, List<String> list_sid) {
-        List<SmsByYearMonthDayHour> hourList = smshour_repo.groupSmsYeMoDaHoTyWhYeMoDaSyIn(yearSms, monthSms, daySms, list_sid);
+        List<SmsByYearMonthDayHour> hourList = smshour_repo.groupSmsMessageTypeByYeMoDaHoWhYeMoDaSyIn(yearSms, monthSms, daySms, list_sid);
         Calendar c = Calendar.getInstance();
         /* Completar HOUR faltantes con 0 */
         for (int hourRunner = 0; hourRunner <= c.get(Calendar.HOUR_OF_DAY); hourRunner++) {
@@ -472,6 +476,12 @@ public class SmsHourService {
                 hourList.add(o);
             }
         }
+        return hourList;
+
+    }
+
+    public List<SmsByYearMonthDayHour> groupSmsYeMoDaHoTyWhYeMoDaSyIn(int yearSms, int monthSms, int daySms, int hourSms, List<String> list_sid) {
+        List<SmsByYearMonthDayHour> hourList = smshour_repo.groupSmsMessageTypeByYeMoDaHoWhYeMoDaHoSyIn(yearSms, monthSms, daySms, hourSms, list_sid);
         return hourList;
 
     }
