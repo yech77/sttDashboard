@@ -18,7 +18,9 @@ import com.stt.dash.ui.MonthlySmsShowGridView;
 import com.stt.dash.ui.SmsShowGridHourlyView;
 import com.stt.dash.ui.SmsShowGridViewV2;
 import com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider;
+import com.stt.dash.ui.popup.MainDashBoardMonthlyPopUpView;
 import com.stt.dash.ui.popup.MainDashBoardTrimestralPopUpView;
+import com.stt.dash.ui.popup.MonthlySmsPopupView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.views.bulksms.FileToSendCard;
 import com.stt.dash.ui.views.dashboard.DashboardBase;
@@ -299,13 +301,11 @@ public class MainDashboardView extends DashboardBase {
         smsThisMonthChart.addChartClickListener(click -> {
             Dialog d = new Dialog();
             d.setWidth("75%");
-            Button closeButton = new Button("Cerrar");
-            closeButton.addClickListener(c -> {
-                d.close();
-            });
-            DailySmsShowGridView view = new DailySmsShowGridView(smsHourService, actualYear, actualMonth, stingListGenericBean);
-            d.add(view, closeButton);
+            MainDashBoardMonthlyPopUpView view = new MainDashBoardMonthlyPopUpView(smsHourService, actualYear, actualMonth, stingListGenericBean.getList());
+//            DailySmsShowGridView view = new DailySmsShowGridView(smsHourService, actualYear, actualMonth, stingListGenericBean);
+            d.add(view);
             d.open();
+            view.setConsumer((s) -> d.close());
         });
         Configuration monthConf = smsThisMonthChart.getConfiguration();
         configureColumnChart(monthConf);
