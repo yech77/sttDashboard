@@ -488,8 +488,39 @@ public class SmsHourService {
 
     }
 
+    public List<SmsByYearMonthDayHour> groupSmsSystemidMessageTypeByYeMoDaHoWhYeMoDaSyIn(int yearSms, int monthSms, int daySms, List<String> list_sid) {
+        List<SmsByYearMonthDayHour> hourList = smshour_repo.groupSmsSystemidMessageTypeByYeMoDaHoWhYeMoDaSyIn(yearSms, monthSms, daySms, list_sid);
+        Calendar c = Calendar.getInstance();
+        /* Completar HOUR faltantes con 0 */
+        for (int hourRunner = 0; hourRunner <= c.get(Calendar.HOUR_OF_DAY); hourRunner++) {
+            boolean thisHasIt = false;
+            for (SmsByYearMonthDay smsByYearMonth : hourList) {
+                /* Si tengo el Hour me salgo del ciclo. */
+                if (smsByYearMonth.getGroupBy() == hourRunner) {
+                    thisHasIt = true;
+                    break;
+                }
+            }
+            /* Agregar el HOUR faltante a la respuesta. */
+            if (!thisHasIt) {
+                log.info("HOUR COLUMN DATA - ADDING HOUR({}) WITH 0 ", hourRunner);
+                /* TODO Descablear year*/
+                SmsByYearMonthDayHour o = new SmsByYearMonthDayHour(0, c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH), hourRunner, "N/A");
+                hourList.add(o);
+            }
+        }
+        return hourList;
+
+    }
+
     public List<SmsByYearMonthDayHour> groupSmsYeMoDaHoTyWhYeMoDaSyIn(int yearSms, int monthSms, int daySms, int hourSms, List<String> list_sid) {
         List<SmsByYearMonthDayHour> hourList = smshour_repo.groupSmsMessageTypeByYeMoDaHoWhYeMoDaHoSyIn(yearSms, monthSms, daySms, hourSms, list_sid);
+        return hourList;
+
+    }
+
+    public List<SmsByYearMonthDayHour> groupSmsSystemidMessageTypeByYeMoDaHoWhYeMoDaHoSyIn(int yearSms, int monthSms, int daySms, int hourSms, List<String> list_sid) {
+        List<SmsByYearMonthDayHour> hourList = smshour_repo.groupSmsSystemidMessageTypeByYeMoDaHoWhYeMoDaHoSyIn(yearSms, monthSms, daySms, hourSms, list_sid);
         return hourList;
 
     }

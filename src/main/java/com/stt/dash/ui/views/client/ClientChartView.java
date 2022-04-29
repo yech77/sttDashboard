@@ -18,6 +18,7 @@ import com.stt.dash.ui.MonthlySmsShowGridView;
 import com.stt.dash.ui.SmsShowGridAllView;
 import com.stt.dash.ui.SmsShowGridHourlyView;
 import com.stt.dash.ui.SmsShowGridViewV2;
+import com.stt.dash.ui.popup.ClientDailyPopupView;
 import com.stt.dash.ui.popup.ClientMonthlyPopupView;
 import com.stt.dash.ui.popup.ClientTrimestralPopUpView;
 import com.stt.dash.ui.popup.MainDashBoardTrimestralPopUpView;
@@ -269,32 +270,26 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
             int seriesItemIndex = listener.getItemIndex();
             Dialog d = new Dialog();
             d.setWidth("75%");
-            Button closeButton = new Button("Cerrar");
-            closeButton.addClickListener(c -> {
-                d.close();
-            });
             /* Convertir Set<SystemId> seleccionados en un List<String>*/
             List<String> selectedSystemIdList = systemIdMultiCombo.getValue().stream().map(SystemId::getSystemId).collect(Collectors.toList());
-            SmsShowGridAllView view = new SmsShowGridAllView(abstractSmsService,
-                    smsHourService, seriesItemIndex,
-                    selectedSystemIdList);
-            view.extracted("Hora" + listener.getItemId() + listener.getCategory() + " " + selectedSystemIdList.toString());
-            d.add(view, closeButton);
+            ClientDailyPopupView view = new ClientDailyPopupView(smsHourService, actualYear, actualMonth, actualDay, seriesItemIndex, selectedSystemIdList);
+//            SmsShowGridAllView view = new SmsShowGridAllView(abstractSmsService,
+//                    smsHourService, seriesItemIndex,
+//                    selectedSystemIdList);
+            d.add(view);
             d.open();
+            view.setConsumer((s) -> d.close());
         });
 
         smsThisDayChart.addChartClickListener(listener -> {
             Dialog d = new Dialog();
             d.setWidth("75%");
-            Button closeButton = new Button("Cerrar");
-            closeButton.addClickListener(c -> {
-                d.close();
-            });
             /* Convertir Set<SystemId> seleccionados en un List<String>*/
             List<String> selectedSystemIdList = systemIdMultiCombo.getValue().stream().map(SystemId::getSystemId).collect(Collectors.toList());
-            SmsShowGridHourlyView view = new SmsShowGridHourlyView(smsHourService, actualYear, actualMonth, actualDay, selectedSystemIdList);
-            d.add(view, closeButton);
+            ClientDailyPopupView view = new ClientDailyPopupView(smsHourService, actualYear, actualMonth, actualDay, selectedSystemIdList);
+            d.add(view);
             d.open();
+            view.setConsumer((s) -> d.close());
         });
         confHourlyChart.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - dia de hoy");
         confHourlyChart.setSubTitle("por hora");
@@ -344,12 +339,6 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
                     .getValue()
                     .stream()
                     .map(SystemId::getSystemId)
-                    .collect(Collectors.toList());
-
-            List<String> messageTypeList = checkboxMessageType
-                    .getSelectedItems()
-                    .stream()
-                    .map(OMessageType::name)
                     .collect(Collectors.toList());
 
             Dialog d = new Dialog();

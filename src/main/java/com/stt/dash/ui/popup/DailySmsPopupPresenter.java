@@ -36,6 +36,15 @@ public class DailySmsPopupPresenter {
         updateInView(dataProvider);
     }
 
+    public DailySmsPopupPresenter(SmsHourService smsHourService, int yearSms, int monthToShow, int dayToShow, Viewnable<SmsByYearMonthDayHour> view, List<String> systemidStringList) {
+        this.view = view;
+        this.smsHourService = smsHourService;
+        this.systemidStringList = systemidStringList;
+        List<SmsByYearMonthDayHour> monthToShowDataList = smsHourService.groupSmsSystemidMessageTypeByYeMoDaHoWhYeMoDaSyIn(yearSms, monthToShow, dayToShow, systemidStringList);
+        updateDataProvider(monthToShowDataList);
+        updateInView(dataProvider);
+    }
+
     /**
      * MainDashboard: Chart.
      *
@@ -53,6 +62,17 @@ public class DailySmsPopupPresenter {
         this.systemidStringList = systemidStringList;
 
         List<SmsByYearMonthDayHour> monthToShowDataList = smsHourService.groupSmsYeMoDaHoTyWhYeMoDaSyIn(yearSms, monthToShow, dayToShow, hourToShow, systemidStringList);
+        updateDataProvider(monthToShowDataList);
+        updateInView(dataProvider);
+    }
+
+    public DailySmsPopupPresenter(SmsHourService smsHourService, int yearSms, int monthToShow, int dayToShow, int hourToShow, Viewnable<SmsByYearMonthDayHour> view, List<String> systemidStringList) {
+        this.view = view;
+        this.smsHourService = smsHourService;
+//        this.monthToShowList = monthToShowList;
+        this.systemidStringList = systemidStringList;
+
+        List<SmsByYearMonthDayHour> monthToShowDataList = smsHourService.groupSmsSystemidMessageTypeByYeMoDaHoWhYeMoDaHoSyIn(yearSms, monthToShow, dayToShow, hourToShow, systemidStringList);
         updateDataProvider(monthToShowDataList);
         updateInView(dataProvider);
     }

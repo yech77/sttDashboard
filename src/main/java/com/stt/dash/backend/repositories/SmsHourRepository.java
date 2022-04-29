@@ -899,6 +899,20 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
                                                                           @Param("listSid") List<String> listSid);
 
     @Query("SELECT  new com.stt.dash.backend.data.SmsByYearMonthDayHour("
+            + "SUM(h.total), h.year, h.month, h.day, h.hour, h.systemId, h.messageType) "
+            + "FROM  SmsHour h "
+            + "WHERE  h.year = :yearSms AND "
+            + "h.month = :monthSms AND "
+            + "h.day = :daySms AND "
+            + "h.systemId IN (:listSid) "
+            + "GROUP BY  h.year, h.month, h.day, h.hour, h.systemId, h.messageType "
+            + "ORDER BY  h.year, h.month, h.day, h.hour, h.systemId, h.messageType")
+    List<SmsByYearMonthDayHour> groupSmsSystemidMessageTypeByYeMoDaHoWhYeMoDaSyIn(@Param("yearSms") int yearSms,
+                                                                                  @Param("monthSms") int monthSms,
+                                                                                  @Param("daySms") int daySms,
+                                                                                  @Param("listSid") List<String> listSid);
+
+    @Query("SELECT  new com.stt.dash.backend.data.SmsByYearMonthDayHour("
             + "SUM(h.total), h.year, h.month, h.day, h.hour, h.messageType) "
             + "FROM  SmsHour h "
             + "WHERE  h.year = :yearSms AND "
@@ -913,6 +927,22 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
                                                                             @Param("daySms") int daySms,
                                                                             @Param("hourSms") int hourSms,
                                                                             @Param("listSid") List<String> listSid);
+
+    @Query("SELECT  new com.stt.dash.backend.data.SmsByYearMonthDayHour("
+            + "SUM(h.total), h.year, h.month, h.day, h.hour, h.systemId, h.messageType) "
+            + "FROM  SmsHour h "
+            + "WHERE  h.year = :yearSms AND "
+            + "h.month = :monthSms AND "
+            + "h.day = :daySms AND "
+            + "h.hour = :hourSms AND "
+            + "h.systemId IN (:listSid) "
+            + "GROUP BY  h.year, h.month, h.day, h.hour, h.systemId, h.messageType "
+            + "ORDER BY  h.year, h.month, h.day, h.hour, h.systemId, h.messageType")
+    List<SmsByYearMonthDayHour> groupSmsSystemidMessageTypeByYeMoDaHoWhYeMoDaHoSyIn(@Param("yearSms") int yearSms,
+                                                                                    @Param("monthSms") int monthSms,
+                                                                                    @Param("daySms") int daySms,
+                                                                                    @Param("hourSms") int hourSms,
+                                                                                    @Param("listSid") List<String> listSid);
 
     /**
      * GRUPO POR YEAR, MONTH, DAY, SYSTEMID
