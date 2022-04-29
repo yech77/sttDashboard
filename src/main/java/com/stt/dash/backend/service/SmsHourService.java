@@ -345,6 +345,14 @@ public class SmsHourService {
         return smshour_repo.groupSmsByYeMoDaSyWhYeMoSyIn_TyIn(yearSms, monthSms, l, list_sid);
     }
 
+    public List<SmsByYearMonthDay> groupSmsByYeMoDaSyWhYeMoSyIn_TyIn(int yearSms, int monthSms, int daySms, Set<OMessageType> messageTypeSms, List<String> list_sid) {
+        List<String> l = new ArrayList<>(messageTypeSms.size());
+        messageTypeSms.forEach(messageTypeSm -> {
+            l.add(messageTypeSm.name());
+        });
+        return smshour_repo.groupSmsByYeMoDaSyWhYeMoDaSyIn_TyIn(yearSms, monthSms, daySms, l, list_sid);
+    }
+
     public List<SmsByYearMonth> getGroupSmsByYearMonthMessageType(int yearSms, int monthSms, List<String> list_sid) {
         return smshour_repo.groupSmsMessageTypeByYeMoWhYeMoSyIn(yearSms, monthSms, list_sid);
     }

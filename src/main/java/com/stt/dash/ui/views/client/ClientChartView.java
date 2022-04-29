@@ -18,6 +18,7 @@ import com.stt.dash.ui.MonthlySmsShowGridView;
 import com.stt.dash.ui.SmsShowGridAllView;
 import com.stt.dash.ui.SmsShowGridHourlyView;
 import com.stt.dash.ui.SmsShowGridViewV2;
+import com.stt.dash.ui.popup.ClientMonthlyPopupView;
 import com.stt.dash.ui.popup.ClientTrimestralPopUpView;
 import com.stt.dash.ui.popup.MainDashBoardTrimestralPopUpView;
 import com.stt.dash.ui.utils.BakeryConst;
@@ -353,31 +354,24 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
 
             Dialog d = new Dialog();
             d.setWidth("75%");
-            Button closeButton = new Button("Cerrar");
-            closeButton.addClickListener(c -> {
-                d.close();
-            });
             /* TODO: probar con el dia 10 que hay un 0 que no se refjeja. */
             /* TODO: pasar el completar 0 a los servicios. */
-            SmsShowGridViewV2 view = new SmsShowGridViewV2(smsHourService, actualYear, actualMonth, seriesItemIndex,
-                    selectedSystemIdList, messageTypeList);
-
-            d.add(view, closeButton);
+            ClientMonthlyPopupView view = new ClientMonthlyPopupView(smsHourService, actualYear, actualMonth, seriesItemIndex, selectedSystemIdList, checkboxMessageType.getSelectedItems());
+            view.setTitles("Gráfico - Mensajes este mes", clientCombobox.getValue() == null ? "Cliente" : clientCombobox.getValue().getClientCod());
+            d.add(view);
             d.open();
+            view.setConsumer((s) -> d.close());
         });
         smsThisMonthChart.addChartClickListener(click -> {
             /* Convertir Set<SystemId> seleccionados en un List<String>*/
             List<String> selectedSystemIdList = systemIdMultiCombo.getValue().stream().map(SystemId::getSystemId).collect(Collectors.toList());
-
             Dialog d = new Dialog();
             d.setWidth("75%");
-            Button closeButton = new Button("Cerrar");
-            closeButton.addClickListener(c -> {
-                d.close();
-            });
-            DailySmsShowGridView view = new DailySmsShowGridView(smsHourService, actualYear, actualMonth, selectedSystemIdList);
-            d.add(view, closeButton);
+            ClientMonthlyPopupView view = new ClientMonthlyPopupView(smsHourService, actualYear, actualMonth, selectedSystemIdList, checkboxMessageType.getSelectedItems());
+            view.setTitles("Gráfico - Mensajes este mes", clientCombobox.getValue() == null ? "Cliente" : clientCombobox.getValue().getClientCod());
+            d.add(view);
             d.open();
+            view.setConsumer((s) -> d.close());
         });
         /**/
         confMonthlyLineChart.getyAxis().setTitle("SMS");

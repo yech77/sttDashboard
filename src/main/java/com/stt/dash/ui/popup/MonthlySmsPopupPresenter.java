@@ -1,5 +1,6 @@
 package com.stt.dash.ui.popup;
 
+import com.stt.dash.app.OMessageType;
 import com.stt.dash.backend.data.SmsByYearMonthDay;
 import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.Viewnable;
@@ -8,6 +9,7 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public class MonthlySmsPopupPresenter {
     final Viewnable view;
@@ -55,6 +57,42 @@ public class MonthlySmsPopupPresenter {
     }
 
     /**
+     * Client: Chart
+     *
+     * @param smsHourService
+     * @param yearSms
+     * @param monthToShow
+     * @param systemidStringList
+     * @param view
+     */
+    public MonthlySmsPopupPresenter(SmsHourService smsHourService, int yearSms, int monthToShow, List<String> systemidStringList, Set<OMessageType> messageTypeSet, Viewnable<SmsByYearMonthDay> view) {
+        this.view = view;
+        this.smsHourService = smsHourService;
+        this.systemidStringList = systemidStringList;
+        List<SmsByYearMonthDay> monthToShowDataList = smsHourService.groupSmsByYeMoDaSyWhYeMoSyIn_TyIn(yearSms, monthToShow, messageTypeSet, systemidStringList);
+        updateDataProvider(monthToShowDataList);
+        updateInView(dataProvider);
+    }
+
+    /**
+     * Client: Chart
+     *
+     * @param smsHourService
+     * @param yearSms
+     * @param monthToShow
+     * @param systemidStringList
+     * @param view
+     */
+    public MonthlySmsPopupPresenter(SmsHourService smsHourService, int yearSms, int monthToShow, int dayToShow, List<String> systemidStringList, Set<OMessageType> messageTypeSet, Viewnable<SmsByYearMonthDay> view) {
+        this.view = view;
+        this.smsHourService = smsHourService;
+        this.systemidStringList = systemidStringList;
+        List<SmsByYearMonthDay> monthToShowDataList = smsHourService.groupSmsByYeMoDaSyWhYeMoSyIn_TyIn(yearSms, monthToShow, dayToShow, messageTypeSet, systemidStringList);
+        updateDataProvider(monthToShowDataList);
+        updateInView(dataProvider);
+    }
+
+    /**
      * Actualizan la data en el dataProvider
      *
      * @param smsByYearMonthList
@@ -74,6 +112,5 @@ public class MonthlySmsPopupPresenter {
      */
     void updateInView(ListDataProvider<SmsByYearMonthDay> dataProvider) {
         view.setGridDataProvider(dataProvider);
-//        view.updateDownloadButton(dataProvider.getItems());
     }
 }
