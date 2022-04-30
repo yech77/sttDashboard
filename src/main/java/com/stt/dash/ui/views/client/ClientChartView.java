@@ -273,9 +273,6 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
             /* Convertir Set<SystemId> seleccionados en un List<String>*/
             List<String> selectedSystemIdList = systemIdMultiCombo.getValue().stream().map(SystemId::getSystemId).collect(Collectors.toList());
             ClientDailyPopupView view = new ClientDailyPopupView(smsHourService, actualYear, actualMonth, actualDay, seriesItemIndex, selectedSystemIdList);
-//            SmsShowGridAllView view = new SmsShowGridAllView(abstractSmsService,
-//                    smsHourService, seriesItemIndex,
-//                    selectedSystemIdList);
             d.add(view);
             d.open();
             view.setConsumer((s) -> d.close());

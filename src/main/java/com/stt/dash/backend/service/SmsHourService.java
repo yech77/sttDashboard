@@ -338,11 +338,34 @@ public class SmsHourService {
     }
 
     public List<SmsByYearMonthDay> groupSmsByYeMoDaSyWhYeMoSyIn_TyIn(int yearSms, int monthSms, Set<OMessageType> messageTypeSms, List<String> list_sid) {
-        List<String> l = new ArrayList<>(messageTypeSms.size());
-        messageTypeSms.forEach(messageTypeSm -> {
-            l.add(messageTypeSm.name());
-        });
-        return smshour_repo.groupSmsByYeMoDaSyWhYeMoSyIn_TyIn(yearSms, monthSms, l, list_sid);
+        List<String> l = messageTypeSms
+                .stream()
+                .map(OMessageType::name)
+                .collect(Collectors.toList());
+        List<SmsByYearMonthDay> hourList = smshour_repo.groupSmsByYeMoDaSyWhYeMoSyIn_TyIn(yearSms, monthSms, l, list_sid);
+        Calendar c = Calendar.getInstance();
+        /* Recorre desde las 0 horas hasta la hora actual*/
+        for (int actualDayFor = 1; actualDayFor <= c.get(Calendar.DAY_OF_MONTH); actualDayFor++) {
+            for (String actualSystemidFor : list_sid) {
+                for (OMessageType actualMessageTypeFor : OMessageType.values()) {
+                    boolean thisHasIt = false;
+                    for (SmsByYearMonthDay actualSmsDayFor : hourList) {
+                        if (actualSmsDayFor.getDaySms() == actualDayFor &&
+                                actualSmsDayFor.getMessageType().equalsIgnoreCase(actualMessageTypeFor.name()) &&
+                                actualSmsDayFor.getSomeCode().equalsIgnoreCase(actualSystemidFor)) {
+                            thisHasIt = true;
+                            break;
+                        }
+                    }
+                    if (!thisHasIt) {
+                        hourList.add(
+                                new SmsByYearMonthDay(0, yearSms, monthSms, actualDayFor, actualSystemidFor, actualMessageTypeFor.name())
+                        );
+                    }
+                }
+            }
+        }
+        return hourList;
     }
 
     public List<SmsByYearMonthDay> groupSmsByYeMoDaSyWhYeMoSyIn_TyIn(int yearSms, int monthSms, int daySms, Set<OMessageType> messageTypeSms, List<String> list_sid) {
@@ -528,7 +551,6 @@ public class SmsHourService {
         Calendar c = Calendar.getInstance();
         /* Recorre desde las 0 horas hasta la hora actual*/
         for (int actualHourFor = 0; actualHourFor <= c.get(Calendar.HOUR_OF_DAY); actualHourFor++) {
-
             for (String actualSystemidFor : list_sid) {
                 for (OMessageType actualMessageTypeFor : OMessageType.values()) {
                     boolean thisHasIt = false;
