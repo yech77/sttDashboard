@@ -340,8 +340,6 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
 
             Dialog d = new Dialog();
             d.setWidth("75%");
-            /* TODO: probar con el dia 10 que hay un 0 que no se refjeja. */
-            /* TODO: pasar el completar 0 a los servicios. */
             ClientMonthlyPopupView view = new ClientMonthlyPopupView(smsHourService, actualYear, actualMonth, seriesItemIndex, selectedSystemIdList, checkboxMessageType.getSelectedItems());
             view.setTitles("Gráfico - Mensajes este mes", clientCombobox.getValue() == null ? "Cliente" : clientCombobox.getValue().getClientCod());
             d.add(view);
