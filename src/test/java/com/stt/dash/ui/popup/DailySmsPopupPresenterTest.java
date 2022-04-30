@@ -97,7 +97,7 @@ class DailySmsPopupPresenterTest {
         //   See https://diff.blue/R013 to resolve this issue.
 
         SmsHourRepository smsHourRepository = mock(SmsHourRepository.class);
-        when(smsHourRepository.groupSmsCarrierAndMessageTypeByYeMoDaWhYeMoDaSyIn_CarrierInTyIn(anyInt(), anyInt(), anyInt(),
+        when(smsHourRepository.groupSmsCarrierAndMessageTypeByYeMoDaHoWhYeMoDaSyIn_CarrierInTyIn(anyInt(), anyInt(), anyInt(),
                 (java.util.List<String>) any(), (java.util.List<String>) any(), (java.util.List<String>) any()))
                 .thenReturn(new ArrayList<>());
         SmsHourService smsHourService = new SmsHourService(smsHourRepository);

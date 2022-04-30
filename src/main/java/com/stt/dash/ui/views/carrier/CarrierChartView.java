@@ -198,6 +198,19 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
     private void updateHourlyChart(List<String> sids) {
         Configuration confHourlyChart = smsThisDayChart.getConfiguration();
 
+        smsThisDayChart.addPointClickListener(listener -> {
+            int seriesItemIndex = listener.getItemIndex();
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            /* Convertir Set<SystemId> seleccionados en un List<String>*/
+            List<String> selectedCarrierList = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
+            List<String> selectedMessageTypeList = checkboxMessageType.getValue().stream().map(OMessageType::name).collect(Collectors.toList());
+            CarrierDailyPopupView view = new CarrierDailyPopupView(smsHourService, actualYear, actualMonth, actualDay, seriesItemIndex, selectedCarrierList, selectedMessageTypeList, clientSystemIdStringList);
+            d.add(view);
+            d.open();
+            view.setConsumer((s) -> d.close());
+        });
+
         smsThisDayChart.addChartClickListener(listener -> {
             Dialog d = new Dialog();
             d.setWidth("75%");

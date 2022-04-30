@@ -99,7 +99,6 @@ public class DailySmsPopupPresenter {
      * @param yearSms
      * @param monthToShow
      * @param dayToShow
-     * @param carrierSet
      * @param systemidStringList
      * @param view
      */
@@ -108,6 +107,25 @@ public class DailySmsPopupPresenter {
         this.smsHourService = smsHourService;
         this.systemidStringList = systemidStringList;
         List<SmsByYearMonthDayHour> monthToShowDataList = smsHourService.groupSmsCarrierAndMessageTypeByYeMoDaWhYeMoDaSyIn_CarrierInTyIn(yearSms, monthToShow, dayToShow, carrierList, messageTypeList, systemidStringList);
+        updateDataProvider(monthToShowDataList);
+        updateInView(dataProvider);
+    }
+
+    /**
+     * Operadora: Chart
+     *
+     * @param smsHourService
+     * @param yearSms
+     * @param monthToShow
+     * @param dayToShow
+     * @param systemidStringList
+     * @param view
+     */
+    public DailySmsPopupPresenter(SmsHourService smsHourService, int yearSms, int monthToShow, int dayToShow, int hourToShow, List<String> carrierList, List<String> messageTypeList, List<String> systemidStringList, Viewnable<SmsByYearMonthDayHour> view) {
+        this.view = view;
+        this.smsHourService = smsHourService;
+        this.systemidStringList = systemidStringList;
+        List<SmsByYearMonthDayHour> monthToShowDataList = smsHourService.groupSmsCarrierAndMessageTypeByYeMoDaWhYeMoDaSyIn_CarrierInTyIn(yearSms, monthToShow, dayToShow, hourToShow, carrierList, messageTypeList, systemidStringList);
         updateDataProvider(monthToShowDataList);
         updateInView(dataProvider);
     }

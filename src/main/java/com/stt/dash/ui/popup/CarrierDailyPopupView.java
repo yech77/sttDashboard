@@ -38,8 +38,8 @@ public class CarrierDailyPopupView extends DailySmsPopupView {
         });
     }
 
-    public CarrierDailyPopupView(SmsHourService smsHourService, int actualYear, int actualMonth, int actualDay, int hourSms, List<String> systemidStringList) {
-        presenter = new DailySmsPopupPresenter(smsHourService, actualYear, actualMonth, actualDay, hourSms, this, systemidStringList);
+    public CarrierDailyPopupView(SmsHourService smsHourService, int actualYear, int actualMonth, int actualDay, int hourSms, List<String> carrierList, List<String> messageTypeList, List<String> systemidStringList) {
+        presenter = new DailySmsPopupPresenter(smsHourService, actualYear, actualMonth, actualDay, hourSms, carrierList, messageTypeList, systemidStringList, this);
         createColumns(grid);
         grid.setHeight("75%");
         setTitles("Gráfico - enviados hoy", "Operadora");
