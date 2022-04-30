@@ -525,6 +525,29 @@ public class SmsHourService {
 
     public List<SmsByYearMonthDayHour> groupSmsSystemidMessageTypeByYeMoDaHoWhYeMoDaHoSyIn(int yearSms, int monthSms, int daySms, int hourSms, List<String> list_sid) {
         List<SmsByYearMonthDayHour> hourList = smshour_repo.groupSmsSystemidMessageTypeByYeMoDaHoWhYeMoDaHoSyIn(yearSms, monthSms, daySms, hourSms, list_sid);
+        Calendar c = Calendar.getInstance();
+        /* Recorre desde las 0 horas hasta la hora actual*/
+        for (int actualHourFor = 0; actualHourFor <= c.get(Calendar.HOUR_OF_DAY); actualHourFor++) {
+
+            for (String actualSystemidFor : list_sid) {
+                for (OMessageType actualMessageTypeFor : OMessageType.values()) {
+                    boolean thisHasIt = false;
+                    for (SmsByYearMonthDayHour actualSmsHourFor : hourList) {
+                        if (actualSmsHourFor.getHourSms() == actualHourFor &&
+                                actualSmsHourFor.getMessageType().equalsIgnoreCase(actualMessageTypeFor.name()) &&
+                                actualSmsHourFor.getSomeCode().equalsIgnoreCase(actualSystemidFor)) {
+                            thisHasIt = true;
+                            break;
+                        }
+                    }
+                    if (!thisHasIt) {
+                        hourList.add(
+                                new SmsByYearMonthDayHour(0, yearSms, monthSms, daySms, actualHourFor, actualSystemidFor, actualMessageTypeFor.name())
+                        );
+                    }
+                }
+            }
+        }
         return hourList;
 
     }
