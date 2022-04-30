@@ -75,7 +75,7 @@ public class MonthlySmsPopupPresenter {
     }
 
     /**
-     * Client: Chart
+     * Client: Point
      *
      * @param smsHourService
      * @param yearSms
@@ -89,6 +89,28 @@ public class MonthlySmsPopupPresenter {
         this.systemidStringList = systemidStringList;
         List<SmsByYearMonthDay> monthToShowDataList = smsHourService.groupSmsByYeMoDaSyWhYeMoSyIn_TyIn(yearSms, monthToShow, dayToShow, messageTypeSet, systemidStringList);
         updateDataProvider(monthToShowDataList);
+        updateInView(dataProvider);
+    }
+
+    /**
+     * Client: Point
+     *
+     * @param smsHourService
+     * @param yearSms
+     * @param monthToShow
+     * @param systemidStringList
+     * @param view
+     */
+    public MonthlySmsPopupPresenter(SmsHourService smsHourService, int yearSms, int monthToShow, List<String> carrierStringList, List<String> messageTypeStringList, List<String> systemidStringList, Viewnable<SmsByYearMonthDay> view) {
+        this.view = view;
+        this.smsHourService = smsHourService;
+        this.systemidStringList = systemidStringList;
+        List<SmsByYearMonthDay> smsByCarrierAndTypeList = smsHourService.groupSmsCarrierMessageTypeByYeMoDaWhYeMoSyIn_CarrierTyIn(yearSms,
+                monthToShow,
+                carrierStringList,
+                messageTypeStringList,
+                systemidStringList);
+        updateDataProvider(smsByCarrierAndTypeList);
         updateInView(dataProvider);
     }
 

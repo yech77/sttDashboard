@@ -18,8 +18,10 @@ import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.MonthlySmsShowGridView;
 import com.stt.dash.ui.SmsShowGridViewV2;
 import com.stt.dash.ui.popup.CarrierDailyPopupView;
+import com.stt.dash.ui.popup.CarrierMonthlyPopupView;
 import com.stt.dash.ui.popup.CarrierTrimestralPopUpView;
 import com.stt.dash.ui.popup.ClientDailyPopupView;
+import com.stt.dash.ui.popup.ClientMonthlyPopupView;
 import com.stt.dash.ui.popup.ClientTrimestralPopUpView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.views.HasNotifications;
@@ -595,6 +597,19 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
      */
     private void populateMonthChart(List<? extends AbstractSmsByYearMonth> smsByDayList, List<SmsByYearMonthDay> smsByCarrierAndTypeList) {
         Configuration confIn = smsThisMonthChart.getConfiguration();
+
+        smsThisMonthChart.addChartClickListener(click -> {
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            List<String> selectedCarrierList = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
+            List<String> selectedMessageTypeList = checkboxMessageType.getValue().stream().map(OMessageType::name).collect(Collectors.toList());
+            CarrierMonthlyPopupView view = new CarrierMonthlyPopupView(smsHourService, actualYear, actualMonth, selectedCarrierList, selectedMessageTypeList, clientSystemIdStringList);
+            view.setTitles("Gráfico - Mensajes este mes", clientCombobox.getValue() == null ? "Cliente" : clientCombobox.getValue().getClientCod());
+            d.add(view);
+            d.open();
+            view.setConsumer((s) -> d.close());
+        });
+
         /**/
         confIn.getyAxis().setTitle("SMS");
         confIn.setSubTitle("por dia");

@@ -316,13 +316,20 @@ public class SmsHourService {
 
     public List<SmsByYearMonthDay> groupSmsCarrierMessageTypeByYeMoDaWhYeMoSyIn_CarrierTyIn(int yearSms, int monthSms, Collection<String> carrier_list, Collection<OMessageType> messageTypeSms, List<String> list_sid) {
         List<String> l = messageTypeSms.stream().map(OMessageType::name).collect(Collectors.toList());
-        List<SmsByYearMonthDay> smsByYearMonthDays = smshour_repo.groupSmsCarrierMessageTypeByYeMoDaWhYeMoSyIn_CarrierTyIn(yearSms, monthSms, carrier_list, l, list_sid);
+        return this.groupSmsCarrierMessageTypeByYeMoDaWhYeMoSyIn_CarrierTyIn(yearSms, monthSms, carrier_list, l, list_sid);
+    }
+
+    public List<SmsByYearMonthDay> groupSmsCarrierMessageTypeByYeMoDaWhYeMoSyIn_CarrierTyIn(int yearSms, int monthSms, Collection<String> carrier_list, List<String> messageTypeSms, List<String> list_sid) {
+        List<SmsByYearMonthDay> smsByYearMonthDays = smshour_repo.groupSmsCarrierMessageTypeByYeMoDaWhYeMoSyIn_CarrierTyIn(yearSms, monthSms, carrier_list, messageTypeSms, list_sid);
+        Calendar c = Calendar.getInstance();
         carrier_list.stream().forEach(actualCarrierForeach -> {
-            l.stream().forEach(actualMessageTypeForeach -> {
-                for (int actualDayFor = 1; actualDayFor < 32; actualDayFor++) {
+            messageTypeSms.stream().forEach(actualMessageTypeForeach -> {
+                for (int actualDayFor = 1; actualDayFor < c.get(Calendar.DAY_OF_MONTH); actualDayFor++) {
                     boolean ithasit = false;
                     for (SmsByYearMonthDay smsByYearMonthDay : smsByYearMonthDays) {
-                        if (smsByYearMonthDay.getGroupBy() == actualDayFor) {
+                        if (smsByYearMonthDay.getGroupBy() == actualDayFor &&
+                                smsByYearMonthDay.getMessageType().equalsIgnoreCase(actualMessageTypeForeach) &&
+                                smsByYearMonthDay.getSomeCode().equalsIgnoreCase(actualCarrierForeach)) {
                             ithasit = true;
                             break;
                         }
