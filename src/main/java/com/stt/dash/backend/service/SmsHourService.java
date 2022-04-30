@@ -541,4 +541,43 @@ public class SmsHourService {
                                                   List<String> list_sid, String message_type) {
         return smshour_repo.totalMessageTypeByYearMonth(yearSms, monthSms, list_sid, message_type);
     }
+
+    /**
+     * Consulta Operadora Chart. Completa con 0 hour-carrier-messagetype.
+     *
+     * @param yearSms
+     * @param monthSms
+     * @param daySms
+     * @param carrierList
+     * @param messageTypeList
+     * @param systemidStringList
+     * @return
+     */
+    public List<SmsByYearMonthDayHour> groupSmsCarrierAndMessageTypeByYeMoDaWhYeMoDaSyIn_CarrierInTyIn(int yearSms, int monthSms, int daySms, List<String> carrierList, List<String> messageTypeList, List<String> systemidStringList) {
+        List<SmsByYearMonthDayHour> hourList = smshour_repo.groupSmsCarrierAndMessageTypeByYeMoDaWhYeMoDaSyIn_CarrierInTyIn(yearSms, monthSms, daySms, carrierList, messageTypeList, systemidStringList);
+        Calendar c = Calendar.getInstance();
+        /* Recorre desde las 0 horas hasta la hora actual*/
+        for (int actualHourFor = 0; actualHourFor <= c.get(Calendar.HOUR_OF_DAY); actualHourFor++) {
+            /* Recorre todos los MessageType solicitados */
+            for (String actualMessageTypeFor : messageTypeList) {
+                boolean thisHasIt = false;
+                for (String actualCarrierFor : carrierList) {
+                    for (SmsByYearMonthDayHour actualSmsHourFor : hourList) {
+                        if (actualSmsHourFor.getHourSms() == actualHourFor &&
+                                actualSmsHourFor.getMessageType().equalsIgnoreCase(actualMessageTypeFor) &&
+                                actualSmsHourFor.getSomeCode().equalsIgnoreCase(actualCarrierFor)) {
+                            thisHasIt = true;
+                            break;
+                        }
+                    }
+                    if (!thisHasIt) {
+                        hourList.add(
+                                new SmsByYearMonthDayHour(0, yearSms, monthSms, daySms, actualHourFor, actualCarrierFor, actualMessageTypeFor)
+                        );
+                    }
+                }
+            }
+        }
+        return hourList;
+    }
 }

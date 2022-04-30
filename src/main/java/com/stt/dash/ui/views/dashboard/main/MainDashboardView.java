@@ -68,6 +68,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.util.stream.Collectors.groupingBy;
+
 @Tag("main-view")
 @JsModule("./src/views/main/main-view.js")
 @Route(value = BakeryConst.PAGE_DASHBOARD_MAIN, layout = MainView.class)
@@ -178,7 +180,7 @@ public class MainDashboardView extends DashboardBase {
         List<SmsByYearMonth> groupList = smsHourService.groupCarrierByYeMoMeWhMoEqMessageTypeIn(actualYear, actualMonth, Arrays.asList("MT", "MO"), stingListGenericBean.getList());
         groupList.stream().forEach(System.out::println);
         /* Agrupar por Carrier */
-        Map<String, List<SmsByYearMonth>> gbc = groupList.stream().collect(Collectors.groupingBy(SmsByYearMonth::getSomeCode));
+        Map<String, List<SmsByYearMonth>> gbc = groupList.stream().collect(groupingBy(SmsByYearMonth::getSomeCode));
         System.out.println("**************** ");
         DataSeries series = new DataSeries();
         gbc.entrySet().forEach(carrier -> {

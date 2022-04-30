@@ -1,8 +1,10 @@
 package com.stt.dash.backend.repositories;
 
+import com.stt.dash.app.OMessageType;
 import com.stt.dash.backend.data.SmsByYearMonth;
 import com.stt.dash.backend.data.SmsByYearMonthDay;
 import com.stt.dash.backend.data.SmsByYearMonthDayHour;
+import com.stt.dash.backend.data.entity.Carrier;
 import com.stt.dash.backend.data.entity.SmsHour;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
 
@@ -338,6 +341,44 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
                                                                                      @Param("carrierList") List<String> carrierList,
                                                                                      @Param("messageTypeSms") List<String> messageTypeSms,
                                                                                      @Param("listSid") List<String> listSid);
+
+    @Query("SELECT  new com.stt.dash.backend.data.SmsByYearMonthDayHour("
+            + "sum(h.total), h.year, h.month, h.day, h.hour, h.carrierCharCode, h.messageType ) "
+            + "FROM  SmsHour h "
+            + "WHERE h.year = :yearSms AND "
+            + "h.month = :monthSms AND "
+            + "h.day = :daySms AND "
+            + "h.carrierCharCode IN (:carrierList) AND "
+            + "h.messageType IN (:messageTypeSms) AND "
+            + "h.systemId IN (:listSid) "
+            + "GROUP BY  h.year, h.month, h.day, h.hour, h.carrierCharCode, h.messageType  "
+            + "ORDER BY h.year, h.month, h.day, h.hour, h.carrierCharCode, h.messageType  ")
+    List<SmsByYearMonthDayHour> groupSmsCarrierAndMessageTypeByYeMoDaWhYeMoDaSyIn_CarrierInTyIn(@Param("yearSms") int yearSms,
+                                                                                                @Param("monthSms") int monthSms,
+                                                                                                @Param("daySms") int daySms,
+                                                                                                @Param("carrierList") List<String> carrierList,
+                                                                                                @Param("messageTypeSms") List<String> messageTypeSms,
+                                                                                                @Param("listSid") List<String> listSid);
+
+    @Query("SELECT  new com.stt.dash.backend.data.SmsByYearMonthDayHour("
+            + "sum(h.total), h.year, h.month, h.day, h.hour, h.carrierCharCode, h.messageType ) "
+            + "FROM  SmsHour h "
+            + "WHERE h.year = :yearSms AND "
+            + "h.month = :monthSms AND "
+            + "h.day = :daySms AND "
+            + "h.hour = :hourSms AND "
+            + "h.carrierCharCode IN (:carrierList) AND "
+            + "h.messageType IN (:messageTypeSms) AND "
+            + "h.systemId IN (:listSid) "
+            + "GROUP BY  h.year, h.month, h.day, h.hour, h.carrierCharCode, h.messageType  "
+            + "ORDER BY h.year, h.month, h.day, h.hour, h.carrierCharCode, h.messageType  ")
+    List<SmsByYearMonthDay> groupSmsCarrierAndMessageTypeByYeMoDaHoWhYeMoDaHoSyIn_CarrierInTyIn(@Param("yearSms") int yearSms,
+                                                                                                @Param("monthSms") int monthSms,
+                                                                                                @Param("daySms") int daySms,
+                                                                                                @Param("hourSms") int hourSms,
+                                                                                                @Param("carrierList") List<String> carrierList,
+                                                                                                @Param("messageTypeSms") List<String> messageTypeSms,
+                                                                                                @Param("listSid") List<String> listSid);
 
     /**
      * GROUP: YEAR, MONTH, CARRIER, MESSAGE TYPE WHERE: YEAR, MONTH, LIST-SIDS,

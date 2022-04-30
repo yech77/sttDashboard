@@ -17,7 +17,9 @@ import com.stt.dash.backend.service.SmsHourService;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.MonthlySmsShowGridView;
 import com.stt.dash.ui.SmsShowGridViewV2;
+import com.stt.dash.ui.popup.CarrierDailyPopupView;
 import com.stt.dash.ui.popup.CarrierTrimestralPopUpView;
+import com.stt.dash.ui.popup.ClientDailyPopupView;
 import com.stt.dash.ui.popup.ClientTrimestralPopUpView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.views.HasNotifications;
@@ -195,6 +197,19 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
      */
     private void updateHourlyChart(List<String> sids) {
         Configuration confHourlyChart = smsThisDayChart.getConfiguration();
+
+        smsThisDayChart.addChartClickListener(listener -> {
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            List<String> selectedCarrierList = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
+            List<String> selectedMessageTypeList = checkboxMessageType.getValue().stream().map(OMessageType::name).collect(Collectors.toList());
+            CarrierDailyPopupView view = new CarrierDailyPopupView(smsHourService, actualYear, actualMonth, actualDay, selectedCarrierList, selectedMessageTypeList, clientSystemIdStringList);
+            d.add(view);
+            d.open();
+            view.setConsumer((s) -> d.close());
+        });
+
+
         confHourlyChart.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - dia de hoy");
         confHourlyChart.setSubTitle("por hora");
         confHourlyChart.getyAxis().setTitle("SMS");
