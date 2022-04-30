@@ -491,22 +491,26 @@ public class SmsHourService {
     public List<SmsByYearMonthDayHour> groupSmsSystemidMessageTypeByYeMoDaHoWhYeMoDaSyIn(int yearSms, int monthSms, int daySms, List<String> list_sid) {
         List<SmsByYearMonthDayHour> hourList = smshour_repo.groupSmsSystemidMessageTypeByYeMoDaHoWhYeMoDaSyIn(yearSms, monthSms, daySms, list_sid);
         Calendar c = Calendar.getInstance();
-        /* Completar HOUR faltantes con 0 */
-        for (int hourRunner = 0; hourRunner <= c.get(Calendar.HOUR_OF_DAY); hourRunner++) {
-            boolean thisHasIt = false;
-            for (SmsByYearMonthDay smsByYearMonth : hourList) {
-                /* Si tengo el Hour me salgo del ciclo. */
-                if (smsByYearMonth.getGroupBy() == hourRunner) {
-                    thisHasIt = true;
-                    break;
+        /* Recorre desde las 0 horas hasta la hora actual*/
+        for (int actualHourFor = 0; actualHourFor <= c.get(Calendar.HOUR_OF_DAY); actualHourFor++) {
+            /* Recorre todos los MessageType solicitados */
+            for (OMessageType mt : OMessageType.values()) {
+                boolean thisHasIt = false;
+                for (String actualCarrierFor : list_sid) {
+                    for (SmsByYearMonthDayHour actualSmsHourFor : hourList) {
+                        if (actualSmsHourFor.getHourSms() == actualHourFor &&
+                                actualSmsHourFor.getMessageType().equalsIgnoreCase(mt.name()) &&
+                                actualSmsHourFor.getSomeCode().equalsIgnoreCase(actualCarrierFor)) {
+                            thisHasIt = true;
+                            break;
+                        }
+                    }
+                    if (!thisHasIt) {
+                        hourList.add(
+                                new SmsByYearMonthDayHour(0, yearSms, monthSms, daySms, actualHourFor, actualCarrierFor, mt.name())
+                        );
+                    }
                 }
-            }
-            /* Agregar el HOUR faltante a la respuesta. */
-            if (!thisHasIt) {
-                log.info("HOUR COLUMN DATA - ADDING HOUR({}) WITH 0 ", hourRunner);
-                /* TODO Descablear year*/
-                SmsByYearMonthDayHour o = new SmsByYearMonthDayHour(0, c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH), hourRunner, "N/A");
-                hourList.add(o);
             }
         }
         return hourList;
