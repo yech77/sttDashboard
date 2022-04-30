@@ -49,6 +49,20 @@ public class CarrierMonthlyPopupView extends MonthlySmsPopupView {
         });
     }
 
+    public CarrierMonthlyPopupView(SmsHourService smsHourService, int yearSms, int monthSms, int daySms, List<String> carrierStringList, List<String> messageTypeStringList, List<String> systemidStringList) {
+        presenter = new MonthlySmsPopupPresenter(smsHourService, yearSms, monthSms, daySms, carrierStringList, messageTypeStringList, systemidStringList, this);
+        createColumns(grid);
+        grid.setHeight("75%");
+        setTitles("Gráfico - Mensajes este mes", "Cliente");
+        downloadButton.addClickListener(buttonClickEvent -> {
+            if (buttonClickEvent.isFromClient()) {
+                downloadButton.setEnabled(false);
+                updateDownloadButton(presenter.getdataFromProvider());
+                consumer.accept("Cerrado por descarga");
+            }
+        });
+    }
+
     public String getStringData(Collection<SmsByYearMonthDay> messages) {
         if (messages.size() > 10000) {
             System.out.println("Daily message limit reached. Code not able to handle this size of string.");

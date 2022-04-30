@@ -560,6 +560,24 @@ public interface SmsHourRepository extends JpaRepository<SmsHour, Long> {
                                                                                      @Param("messageTypeSms") List<String> messageTypeSms,
                                                                                      @Param("listSid") List<String> listSid);
 
+    @Query("SELECT  new com.stt.dash.backend.data.SmsByYearMonthDay("
+            + "SUM(h.total), h.year, h.month, h.day, h.carrierCharCode, h.messageType) "
+            + "FROM  SmsHour h "
+            + "WHERE h.year = :yearSms AND "
+            + "h.month = :monthSms AND "
+            + "h.day = :daySms AND "
+            + "h.carrierCharCode IN (:carrierList) AND "
+            + "h.messageType IN (:messageTypeSms) AND "
+            + "h.systemId IN (:listSid) "
+            + "GROUP BY h.year, h.month, h.day, h.carrierCharCode, h.messageType "
+            + "ORDER BY h.year, h.month, h.day, h.carrierCharCode, h.messageType ")
+    List<SmsByYearMonthDay> groupSmsCarrierMessageTypeByYeMoDaWhYeMoSyIn_CarrierTyIn(@Param("yearSms") int yearSms,
+                                                                                     @Param("monthSms") int monthSms,
+                                                                                     @Param("daySms") int daySms,
+                                                                                     @Param("carrierList") Collection<String> carrier,
+                                                                                     @Param("messageTypeSms") List<String> messageTypeSms,
+                                                                                     @Param("listSid") List<String> listSid);
+
     /**
      * GROUP: YEAR, MONTH, DAY, CARRIER WHERE: YEAR, MONTH, LIST-MESSAGETYPE,
      * LIST-SID

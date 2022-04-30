@@ -610,6 +610,20 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
             view.setConsumer((s) -> d.close());
         });
 
+        smsThisMonthChart.addPointClickListener(click -> {
+            /* El dia comienza en 1. */
+            int seriesItemIndex = click.getItemIndex() + 1;
+            Dialog d = new Dialog();
+            d.setWidth("75%");
+            List<String> selectedCarrierList = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
+            List<String> selectedMessageTypeList = checkboxMessageType.getValue().stream().map(OMessageType::name).collect(Collectors.toList());
+            CarrierMonthlyPopupView view = new CarrierMonthlyPopupView(smsHourService, actualYear, actualMonth, seriesItemIndex, selectedCarrierList, selectedMessageTypeList, clientSystemIdStringList);
+            view.setTitles("Gráfico - Mensajes este mes", clientCombobox.getValue() == null ? "Cliente" : clientCombobox.getValue().getClientCod());
+            d.add(view);
+            d.open();
+            view.setConsumer((s) -> d.close());
+        });
+
         /**/
         confIn.getyAxis().setTitle("SMS");
         confIn.setSubTitle("por dia");

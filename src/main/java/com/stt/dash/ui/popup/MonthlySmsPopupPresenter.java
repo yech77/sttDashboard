@@ -114,6 +114,20 @@ public class MonthlySmsPopupPresenter {
         updateInView(dataProvider);
     }
 
+    public MonthlySmsPopupPresenter(SmsHourService smsHourService, int yearSms, int monthToShow, int daySms, List<String> carrierStringList, List<String> messageTypeStringList, List<String> systemidStringList, Viewnable<SmsByYearMonthDay> view) {
+        this.view = view;
+        this.smsHourService = smsHourService;
+        this.systemidStringList = systemidStringList;
+        List<SmsByYearMonthDay> smsByCarrierAndTypeList = smsHourService.groupSmsCarrierMessageTypeByYeMoDaWhYeMoSyIn_CarrierTyIn(yearSms,
+                monthToShow,
+                daySms,
+                carrierStringList,
+                messageTypeStringList,
+                systemidStringList);
+        updateDataProvider(smsByCarrierAndTypeList);
+        updateInView(dataProvider);
+    }
+
     /**
      * Actualizan la data en el dataProvider
      *

@@ -344,6 +344,31 @@ public class SmsHourService {
         return smsByYearMonthDays;
     }
 
+    public List<SmsByYearMonthDay> groupSmsCarrierMessageTypeByYeMoDaWhYeMoSyIn_CarrierTyIn(int yearSms, int monthSms, int daySms, Collection<String> carrier_list, List<String> messageTypeSms, List<String> list_sid) {
+        List<SmsByYearMonthDay> smsByYearMonthDays = smshour_repo.groupSmsCarrierMessageTypeByYeMoDaWhYeMoSyIn_CarrierTyIn(yearSms, monthSms, daySms, carrier_list, messageTypeSms, list_sid);
+        Calendar c = Calendar.getInstance();
+        carrier_list.stream().forEach(actualCarrierForeach -> {
+            messageTypeSms.stream().forEach(actualMessageTypeForeach -> {
+//                for (int actualDayFor = 1; actualDayFor < c.get(Calendar.DAY_OF_MONTH); actualDayFor++) {
+                boolean ithasit = false;
+                for (SmsByYearMonthDay smsByYearMonthDay : smsByYearMonthDays) {
+                    if (smsByYearMonthDay.getGroupBy() == daySms &&
+                            smsByYearMonthDay.getMessageType().equalsIgnoreCase(actualMessageTypeForeach) &&
+                            smsByYearMonthDay.getSomeCode().equalsIgnoreCase(actualCarrierForeach)) {
+                        ithasit = true;
+                        break;
+                    }
+                }
+                if (!ithasit) {
+                    smsByYearMonthDays.add(
+                            new SmsByYearMonthDay(0, yearSms, monthSms, daySms, actualCarrierForeach, actualMessageTypeForeach));
+                }
+//                }
+            });
+        });
+        return smsByYearMonthDays;
+    }
+
     public List<SmsByYearMonthDay> groupSmsByYeMoDaSyWhYeMoSyIn_TyIn(int yearSms, int monthSms, Set<OMessageType> messageTypeSms, List<String> list_sid) {
         List<String> l = messageTypeSms
                 .stream()
