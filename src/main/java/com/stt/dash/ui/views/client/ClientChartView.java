@@ -164,7 +164,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         checkboxMessageType.setWidthFull();
         systemIdMultiCombo.setWidthFull();
         updateCharts();
-        filterButton.setEnabled(true);
+        filterButton.setEnabled(isValidSearch());
     }
 
     /**
@@ -190,6 +190,19 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
                 systemIdMultiCombo.setValue(new HashSet<>(clientListener.getValue().getSystemids()));
             }
         });
+
+        clientCombobox.addBlurListener(blur -> {
+            filterButton.setEnabled(isValidSearch());
+        });
+
+        systemIdMultiCombo.addBlurListener(blur -> {
+            filterButton.setEnabled(isValidSearch());
+        });
+
+        checkboxMessageType.addValueChangeListener(value -> {
+            filterButton.setEnabled(isValidSearch());
+        });
+
         filterButton.addClickListener(clickEvent -> {
             filterButton.setEnabled(false);
             /* TODO: Validar si tien todos los datos */
@@ -212,6 +225,12 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         updateTrimestrePie();
         updateMonthlyPie();
         updateDailyPie();
+    }
+
+    private boolean isValidSearch() {
+        return clientCombobox.getValue() != null &&
+                !systemIdMultiCombo.getValue().isEmpty() &&
+                !checkboxMessageType.isInvalid();
     }
 
     private void updateDailyPie() {
