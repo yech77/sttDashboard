@@ -190,6 +190,18 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         });
         filterButton.setEnabled(true);
         filterButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        clientCombobox.addBlurListener(blur -> {
+            filterButton.setEnabled(isValidSearch());
+        });
+
+        carrierMultiComboBox.addBlurListener(blur -> {
+            filterButton.setEnabled(isValidSearch());
+        });
+
+        checkboxMessageType.addValueChangeListener(value -> {
+            filterButton.setEnabled(isValidSearch());
+        });
     }
 
     /**
@@ -670,6 +682,13 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
                 confIn.addSeries(list_series2.get(i));
             }
         }
+    }
+
+
+    private boolean isValidSearch() {
+        return clientCombobox.getValue() != null &&
+                !carrierMultiComboBox.getValue().isEmpty() &&
+                !checkboxMessageType.isInvalid();
     }
 
     /**

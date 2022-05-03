@@ -205,7 +205,6 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
 
         filterButton.addClickListener(clickEvent -> {
             filterButton.setEnabled(false);
-            /* TODO: Validar si tien todos los datos */
             keepParametersInSession();
             UI.getCurrent().getPage().reload();
         });
