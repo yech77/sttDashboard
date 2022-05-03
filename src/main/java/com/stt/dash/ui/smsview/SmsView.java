@@ -53,8 +53,10 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 @Tag("sms-view")
@@ -71,7 +73,7 @@ public class SmsView extends LitTemplate {
     @Id("smsGrid")
     Grid<AbstractSMS> grid;
     /**/
-
+    private Locale esLocale = new Locale("es", "ES");
     /**/
     private ListDataProvider<AbstractSMS> dataProvider;
     private List<AbstractSMS> abstractSMSList;
@@ -85,8 +87,11 @@ public class SmsView extends LitTemplate {
 
     /* Hora del servidor para establecer busquedas de YYYY-MM-DD*/
     public static LocalDateTime localDateTime = LocalDateTime.now();
+    /**/
     private EnhancedDateRangePicker dateOne = new EnhancedDateRangePicker();
-    private DatePicker dateTwo = new DatePicker();
+    private DatePicker firstDate = new DatePicker();
+    private DatePicker secondDate = new DatePicker();
+    /**/
     private ComboBox<Carrier> comboCarrier = new ComboBox<>();
     private TextField textPhoneNumer = new TextField();
     private MultiComboBox<SystemId> multi_systemIds = new MultiComboBox<>();
@@ -173,10 +178,17 @@ public class SmsView extends LitTemplate {
         dateOne.setLabel("Rango de busqueda");
         dateOne.setPattern(" dd-MM-yyyy");
         /**/
-        secondline.add(new HorizontalLayout(dateOne, checkboxMessageType),
+        firstDate.setLabel("Desde");
+        firstDate.setRequired(true);
+        firstDate.setLocale(esLocale);
+        secondDate.setLabel("Hasta");
+        secondDate.setRequired(true);
+        secondDate.setLocale(esLocale);
+        /**/
+        secondline.add(new HorizontalLayout(firstDate, secondDate, checkboxMessageType),
                 new HorizontalLayout(textPhoneNumer, comboCarrier),
                 new HorizontalLayout(multi_systemIds), searchButton);
-        dateOne.setWidthFull();
+//        dateOne.setWidthFull();
         textPhoneNumer.setWidthFull();
         checkboxMessageType.setWidthFull();
         comboCarrier.setWidthFull();
@@ -187,6 +199,7 @@ public class SmsView extends LitTemplate {
             if (!listener.isFromClient()) {
                 return;
             }
+            /* Todo: usar el servicio de admin.*/
             if (StringUtils.startsWith(listener.getValue(), "58414") ||
                     StringUtils.startsWith(listener.getValue(), "58424")) {
                 Carrier carrier = searchCarrierbyName(carrierSet, "movistar");
@@ -379,8 +392,12 @@ public class SmsView extends LitTemplate {
                 )
         );
         download.addClickListener(click -> {
-            LocalDate selectedStartDate = (dateOne.getValue() == null) ? null : dateOne.getValue().getStartDate();
-            LocalDate selectedEndDate = (dateOne.getValue() == null) ? null : dateOne.getValue().getEndDate();
+            LocalDate selectedStartDate = firstDate.getValue();
+            LocalDate selectedEndDate = secondDate.getValue();
+            if (selectedStartDate == null || selectedEndDate == null) {
+                return;
+            }
+
             StringBuilder sb = new StringBuilder();
             sb
                     .append("Desde: ")
@@ -454,10 +471,10 @@ public class SmsView extends LitTemplate {
     }
 
     private List<AbstractSMS> getSms(int actualpage, int itemsPerPage, boolean updateDataView) {
-        LocalDate selectedStartDate = (dateOne.getValue() == null) ? null : dateOne.getValue().getStartDate();
-        LocalDate selectedEndDate = (dateOne.getValue() == null) ? null : dateOne.getValue().getEndDate();
-        if (selectedEndDate == null) {
-            selectedEndDate = selectedStartDate;
+        LocalDate selectedStartDate = firstDate.getValue();
+        LocalDate selectedEndDate = secondDate.getValue();
+        if (selectedEndDate == null || selectedEndDate == null) {
+            return Collections.emptyList();
         }
         return obtainAbstractOf(getSmsPage(selectedStartDate, selectedEndDate, actualpage, itemsPerPage, updateDataView));
     }

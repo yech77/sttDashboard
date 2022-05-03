@@ -78,7 +78,6 @@ public class OdashConfService {
         /**/
         ODashConf oDashConf1 = new ODashConf();
         oDashConf1.setSyncId(oDashConf.getIdConf());
-//        oDashConf1.setId(id);
         if (odc.isPresent()) {
             oDashConf1 = odc.get();
         }

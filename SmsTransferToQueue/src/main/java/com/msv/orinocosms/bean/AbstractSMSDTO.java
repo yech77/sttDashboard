@@ -7,16 +7,29 @@ package com.msv.orinocosms.bean;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Clase que representa la tabla en la cual se guardan los mensajes.
  *
- * @since
  * @author yech77
+ * @since
  */
-public class AbstractSMSDTO implements Serializable{
+public class AbstractSMSDTO implements Serializable {
+    public enum ABSTRACT_OPTIONALS {
+        CREATED_FROM(0, "CREATED FROM");
+        private Integer pos;
+        private String label;
+
+        ABSTRACT_OPTIONALS(Integer pos, String label) {
+            this.pos = pos;
+            this.label = label;
+        }
+    }
+
     private static final long serialVersionUID = 1L;
-    
+
     private Long id;
     private String system_id;
     private String messagesText;
@@ -29,10 +42,12 @@ public class AbstractSMSDTO implements Serializable{
     private int datacoding;
     private String msgSended;
     private String msgReceived;
+    Map<String, Object> optionalParams = new HashMap<>();
+
 
     public Long getId() {
         return id;
-}
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -126,4 +141,11 @@ public class AbstractSMSDTO implements Serializable{
         this.carrier_char_code = carrier_char_code;
     }
 
+    public Map<String, Object> getOptionalParameters() {
+        return optionalParams;
+    }
+
+    public void put(String Key, String value) {
+        optionalParams.put(Key, value);
+    }
 }

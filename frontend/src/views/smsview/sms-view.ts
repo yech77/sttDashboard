@@ -12,45 +12,72 @@ export class SmsView extends LitElement {
         return html`
             <style include="shared-styles">
                 :host {
-                    position: relative;
-                    z-index: 2;
-                    display: flex;
-                    flex-direction: column;
-                    overflow: hidden;
-                    padding: 0 var(--lumo-space-s);
-                    background-image: linear-gradient(var(--lumo-shade-20pct), var(--lumo-shade-20pct));
-                    background-color: var(--lumo-base-color);
-                    box-shadow: 0 0 16px 2px var(--lumo-shade-20pct);
-                    order: 1;
                     width: 100%;
-                    height: 48px;
+                    -webkit-overflow-scrolling: touch;
+                    overflow: auto;
                 }
 
-                @media (min-width: 700px) {
-                    .row {
-                        width: 100%;
-                        max-width: 964px;
-                        margin: 0 auto;
-                    }
-
-                    .field {
-                        padding-right: var(--lumo-space-m);
-                    }
+                .vaadin-board-cell {
+                    padding: var(--lumo-space-s);
                 }
+
+                *::-ms-backdrop,
+                .vaadin-board-cell {
+                    padding: 0;
+                }
+
+                .column-chart {
+                    box-shadow: 0 2px 5px 0 rgba(23, 68, 128, 0.1);
+                    border-radius: 4px;
+                    height: calc(20vh - 64px) !important;
+                    min-height: 200px;
+                }
+
+                .column-daily-chart {
+                    box-shadow: 0 2px 5px 0 rgba(23, 68, 128, 0.1);
+                    border-radius: 4px;
+                    height: calc(20vh - 64px) !important;
+                    min-height: 250px;
+                }
+
+                .pie-chart {
+                    box-shadow: 0 2px 5px 0 rgba(23, 68, 128, 0.1);
+                    border-radius: 4px;
+                    height: calc(20vh - 64px) !important;
+                    min-height: 250px;
+                }
+
+                #carrierDailyChart {
+                    height: calc(30vh - 64px) !important;
+                    min-height: 200px;
+                }
+
+                #monthlyProductSplit,
+                #ordersGrid {
+                    border-radius: 4px;
+                    box-shadow: 0 2px 5px 0 rgba(23, 68, 128, 0.1);
+                    height: calc(40vh - 64px) !important;
+                    min-height: 355px;
+                }
+
+                vaadin-board-row.custom-board-row {
+                    --vaadin-board-width-medium: 1440px;
+                    --vaadin-board-width-small: 1024px;
+                }
+
             </style>
-            <div class="row" id="firstline"></div>
-            <div class="row" id="secondline"></div>
-            <div>
-                <vaadin-board style="max-width: 100%" ; margin-right: auto; margin-left: auto
-                ">
+            <vaadin-board>
+                <vaadin-row>
+                    <div id="firstline" class="vaadin-board-cell"></div>
+                    <div id="secondline" class="vaadin-board-cell"></div>
+                </vaadin-row>
                 <vaadin-row>
                     <vaadin-grid id="smsGrid" style="min-height: 500px"></vaadin-grid>
                 </vaadin-row>
                 <vaadin-row>
                     <div id="footer"></div>
                 </vaadin-row>
-                </vaadin-board>
-            </div>
+            </vaadin-board>
         `;
     }
 }

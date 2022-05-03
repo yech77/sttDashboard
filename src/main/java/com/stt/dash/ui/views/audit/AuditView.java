@@ -71,7 +71,7 @@ public class AuditView extends VerticalLayout {
     /**/
 //    private final SessionObjectUtils utils;
     /**/
-    private Grid<ODashAuditEvent> grid = new Grid<>();
+    private Grid<ODashAuditEvent> grid;
     private Button downloadButton = new Button("Descargar");
     //    private TextField filter = new TextField("Filtrar por Evento");
     private Button filterButton = new Button(VaadinIcon.FILTER.create());
@@ -97,8 +97,10 @@ public class AuditView extends VerticalLayout {
                      @Autowired OUserService user_serv,
                      @Autowired OUserSession ouser_session,
                      @Autowired UserRepository ouser_repo,
-                     @Autowired MyAuditEventComponent auditEvent) {
+                     @Autowired MyAuditEventComponent auditEvent,
+                     @Autowired Grid<ODashAuditEvent> grid) {
 //        utils = new SessionObjectUtils(ouser_session);
+        this.grid = grid;
         /**/
         this.event_serv = event_serv;
 //        List<User> user = utils.getUserFamily(currentUser);
@@ -120,20 +122,20 @@ public class AuditView extends VerticalLayout {
         setWidth("100%");
         /**/
         grid.setSelectionMode(Grid.SelectionMode.MULTI);
-        grid.setHeight("400px");
-        grid.addColumn(ODashAuditEvent::getPrincipal)
-                .setHeader("Usuario");
-
-        grid.addColumn(ODashAuditEvent::getEventDate)
-                .setHeader("Fecha");
-
-        grid.addColumn(TemplateRenderer.<ODashAuditEvent>of(
-                        "<div><small><b>[[item.name]]</b></small><br>[[item.purchasedate]]</div>")
-                .withProperty("name", col -> {
-                    return col.getEventType().name();
-                })
-                .withProperty("purchasedate", ODashAuditEvent::getEventDesc));
-        grid.getColumns().stream().forEach(col -> col.setAutoWidth(true));
+//        grid.setHeight("400px");
+//        grid.addColumn(ODashAuditEvent::getPrincipal)
+//                .setHeader("Usuario");
+//
+//        grid.addColumn(ODashAuditEvent::getEventDate)
+//                .setHeader("Fecha");
+//
+//        grid.addColumn(TemplateRenderer.<ODashAuditEvent>of(
+//                        "<div><small><b>[[item.name]]</b></small><br>[[item.purchasedate]]</div>")
+//                .withProperty("name", col -> {
+//                    return col.getEventType().name();
+//                })
+//                .withProperty("purchasedate", ODashAuditEvent::getEventDesc));
+//        grid.getColumns().stream().forEach(col -> col.setAutoWidth(true));
 
         /**/
         createDetailsVertical();
@@ -289,6 +291,7 @@ public class AuditView extends VerticalLayout {
         StringWriter output = new StringWriter();
         StatefulBeanToCsv<ODashAuditEvent> writer = new StatefulBeanToCsvBuilder<ODashAuditEvent>(output)
                 .withSeparator(separatorText.getValue().toCharArray()[0])
+                .withQuotechar(quoteDelimiterText.getValue().toCharArray()[0])
                 .build();
         try {
             writer.write(persons);

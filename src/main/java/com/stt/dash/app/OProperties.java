@@ -23,7 +23,7 @@ public class OProperties {
     private String agendafilePathBase;
 
     @Value("${orinoco.host}")
-    public static String ORINOCO_HOST;
+    public String orinoco_host;
 
     public String getImqaddresslist() {
         return imqaddresslist;
@@ -45,7 +45,7 @@ public class OProperties {
         return agendafilePathBase;
     }
 
-    public static String getOrinocoHost() {
-        return ORINOCO_HOST;
+    public String getOrinocoHost() {
+        return orinoco_host;
     }
 }

@@ -1,5 +1,6 @@
 package com.stt.dash.app.session;
 
+import com.stt.dash.app.OProperties;
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.security.SecurityUtils;
 import com.stt.dash.backend.data.entity.SystemId;
@@ -8,12 +9,16 @@ import com.stt.dash.backend.repositories.SystemIdRepository;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,14 +44,14 @@ public class STTConfiguration {
     @Bean
     @VaadinSessionScope
     public SetGenericBean<SystemId> getComercialUserSystemId(CurrentUser currentUser,
-                                                   SystemIdRepository repo) {
+                                                             SystemIdRepository repo) {
         Set<SystemId> allSystemId;
         User.OUSER_TYPE userType = currentUser.getUser().getUserType();
         if (userType != User.OUSER_TYPE.BY) {
-            if (currentUser.getUser().getClient() ==null){
+            if (currentUser.getUser().getClient() == null) {
                 log.info("El usuario no tiene clientes asignados.");
                 allSystemId = new HashSet<>();
-            }else {
+            } else {
                 log.info("CLIENTE ***** {}", currentUser.getUser().getClient());
                 log.info("SIDS ***** {}", currentUser.getUser().getClient().getSystemids());
                 allSystemId = repo.findAllSystemId(currentUser.getUser().getEmail());
@@ -72,7 +77,7 @@ public class STTConfiguration {
     @Bean
     @VaadinSessionScope
     public ListGenericBean<String> getUserSystemIdString(CurrentUser currentUser,
-                                                   SystemIdRepository repo) {
+                                                         SystemIdRepository repo) {
         SetGenericBean<SystemId> s = getComercialUserSystemId(currentUser, repo);
         List<String> allSystemId = s.getSet().stream().map(SystemId::getSystemId).collect(Collectors.toList());
         return () -> allSystemId;
@@ -111,15 +116,25 @@ public class STTConfiguration {
         return () -> allUsers;
     }
 
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public WebClient builderWebclient(@Autowired OProperties prop) {
+        return WebClient.builder()
+                .baseUrl(prop.getOrinocoHost())
+                .defaultHeaders(header -> header.setBasicAuth("orinoco", "0R1n0coRIv3r$"))
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+    }
+
     private class SpringSecurityAuditorAware implements AuditorAware<String> {
         @Override
         public Optional<String> getCurrentAuditor() {
             Optional<String> s;
             /* 22/06/2021: Debi agregar este try dado que si la bd se esta creando por primera vez,
-            * SecurityUtils.getUsername() da un nullpointer*/
+             * SecurityUtils.getUsername() da un nullpointer*/
             try {
                 s = Optional.ofNullable(SecurityUtils.getUsername());
-            }catch (Exception e){
+            } catch (Exception e) {
                 s = Optional.empty();
             }
             return s;

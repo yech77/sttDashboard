@@ -1,5 +1,6 @@
 import '@polymer/polymer/polymer-element.js';
 import '@vaadin/vaadin-charts/vaadin-chart-default-theme.js';
+
 const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `<dom-module id="bakery-charts-theme" theme-for="vaadin-chart">
@@ -59,12 +60,50 @@ $_documentContainer.innerHTML = `<dom-module id="bakery-charts-theme" theme-for=
       }
 
       :host(.yearly-sales) .highcharts-color-2 {
-        stroke: #1bca66;
+        stroke: #6bc592;
+        fill: #1bca66;
+      }
+      
+      /*:host(.column-chart) .highcharts-color-0 {*/
+      /*  stroke: #a99f7e;*/
+      /*  fill: #d7a011;*/
+      /*}*/
+      
+      /*:host(.column-chart) .highcharts-color-1 {*/
+      /*  stroke: #082244;*/
+      /*  fill: #387eda;*/
+      /*}*/
+      
+      /*:host(.column-chart) .highcharts-color-2 {*/
+      /*  stroke: #1bca66;*/
+      /*  fill: #17b95c;*/
+      /*}*/
+      
+      /*:host(.column-chart) .highcharts-grid-line {*/
+      /*  stroke: rgba(23, 68, 128, 0.1);*/
+      /*}*/
+      
+      /*:host(.column-chart) .highcharts-area {*/
+      /*  fill-opacity: 0.1;*/
+      /*}*/
+      
+      :host(.daily-sales) .highcharts-color-0 {
+        stroke: #3a9aa4;
+        fill: #18ddf2;
+      }
+
+      :host(.daily-sales) .highcharts-color-1 {
+        stroke: #1877f3;
+        fill: #1877f3;
+      }
+
+      :host(.daily-sales) .highcharts-color-2 {
+        stroke: #137c40;
         fill: #1bca66;
       }
       /**/
       :host(.carrierDailyChart) .highcharts-color-0 {
-        stroke: #18ddf2;
+        stroke: #0d6c77;
         fill: #18ddf2;
       }
 
