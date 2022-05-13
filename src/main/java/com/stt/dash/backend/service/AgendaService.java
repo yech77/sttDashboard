@@ -181,33 +181,32 @@ public class AgendaService implements FilterableCrudService<Agenda> {
     @Override
     public Agenda save(User currentUser, Agenda entity) {
         try {
-            try {
-                Long id = entity.getId();
-                entity = FilterableCrudService.super.save(currentUser, entity);
-                if (id == null) {
-                    log.info("{} Saved: Agenda[{}]", getStringLog(), entity.getName());
-                    try {
-                        auditEvent.add(ODashAuditEvent.OEVENT_TYPE.CREATE_AGENDA, entity);
-                    } catch (Exception e) {
-                        log.error("", e);
-                    }
-                } else {
-                    log.info("{} Updated: Agenda[{}]", getStringLog(), entity.getName());
-                    try {
-                        auditEvent.add(ODashAuditEvent.OEVENT_TYPE.UPDATE_AGENDA, entity);
-                    } catch (Exception e) {
-                        log.error("", e);
-                    }
+            Long id = entity.getId();
+            entity = FilterableCrudService.super.save(currentUser, entity);
+            if (id == null) {
+                log.info("{} Saved: Agenda[{}]", getStringLog(), entity.getName());
+                try {
+                    auditEvent.add(ODashAuditEvent.OEVENT_TYPE.CREATE_AGENDA, entity);
+                } catch (Exception e) {
+                    log.error("", e);
                 }
-            } catch (Exception d) {
-                log.error("{} Error on Save:", getStringLog());
-                log.error("", d);
+            } else {
+                log.info("{} Updated: Agenda[{}]", getStringLog(), entity.getName());
+                try {
+                    auditEvent.add(ODashAuditEvent.OEVENT_TYPE.UPDATE_AGENDA, entity);
+                } catch (Exception e) {
+                    log.error("", e);
+                }
             }
-            return entity;
         } catch (DataIntegrityViolationException e) {
             throw new UserFriendlyDataException(
                     "Ya existe una agenda con ese nombe. Por favor seleccione otro nombre.");
+        } catch (Exception d) {
+            log.error("{} Error on Save:", getStringLog());
+            log.error("", d);
+            throw new UserFriendlyDataException("Huno un eror y no se pudo salvar la agenda");
         }
+        return entity;
     }
 
     @Override
