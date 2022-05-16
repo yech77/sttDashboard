@@ -8,7 +8,7 @@ public enum Status {
     VALIDATING("Validando"),
     GENERATING_MESSAGES("Generando"),
     PREPARING_SMS("Preparando"),
-    WAITING_TO_SEND("Esperando"),
+    WAITING_TO_SEND("Por enviar"),
     SENDING("Enviando"),
     COMPLETED("Enviados"),
     INVALID("Invalido");
