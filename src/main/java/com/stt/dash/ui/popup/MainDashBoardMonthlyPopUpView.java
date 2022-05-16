@@ -17,6 +17,7 @@ import org.vaadin.olli.FileDownloadWrapper;
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class MainDashBoardMonthlyPopUpView extends MonthlySmsPopupView {
 
@@ -68,11 +69,11 @@ public class MainDashBoardMonthlyPopUpView extends MonthlySmsPopupView {
     @Override
     public void updateDownloadButton(Collection<SmsByYearMonthDay> messages) {
         Dialog d = new Dialog();
-        d.add(getDownloadButton(messages));
+        d.add(getDownloadButton(messages, s -> d.close()));
         d.open();
     }
 
-    private Component getDownloadButton(Collection<SmsByYearMonthDay> messages) {
+    private Component getDownloadButton(Collection<SmsByYearMonthDay> messages, Consumer<String> consumer) {
         String fileName = "mes-Mensajes-dashboard.csv";
         Button download = new Button("Descargar", VaadinIcon.ARROW_DOWN.create());
         download.setIconAfterText(true);
@@ -81,6 +82,7 @@ public class MainDashBoardMonthlyPopUpView extends MonthlySmsPopupView {
             return new ByteArrayInputStream(getStringData(messages).getBytes());
         }));
         buttonWrapper.wrapComponent(download);
+        download.addClickListener(click -> consumer.accept(""));
         return buttonWrapper;
     }
 
