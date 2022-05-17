@@ -309,6 +309,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         confHourlyChart.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - dia de hoy");
         confHourlyChart.setSubTitle("por hora");
         confHourlyChart.getyAxis().setTitle("SMS");
+        confHourlyChart.setExporting(true);
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /**/
         confHourlyChart.getxAxis().setTitle("Hora");
@@ -379,6 +380,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         confMonthlyLineChart.getyAxis().setTitle("SMS");
         confMonthlyLineChart.setSubTitle("por dia");
         confMonthlyLineChart.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - " + actualYear);
+        confMonthlyLineChart.setExporting(true);
         /**/
         String[] da = new String[LocalDate.now().getMonth().maxLength()];
         for (int i = 1; i <= LocalDate.now().getMonth().maxLength(); i++) {
@@ -435,6 +437,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         });
         confTriMixChart.getyAxis().setTitle("SMS");
         confTriMixChart.setTitle("Trimestral - " + LocalDate.now().getYear());
+        confTriMixChart.setExporting(true);
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /* Averiguar cuales son los tres meses a calular. */
         /**/

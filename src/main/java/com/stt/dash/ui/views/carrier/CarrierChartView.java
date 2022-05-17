@@ -239,6 +239,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
 
         confHourlyChart.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - dia de hoy");
         confHourlyChart.setSubTitle("por hora");
+        confHourlyChart.setExporting(true);
         confHourlyChart.getyAxis().setTitle("SMS");
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /**/
@@ -384,6 +385,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
 
         confIn.setTitle(OMonths.valueOf(actualMonth).getMonthName() + "- dia de hoy");
         confIn.setSubTitle("por hora");
+        confIn.setExporting(true);
         confIn.getyAxis().setTitle("SMS");
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /**/
@@ -493,6 +495,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         tooltip.setValueDecimals(0);
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
         confTriChart.setTitle("Trimestre");
+        confTriChart.setExporting(true);
         confTriChart.setTooltip(tooltip);
         /* Averiguar cuales son los tres meses a calular. */
         confTriChart.getxAxis().setCategories(ml);
@@ -517,6 +520,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         tooltip.setValueDecimals(0);
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
         confTriChart.setTitle("Trimestre");
+        confTriChart.setExporting(true);
         confTriChart.setTooltip(tooltip);
         /**/
 //        System.out.println("************************************************ ");
@@ -639,6 +643,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         /**/
         confIn.getyAxis().setTitle("SMS");
         confIn.setSubTitle("por dia");
+        confIn.setExporting(true);
         confIn.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - " + actualYear);
         /**/
         String[] da = new String[LocalDate.now().getMonth().maxLength()];
