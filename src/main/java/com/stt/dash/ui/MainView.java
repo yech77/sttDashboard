@@ -60,7 +60,9 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.stt.dash.ui.utils.BakeryConst.*;
@@ -75,15 +77,19 @@ public class MainView extends AppLayout {
     private final ConfirmDialog confirmDialog = new ConfirmDialog();
     //	private final ConfirmDialog confirmDialog = new ConfirmDialog();
     private final Tabs menu;
+    private final CurrentUser currentUser;
 
     public MainView(@Autowired CurrentUser currentUser) {
+        this.currentUser = currentUser;
 //		confirmDialog.setCancelable(true);
 //		confirmDialog.setConfirmButtonTheme("raised tertiary error");
 //		confirmDialog.setCancelButtonTheme("raised tertiary");
 
 //		this.setDrawerOpened(false);
-        H1 title = new H1("Orinoco Dash");
-        title.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
+        H1 title = new H1("Orinoco");
+        title.getStyle()
+                .set("font-size", "var(--lumo-font-size-l)")
+                .set("margin", "0");
 //		Span appName = new Span("Orinoco Dash");
 //		appName.addClassName("hide-on-mobile");
 
@@ -91,6 +97,7 @@ public class MainView extends AppLayout {
 
 //		this.addToNavbar(true, menu);
         /**/
+        this.addToNavbar(new DrawerToggle(), title);
         Avatar avatar = avatarMenuBar(currentUser.getUser().getFirstName() + " " + currentUser.getUser().getLastName());
         /**/
         MenuBar menuBar = new MenuBar();
@@ -100,10 +107,10 @@ public class MainView extends AppLayout {
         subMenu.addItem("Logout", menuItemClickEvent -> logout());
         /**/
         VerticalLayout verticalLayout = new VerticalLayout(menuBar);
+        verticalLayout.setId("myHorizontal");
         verticalLayout.setAlignItems(FlexComponent.Alignment.END);
-        this.addToNavbar(new DrawerToggle(), title, verticalLayout);
+        this.addToNavbar(verticalLayout);
         this.addToDrawer(menu);
-
         this.getElement().appendChild(confirmDialog.getElement());
 
         getElement().addEventListener("search-focus", e -> {

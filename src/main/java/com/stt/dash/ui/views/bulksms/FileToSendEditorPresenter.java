@@ -54,8 +54,8 @@ public class FileToSendEditorPresenter {
         OWebClient<Integer> we = new OWebClient<>(webClient, Integer.class);
         Mono<Integer> monoOResponse;
         try {
-            log.info("Llamando: [{}]", properties.getOrinocoHost() + "ws/data/sid/balance/cod/" + systemid + "/date/" + stringDate);
-            monoOResponse = we.getMonoOResponse(properties.getOrinocoHost() + "ws/data/sid/balance/cod/" + systemid + "/date/" + stringDate);
+            log.info("Llamando: [{}]", properties.getOrinocoHost() + "orinoco-admin/ws/data/sid/balance/cod/" + systemid + "/date/" + stringDate);
+            monoOResponse = we.getMonoOResponse(properties.getOrinocoHost() + "orinoco-admin/ws/data/sid/balance/cod/" + systemid + "/date/" + stringDate);
             return monoOResponse.block();
         } catch (Exception e) {
             log.error("", e);

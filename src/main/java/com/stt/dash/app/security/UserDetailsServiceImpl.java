@@ -2,6 +2,8 @@ package com.stt.dash.app.security;
 
 import java.util.*;
 
+import com.stt.dash.backend.service.LoginAttemptService;
+import com.stt.dash.ui.MainView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,11 +27,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Primary
 public class UserDetailsServiceImpl implements UserDetailsService {
 
+    private LoginAttemptService loginAttemptService;
+
     private final UserRepository userRepository;
 
     @Autowired
-    public UserDetailsServiceImpl(UserRepository userRepository) {
+    public UserDetailsServiceImpl(UserRepository userRepository, LoginAttemptService loginAttemptService) {
         this.userRepository = userRepository;
+        this.loginAttemptService = loginAttemptService;
     }
 
     /**
@@ -42,9 +47,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        if (loginAttemptService.isBlocked(username)) {
+            throw new RuntimeException("Blocked");
+        }
         User user = userRepository.findByEmailIgnoreCase(username);
         if (null == user) {
-            throw new UsernameNotFoundException("No user present with username: " + username);
+            throw new UsernameNotFoundException("No user present with username/key");
         } else {
             /**/
             Set<GrantedAuthority> grantedAuthoritySet = new HashSet<>();
@@ -53,26 +61,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     grantedAuthoritySet.add(new SimpleGrantedAuthority(authority.getAuthName()));
                 });
             });
-//			List<String> l = new ArrayList<>(s);
-//			String[] a = new String[l.size()];
-//			a = l.toArray(a);
-//			UserDetails thing = org.springframework.security.core.userdetails.User.withUsername(user.getUserEmail())
-//					.password("{noop}" + user.getUserPassword())
-//					//                    .roles("user"/*user.getRoles() */)
-//					.authorities(a)
-////                    .accountLocked(user.getUserStatus()==OUser.OUSER_STATUS.DESACTIVADO)
-//					.build();
-//			details[count] = thing;
-
-            return new
-                    org.springframework.security.core.userdetails.User(
-                    user.getEmail(),
-                    user.getPasswordHash(),
-                    user.isActive(),
-                    true,
-                    true,
-                    true,
-                    grantedAuthoritySet);
+            return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPasswordHash(), user.isActive(), true, true, true, grantedAuthoritySet);
         }
     }
 }

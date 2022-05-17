@@ -58,24 +58,28 @@ export class FileToSendEditor extends LitElement {
 
                 <vaadin-form-layout id="form1" .responsiveSteps="${this.responsiveSteps}">
                     <vaadin-form-layout id="form2" .responsiveSteps="${this.form2}">
-                        <vaadin-date-time-picker label="Fecha de envio" id="dueDate"></vaadin-date-time-picker>
+                        <vaadin-date-picker label="Fecha de envio" id="dueDate2"></vaadin-date-picker>
+                        <vaadin-time-picker label="Hora de envio" id="dueTime"></vaadin-time-picker>
                         <vaadin-checkbox id="sendNow">Enviar Ya</vaadin-checkbox>
+                        <vaadin-date-time-picker label="Fecha de envio" id="dueDate"></vaadin-date-time-picker>
                     </vaadin-form-layout>
 
                     <vaadin-form-layout id="form3" colspan="3" .responsiveSteps="${this.form3}">
                         <vaadin-combo-box id="status" label="Agenda" class="status" colspan="2"
                                           clear-button-visible></vaadin-combo-box>
-                        <iron-icon slot="prefix" icon="vaadin:phone"></iron-icon>
+                        <!--                        <iron-icon slot="prefix" icon="vaadin:phone"></iron-icon>-->
                         </vaadin-combo-box>
                         <vaadin-combo-box id="systemId" label="Credencial"
                                           clear-button-visible></vaadin-combo-box>
-                        <vaadin-text-field id="orderName" label="Nombre de Programacion" colspan="2"
+                        <vaadin-text-field id="orderDescription" label="Nombre de Programacion" colspan="2"
                                            clear-button-visible></vaadin-text-field>
-                        <vaadin-text-field id="orderDescription" label="Descripcion" colspan="2"
+                        <vaadin-text-field id="orderName" label="Descripcion" colspan="2"
                                            clear-button-visible></vaadin-text-field>
                         <vaadin-text-area id="message" label="Escriba su mensaje" colspan="2" required
                                           clear-button-visible></vaadin-text-area>
-                        <vaadin-text-area id="messageBuilded" label="Mensaje" readonly="true"></vaadin-text-area>
+                        <vaadin-text-area id="messageBuilded" label="Mensaje"
+                                          helper-text="vista previa solo si Agenda es variable"
+                                          readonly="true"></vaadin-text-area>
 
                         <vaadin-form-item colspan="2">
                             <hr>

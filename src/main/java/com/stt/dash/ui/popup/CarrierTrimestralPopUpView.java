@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class CarrierTrimestralPopUpView extends TrimestralSmsPopupView {
 
@@ -53,11 +54,11 @@ public class CarrierTrimestralPopUpView extends TrimestralSmsPopupView {
     @Override
     public void updateDownloadButton(Collection<SmsByYearMonth> messages) {
         Dialog d = new Dialog();
-        d.add(getDownloadButton(messages));
+        d.add(getDownloadButton(messages, s -> d.close()));
         d.open();
     }
 
-    private Component getDownloadButton(Collection<SmsByYearMonth> messages) {
+    private Component getDownloadButton(Collection<SmsByYearMonth> messages, Consumer<String> consumer) {
         String fileName = "trimestre-Mensajes-operadora.csv";
         Button download = new Button("Descargar", VaadinIcon.ARROW_DOWN.create());
         download.setIconAfterText(true);
@@ -66,6 +67,7 @@ public class CarrierTrimestralPopUpView extends TrimestralSmsPopupView {
             return new ByteArrayInputStream(getStringData(messages).getBytes());
         }));
         buttonWrapper.wrapComponent(download);
+        download.addClickListener(click -> consumer.accept(""));
         return buttonWrapper;
     }
 

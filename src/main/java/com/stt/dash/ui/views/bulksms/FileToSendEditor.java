@@ -17,6 +17,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Div;
@@ -27,6 +28,7 @@ import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.binder.*;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.value.ValueChangeMode;
@@ -47,10 +49,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalField;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -75,6 +82,10 @@ public class FileToSendEditor extends LitTemplate implements HasNotifications {
 
     @Id("dueDate")
     private DateTimePicker dueDate;
+    @Id("dueDate2")
+    private DatePicker dueDate2;
+    @Id("dueTime")
+    private TimePicker dueTime;
 
     @Id("sendNow")
     private Checkbox sendNow;
@@ -133,6 +144,7 @@ public class FileToSendEditor extends LitTemplate implements HasNotifications {
     Type gsonType = new TypeToken<HashMap<Integer, Integer>>() {
     }.getType();
 
+    private static Locale esLocale = new Locale("es", "ES");
 
     public FileToSendEditor(@Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
                             AgendaService agendaService,
@@ -143,6 +155,8 @@ public class FileToSendEditor extends LitTemplate implements HasNotifications {
         presenter = new FileToSendEditorPresenter(this, userChildrenList, agendaService, systemIdList, webClient, properties);
         /**/
         acceptCheckbox.setVisible(false);
+        dueDate.setVisible(false);
+        /**/
         cancel.addClickListener(e -> fireEvent(new CancelEvent(this, false)));
         review.addClickListener(e ->
         {
@@ -187,7 +201,12 @@ public class FileToSendEditor extends LitTemplate implements HasNotifications {
                 showNotification("Saldo insuficiente", true);
                 return;
             }
-
+            /* Agregar al la hora qe va al bind, lo seleccionado en los campos.*/
+            LocalDateTime l = LocalDateTime.of(dueDate2.getValue().getYear(),
+                    dueDate2.getValue().getMonthValue(),
+                    dueDate2.getValue().getDayOfMonth(),
+                    dueTime.getValue().getHour(), dueTime.getValue().getMinute());
+            dueDate.setValue(l);
             fireEvent(new BulkSmsReviewEvent(this));
         });
         /* El pickup Locations es el systemid*/
@@ -231,8 +250,16 @@ public class FileToSendEditor extends LitTemplate implements HasNotifications {
         binder.bind(acceptCheckbox, "smsAccepted");
         addListeners();
         /* date-to-send */
+        LocalDate ld = LocalDate.now();
+        dueDate2.setLocale(esLocale);
+        dueDate2.setValue(ld);
+        dueDate2.setMin(ld);
+        dueDate.setLocale(esLocale);
         dueDate.setMin(LocalDateTime.now());
         dueDate.setValue(LocalDateTime.now().plusMinutes(10));
+        /* time */
+        dueTime.setValue(LocalTime.of(LocalDateTime.now().plusHours(1).getHour(), 0));
+        dueTime.setStep(Duration.ofMinutes(30));
         /**/
         binder.addValueChangeListener(c -> {
             System.out.println("OLDVALUE ->" + c.getOldValue() + " VALUE ->" + c.getValue());
@@ -241,6 +268,13 @@ public class FileToSendEditor extends LitTemplate implements HasNotifications {
     }
 
     private void addListeners() {
+        dueDate2.addValueChangeListener(lister -> {
+            if (lister.getValue().isEqual(LocalDate.now())) {
+                dueTime.setMinTime(LocalTime.now());
+            } else {
+                dueTime.setMinTime(null);
+            }
+        });
         acceptCheckbox.addValueChangeListener(event -> {
             if (!event.isFromClient()) {
                 return;

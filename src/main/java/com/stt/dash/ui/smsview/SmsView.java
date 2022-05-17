@@ -1,9 +1,11 @@
 package com.stt.dash.ui.smsview;
 
 import com.stt.dash.app.OMessageType;
+import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.SetGenericBean;
 import com.stt.dash.backend.data.OUserSession;
 import com.stt.dash.backend.data.entity.Carrier;
+import com.stt.dash.backend.data.entity.ORole;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.sms.AbstractSMS;
 import com.stt.dash.backend.service.AbstractSmsService;
@@ -35,6 +37,7 @@ import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
+import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -84,7 +87,7 @@ public class SmsView extends LitTemplate {
     private Grid.Column<AbstractSMS> messageTypeColum;
     private Grid.Column<AbstractSMS> dateColumn;
     /**/
-
+    private boolean hasAuthToViewMsgTextColumn = false;
     /* Hora del servidor para establecer busquedas de YYYY-MM-DD*/
     public static LocalDateTime localDateTime = LocalDateTime.now();
     /**/
@@ -118,13 +121,16 @@ public class SmsView extends LitTemplate {
     /**/
     FooterRow footerRow;
 
-    public SmsView(@Autowired AbstractSmsService sms_serv,
+    public SmsView(@Autowired CurrentUser currentUser,
+                   @Autowired AbstractSmsService sms_serv,
                    @Autowired OUserSession ouser_session,
                    @Autowired CarrierService carrier_serv,
                    @Autowired SetGenericBean<SystemId> systemIdSetGenericBean) {
         this.sms_serv = sms_serv;
         this.ouser_session = ouser_session;
         this.carrier_serv = carrier_serv;
+        /**/
+        this.hasAuthToViewMsgTextColumn = isGrantedMsgTextColumn(currentUser.getUser().getRoles());
         /**/
         Page<Carrier> carrierList = carrier_serv.findAll();
         Set<Carrier> carrierSet = carrierList.toSet();
@@ -450,9 +456,23 @@ public class SmsView extends LitTemplate {
             System.out.println("Daily message limit reached. Code not able to handle this size of string.");
             return "";
         }
-        StringBuilder sb = new StringBuilder("id,\"address\",datacoding,\"date\",\"iso2\",\"message_type\",\"messages_text\",\"msg_received\",\"msg_sended\",\"source\",\"systemid\",\"carrierCharCode\"\n");
+//        StringBuilder sb = new StringBuilder("id,\"address\",datacoding,\"date\",\"iso2\",\"message_type\",\"messages_text\",\"msg_received\",\"msg_sended\",\"source\",\"systemid\",\"carrierCharCode\"\n");
+        StringBuilder sb = new StringBuilder("\"destino\",\"fecha\",\"tipo de mensaje\",\"mensaje\",\"id recibido\",\"id enviando\",\"source\",\"credencial\",\"operadora\"\n");
+
         for (AbstractSMS msg : messages) {
-            sb.append(msg.toString());
+            sb.append(msg.getDestination()).append(",");
+            sb.append(msg.getDate()).append(",");
+            sb.append(msg.getMessageType()).append(",");
+            if (hasAuthToViewMsgTextColumn) {
+                sb.append(msg.getMessagesText()).append(",");
+            } else {
+                sb.append("").append(",");
+            }
+            sb.append(msg.getMsgReceived()).append(",");
+            sb.append(msg.getMsgSended()).append(",");
+            sb.append(msg.getSource()).append(",");
+            sb.append(msg.getSystemId()).append(",");
+            sb.append(msg.getCarrierCharCode());
             sb.append("\n");
         }
         return sb.toString();
@@ -479,12 +499,23 @@ public class SmsView extends LitTemplate {
         return obtainAbstractOf(getSmsPage(selectedStartDate, selectedEndDate, actualpage, itemsPerPage, updateDataView));
     }
 
+    //    private void addColumnsToGrid() {
+////        createIdColumn();
+//        createPhoneNumberColumn();
+//        createCarrierColumn();
+//        createSystemIdColumn();
+//        createMessageypeColumn();
+//        createDateColumn();
+//    }
     private void addColumnsToGrid() {
-//        createIdColumn();
         createPhoneNumberColumn();
-        createCarrierColumn();
         createSystemIdColumn();
-        createMessageypeColumn();
+        createCarrierColumn();
+        if (!hasAuthToViewMsgTextColumn) {
+            createMessageypeColumn();
+        } else {
+            createMessageypeAndMsgTExtColumn();
+        }
         createDateColumn();
     }
 
@@ -493,20 +524,38 @@ public class SmsView extends LitTemplate {
 //                .setWidth("120px").setFlexGrow(0);
 //    }
 
+//    private void createPhoneNumberColumn() {
+//        phoneColum = grid
+//                .addColumn(AbstractSMS::getDestination)
+//                .setComparator(client -> client.getDestination()).setHeader("Telefono")
+//                .setWidth("180px").setFlexGrow(0);
+//    }
+
     private void createPhoneNumberColumn() {
-        phoneColum = grid
-                .addColumn(AbstractSMS::getDestination)
-                .setComparator(client -> client.getDestination()).setHeader("Telefono")
+        phoneColum = grid.addColumn(TemplateRenderer.<AbstractSMS>of(
+                                "<div><b>[[item.dest]]</b><br><small>[[item.source]]</small></div>")
+                        .withProperty("dest", col -> {
+                            return col.getDestination();
+                        })
+                        .withProperty("source", AbstractSMS::getSource))
+                .setComparator(client -> client.getDestination()).setHeader("destino / source")
                 .setWidth("180px").setFlexGrow(0);
     }
+
+//    private void createCarrierColumn() {
+//        carrierColum = grid
+//                .addColumn(AbstractSMS::getCarrierCharCode)
+////                .setComparator(client -> client.getCarrierCharCode())
+//                .setHeader("Operadora")
+//                .setAutoWidth(true);
+////                .setWidth("180px").setFlexGrow(0);
+//    }
 
     private void createCarrierColumn() {
         carrierColum = grid
                 .addColumn(AbstractSMS::getCarrierCharCode)
-//                .setComparator(client -> client.getCarrierCharCode())
-                .setHeader("Operadora")
+                .setHeader("operadora")
                 .setAutoWidth(true);
-//                .setWidth("180px").setFlexGrow(0);
     }
 
     private void createSystemIdColumn() {
@@ -517,22 +566,53 @@ public class SmsView extends LitTemplate {
 //                .setWidth("180px").setFlexGrow(0);
     }
 
+//    private void createMessageypeColumn() {
+//        messageTypeColum = grid
+//                .addColumn(AbstractSMS::getMessageType)
+//                .setComparator(client -> client.getMessageType()).setHeader("Tipo de Mensaje")
+//                .setAutoWidth(true);
+////                .setWidth("180px").setFlexGrow(0);
+//    }
+
     private void createMessageypeColumn() {
+
         messageTypeColum = grid
                 .addColumn(AbstractSMS::getMessageType)
-                .setComparator(client -> client.getMessageType()).setHeader("Tipo de Mensaje")
+                .setComparator(client -> client.getMessageType())
+                .setHeader("tipo de mensaje")
                 .setAutoWidth(true);
-//                .setWidth("180px").setFlexGrow(0);
     }
+
+//    private void createDateColumn() {
+//        dateColumn = grid
+//                .addColumn(new LocalDateTimeRenderer<>(
+//                        client -> client.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+//                        DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")))
+//                .setComparator(AbstractSMS::getDate).setHeader("Fecha de envío")
+//                .setAutoWidth(true);
+////                .setWidth("180px").setFlexGrow(0);
+//    }
 
     private void createDateColumn() {
         dateColumn = grid
                 .addColumn(new LocalDateTimeRenderer<>(
                         client -> client.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
                         DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")))
-                .setComparator(AbstractSMS::getDate).setHeader("Fecha de envío")
+                .setComparator(AbstractSMS::getDate).setHeader("fecha de envío")
                 .setAutoWidth(true);
-//                .setWidth("180px").setFlexGrow(0);
+    }
+
+
+    private void createMessageypeAndMsgTExtColumn() {
+        messageTypeColum = grid
+                .addColumn(TemplateRenderer.<AbstractSMS>of(
+                                "<div><small><b>[[item.msgtype]]</b></small><br><small>[[item.msgtext]]</small></div>")
+                        .withProperty("msgtype", col -> {
+                            return col.getMessageType();
+                        })
+                        .withProperty("msgtext", AbstractSMS::getMessagesText))
+                .setComparator(client -> client.getMessageType()).setHeader("tipo de mensaje / mensaje")
+                .setAutoWidth(true);
     }
 
     private void addFiltersToGrid() {
@@ -646,5 +726,15 @@ public class SmsView extends LitTemplate {
 
     private boolean isValidSearch() {
         return (!checkboxMessageType.isInvalid() && !multi_systemIds.isInvalid());
+    }
+
+    private boolean isGrantedMsgTextColumn(Set<ORole> roles) {
+        return roles.stream().filter(rol -> {
+            return rol.getAuthorities().stream().filter(auth -> {
+                        return auth.getAuthName().equalsIgnoreCase("VIEW_MSG_TEXT");
+                    })
+                    .findFirst()
+                    .isPresent();
+        }).findFirst().isPresent();
     }
 }

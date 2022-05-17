@@ -258,9 +258,22 @@ public class SmsShowView extends LitTemplate {
             System.out.println("Daily message limit reached. Code not able to handle this size of string.");
             return "";
         }
-        StringBuilder sb = new StringBuilder("id,\"address\",datacoding,\"date\",\"iso2\",\"message_type\",\"messages_text\",\"msg_received\",\"msg_sended\",\"source\",\"systemid\",\"carrierCharCode\"\n");
+        StringBuilder sb = new StringBuilder("\"destino\",\"fecha\",\"tipo de mensaje\",\"mensaje\",\"id recibido\",\"id enviando\",\"source\",\"credencial\",\"operadora\"\n");
+
         for (AbstractSMS msg : messages) {
-            sb.append(msg.toString());
+            sb.append(msg.getDestination()).append(",");
+            sb.append(msg.getDate()).append(",");
+            sb.append(msg.getMessageType()).append(",");
+            if (hasAuthToViewMsgTextColumn) {
+                sb.append(msg.getMessagesText()).append(",");
+            } else {
+                sb.append("").append(",");
+            }
+            sb.append(msg.getMsgReceived()).append(",");
+            sb.append(msg.getMsgSended()).append(",");
+            sb.append(msg.getSource()).append(",");
+            sb.append(msg.getSystemId()).append(",");
+            sb.append(msg.getCarrierCharCode());
             sb.append("\n");
         }
         return sb.toString();
@@ -314,7 +327,7 @@ public class SmsShowView extends LitTemplate {
     private void createCarrierColumn() {
         carrierColum = grid
                 .addColumn(AbstractSMS::getCarrierCharCode)
-                .setHeader("credencial / operadora")
+                .setHeader("operadora")
                 .setAutoWidth(true);
     }
 

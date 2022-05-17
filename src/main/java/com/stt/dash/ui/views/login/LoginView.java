@@ -1,5 +1,6 @@
 package com.stt.dash.ui.views.login;
 
+import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.views.dashboard.main.MainDashboardView;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.login.LoginI18n;
@@ -14,6 +15,10 @@ import com.vaadin.flow.router.Route;
 import com.stt.dash.app.security.SecurityUtils;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.views.storefront.StorefrontView;
+
+import java.util.HashMap;
+import java.util.Map;
+
 
 @Route
 @PageTitle("Orinoco Dash")
@@ -50,11 +55,8 @@ public class LoginView extends LoginOverlay
 
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
-        setError(
-                event.getLocation().getQueryParameters().getParameters().containsKey(
-                        "error"));
-        System.out.println("VINO UN PARAMETRO: " + event.getLocation().getQueryParameters().getParameters()
-                .containsKey("pu"));
+        setError(event.getLocation().getQueryParameters().getParameters().containsKey(
+                "error"));
     }
 
 }

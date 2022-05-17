@@ -16,13 +16,13 @@ public class SyncDataOWebClient extends OWebClient<SyncDTO> {
     public Mono<SyncDTO> callSyncDataMono(Integer cli, Integer sys) throws IOException {
         String url = url_sync_data.replace("{idClient}", String.valueOf(cli));
         url = url.replace("{idSys}", String.valueOf(sys));
-        return super.getMonoOResponse("/ws/data/sync/cliid/0/sysid/0");
+        return super.getMonoOResponse("orinoco-admin/ws/data/sync/cliid/0/sysid/0");
     }
 
     public Flux<SyncDTO> callSyncDataFlux(Integer cli, Integer sys) throws IOException {
         String url = url_sync_data.replace("{idClient}", String.valueOf(cli));
         url = url.replace("{idSys}", String.valueOf(sys));
-        return super.getFluxOResponse("/ws/data/sync/cliid/0/sysid/0");
+        return super.getFluxOResponse("orinoco-admin//ws/data/sync/cliid/0/sysid/0");
     }
 
 }

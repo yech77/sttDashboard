@@ -9,20 +9,29 @@ import javax.persistence.Entity;
 import java.util.Date;
 
 /**
- *
  * @author Enrique
  */
 @Entity
 public class FilesToSend extends AbstractEntityAuto {
 
     public enum Status {
-        VALIDATING,
-        GENERATING_MESSAGES,
-        PREPARING_SMS,
-        WAITING_TO_SEND,
-        SENDING,
-        COMPLETED,
-        INVALID
+        VALIDATING("Validando"),
+        GENERATING_MESSAGES("Generando"),
+        PREPARING_SMS("Preparando"),
+        WAITING_TO_SEND("Esperando"),
+        SENDING("Enviando"),
+        COMPLETED("Enviados"),
+        INVALID("Invalido");
+
+        private String text;
+
+        Status(String text) {
+            this.text = text;
+        }
+
+        public String getText() {
+            return text;
+        }
     }
 
     private int numGenerated;
@@ -211,7 +220,7 @@ public class FilesToSend extends AbstractEntityAuto {
     public void setBeingProcessed(boolean beingProcessed) {
         this.beingProcessed = beingProcessed;
     }
-    
+
     public String getFilePath() {
         return filePath;
     }

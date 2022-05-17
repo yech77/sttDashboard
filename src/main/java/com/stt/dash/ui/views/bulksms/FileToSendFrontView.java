@@ -16,8 +16,10 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.polymertemplate.Id;
+import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.*;
+import com.vaadin.flow.templatemodel.TemplateModel;
 import org.springframework.security.access.annotation.Secured;
 
 import java.util.List;
@@ -26,13 +28,16 @@ import java.util.Optional;
 import static com.stt.dash.ui.utils.BakeryConst.EDIT_SEGMENT;
 import static com.stt.dash.ui.utils.BakeryConst.ORDER_ID;
 
-@Tag("file-to-sendfront-view")
-@JsModule("./src/views/bulksms/file-to-sendfront-view.ts")
+@Tag("storefront-view")
+@JsModule("./src/views/storefront/storefront-view.js")
+//@Tag("file-to-sendfront-view")
+//@JsModule("./src/views/bulksms/file-to-sendfront-view.ts")
 @Route(value = BakeryConst.PAGE_BULK_STOREFRONT_ORDER_TEMPLATE, layout = MainView.class)
 @RouteAlias(value = BakeryConst.PAGE_BULK_STOREFRONT_ORDER_EDIT_TEMPLATE, layout = MainView.class)
 @Secured({Role.ADMIN, "UI_PROGRAM_SMS"})
 @PageTitle(BakeryConst.TITLE_BULK_SCHEDULER)
-public class FileToSendFrontView extends LitTemplate implements HasLogger, BeforeEnterObserver, EntityView<FIlesToSend> {
+public class FileToSendFrontView extends PolymerTemplate<TemplateModel> implements HasLogger, BeforeEnterObserver, EntityView<FIlesToSend> {
+//public class FileToSendFrontView extends LitTemplate implements HasLogger, BeforeEnterObserver, EntityView<FIlesToSend> {
 
     @Id("search")
     private SearchBar searchBar;
@@ -77,21 +82,9 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
         dialog.addDialogCloseActionListener(e -> presenter.cancel());
     }
 
-
     @Override
-    public boolean isDirty() {
-        return fileToSendEditor.hasChanges() || detailsView.isDirty();
-    }
-
-    @Override
-    public void clear() {
-        detailsView.setDirty(false);
-        fileToSendEditor.clear();
-    }
-
-    @Override
-    public void write(FIlesToSend entity) throws ValidationException {
-        fileToSendEditor.write(entity);
+    public ConfirmDialog getConfirmDialog() {
+        return confirmation;
     }
 
     @Override
@@ -99,22 +92,8 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
         this.confirmation = confirmDialog;
     }
 
-    @Override
-    public ConfirmDialog getConfirmDialog() {
-        return confirmation;
-    }
-
-    FileToSendEditor getOpenedOrderEditor() {
-        return fileToSendEditor;
-    }
-
-    FileToSendDetails getOpenedOrderDetails() {
-        return detailsView;
-    }
-
-
-    Grid<FIlesToSend> getGrid() {
-        return grid;
+    void setOpened(boolean opened) {
+        dialog.setOpened(opened);
     }
 
     @Override
@@ -128,8 +107,51 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
         }
     }
 
+    void navigateToMainView() {
+        getUI().ifPresent(ui -> ui.navigate(BakeryConst.PAGE_BULK_STOREFRONT));
+    }
+
+    @Override
+    public boolean isDirty() {
+        return fileToSendEditor.hasChanges() || detailsView.isDirty();
+    }
+
+    @Override
+    public void write(FIlesToSend entity) throws ValidationException {
+        fileToSendEditor.write(entity);
+    }
+
+    //    public Stream<HasValue<?, ?>> validate() {
+//        return orderEditor.validate();
+//    }
+
     SearchBar getSearchBar() {
         return searchBar;
+    }
+
+    FileToSendEditor getOpenedOrderEditor() {
+        return fileToSendEditor;
+    }
+
+    FileToSendDetails getOpenedOrderDetails() {
+        return detailsView;
+    }
+
+    Grid<FIlesToSend> getGrid() {
+        return grid;
+    }
+
+    @Override
+    public void clear() {
+        detailsView.setDirty(false);
+        fileToSendEditor.clear();
+    }
+
+    void setDialogElementsVisibility(boolean editing) {
+        System.out.println("SET_DIALOG_ELEMETN: EDITING " + editing);
+        dialog.add(editing ? fileToSendEditor : detailsView);
+        fileToSendEditor.setVisible(editing);
+        detailsView.setVisible(!editing);
     }
 
     @Override
@@ -140,24 +162,5 @@ public class FileToSendFrontView extends LitTemplate implements HasLogger, Befor
     private String getLastSegment(BeforeEnterEvent event) {
         List<String> segments = event.getLocation().getSegments();
         return segments.get(segments.size() - 1);
-    }
-
-    void setOpened(boolean opened) {
-        dialog.setOpened(opened);
-    }
-
-    void setDialogElementsVisibility(boolean editing) {
-        System.out.println("SET_DIALOG_ELEMETN: EDITING " + editing);
-        dialog.add(editing ? fileToSendEditor : detailsView);
-        fileToSendEditor.setVisible(editing);
-        detailsView.setVisible(!editing);
-    }
-
-//    public Stream<HasValue<?, ?>> validate() {
-//        return orderEditor.validate();
-//    }
-
-    void navigateToMainView() {
-        getUI().ifPresent(ui -> ui.navigate(BakeryConst.PAGE_BULK_STOREFRONT));
     }
 }
