@@ -12,16 +12,10 @@ import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.AbstractSmsService;
 import com.stt.dash.backend.service.CarrierService;
 import com.stt.dash.backend.service.SmsHourService;
-import com.stt.dash.ui.DailySmsShowGridView;
 import com.stt.dash.ui.MainView;
-import com.stt.dash.ui.MonthlySmsShowGridView;
-import com.stt.dash.ui.SmsShowGridAllView;
-import com.stt.dash.ui.SmsShowGridHourlyView;
-import com.stt.dash.ui.SmsShowGridViewV2;
 import com.stt.dash.ui.popup.ClientDailyPopupView;
 import com.stt.dash.ui.popup.ClientMonthlyPopupView;
 import com.stt.dash.ui.popup.ClientTrimestralPopUpView;
-import com.stt.dash.ui.popup.MainDashBoardTrimestralPopUpView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.views.HasNotifications;
 import com.stt.dash.ui.views.dashboard.DashboardBase;
@@ -77,23 +71,17 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
     @Id("beanCheckboxGroup")
     private CheckboxGroup<OMessageType> checkboxMessageType;
     @Id("filterButton")
-    private Button filterButton;
+    private Button searchButton;
     /**/
     Logger log = LoggerFactory.getLogger(ClientChartView.class);
     private final SmsHourService smsHourService;
     private final AbstractSmsService abstractSmsService;
     private final ListGenericBean<String> allUserStringSystemId;
     private final CurrentUser currentUser;
-    /* CLIENTE */
-//    private ComboBox<Client> clientCombobox = new ComboBox<>("Clientes");
-//    private MultiComboBox<SystemId> systemIdMultiCombo = new MultiComboBox<>("Credenciales");
-    //    private final CheckboxGroup<OMessageType> checkboxMessageType = new CheckboxGroup<>();
     /* Para Graficos y servicios */
     private List<Integer> monthToShowList;
     private List<String> selectedSystemIdList;
     private String[] ml;
-    /* Button */
-//    private Button filterButton = new Button("Actualizar");
     private List<Carrier> carrierList;
 
     public ClientChartView(AbstractSmsService abstractSmsService,
@@ -158,13 +146,11 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         });
         /* ******* */
         /* HEADER */
-//        divHeader.add(new HorizontalLayout(clientCombobox, checkboxMessageType),
-//                new HorizontalLayout(systemIdMultiCombo), filterButton);
         clientCombobox.setWidthFull();
         checkboxMessageType.setWidthFull();
         systemIdMultiCombo.setWidthFull();
         updateCharts();
-        filterButton.setEnabled(isValidSearch());
+        searchButton.setEnabled(isValidSearch());
     }
 
     /**
@@ -191,20 +177,20 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
             }
         });
 
-        clientCombobox.addBlurListener(blur -> {
-            filterButton.setEnabled(isValidSearch());
+        clientCombobox.addValueChangeListener(blur -> {
+            searchButton.setEnabled(isValidSearch());
         });
 
-        systemIdMultiCombo.addBlurListener(blur -> {
-            filterButton.setEnabled(isValidSearch());
+        systemIdMultiCombo.addValueChangeListener(blur -> {
+            searchButton.setEnabled(isValidSearch());
         });
 
         checkboxMessageType.addValueChangeListener(value -> {
-            filterButton.setEnabled(isValidSearch());
+            searchButton.setEnabled(isValidSearch());
         });
 
-        filterButton.addClickListener(clickEvent -> {
-            filterButton.setEnabled(false);
+        searchButton.addClickListener(clickEvent -> {
+            searchButton.setEnabled(false);
             keepParametersInSession();
             UI.getCurrent().getPage().reload();
         });
@@ -414,50 +400,42 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
                         selectedSystemIdList = value.stream().map(SystemId::getSystemId).collect(Collectors.toList())
                 );
         /**/
-        Configuration confTriMixChart = smsLastThreeMonthChart.getConfiguration();
+        Configuration conf = smsLastThreeMonthChart.getConfiguration();
         smsLastThreeMonthChart.addPointClickListener(click -> {
-            Dialog d = new Dialog();
-            d.setWidth("75%");
             List<Integer> month = monthsIn(2);
             Integer integer = month.get(click.getItemIndex());
             List<String> messageTypeList = checkboxMessageType.getSelectedItems().stream().map(OMessageType::name).collect(Collectors.toList());
             ClientTrimestralPopUpView view = new ClientTrimestralPopUpView(smsHourService, actualYear, integer, selectedSystemIdList, messageTypeList);
-            d.add(view);
-            d.open();
-            view.setConsumer((s) -> d.close());
+            popup(view);
         });
         smsLastThreeMonthChart.addChartClickListener(click -> {
-            Dialog d = new Dialog();
-            d.setWidth("75%");
             List<String> messageTypeList = checkboxMessageType.getSelectedItems().stream().map(OMessageType::name).collect(Collectors.toList());
             ClientTrimestralPopUpView view = new ClientTrimestralPopUpView(smsHourService, actualYear, monthsIn(2), selectedSystemIdList, messageTypeList);
-            d.add(view);
-            d.open();
-            view.setConsumer((s) -> d.close());
+            popup(view);
         });
-        confTriMixChart.getyAxis().setTitle("SMS");
-        confTriMixChart.setTitle("Trimestral - " + LocalDate.now().getYear());
-        confTriMixChart.setExporting(true);
+        conf.getyAxis().setTitle("SMS");
+        conf.setTitle("Trimestral - " + LocalDate.now().getYear());
+        conf.setExporting(true);
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /* Averiguar cuales son los tres meses a calular. */
         /**/
-        confTriMixChart.getxAxis().setCategories(ml);
+        conf.getxAxis().setCategories(ml);
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
         tooltip.setShared(true);
-        confTriMixChart.setTooltip(tooltip);
+        conf.setTooltip(tooltip);
 
         /* Buscar con todos los systemids del usuario. */
         List<SmsByYearMonth> l = smsHourService.groupSmsMessageTypeByYeMoWhYeMoInSyIn(actualYear, monthsIn(2), allUserStringSystemId.getList());
         List<Series> LineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), l, monthsIn(2));
-        addToChart(confTriMixChart, LineDateSeriesList, plotColum);
+        addToChart(conf, LineDateSeriesList, plotColum);
         /* LINE CHART */
         l = smsHourService.
                 getGroupSystemIdByYeMoWhMoInMessageTypeIn(LocalDate.now().getYear(), monthsIn(2), checkboxMessageType.getSelectedItems(), selectedSystemIdList);
 
         PlotOptionsLine plotLine = new PlotOptionsLine();
         LineDateSeriesList = systemidAndTimeTotal(systemIdMultiCombo.getValue(), l, monthsIn(2));
-        addToChart(confTriMixChart, LineDateSeriesList, plotLine);
+        addToChart(conf, LineDateSeriesList, plotLine);
     }
 
     private void addToChart(Configuration configuration, List<Series> LineDateSeriesList, AbstractPlotOptions plot) {
@@ -535,7 +513,6 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
             return new ArrayList<>();
         }
         Map<String, List<Long>> serieToChartMap = new HashMap<>();
-        List<Series> dataSeriesList = new ArrayList<>();
         /* Recorre los carrier seleccionados. */
         systemidSet.forEach(actualSystemIdForeach -> {
             List<Long> totalList = new ArrayList<>();
@@ -553,6 +530,14 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
 
         });
         return convertToSeries(serieToChartMap);
+    }
+
+    private void popup(ClientTrimestralPopUpView view) {
+        Dialog d = new Dialog();
+        d.setWidth("75%");
+        d.add(view);
+        d.open();
+        view.setConsumer((s) -> d.close());
     }
 
     private String getStringLog() {

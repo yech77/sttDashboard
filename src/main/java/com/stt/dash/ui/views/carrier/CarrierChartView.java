@@ -189,13 +189,12 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
             UI.getCurrent().getPage().reload();
         });
         filterButton.setEnabled(true);
-        filterButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        clientCombobox.addBlurListener(blur -> {
+        clientCombobox.addValueChangeListener(blur -> {
             filterButton.setEnabled(isValidSearch());
         });
 
-        carrierMultiComboBox.addBlurListener(blur -> {
+        carrierMultiComboBox.addValueChangeListener(blur -> {
             filterButton.setEnabled(isValidSearch());
         });
 

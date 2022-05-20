@@ -176,8 +176,7 @@ public class FileToSendPresenter {
             view.showUpdatedNotification();
             close();
         };
-        EntityPresenter.CrudOnPreOperation<FIlesToSend>
-                onBeforeDelete = entity -> {
+        EntityPresenter.CrudOnPreOperation<FIlesToSend> onBeforeDelete = entity -> {
             return entity.getStatus() != Status.COMPLETED;
         };
         if (entityPresenter.getEntity().getStatus() != Status.COMPLETED) {

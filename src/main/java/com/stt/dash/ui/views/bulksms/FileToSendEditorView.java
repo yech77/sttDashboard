@@ -53,7 +53,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.TemporalField;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -66,7 +65,7 @@ import java.util.logging.Logger;
 @JsModule("./src/views/bulksms/file-to-send-editor.ts")
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class FileToSendEditor extends LitTemplate implements HasNotifications {
+public class FileToSendEditorView extends LitTemplate implements HasNotifications {
 
     @Id("title")
     private H2 title;
@@ -119,14 +118,14 @@ public class FileToSendEditor extends LitTemplate implements HasNotifications {
     private Button cancel;
 
     @Id("review")
-    private Button review;
+    private Button programAgendaButton;
 
     /**/
-    private FileToSendEditorPresenter presenter;
+    private FileToSendEditorViewPresenter presenter;
 
     private final String SMS_MESSAGE_WITHOUT_PARAMETER = "Escriba directamente su mensaje";
     private final String SMS_MESSAGE_WITH_PARAMETER = "Mensaje contiene %s  parámetros; Tienes usados %s.";
-//    private FileToSendEditor fileToSendEditor;
+//    private FileToSendEditorView fileToSendEditor;
 
     private User currentUser;
 
@@ -146,19 +145,19 @@ public class FileToSendEditor extends LitTemplate implements HasNotifications {
 
     private static Locale esLocale = new Locale("es", "ES");
 
-    public FileToSendEditor(@Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
-                            AgendaService agendaService,
-                            @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList,
-                            WebClient webClient,
-                            OProperties properties) {
+    public FileToSendEditorView(@Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
+                                AgendaService agendaService,
+                                @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList,
+                                WebClient webClient,
+                                OProperties properties) {
         /**/
-        presenter = new FileToSendEditorPresenter(this, userChildrenList, agendaService, systemIdList, webClient, properties);
+        presenter = new FileToSendEditorViewPresenter(this, userChildrenList, agendaService, systemIdList, webClient, properties);
         /**/
         acceptCheckbox.setVisible(false);
         dueDate.setVisible(false);
         /**/
         cancel.addClickListener(e -> fireEvent(new CancelEvent(this, false)));
-        review.addClickListener(e ->
+        programAgendaButton.addClickListener(e ->
         {
             Integer block = -1;
             try {
@@ -167,7 +166,7 @@ public class FileToSendEditor extends LitTemplate implements HasNotifications {
                 showNotification("Ha ocurrido un Error al obtener Saldo. Favor intente nuevamente.", true);
                 return;
             }
-            if (block < 0) {
+            if (block <= 0) {
                 showNotification("No se puede Programar. Verifique saldo o fecha de Vencimiento de: " + systemIdMulti.getValue(), true);
                 return;
             }
@@ -483,9 +482,9 @@ public class FileToSendEditor extends LitTemplate implements HasNotifications {
 
     private void validateReview() {
         if (hasMoreSms) {
-            review.setEnabled(binder.isValid() && acceptCheckbox.getValue());
+            programAgendaButton.setEnabled(binder.isValid() && acceptCheckbox.getValue());
         } else {
-            review.setEnabled(binder.isValid());
+            programAgendaButton.setEnabled(binder.isValid());
         }
     }
 
@@ -571,7 +570,7 @@ public class FileToSendEditor extends LitTemplate implements HasNotifications {
         if (order.getStatus() != null) {
 //            getModel().setStatus(order.getState().name());
         }
-        review.setEnabled(false);
+        programAgendaButton.setEnabled(false);
     }
 
     public boolean hasChanges() {

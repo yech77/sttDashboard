@@ -355,8 +355,7 @@ public class MainDashboardView extends DashboardBase {
      */
     private void populateLastThreeMonthChart() {
         smsLastThreeMonthChart.addPointClickListener(click -> {
-            List<Integer> integers = monthsIn(2);
-            Integer month = integers.get(click.getItemIndex());
+            Integer month = monthsIn(2).get(click.getItemIndex());
             MainDashBoardTrimestralPopUpView view = new MainDashBoardTrimestralPopUpView(smsHourService, actualYear, month, stingListGenericBean.getList());
             popup(view);
         });
