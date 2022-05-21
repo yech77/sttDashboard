@@ -104,9 +104,7 @@ public class EntityPresenter<T extends AbstractEntitySequence, V extends EntityV
     }
 
     private void saveEntity() {
-        state.updateEntity(
-                crudService.save(currentUser.getUser(), state.getEntity()),
-                isNew());
+        state.updateEntity(crudService.save(currentUser.getUser(), state.getEntity()), isNew());
     }
 
     public boolean writeEntity() {

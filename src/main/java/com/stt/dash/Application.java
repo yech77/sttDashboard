@@ -3,9 +3,7 @@ package com.stt.dash;
 import com.stt.dash.app.security.SecurityConfiguration;
 import com.stt.dash.backend.data.ClientCopycatDTO;
 import com.stt.dash.backend.data.SystemIdCopycatDTO;
-import com.stt.dash.backend.data.bean.SyncDTO;
 import com.stt.dash.backend.data.entity.Client;
-import com.stt.dash.backend.data.entity.ODashConf;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.UserRepository;
@@ -15,7 +13,6 @@ import com.stt.dash.backend.service.SystemIdService;
 import com.stt.dash.backend.service.TempSmsService;
 import com.stt.dash.backend.service.UserService;
 import com.stt.dash.backend.util.ws.SyncClientWebClient;
-import com.stt.dash.backend.util.ws.SyncDataOWebClient;
 import com.stt.dash.backend.util.ws.SyncSystemIdWebClient;
 import com.stt.dash.ui.MainView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +23,12 @@ import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConf
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 

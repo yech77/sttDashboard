@@ -125,7 +125,7 @@ public class FileToSendFrontView extends PolymerTemplate<TemplateModel> implemen
         return searchBar;
     }
 
-    FileToSendEditorView getOpenedOrderEditor() {
+    FileToSendEditorView getOpenedFileToSendEditorView() {
         return fileToSendEditorView;
     }
 

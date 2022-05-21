@@ -9,6 +9,8 @@ import com.stt.dash.backend.service.FilesToSendService;
 import com.stt.dash.backend.service.SystemIdService;
 import com.stt.dash.backend.thread.SmsGeneratorParserRunnable;
 import com.stt.dash.backend.util.AgendaFileUtils;
+import com.stt.dash.backend.util.ws.BalanceWebClient;
+import com.stt.dash.backend.util.ws.SystemIdBalanceOResponse;
 import com.stt.dash.ui.crud.EntityPresenter;
 import com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider;
 import com.stt.dash.ui.utils.ODateUitls;
@@ -20,7 +22,10 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.concurrent.Executors;
@@ -35,6 +40,7 @@ public class FileToSendPresenter {
     private static final String DELETE_DENIED_INCORRECT_STATUS = "No se puede borrar. Programacion ya enviada.";
     private FileToSendCardHeaderGenerator headersGenerator;
     private FileToSendFrontView view;
+    private WebClient webClient;
 
     private final EntityPresenter<FIlesToSend, FileToSendFrontView> entityPresenter;
     private final FilesToSendGridDataProvider dataProvider;
@@ -44,11 +50,13 @@ public class FileToSendPresenter {
     private final OProperties properties;
 
     @Autowired
-    FileToSendPresenter(FilesToSendService service,
-                        SystemIdService systemIdService,
-                        OProperties properties,
-                        FilesToSendGridDataProvider dataProvider,
-                        EntityPresenter<FIlesToSend, FileToSendFrontView> entityPresenter, CurrentUser currentUser) {
+    FileToSendPresenter(@Autowired FilesToSendService service,
+                        @Autowired SystemIdService systemIdService,
+                        @Autowired OProperties properties,
+                        @Autowired FilesToSendGridDataProvider dataProvider,
+                        @Autowired EntityPresenter<FIlesToSend, FileToSendFrontView> entityPresenter,
+                        @Autowired WebClient webClient,
+                        @Autowired CurrentUser currentUser) {
         this.entityPresenter = entityPresenter;
         this.dataProvider = dataProvider;
         this.currentUser = currentUser;
@@ -58,15 +66,16 @@ public class FileToSendPresenter {
         headersGenerator.resetHeaderChain(false);
         dataProvider.setPageObserver(p -> headersGenerator.filesToSendRead(p.getContent()));
         this.properties = properties;
+        this.webClient = webClient;
     }
 
     void init(FileToSendFrontView view) {
         this.entityPresenter.setView(view);
         this.view = view;
         view.getGrid().setDataProvider(dataProvider);
-        view.getOpenedOrderEditor().setCurrentUser(currentUser.getUser());
-        view.getOpenedOrderEditor().addCancelListener(e -> cancel());
-        view.getOpenedOrderEditor().addReviewListener(e -> review());
+        view.getOpenedFileToSendEditorView().setCurrentUser(currentUser.getUser());
+        view.getOpenedFileToSendEditorView().addCancelListener(e -> cancel());
+        view.getOpenedFileToSendEditorView().addReviewListener(e -> review());
         view.getOpenedOrderDetails().addSaveListenter(e -> save());
         view.getOpenedOrderDetails().addCancelListener(e -> cancel());
         view.getOpenedOrderDetails().addBackListener(e -> back());
@@ -89,7 +98,6 @@ public class FileToSendPresenter {
     }
 
     void createNewOrder() {
-        System.out.println("Llegue a crearNewOrder...");
         open(entityPresenter.createNew(), true);
     }
 
@@ -98,25 +106,21 @@ public class FileToSendPresenter {
     }
 
     void closeSilently() {
-        System.out.println("Llegue a closeSilently...");
         entityPresenter.close();
         view.setOpened(false);
     }
 
     void edit() {
-        System.out.println("Llegue edit...");
         UI.getCurrent()
                 .navigate(String.format(PAGE_BULK_STOREFRONT_ORDER_EDIT,
                         entityPresenter.getEntity().getId()));
     }
 
     void back() {
-        System.out.println("Llegue a back...");
         view.setDialogElementsVisibility(true);
     }
 
     void review() {
-        System.out.println("Llegue a Review...");
 //         Using collect instead of findFirst to assure all streams are
 //         traversed, and every validation updates its view
 //        List<HasValue<?, ?>> fields = view.validate().collect(Collectors.toList());
@@ -140,7 +144,6 @@ public class FileToSendPresenter {
         entityPresenter.save(e -> {
             /* Si se salva correctamente se ejecuta este codigo. */
             if (entityPresenter.isNew()) {
-                System.out.println("Llegue a save is New...");
                 view.showCreatedNotification();
                 dataProvider.refreshAll();
                 /**/
@@ -150,7 +153,6 @@ public class FileToSendPresenter {
                 /**/
                 String clientCod = bySystemId.get().getSystemId();
                 // Valida y Genera mensajes
-                System.out.println("Generando mensajes en 5 segundos...");
                 AgendaFileUtils.setBaseDir(properties.getAgendaFilePathUpload());
                 scheduler.schedule(new SmsGeneratorParserRunnable(properties,
                                 service,
@@ -160,8 +162,15 @@ public class FileToSendPresenter {
                                 currentUser.getUser()),
                         ODateUitls.localDateTimeToDate(LocalDateTime.now().plusSeconds(5)));
                 /**/
+                BalanceWebClient balanceWebClient = new BalanceWebClient(webClient, SystemIdBalanceOResponse.class);
+                try {
+                    Mono<SystemIdBalanceOResponse> mono = balanceWebClient.callSyncData(e.getSystemId(), e.getSmsCount());
+                    SystemIdBalanceOResponse block = mono.block();
+                    System.out.println("Actualizado el saldo en oadmin....");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             } else {
-                System.out.println("Llegue a save not is New...");
                 view.showUpdatedNotification();
                 dataProvider.refreshItem(e);
             }
@@ -186,20 +195,18 @@ public class FileToSendPresenter {
         }
     }
 
-    private void open(FIlesToSend order, boolean edit) {
-        System.out.println("Llegue a Open...");
+    private void open(FIlesToSend fileToSend, boolean edit) {
         view.setDialogElementsVisibility(edit);
         view.setOpened(true);
         if (edit) {
-            view.getOpenedOrderEditor().read(order, entityPresenter.isNew());
+            view.getOpenedFileToSendEditorView().read(fileToSend, entityPresenter.isNew());
         } else {
-            view.getOpenedOrderDetails().display(order, false);
+            view.getOpenedOrderDetails().display(fileToSend, false);
         }
     }
 
     private void close() {
-        System.out.println("FileToSendPresenter: Close");
-        view.getOpenedOrderEditor().close();
+        view.getOpenedFileToSendEditorView().close();
         view.setOpened(false);
         view.navigateToMainView();
         entityPresenter.close();

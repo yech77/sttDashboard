@@ -145,6 +145,8 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
 
     private static Locale esLocale = new Locale("es", "ES");
 
+    private int totsms = 0;
+
     public FileToSendEditorView(@Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
                                 AgendaService agendaService,
                                 @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList,
@@ -178,11 +180,9 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
                 totSmsLineAgenda = agendaComboBox.getValue().getItemCount();
             }
 
-            Map<Integer, Integer> integerIntegerMap = calculateNumberOfSms(smsBoxCharCounter);
             /* calcular el total asumiendo que la agenda no es variable */
             String s = smsBoxCharCounter + " caracteres";
             paragraphCharCounter.setText(s + "\n");
-            int totsms = 0;
             Map<Integer, Integer> smsToSendList = calculateNumberOfSms(smsBoxCharCounter);
 
             /* Calcular total de Agenda no Variable */
@@ -583,8 +583,9 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
 //        itemsEditor.setValue(null);
     }
 
-    public void write(FIlesToSend fIlesToSend) throws ValidationException {
-        binder.writeBean(fIlesToSend);
+    public void write(FIlesToSend filesToSend) throws ValidationException {
+        filesToSend.setSmsCount(totsms);
+        binder.writeBean(filesToSend);
     }
 
     public Registration addReviewListener(ComponentEventListener<BulkSmsReviewEvent> listener) {

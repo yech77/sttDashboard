@@ -18,6 +18,10 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+/**
+ * Crea el archivo con el mensaje final que se va a enviar al usuario. Este archivo sirve de insumo para
+ * el preparingSmsMessagge.
+ */
 public class SmsGeneratorParserRunnable implements Runnable {
 
     private static Logger log = LoggerFactory.getLogger(SmsGeneratorParserRunnable.class);
