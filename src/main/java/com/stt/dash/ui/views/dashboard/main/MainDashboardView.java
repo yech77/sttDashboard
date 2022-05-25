@@ -302,7 +302,7 @@ public class MainDashboardView extends DashboardBase {
             popup(view);
         });
         Configuration monthConf = smsThisMonthChart.getConfiguration();
-        configureColumnChart(monthConf);
+//        configureColumnChart(monthConf);
         /**/
         List<SmsByYearMonthDay> smsDailyList = smsHourService.groupSmsByYeMoDaTyWhYeMoSyIn(actualYear, actualMonth, stingListGenericBean.getList());
         System.out.println("DEVUELTOS: " + smsDailyList.size());
@@ -323,7 +323,7 @@ public class MainDashboardView extends DashboardBase {
         ListSeries moListSeries = new ListSeries("MO");
         mtListSeries.setData(mt);
         moListSeries.setData(mo);
-        PlotOptionsColumn plotColumn = new PlotOptionsColumn();
+        PlotOptionsLine plotColumn = new PlotOptionsLine();
         plotColumn.setStacking(Stacking.NONE);
         Tooltip tooltip2 = new Tooltip();
         tooltip2.setValueDecimals(0);
@@ -354,6 +354,7 @@ public class MainDashboardView extends DashboardBase {
      *
      */
     private void populateLastThreeMonthChart() {
+        Configuration conf = smsLastThreeMonthChart.getConfiguration();
         smsLastThreeMonthChart.addPointClickListener(click -> {
             Integer month = monthsIn(2).get(click.getItemIndex());
             MainDashBoardTrimestralPopUpView view = new MainDashBoardTrimestralPopUpView(smsHourService, actualYear, month, stingListGenericBean.getList());
@@ -363,7 +364,6 @@ public class MainDashboardView extends DashboardBase {
             MainDashBoardTrimestralPopUpView view = new MainDashBoardTrimestralPopUpView(smsHourService, actualYear, monthsIn(2), stingListGenericBean.getList());
             popup(view);
         });
-        Configuration conf = smsLastThreeMonthChart.getConfiguration();
         conf.getChart().setType(ChartType.AREASPLINE);
         conf.getChart().setBorderRadius(4);
         conf.setTitle("Enviados en los Últimos tres Meses");
@@ -381,7 +381,7 @@ public class MainDashboardView extends DashboardBase {
         conf.getxAxis().setCategories(ml);
         List<? extends AbstractSmsByYearMonth> monthToShowDataList = smsHourService.groupSmsMessageTypeByYeMoWhYeMoInSyIn(actualYear, monthToShowList, stingListGenericBean.getList());
         List<Series> lineDateSeriesList = messageTypeAndMonthlyTotal(Arrays.asList(OMessageType.values()), monthToShowDataList, monthsIn(2));
-        PlotOptionsLine plotLine = new PlotOptionsLine();
+        PlotOptionsColumn plotLine = new PlotOptionsColumn();
         addToChart(conf, lineDateSeriesList, plotLine);
     }
 

@@ -331,7 +331,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
      *
      */
     private void updateMonthlyLineChart() {
-        Configuration confMonthlyLineChart = smsThisMonthChart.getConfiguration();
+        Configuration confThisMonth = smsThisMonthChart.getConfiguration();
         /**/
         smsThisMonthChart.addPointClickListener(click -> {
             /* El dia comienza en 1. */
@@ -363,16 +363,16 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
             view.setConsumer((s) -> d.close());
         });
         /**/
-        confMonthlyLineChart.getyAxis().setTitle("SMS");
-        confMonthlyLineChart.setSubTitle("por dia");
-        confMonthlyLineChart.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - " + actualYear);
-        confMonthlyLineChart.setExporting(true);
+        confThisMonth.getyAxis().setTitle("SMS");
+        confThisMonth.setSubTitle("por dia");
+        confThisMonth.setExporting(true);
+        confThisMonth.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - " + actualYear);
         /**/
         String[] da = new String[LocalDate.now().getMonth().maxLength()];
         for (int i = 1; i <= LocalDate.now().getMonth().maxLength(); i++) {
             da[i - 1] = i + "";
         }
-        confMonthlyLineChart.getxAxis().setCategories(da);
+        confThisMonth.getxAxis().setCategories(da);
         /**/
         PlotOptionsLine plotColum = new PlotOptionsLine();
         /**/
@@ -380,16 +380,18 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         tooltip.setValueDecimals(0);
         tooltip.setShared(true);
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">Dia: {point.key}</span><br/>");
-        confMonthlyLineChart.setTooltip(tooltip);
+        confThisMonth.setTooltip(tooltip);
+        /**/
+        configureColumnChart(confThisMonth);
         /* Column Chart*/
         List<SmsByYearMonthDay> smsByYearMonthDayList = smsHourService.groupSmsByYeMoDaTyWhYeMoSyIn(LocalDate.now().getYear(), actualMonth, allUserStringSystemId.getList());
         List<Series> LineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), smsByYearMonthDayList, dayList);
-        addToChart(confMonthlyLineChart, LineDateSeriesList, plotColum);
+        addToChart(confThisMonth, LineDateSeriesList, plotColum);
         /* Line Chart */
         smsByYearMonthDayList = smsHourService.groupSmsByYeMoDaSyWhYeMoSyIn_TyIn(LocalDate.now().getYear(), actualMonth, checkboxMessageType.getSelectedItems(), allUserStringSystemId.getList());
         PlotOptionsLine plotLine = new PlotOptionsLine();
         LineDateSeriesList = systemidAndTimeTotal(systemIdMultiCombo.getValue(), smsByYearMonthDayList, dayList);
-        addToChart(confMonthlyLineChart, LineDateSeriesList, plotLine);
+        addToChart(confThisMonth, LineDateSeriesList, plotLine);
     }
 
     private void updateTriMixChart() {

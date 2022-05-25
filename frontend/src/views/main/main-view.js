@@ -32,7 +32,7 @@ class MainView extends PolymerElement {
                     box-shadow: 0 2px 5px 0 rgba(23, 68, 128, 0.1);
                     border-radius: 4px;
                     height: calc(20vh - 64px) !important;
-                    min-height: 150px;
+                    min-height: 200px;
                 }
 
                 #yearlySalesGraph {
@@ -66,14 +66,14 @@ class MainView extends PolymerElement {
                 </vaadin-board-row>
                 <vaadin-board-row>
                     <div class="vaadin-board-cell">
-                        <vaadin-chart id="deliveriesThisMonth" class="column-chart"></vaadin-chart>
+                        <vaadin-chart id="yearlySalesGraph" class="column-chart"></vaadin-chart>
                     </div>
-                    <div class="vaadin-board-cell">
+                    <div class="vaadin-board-cell" board-cols="2">
                         <vaadin-chart id="deliveriesThisYear" class="column-chart"></vaadin-chart>
                     </div>
                 </vaadin-board-row>
                 <vaadin-board-row>
-                    <vaadin-chart id="yearlySalesGraph" class="yearly-sales"></vaadin-chart>
+                    <vaadin-chart id="deliveriesThisMonth" class="yearly-sales"></vaadin-chart>
                 </vaadin-board-row>
                 <vaadin-board-row class="custom-board-row">
                     <div class="vaadin-board-cell">

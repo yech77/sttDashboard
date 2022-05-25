@@ -44,7 +44,7 @@ public abstract class DashboardBase extends PolymerTemplate<TemplateModel> {
         conf.getxAxis().setTickLength(0);
         conf.getyAxis().getTitle().setText(null);
         /**/
-        conf.getLegend().setEnabled(false);
+        conf.getLegend().setEnabled(true);
     }
 
     /**
