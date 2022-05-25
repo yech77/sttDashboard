@@ -14,7 +14,6 @@ import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.data.binder.ValidationException;
@@ -30,14 +29,11 @@ import static com.stt.dash.ui.utils.BakeryConst.ORDER_ID;
 
 @Tag("storefront-view")
 @JsModule("./src/views/storefront/storefront-view.js")
-//@Tag("file-to-sendfront-view")
-//@JsModule("./src/views/bulksms/file-to-sendfront-view.ts")
 @Route(value = BakeryConst.PAGE_BULK_STOREFRONT_ORDER_TEMPLATE, layout = MainView.class)
 @RouteAlias(value = BakeryConst.PAGE_BULK_STOREFRONT_ORDER_EDIT_TEMPLATE, layout = MainView.class)
 @Secured({Role.ADMIN, "UI_PROGRAM_SMS"})
 @PageTitle(BakeryConst.TITLE_BULK_SCHEDULER)
 public class FileToSendFrontView extends PolymerTemplate<TemplateModel> implements HasLogger, BeforeEnterObserver, EntityView<FIlesToSend> {
-//public class FileToSendFrontView extends LitTemplate implements HasLogger, BeforeEnterObserver, EntityView<FIlesToSend> {
 
     @Id("search")
     private SearchBar searchBar;
@@ -50,14 +46,14 @@ public class FileToSendFrontView extends PolymerTemplate<TemplateModel> implemen
 
     private ConfirmDialog confirmation;
 
-    private final FileToSendEditor fileToSendEditor;
+    private final FileToSendEditorView fileToSendEditorView;
 
     private final FileToSendDetails detailsView = new FileToSendDetails();
 
     private final FileToSendPresenter presenter;
 
-    public FileToSendFrontView(FileToSendEditor fileToSendEditor, FileToSendPresenter presenter) {
-        this.fileToSendEditor = fileToSendEditor;
+    public FileToSendFrontView(FileToSendEditorView fileToSendEditorView, FileToSendPresenter presenter) {
+        this.fileToSendEditorView = fileToSendEditorView;
         this.presenter = presenter;
 
         searchBar.setActionText("Programar nuevo masivo");
@@ -113,12 +109,12 @@ public class FileToSendFrontView extends PolymerTemplate<TemplateModel> implemen
 
     @Override
     public boolean isDirty() {
-        return fileToSendEditor.hasChanges() || detailsView.isDirty();
+        return fileToSendEditorView.hasChanges() || detailsView.isDirty();
     }
 
     @Override
     public void write(FIlesToSend entity) throws ValidationException {
-        fileToSendEditor.write(entity);
+        fileToSendEditorView.write(entity);
     }
 
     //    public Stream<HasValue<?, ?>> validate() {
@@ -129,8 +125,8 @@ public class FileToSendFrontView extends PolymerTemplate<TemplateModel> implemen
         return searchBar;
     }
 
-    FileToSendEditor getOpenedOrderEditor() {
-        return fileToSendEditor;
+    FileToSendEditorView getOpenedFileToSendEditorView() {
+        return fileToSendEditorView;
     }
 
     FileToSendDetails getOpenedOrderDetails() {
@@ -144,13 +140,13 @@ public class FileToSendFrontView extends PolymerTemplate<TemplateModel> implemen
     @Override
     public void clear() {
         detailsView.setDirty(false);
-        fileToSendEditor.clear();
+        fileToSendEditorView.clear();
     }
 
     void setDialogElementsVisibility(boolean editing) {
         System.out.println("SET_DIALOG_ELEMETN: EDITING " + editing);
-        dialog.add(editing ? fileToSendEditor : detailsView);
-        fileToSendEditor.setVisible(editing);
+        dialog.add(editing ? fileToSendEditorView : detailsView);
+        fileToSendEditorView.setVisible(editing);
         detailsView.setVisible(!editing);
     }
 

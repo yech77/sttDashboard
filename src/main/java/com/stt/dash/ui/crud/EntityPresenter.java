@@ -98,16 +98,13 @@ public class EntityPresenter<T extends AbstractEntitySequence, V extends EntityV
         return false;
     }
 
-    private void consumeError(
-            Exception e, String message, boolean isPersistent) {
+    private void consumeError(Exception e, String message, boolean isPersistent) {
         getLogger().debug(message, e);
         view.showError(message, isPersistent);
     }
 
     private void saveEntity() {
-        state.updateEntity(
-                crudService.save(currentUser.getUser(), state.getEntity()),
-                isNew());
+        state.updateEntity(crudService.save(currentUser.getUser(), state.getEntity()), isNew());
     }
 
     public boolean writeEntity() {

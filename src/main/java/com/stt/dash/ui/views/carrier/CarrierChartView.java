@@ -189,13 +189,12 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
             UI.getCurrent().getPage().reload();
         });
         filterButton.setEnabled(true);
-        filterButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        clientCombobox.addBlurListener(blur -> {
+        clientCombobox.addValueChangeListener(blur -> {
             filterButton.setEnabled(isValidSearch());
         });
 
-        carrierMultiComboBox.addBlurListener(blur -> {
+        carrierMultiComboBox.addValueChangeListener(blur -> {
             filterButton.setEnabled(isValidSearch());
         });
 
@@ -239,6 +238,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
 
         confHourlyChart.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - dia de hoy");
         confHourlyChart.setSubTitle("por hora");
+        confHourlyChart.setExporting(true);
         confHourlyChart.getyAxis().setTitle("SMS");
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /**/
@@ -384,6 +384,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
 
         confIn.setTitle(OMonths.valueOf(actualMonth).getMonthName() + "- dia de hoy");
         confIn.setSubTitle("por hora");
+        confIn.setExporting(true);
         confIn.getyAxis().setTitle("SMS");
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /**/
@@ -493,6 +494,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         tooltip.setValueDecimals(0);
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
         confTriChart.setTitle("Trimestre");
+        confTriChart.setExporting(true);
         confTriChart.setTooltip(tooltip);
         /* Averiguar cuales son los tres meses a calular. */
         confTriChart.getxAxis().setCategories(ml);
@@ -517,6 +519,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         tooltip.setValueDecimals(0);
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
         confTriChart.setTitle("Trimestre");
+        confTriChart.setExporting(true);
         confTriChart.setTooltip(tooltip);
         /**/
 //        System.out.println("************************************************ ");
@@ -608,8 +611,8 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
      * @param smsByCarrierAndTypeList
      */
     private void populateMonthChart(List<? extends AbstractSmsByYearMonth> smsByDayList, List<SmsByYearMonthDay> smsByCarrierAndTypeList) {
-        Configuration confIn = smsThisMonthChart.getConfiguration();
-
+        Configuration confThisMonth = smsThisMonthChart.getConfiguration();
+        /**/
         smsThisMonthChart.addChartClickListener(click -> {
             Dialog d = new Dialog();
             d.setWidth("75%");
@@ -635,17 +638,17 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
             d.open();
             view.setConsumer((s) -> d.close());
         });
-
         /**/
-        confIn.getyAxis().setTitle("SMS");
-        confIn.setSubTitle("por dia");
-        confIn.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - " + actualYear);
+        confThisMonth.getyAxis().setTitle("SMS");
+        confThisMonth.setSubTitle("por dia");
+        confThisMonth.setExporting(true);
+        confThisMonth.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - " + actualYear);
         /**/
         String[] da = new String[LocalDate.now().getMonth().maxLength()];
         for (int i = 1; i <= LocalDate.now().getMonth().maxLength(); i++) {
             da[i - 1] = i + "";
         }
-        confIn.getxAxis().setCategories(da);
+        confThisMonth.getxAxis().setCategories(da);
         /**/
         PlotOptionsLine plotColum = new PlotOptionsLine();
         /**/
@@ -653,14 +656,14 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         tooltip.setValueDecimals(0);
         tooltip.setShared(true);
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
-        confIn.setTooltip(tooltip);
+        confThisMonth.setTooltip(tooltip);
         /**/
-        configureColumnChart(confIn);
+        configureColumnChart(confThisMonth);
         smsByDayList = orderGroup(fillWithCero(smsByDayList, monthToShowList));
         /**/
         List<DataSeries> list_series1 = findDataSeriesColumnsBase(smsByDayList);
         for (DataSeries list_sery : list_series1) {
-            confIn.addSeries(list_sery);
+            confThisMonth.addSeries(list_sery);
         }
 //        DataProvider<SmsByYearMonth, ?> dataProvider = new ListDataProvider<>(smsGroup);
 //
@@ -679,7 +682,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
             log.info("{} NO DATA FOR CARRIER CHART LINE", getStringLog());
         } else {
             for (int i = 0; i < list_series2.size() - 1; i++) {
-                confIn.addSeries(list_series2.get(i));
+                confThisMonth.addSeries(list_series2.get(i));
             }
         }
     }

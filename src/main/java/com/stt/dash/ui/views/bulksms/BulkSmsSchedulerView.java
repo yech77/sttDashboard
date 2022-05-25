@@ -39,6 +39,7 @@ import java.util.concurrent.ScheduledExecutorService;
 @Route(value = BakeryConst.PAGE_BULKSMS_SCHEDULER, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_BULKSMS_SCHEDULER)
 @Secured({Role.ADMIN, "UI_USER"})
+@Deprecated
 public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
 
     private static BulkSmsSchedulerForm form;

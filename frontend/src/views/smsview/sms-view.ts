@@ -71,6 +71,9 @@ export class SmsView extends LitElement {
                     <div id="firstline" class="vaadin-board-cell"></div>
                     <div id="secondline" class="vaadin-board-cell"></div>
                 </vaadin-row>
+                <buttons-bar id="footerr" class="vaadin-board-cell">
+                    <vaadin-button slot="right" id="filterButton" theme="primary">Buscar</vaadin-button>
+                </buttons-bar>
                 <vaadin-row>
                     <vaadin-grid id="smsGrid" style="min-height: 500px"></vaadin-grid>
                 </vaadin-row>

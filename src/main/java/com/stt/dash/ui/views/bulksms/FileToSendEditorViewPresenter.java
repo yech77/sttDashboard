@@ -12,13 +12,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class FileToSendEditorPresenter {
-    private final static Logger log = LoggerFactory.getLogger(FileToSendEditorPresenter.class);
-    private final FileToSendEditor view;
+public class FileToSendEditorViewPresenter {
+    private final static Logger log = LoggerFactory.getLogger(FileToSendEditorViewPresenter.class);
+    private final FileToSendEditorView view;
     private final AgendaService agendaService;
     private final ListGenericBean<User> userChildrenList;
     private final ListGenericBean<String> systemIdList;
@@ -27,12 +26,12 @@ public class FileToSendEditorPresenter {
 
     public final static String yyyy_MM_dd = "yyyy-MM-dd";
 
-    public FileToSendEditorPresenter(FileToSendEditor view,
-                                     @Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
-                                     AgendaService agendaService,
-                                     @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList,
-                                     WebClient webClient,
-                                     OProperties properties) {
+    public FileToSendEditorViewPresenter(FileToSendEditorView view,
+                                         @Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
+                                         AgendaService agendaService,
+                                         @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList,
+                                         WebClient webClient,
+                                         OProperties properties) {
         this.view = view;
         this.agendaService = agendaService;
         this.userChildrenList = userChildrenList;

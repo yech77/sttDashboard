@@ -71,6 +71,8 @@ public class SmsView extends LitTemplate {
     Div firstline;
     @Id("secondline")
     Div secondline;
+    @Id("filterButton")
+    private Button searchButton;
     @Id("footer")
     Div footer;
     @Id("smsGrid")
@@ -99,7 +101,7 @@ public class SmsView extends LitTemplate {
     private TextField textPhoneNumer = new TextField();
     private MultiComboBox<SystemId> multi_systemIds = new MultiComboBox<>();
     private CheckboxGroup<OMessageType> checkboxMessageType = new CheckboxGroup<>();
-    private Button searchButton = new Button("Buscar");
+    //    private Button searchButton = new Button("Buscar");
     private IntegerField currentPageTextbox = new IntegerField("Página actual");
     private Label totalAmountOfPagesLabel = new Label();
     /**/
@@ -173,6 +175,7 @@ public class SmsView extends LitTemplate {
         textPhoneNumer.setLabel("Numero a buscar");
         textPhoneNumer.setClearButtonVisible(true);
         /**/
+        searchButton.setText("Buscar");
         /**/
         dateOne.setMin(LocalDate.now().minusMonths(1));
         dateOne.setMax(LocalDate.now());
@@ -193,8 +196,7 @@ public class SmsView extends LitTemplate {
         /**/
         secondline.add(new HorizontalLayout(firstDate, secondDate, checkboxMessageType),
                 new HorizontalLayout(textPhoneNumer, comboCarrier),
-                new HorizontalLayout(multi_systemIds), searchButton);
-//        dateOne.setWidthFull();
+                new HorizontalLayout(multi_systemIds));
         textPhoneNumer.setWidthFull();
         checkboxMessageType.setWidthFull();
         comboCarrier.setWidthFull();
@@ -456,12 +458,12 @@ public class SmsView extends LitTemplate {
             System.out.println("Daily message limit reached. Code not able to handle this size of string.");
             return "";
         }
-//        StringBuilder sb = new StringBuilder("id,\"address\",datacoding,\"date\",\"iso2\",\"message_type\",\"messages_text\",\"msg_received\",\"msg_sended\",\"source\",\"systemid\",\"carrierCharCode\"\n");
+        /*TODO: Cambiar a CSVFormat standard*/
         StringBuilder sb = new StringBuilder("\"destino\",\"fecha\",\"tipo de mensaje\",\"mensaje\",\"id recibido\",\"id enviando\",\"source\",\"credencial\",\"operadora\"\n");
 
         for (AbstractSMS msg : messages) {
             sb.append(msg.getDestination()).append(",");
-            sb.append(msg.getDate()).append(",");
+            sb.append(ODateUitls.dd_MM_yyyy_HH_mm_SS.format(msg.getDate())).append(",");
             sb.append(msg.getMessageType()).append(",");
             if (hasAuthToViewMsgTextColumn) {
                 sb.append(msg.getMessagesText()).append(",");
@@ -499,14 +501,6 @@ public class SmsView extends LitTemplate {
         return obtainAbstractOf(getSmsPage(selectedStartDate, selectedEndDate, actualpage, itemsPerPage, updateDataView));
     }
 
-    //    private void addColumnsToGrid() {
-////        createIdColumn();
-//        createPhoneNumberColumn();
-//        createCarrierColumn();
-//        createSystemIdColumn();
-//        createMessageypeColumn();
-//        createDateColumn();
-//    }
     private void addColumnsToGrid() {
         createPhoneNumberColumn();
         createSystemIdColumn();
@@ -519,18 +513,6 @@ public class SmsView extends LitTemplate {
         createDateColumn();
     }
 
-//    private void createIdColumn() {
-//        idColumn = grid.addColumn(AbstractSMS::getId, "id").setHeader("ID")
-//                .setWidth("120px").setFlexGrow(0);
-//    }
-
-//    private void createPhoneNumberColumn() {
-//        phoneColum = grid
-//                .addColumn(AbstractSMS::getDestination)
-//                .setComparator(client -> client.getDestination()).setHeader("Telefono")
-//                .setWidth("180px").setFlexGrow(0);
-//    }
-
     private void createPhoneNumberColumn() {
         phoneColum = grid.addColumn(TemplateRenderer.<AbstractSMS>of(
                                 "<div><b>[[item.dest]]</b><br><small>[[item.source]]</small></div>")
@@ -541,15 +523,6 @@ public class SmsView extends LitTemplate {
                 .setComparator(client -> client.getDestination()).setHeader("destino / source")
                 .setWidth("180px").setFlexGrow(0);
     }
-
-//    private void createCarrierColumn() {
-//        carrierColum = grid
-//                .addColumn(AbstractSMS::getCarrierCharCode)
-////                .setComparator(client -> client.getCarrierCharCode())
-//                .setHeader("Operadora")
-//                .setAutoWidth(true);
-////                .setWidth("180px").setFlexGrow(0);
-//    }
 
     private void createCarrierColumn() {
         carrierColum = grid
@@ -563,16 +536,7 @@ public class SmsView extends LitTemplate {
                 .addColumn(AbstractSMS::getSystemId)
                 .setComparator(client -> client.getSystemId()).setHeader("Credencial")
                 .setAutoWidth(true);
-//                .setWidth("180px").setFlexGrow(0);
     }
-
-//    private void createMessageypeColumn() {
-//        messageTypeColum = grid
-//                .addColumn(AbstractSMS::getMessageType)
-//                .setComparator(client -> client.getMessageType()).setHeader("Tipo de Mensaje")
-//                .setAutoWidth(true);
-////                .setWidth("180px").setFlexGrow(0);
-//    }
 
     private void createMessageypeColumn() {
 
@@ -583,16 +547,6 @@ public class SmsView extends LitTemplate {
                 .setAutoWidth(true);
     }
 
-//    private void createDateColumn() {
-//        dateColumn = grid
-//                .addColumn(new LocalDateTimeRenderer<>(
-//                        client -> client.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
-//                        DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")))
-//                .setComparator(AbstractSMS::getDate).setHeader("Fecha de envío")
-//                .setAutoWidth(true);
-////                .setWidth("180px").setFlexGrow(0);
-//    }
-
     private void createDateColumn() {
         dateColumn = grid
                 .addColumn(new LocalDateTimeRenderer<>(
@@ -601,7 +555,6 @@ public class SmsView extends LitTemplate {
                 .setComparator(AbstractSMS::getDate).setHeader("fecha de envío")
                 .setAutoWidth(true);
     }
-
 
     private void createMessageypeAndMsgTExtColumn() {
         messageTypeColum = grid

@@ -60,6 +60,8 @@ public class SmsShowView extends LitTemplate {
     Div firstline;
     @Id("secondline")
     Div secondline;
+    @Id("filterButton")
+    private Button searchButton;
     @Id("footer")
     Div footer;
     @Id("smsGrid")
@@ -77,7 +79,7 @@ public class SmsShowView extends LitTemplate {
     private DatePicker firstDate = new DatePicker();
     private DatePicker secondDate = new DatePicker();
     /**/
-    private Button searchButton = new Button("Buscar");
+//    private Button searchButton = new Button("Buscar");
     private IntegerField currentPageTextbox = new IntegerField("Página actual");
     private Label totalAmountOfPagesLabel = new Label();
     ComboBox<Integer> comboItemsPerPage = new ComboBox<>("Sms por página");
@@ -118,6 +120,7 @@ public class SmsShowView extends LitTemplate {
         secondDate.setRequired(true);
         secondDate.setLocale(esLocale);
         /**/
+        searchButton.setText("Buscar");
 
 //        dateOne.setWidthFull();
         /**/
@@ -170,7 +173,7 @@ public class SmsShowView extends LitTemplate {
         });
         /**/
         firstline.add(new HorizontalLayout(firstDate, secondDate), clientCombobox);
-        secondline.add(searchButton);
+//        secondline.add(searchButton);
         footer.add(comboItemsPerPage, currentPageTextbox, totalAmountOfPagesLabel);
         addValueChangeListener();
     }
@@ -258,11 +261,12 @@ public class SmsShowView extends LitTemplate {
             System.out.println("Daily message limit reached. Code not able to handle this size of string.");
             return "";
         }
+        /*TODO: Cambiar a CSVFormat standard*/
         StringBuilder sb = new StringBuilder("\"destino\",\"fecha\",\"tipo de mensaje\",\"mensaje\",\"id recibido\",\"id enviando\",\"source\",\"credencial\",\"operadora\"\n");
 
         for (AbstractSMS msg : messages) {
             sb.append(msg.getDestination()).append(",");
-            sb.append(msg.getDate()).append(",");
+            sb.append(ODateUitls.dd_MM_yyyy_HH_mm_SS.format(msg.getDate())).append(",");
             sb.append(msg.getMessageType()).append(",");
             if (hasAuthToViewMsgTextColumn) {
                 sb.append(msg.getMessagesText()).append(",");
