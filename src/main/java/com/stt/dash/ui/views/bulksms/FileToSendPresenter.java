@@ -161,12 +161,11 @@ public class FileToSendPresenter {
                                 currentUser.getUser().getEmail(),
                                 currentUser.getUser()),
                         ODateUitls.localDateTimeToDate(LocalDateTime.now().plusSeconds(5)));
-                /**/
+                /* Disminuir saldo a usar */
                 BalanceWebClient balanceWebClient = new BalanceWebClient(webClient, SystemIdBalanceOResponse.class);
                 try {
-                    Mono<SystemIdBalanceOResponse> mono = balanceWebClient.callSyncData(e.getSystemId(), e.getSmsCount());
+                    Mono<SystemIdBalanceOResponse> mono = balanceWebClient.callSyncData(e.getSystemId(), e.getTotalSmsToSend());
                     SystemIdBalanceOResponse block = mono.block();
-                    System.out.println("Actualizado el saldo en oadmin....");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -179,20 +178,32 @@ public class FileToSendPresenter {
     }
 
     void delete() {
-        EntityPresenter.CrudOperationListener<FIlesToSend>
-                onSuccess = entity -> {
+        EntityPresenter.CrudOperationListener<FIlesToSend> onSuccess = entity -> {
             dataProvider.refreshAll();
+            /* Devolver el saldo  */
+            updateBalance(entity.getSystemId(), entity.getTotalSmsToSend() * -1);
             view.showUpdatedNotification();
             close();
         };
-        EntityPresenter.CrudOnPreOperation<FIlesToSend> onBeforeDelete = entity -> {
-            return entity.getStatus() != Status.COMPLETED;
-        };
+//        EntityPresenter.CrudOnPreOperation<FIlesToSend> onBeforeDelete = entity -> {
+//            return entity.getStatus() != Status.COMPLETED;
+//        };
         if (entityPresenter.getEntity().getStatus() != Status.COMPLETED) {
             entityPresenter.delete(onSuccess);
         } else {
             view.showNotification(DELETE_DENIED_INCORRECT_STATUS, true);
         }
+    }
+
+    private void updateBalance(String systemid, int numOfSms) {
+        BalanceWebClient balanceWebClient = new BalanceWebClient(webClient, SystemIdBalanceOResponse.class);
+        try {
+            Mono<SystemIdBalanceOResponse> mono = balanceWebClient.callSyncData(systemid, numOfSms);
+            SystemIdBalanceOResponse block = mono.block();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+
     }
 
     private void open(FIlesToSend fileToSend, boolean edit) {
