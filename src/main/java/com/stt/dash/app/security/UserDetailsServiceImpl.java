@@ -2,6 +2,8 @@ package com.stt.dash.app.security;
 
 import java.util.*;
 
+import com.stt.dash.backend.data.entity.MyAuditEventComponent;
+import com.stt.dash.backend.data.entity.ODashAuditEvent;
 import com.stt.dash.backend.service.LoginAttemptService;
 import com.stt.dash.ui.MainView;
 import org.springframework.beans.factory.annotation.Autowired;
