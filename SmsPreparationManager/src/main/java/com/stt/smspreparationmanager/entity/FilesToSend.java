@@ -48,6 +48,7 @@ public class FilesToSend extends AbstractEntityAuto {
     private boolean readyToSend;
     private boolean beingProcessed;
     private String filePath;
+    private Integer totalSmsToSend;
 
     public FilesToSend() {
         initDefaultValues();
@@ -229,4 +230,11 @@ public class FilesToSend extends AbstractEntityAuto {
         this.filePath = filePath;
     }
 
+    public Integer getTotalSmsToSend() {
+        return totalSmsToSend;
+    }
+
+    public void setTotalSmsToSend(Integer totalSmsToSend) {
+        this.totalSmsToSend = totalSmsToSend;
+    }
 }

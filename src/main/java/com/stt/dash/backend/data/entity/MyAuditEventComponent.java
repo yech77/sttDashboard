@@ -28,6 +28,7 @@ public class MyAuditEventComponent implements AuditEventRepository {
 
     @Override
     public void add(AuditEvent event) {
+        System.out.println("EVENTO: ****** " + event.getType());
         l.add(event);
         /* Lista de eventos del servicio maximo de 500. */
         if (l.size() > 500) {

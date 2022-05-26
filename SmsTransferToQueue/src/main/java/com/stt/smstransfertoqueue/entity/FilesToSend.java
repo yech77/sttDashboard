@@ -5,11 +5,11 @@
  */
 package com.stt.smstransfertoqueue.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import java.util.Date;
 
 /**
- *
  * @author Enrique
  */
 @Entity
@@ -39,6 +39,8 @@ public class FilesToSend extends AbstractEntityAuto {
     private boolean readyToSend;
     private boolean beingProcessed;
     private String filePath;
+
+    private Integer totalSmsToSend;
 
     public FilesToSend() {
         initDefaultValues();
@@ -211,7 +213,7 @@ public class FilesToSend extends AbstractEntityAuto {
     public void setBeingProcessed(boolean beingProcessed) {
         this.beingProcessed = beingProcessed;
     }
-    
+
     public String getFilePath() {
         return filePath;
     }
@@ -220,4 +222,12 @@ public class FilesToSend extends AbstractEntityAuto {
         this.filePath = filePath;
     }
 
+
+    public Integer getTotalSmsToSend() {
+        return totalSmsToSend;
+    }
+
+    public void setTotalSmsToSend(Integer totalSmsToSend) {
+        this.totalSmsToSend = totalSmsToSend;
+    }
 }
