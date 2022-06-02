@@ -370,6 +370,9 @@ public class SmsHourService {
     }
 
     public List<SmsByYearMonthDay> groupSmsByYeMoDaSyWhYeMoSyIn_TyIn(int yearSms, int monthSms, Set<OMessageType> messageTypeSms, List<String> list_sid) {
+        if (list_sid == null || list_sid.isEmpty()) {
+            return new ArrayList<>(0);
+        }
         List<String> l = messageTypeSms
                 .stream()
                 .map(OMessageType::name)

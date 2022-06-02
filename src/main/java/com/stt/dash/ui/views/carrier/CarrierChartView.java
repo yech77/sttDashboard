@@ -86,7 +86,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
     /**/
     private static Logger log = LoggerFactory.getLogger(CarrierChartView.class);
     private final SmsHourService smsHourService;
-    private final ListGenericBean<String> userSystemIdList;
+//    private final ListGenericBean<String> userSystemIdList;
     /* CLIENTE */
 //    private ComboBox<Client> clientCombobox = new ComboBox<>("Clientes");
 
@@ -107,7 +107,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
                             ListGenericBean<String> stringListGenericBean,
                             CurrentUser currentUser) {
         super();
-        this.userSystemIdList = stringListGenericBean;
+//        this.userSystemIdList = stringListGenericBean;
         this.smsHourService = smsHourService;
         setActualDate();
         /* ******* */
@@ -309,26 +309,13 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
                 Long tot = l.stream()
                         .filter(sms -> sms.getGroupBy() == actualMonthInForeach
                                 && actualCarrierInForeach.getCarrierCharcode().equalsIgnoreCase(sms.getSomeCode()))
-                        .mapToLong(sms -> sms.getTotal()).sum();
+                        .mapToLong(sms -> sms.getTotal())
+                        .sum();
                 series.addData(tot);
             });
             dataSeriesList.add(series);
         });
         return dataSeriesList;
-    }
-
-    private void updateHourly(List<String> sids) {
-        List<String> carrier_list = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
-        /* --------------POR HORA */
-        List<SmsByYearMonthDayHour> smsHourGroup = smsHourService.groupSmsYeMoDaHoTyWhYeMoDaSyIn(actualYear, actualMonth, actualDay, sids);
-        List<SmsByYearMonthDayHour> carrierHourGroup = smsHourService.groupSmsCarrierAndMessageTypeByYeMoDaHoWhYeMoDaSyIn_CarrierTyIn(actualYear,
-                actualMonth,
-                actualDay,
-                carrier_list,
-                checkboxMessageType.getSelectedItems(), sids);
-        populateHourChart(smsHourGroup, new ArrayList<>(carrierHourGroup));
-        /* PIE */
-        populateHourPieChart(carrierHourGroup);
     }
 
     private void updateDaily(List<String> sids) {
@@ -377,57 +364,6 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
             confOut.addSeries(list_sery);
         }
         confOut.setTitle("Hoy");
-    }
-
-    private void populateHourChart(List<? extends AbstractSmsByYearMonth> smsHourGroup, List<SmsByYearMonthDayHour> carrierHourGroup) {
-        Configuration confIn = smsThisDayChart.getConfiguration();
-
-        confIn.setTitle(OMonths.valueOf(actualMonth).getMonthName() + "- dia de hoy");
-        confIn.setSubTitle("por hora");
-        confIn.setExporting(true);
-        confIn.getyAxis().setTitle("SMS");
-        PlotOptionsColumn plotColum = new PlotOptionsColumn();
-        /**/
-        confIn.getxAxis().setTitle("Hora");
-//        String[] da = new String[LocalDateTime.now().getHour())];
-//        for (int i = 0; i <= LocalDateTime.now().getHour(); i++) {
-//            da[i] = i + ":";
-//        }
-//        confHourlyChart.getxAxis().setCategories(da);
-        /**/
-        Tooltip tooltip = new Tooltip();
-        tooltip.setValueDecimals(0);
-        tooltip.setShared(true);
-        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">Hora: {point.key}</span><br/>");
-        confIn.setTooltip(tooltip);
-        /**/
-        /**/
-//        configureColumnChart(confIn);
-        smsHourGroup = orderGroup(fillWithCero(smsHourGroup, monthToShowList));
-        List<? extends AbstractSmsByYearMonth> l = new ArrayList<>(smsHourGroup);
-        /**/
-        List<DataSeries> list_series1 = findDataSeriesColumnsBase(smsHourGroup);
-        for (DataSeries list_sery : list_series1) {
-            confIn.addSeries(list_sery);
-        }
-//        DataProvider<SmsByYearMonth, ?> dataProvider = new ListDataProvider<>(smsGroup);
-//
-//        DataProviderSeries<SmsByYearMonth> series = new DataProviderSeries<>(dataProvider, SmsByYearMonth::getTotal);
-//        confIn.addSeries(series);
-
-        log.info("TRIMESTRE LINE DATA: {}", l);
-        /* Averiguar cuales son los tres meses a calular. */
-        List<Integer> monthList = monthToShowList;
-
-        l = orderGroup(fillWithCero(l, monthToShowList));
-        List<DataSeries> list_series2 = findDataSeriesLineBase(l);
-        if (list_series2 == null || list_series2.size() == 0) {
-            log.info("{} NO DATA FOR CARRIER CHART LINE", getStringLog());
-        } else {
-            for (int i = 0; i < list_series2.size() - 1; i++) {
-                confIn.addSeries(list_series2.get(i));
-            }
-        }
     }
 
     private void populateMonthlyPieChart(List<SmsByYearMonthDay> carrierDayGroup) {
@@ -505,84 +441,6 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         PlotOptionsLine plotLine = new PlotOptionsLine();
         LineDateSeriesList = paEntenderLine(carrierGroup, monthToShowList);
         addToChart(confTriChart, LineDateSeriesList, plotLine);
-    }
-
-    /**
-     * @param smsGroup     Agrupado por Year-Month-MessageType
-     * @param carrierGroup Data agrupada por Year-Month-Carrier-MessageType
-     */
-    private void populateTriColumnLineChart(List<? extends AbstractSmsByYearMonth> smsGroup, List<SmsByYearMonth> carrierGroup) {
-        Configuration confTriChart = smsLastThreeMonthChart.getConfiguration();
-        /**/
-        Tooltip tooltip = new Tooltip();
-        tooltip.setShared(true);
-        tooltip.setValueDecimals(0);
-        tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
-        confTriChart.setTitle("Trimestre");
-        confTriChart.setExporting(true);
-        confTriChart.setTooltip(tooltip);
-        /**/
-//        System.out.println("************************************************ ");
-//        carrierGroup.stream().forEach(System.out::println);
-//        System.out.println("************************************************ ");
-
-        /**/
-//        configureColumnChart(confIn);
-        /* Averiguar cuales son los tres meses a calular. */
-        confTriChart.getxAxis().setCategories(ml);
-        /**/
-//        System.out.println("BEFORE FILL AND ORDER ");
-//        smsGroup.stream().forEach(System.out::println);
-        smsGroup = orderGroup(fillWithCero(smsGroup, monthToShowList));
-//        System.out.println("AFTER FILL AND ORDER ");
-//        smsGroup.stream().forEach(System.out::println);
-        List<DataSeries> columnDataSeriesList = findDataSeriesColumnsBase(smsGroup);
-
-        for (DataSeries list_sery : columnDataSeriesList) {
-            confTriChart.addSeries(list_sery);
-        }
-//        DataProvider<SmsByYearMonth, ?> dataProvider = new ListDataProvider<>(smsGroup);
-//
-//        DataProviderSeries<SmsByYearMonth> series = new DataProviderSeries<>(dataProvider, SmsByYearMonth::getTotal);
-//        confIn.addSeries(series);
-
-        /**/
-        System.out.println("BEFORE FILL AND ORDER: CARRIER GROUP ");
-        carrierGroup.stream().forEach(System.out::println);
-        smsGroup = orderGroup(fillWithCero(smsGroup, monthToShowList));
-        System.out.println("AFTER FILL AND ORDER: CARRIER GROUP ");
-        carrierGroup.stream().forEach(System.out::println);
-        /**/
-        List<? extends AbstractSmsByYearMonth> l = carrierGroup;
-//        log.info("TRIMESTRE LINE DATA: {}", l);
-        /* Averiguar cuales son los tres meses a calular. */
-        List<Integer> monthList = monthToShowList;
-
-        System.out.println("L ANTES DE");
-        /* AGRUPAR POR  */
-        Map<String, List<SmsByYearMonth>> gbc =
-                carrierGroup.stream()
-                        .collect(Collectors.groupingBy(s -> "" + s.getGroupBy()));
-        System.out.println("AGRUPADO ***");
-        gbc.entrySet().stream().forEach(sms -> {
-            long total = 0;
-            for (SmsByYearMonth bym : sms.getValue()) {
-                total += bym.getTotal();
-            }
-        });
-        gbc.entrySet().stream().forEach(System.out::println);
-
-        l.stream().forEach(System.out::println);
-//        l = orderGroup(fillWithCero(l, monthToShowList));
-        List<Series> LineDateSeriesList = paEntenderLine(l, monthToShowList);
-        if (LineDateSeriesList == null || LineDateSeriesList.size() == 0) {
-            log.info("{} NO DATA FOR CARRIER CHART LINE", getStringLog());
-        } else {
-            for (int i = 0; i < LineDateSeriesList.size(); i++) {
-                System.out.println("ADDING ********" + LineDateSeriesList.get(i).getName());
-                confTriChart.addSeries(LineDateSeriesList.get(i));
-            }
-        }
     }
 
     private void populatePieChart(List<SmsByYearMonth> smsByYearMonth) {

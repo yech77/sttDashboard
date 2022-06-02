@@ -106,7 +106,7 @@ public class MainView extends AppLayout {
         menuBar.addThemeVariants(MenuBarVariant.LUMO_TERTIARY_INLINE);
         MenuItem menuItem = menuBar.addItem(avatar);
         SubMenu subMenu = menuItem.getSubMenu();
-        subMenu.addItem("Logout", menuItemClickEvent -> logout());
+//        subMenu.addItem("Logout", menuItemClickEvent -> logout());
         subMenu.addItem(createLogoutLink(contextPath));
         /**/
         VerticalLayout verticalLayout = new VerticalLayout(menuBar);

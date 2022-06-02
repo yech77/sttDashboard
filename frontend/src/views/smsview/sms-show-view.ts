@@ -67,13 +67,6 @@ export class SmsShowView extends LitElement {
 
             </style>
             <vaadin-board>
-                <!--                <vaadin-board-row class="vaadin-board-cell">-->
-                <!--                    <vaadin-form-layout>-->
-                <!--                        <vaadin-date-picker id="P1" colspan="2"></vaadin-date-picker>-->
-                <!--                        <vaadin-date-picker id="P2"></vaadin-date-picker>-->
-                <!--                        <vaadin-combo-box id="beanCheckboxGroup"></vaadin-combo-box>-->
-                <!--                    </vaadin-form-layout>-->
-                <!--                </vaadin-board-row>-->
                 <vaadin-row>
                     <div id="firstline" class="vaadin-board-cell"></div>
                     <div id="secondline" class="vaadin-board-cell"></div>

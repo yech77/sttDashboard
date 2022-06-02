@@ -48,6 +48,8 @@ import java.util.stream.Collectors;
 @PageTitle(BakeryConst.TITLE_CLIENT)
 @Secured({Role.ADMIN, "UI_EVOLUTION_CLIENT"})
 public class ClientChartView extends DashboardBase implements HasNotifications {
+    /**/
+    private static Logger log = LoggerFactory.getLogger(ClientChartView.class);
 
     private static final String CLIENT_VIEW_SELECTED_SYSTEMID = "client_view_selected_systemid";
     private static final String CLIENT_VIEW_SELECTED_MESSAGETYPE = "client_view_selected_messageType";
@@ -72,17 +74,15 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
     private CheckboxGroup<OMessageType> checkboxMessageType;
     @Id("filterButton")
     private Button searchButton;
-    /**/
-    Logger log = LoggerFactory.getLogger(ClientChartView.class);
     private final SmsHourService smsHourService;
     private final AbstractSmsService abstractSmsService;
     private final ListGenericBean<String> allUserStringSystemId;
     private final CurrentUser currentUser;
     /* Para Graficos y servicios */
     private List<Integer> monthToShowList;
-    private List<String> selectedSystemIdList;
     private String[] ml;
     private List<Carrier> carrierList;
+    private List<String> slist;
 
     public ClientChartView(AbstractSmsService abstractSmsService,
                            SmsHourService smsHourService,
@@ -106,7 +106,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         /* ******* Message type */
         checkboxMessageType.setLabel("Tipo de Mensajes");
         checkboxMessageType.setItems(OMessageType.values());
-        checkboxMessageType.setValue(new HashSet<OMessageType>(Arrays.asList(OMessageType.values())));
+        checkboxMessageType.setValue(new HashSet<>(Arrays.asList(OMessageType.values())));
         checkboxMessageType.setRequired(true);
         checkboxMessageType.setErrorMessage("seleccionar al menos un tipo de sms");
         Optional<Object> op = getCurrentSessionAttributeAndNullIt(CLIENT_VIEW_SELECTED_MESSAGETYPE);
@@ -141,9 +141,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
             systemIdMultiCombo.setItems(currentUser.getUser().getClient().getSystemids());
         }
         op = getCurrentSessionAttributeAndNullIt(CLIENT_VIEW_SELECTED_CLIENT);
-        op.ifPresent(o -> {
-            clientCombobox.setValue((Client) o);
-        });
+        op.ifPresent(o -> clientCombobox.setValue((Client) o));
         /* ******* */
         /* HEADER */
         clientCombobox.setWidthFull();
@@ -162,8 +160,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
     private Optional<Object> getCurrentSessionAttributeAndNullIt(String attributeName) {
         Object o = VaadinSession.getCurrent().getAttribute(attributeName);
         VaadinSession.getCurrent().setAttribute(attributeName, null);
-        Optional<Object> op = Optional.ofNullable(o);
-        return op;
+        return Optional.ofNullable(o);
     }
 
     private void addValueChangeListener() {
@@ -177,12 +174,12 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
             }
         });
 
-        clientCombobox.addValueChangeListener(blur -> {
-            searchButton.setEnabled(isValidSearch());
-        });
+        clientCombobox.addValueChangeListener(blur -> searchButton.setEnabled(isValidSearch()));
 
         systemIdMultiCombo.addValueChangeListener(blur -> {
             searchButton.setEnabled(isValidSearch());
+            /* Convertir Set<SystemId> seleccionados en un List<String>*/
+            slist = systemIdMultiCombo.getValue().stream().map(SystemId::getSystemId).collect(Collectors.toList());
         });
 
         checkboxMessageType.addValueChangeListener(value -> {
@@ -228,9 +225,9 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
         confHourlyChart.setTooltip(tooltip);
         /* Column Chart*/
-        List<SmsByYearMonthDayHour> l = smsHourService.getGroupSystemIdByYeMoDaHoCaWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), actualMonth, actualDay, checkboxMessageType.getSelectedItems(), allUserStringSystemId.getList());
-        List<DataSeries> LineDateSeriesList = paEntenderPie(l, Arrays.asList(actualDay));
-        addToPieChart(confHourlyChart, LineDateSeriesList, innerPieOptions);
+        List<SmsByYearMonthDayHour> l = smsHourService.getGroupSystemIdByYeMoDaHoCaWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), actualMonth, actualDay, checkboxMessageType.getSelectedItems(), slist);
+        List<DataSeries> lineDateSeriesList = paEntenderPie(l, Arrays.asList(actualDay));
+        addToPieChart(confHourlyChart, lineDateSeriesList, innerPieOptions);
     }
 
     private void updateMonthlyPie() {
@@ -244,9 +241,9 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
         confMonthlyChart.setTooltip(tooltip);
         /* Column Chart*/
-        List<SmsByYearMonth> l = smsHourService.getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(LocalDate.now().getYear(), Arrays.asList(actualMonth), checkboxMessageType.getSelectedItems(), allUserStringSystemId.getList());
-        List<DataSeries> LineDateSeriesList = paEntenderPie(l, Arrays.asList(actualMonth));
-        addToPieChart(confMonthlyChart, LineDateSeriesList, innerPieOptions);
+        List<SmsByYearMonth> l = smsHourService.getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(LocalDate.now().getYear(), Arrays.asList(actualMonth), checkboxMessageType.getSelectedItems(), slist);
+        List<DataSeries> lineDateSeriesList = paEntenderPie(l, Arrays.asList(actualMonth));
+        addToPieChart(confMonthlyChart, lineDateSeriesList, innerPieOptions);
     }
 
     private void updateTrimestrePie() {
@@ -260,11 +257,10 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         tooltip.setValueDecimals(0);
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
         confHourlyChart.setTooltip(tooltip);
-        ;
         /* Column Chart*/
-        List<SmsByYearMonth> l = smsHourService.getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(LocalDate.now().getYear(), monthsIn(2), checkboxMessageType.getSelectedItems(), allUserStringSystemId.getList());
-        List<DataSeries> LineDateSeriesList = paEntenderPie(l, monthsIn(2));
-        addToPieChart(confHourlyChart, LineDateSeriesList, innerPieOptions);
+        List<SmsByYearMonth> l = smsHourService.getGroupSystemIdByYeMoCaWhMoInMessageTypeIn(LocalDate.now().getYear(), monthsIn(2), checkboxMessageType.getSelectedItems(), slist);
+        List<DataSeries> lineDateSeriesList = paEntenderPie(l, monthsIn(2));
+        addToPieChart(confHourlyChart, lineDateSeriesList, innerPieOptions);
     }
 
     private void updateHourlyChart() {
@@ -274,23 +270,19 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
             int seriesItemIndex = listener.getItemIndex();
             Dialog d = new Dialog();
             d.setWidth("75%");
-            /* Convertir Set<SystemId> seleccionados en un List<String>*/
-            List<String> selectedSystemIdList = systemIdMultiCombo.getValue().stream().map(SystemId::getSystemId).collect(Collectors.toList());
-            ClientDailyPopupView view = new ClientDailyPopupView(smsHourService, actualYear, actualMonth, actualDay, seriesItemIndex, selectedSystemIdList);
+            ClientDailyPopupView view = new ClientDailyPopupView(smsHourService, actualYear, actualMonth, actualDay, seriesItemIndex, slist);
             d.add(view);
             d.open();
-            view.setConsumer((s) -> d.close());
+            view.setConsumer(s -> d.close());
         });
 
         smsThisDayChart.addChartClickListener(listener -> {
             Dialog d = new Dialog();
             d.setWidth("75%");
-            /* Convertir Set<SystemId> seleccionados en un List<String>*/
-            List<String> selectedSystemIdList = systemIdMultiCombo.getValue().stream().map(SystemId::getSystemId).collect(Collectors.toList());
-            ClientDailyPopupView view = new ClientDailyPopupView(smsHourService, actualYear, actualMonth, actualDay, selectedSystemIdList);
+            ClientDailyPopupView view = new ClientDailyPopupView(smsHourService, actualYear, actualMonth, actualDay, slist);
             d.add(view);
             d.open();
-            view.setConsumer((s) -> d.close());
+            view.setConsumer(s -> d.close());
         });
         confHourlyChart.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - dia de hoy");
         confHourlyChart.setSubTitle("por hora");
@@ -311,20 +303,18 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
             return;
         }
         /* Column Chart*/
-        List<SmsByYearMonthDayHour> smsList = smsHourService.groupSmsYeMoDaHoTyWhYeMoDaSyIn(LocalDate.now().getYear(), actualMonth, actualDay, allUserStringSystemId.getList());
+        List<SmsByYearMonthDayHour> smsList = smsHourService.groupSmsYeMoDaHoTyWhYeMoDaSyIn(LocalDate.now().getYear(), actualMonth, actualDay, slist);
         if (smsList == null || smsList.isEmpty()) {
             log.info("Hourly Chart Without data to show");
             return;
         }
-        List<Series> LineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), smsList, hourList);
-        addToChart(confHourlyChart, LineDateSeriesList, plotColum);
-        /* Convertir Set<SystemId> seleccionados en un List<String>*/
-        List<String> selectedSystemIdList = systemIdMultiCombo.getValue().stream().map(SystemId::getSystemId).collect(Collectors.toList());
+        List<Series> lineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), smsList, hourList);
+        addToChart(confHourlyChart, lineDateSeriesList, plotColum);
         /* Line Chart */
-        smsList = smsHourService.getGroupSystemIdByYeMoDaHoWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), actualMonth, actualDay, checkboxMessageType.getSelectedItems(), selectedSystemIdList);
+        smsList = smsHourService.getGroupSystemIdByYeMoDaHoWhYeMoDayEqMessageTypeIn(LocalDate.now().getYear(), actualMonth, actualDay, checkboxMessageType.getSelectedItems(), slist);
         PlotOptionsLine plotLine = new PlotOptionsLine();
-        LineDateSeriesList = systemidAndTimeTotal(systemIdMultiCombo.getValue(), smsList, hourList);
-        addToChart(confHourlyChart, LineDateSeriesList, plotLine);
+        lineDateSeriesList = systemidAndTimeTotal(systemIdMultiCombo.getValue(), smsList, hourList);
+        addToChart(confHourlyChart, lineDateSeriesList, plotLine);
     }
 
     /**
@@ -336,31 +326,23 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         smsThisMonthChart.addPointClickListener(click -> {
             /* El dia comienza en 1. */
             int seriesItemIndex = click.getItemIndex() + 1;
-            /* Convertir Set<SystemId> seleccionados en un List<String>*/
-            List<String> selectedSystemIdList = systemIdMultiCombo
-                    .getValue()
-                    .stream()
-                    .map(SystemId::getSystemId)
-                    .collect(Collectors.toList());
-
             Dialog d = new Dialog();
             d.setWidth("75%");
-            ClientMonthlyPopupView view = new ClientMonthlyPopupView(smsHourService, actualYear, actualMonth, seriesItemIndex, selectedSystemIdList, checkboxMessageType.getSelectedItems());
+            ClientMonthlyPopupView view = new ClientMonthlyPopupView(smsHourService, actualYear, actualMonth, seriesItemIndex, slist, checkboxMessageType.getSelectedItems());
             view.setTitles("Gráfico - Mensajes este mes", clientCombobox.getValue() == null ? "Cliente" : clientCombobox.getValue().getClientCod());
             d.add(view);
             d.open();
-            view.setConsumer((s) -> d.close());
+            view.setConsumer(s -> d.close());
         });
         smsThisMonthChart.addChartClickListener(click -> {
             /* Convertir Set<SystemId> seleccionados en un List<String>*/
-            List<String> selectedSystemIdList = systemIdMultiCombo.getValue().stream().map(SystemId::getSystemId).collect(Collectors.toList());
             Dialog d = new Dialog();
             d.setWidth("75%");
-            ClientMonthlyPopupView view = new ClientMonthlyPopupView(smsHourService, actualYear, actualMonth, selectedSystemIdList, checkboxMessageType.getSelectedItems());
+            ClientMonthlyPopupView view = new ClientMonthlyPopupView(smsHourService, actualYear, actualMonth, slist, checkboxMessageType.getSelectedItems());
             view.setTitles("Gráfico - Mensajes este mes", clientCombobox.getValue() == null ? "Cliente" : clientCombobox.getValue().getClientCod());
             d.add(view);
             d.open();
-            view.setConsumer((s) -> d.close());
+            view.setConsumer(s -> d.close());
         });
         /**/
         confThisMonth.getyAxis().setTitle("SMS");
@@ -384,35 +366,28 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         /**/
         configureColumnChart(confThisMonth);
         /* Column Chart*/
-        List<SmsByYearMonthDay> smsByYearMonthDayList = smsHourService.groupSmsByYeMoDaTyWhYeMoSyIn(LocalDate.now().getYear(), actualMonth, allUserStringSystemId.getList());
-        List<Series> LineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), smsByYearMonthDayList, dayList);
-        addToChart(confThisMonth, LineDateSeriesList, plotColum);
+        List<SmsByYearMonthDay> smsByYearMonthDayList = smsHourService.groupSmsByYeMoDaTyWhYeMoSyIn(LocalDate.now().getYear(), actualMonth, slist);
+        List<Series> lineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), smsByYearMonthDayList, dayList);
+        addToChart(confThisMonth, lineDateSeriesList, plotColum);
         /* Line Chart */
-        smsByYearMonthDayList = smsHourService.groupSmsByYeMoDaSyWhYeMoSyIn_TyIn(LocalDate.now().getYear(), actualMonth, checkboxMessageType.getSelectedItems(), allUserStringSystemId.getList());
+        smsByYearMonthDayList = smsHourService.groupSmsByYeMoDaSyWhYeMoSyIn_TyIn(LocalDate.now().getYear(), actualMonth, checkboxMessageType.getSelectedItems(), slist);
         PlotOptionsLine plotLine = new PlotOptionsLine();
-        LineDateSeriesList = systemidAndTimeTotal(systemIdMultiCombo.getValue(), smsByYearMonthDayList, dayList);
-        addToChart(confThisMonth, LineDateSeriesList, plotLine);
+        lineDateSeriesList = systemidAndTimeTotal(systemIdMultiCombo.getValue(), smsByYearMonthDayList, dayList);
+        addToChart(confThisMonth, lineDateSeriesList, plotLine);
     }
 
     private void updateTriMixChart() {
-        /* Convertir Set<SystemId> seleccionados en un List<String>*/
-        systemIdMultiCombo
-                .getOptionalValue()
-                .ifPresent(value ->
-                        selectedSystemIdList = value.stream().map(SystemId::getSystemId).collect(Collectors.toList())
-                );
-        /**/
         Configuration conf = smsLastThreeMonthChart.getConfiguration();
         smsLastThreeMonthChart.addPointClickListener(click -> {
             List<Integer> month = monthsIn(2);
             Integer integer = month.get(click.getItemIndex());
             List<String> messageTypeList = checkboxMessageType.getSelectedItems().stream().map(OMessageType::name).collect(Collectors.toList());
-            ClientTrimestralPopUpView view = new ClientTrimestralPopUpView(smsHourService, actualYear, integer, selectedSystemIdList, messageTypeList);
+            ClientTrimestralPopUpView view = new ClientTrimestralPopUpView(smsHourService, actualYear, integer, slist, messageTypeList);
             popup(view);
         });
         smsLastThreeMonthChart.addChartClickListener(click -> {
             List<String> messageTypeList = checkboxMessageType.getSelectedItems().stream().map(OMessageType::name).collect(Collectors.toList());
-            ClientTrimestralPopUpView view = new ClientTrimestralPopUpView(smsHourService, actualYear, monthsIn(2), selectedSystemIdList, messageTypeList);
+            ClientTrimestralPopUpView view = new ClientTrimestralPopUpView(smsHourService, actualYear, monthsIn(2), slist, messageTypeList);
             popup(view);
         });
         conf.getyAxis().setTitle("SMS");
@@ -428,37 +403,37 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         conf.setTooltip(tooltip);
 
         /* Buscar con todos los systemids del usuario. */
-        List<SmsByYearMonth> l = smsHourService.groupSmsMessageTypeByYeMoWhYeMoInSyIn(actualYear, monthsIn(2), allUserStringSystemId.getList());
-        List<Series> LineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), l, monthsIn(2));
-        addToChart(conf, LineDateSeriesList, plotColum);
+        List<SmsByYearMonth> l = smsHourService.groupSmsMessageTypeByYeMoWhYeMoInSyIn(actualYear, monthsIn(2), slist);
+        List<Series> lineDateSeriesList = messageTypeAndMonthlyTotal(checkboxMessageType.getSelectedItems(), l, monthsIn(2));
+        addToChart(conf, lineDateSeriesList, plotColum);
         /* LINE CHART */
         l = smsHourService.
-                getGroupSystemIdByYeMoWhMoInMessageTypeIn(LocalDate.now().getYear(), monthsIn(2), checkboxMessageType.getSelectedItems(), selectedSystemIdList);
+                getGroupSystemIdByYeMoWhMoInMessageTypeIn(LocalDate.now().getYear(), monthsIn(2), checkboxMessageType.getSelectedItems(), slist);
 
         PlotOptionsLine plotLine = new PlotOptionsLine();
-        LineDateSeriesList = systemidAndTimeTotal(systemIdMultiCombo.getValue(), l, monthsIn(2));
-        addToChart(conf, LineDateSeriesList, plotLine);
+        lineDateSeriesList = systemidAndTimeTotal(systemIdMultiCombo.getValue(), l, monthsIn(2));
+        addToChart(conf, lineDateSeriesList, plotLine);
     }
 
-    private void addToChart(Configuration configuration, List<Series> LineDateSeriesList, AbstractPlotOptions plot) {
-        if (LineDateSeriesList == null || LineDateSeriesList.size() == 0) {
+    private void addToChart(Configuration configuration, List<Series> lineDateSeriesList, AbstractPlotOptions plot) {
+        if (lineDateSeriesList == null || lineDateSeriesList.isEmpty()) {
             log.info("{} NO DATA FOR CARRIER CHART LINE");
         } else {
-            for (int i = 0; i < LineDateSeriesList.size(); i++) {
-                Series series = LineDateSeriesList.get(i);
+            for (int i = 0; i < lineDateSeriesList.size(); i++) {
+                Series series = lineDateSeriesList.get(i);
                 series.setPlotOptions(plot);
                 configuration.addSeries(series);
             }
         }
     }
 
-    private void addToPieChart(Configuration configuration, List<DataSeries> LineDateSeriesList, AbstractPlotOptions plot) {
-        if (LineDateSeriesList == null || LineDateSeriesList.size() == 0) {
-            log.info("{} NO DATA FOR CARRIER CHART LINE");
+    private void addToPieChart(Configuration configuration, List<DataSeries> lineDateSeriesList, AbstractPlotOptions plot) {
+        if (lineDateSeriesList == null || lineDateSeriesList.isEmpty()) {
+            log.info("NO DATA FOR CARRIER CHART LINE");
         } else {
-            for (int i = 0; i < LineDateSeriesList.size(); i++) {
-                System.out.println("ADDING LINE PIE********" + LineDateSeriesList.get(i).getName());
-                Series series = LineDateSeriesList.get(i);
+            for (int i = 0; i < lineDateSeriesList.size(); i++) {
+                System.out.println("ADDING LINE PIE********" + lineDateSeriesList.get(i).getName());
+                Series series = lineDateSeriesList.get(i);
 //                series.setPlotOptions(plot);
                 configuration.addSeries(series);
             }
@@ -477,7 +452,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
             /* Total por Carrier */
             Long carrierTot = smsList.parallelStream()
                     .filter(sms -> actualCarrierForeach.equalsIgnoreCase(sms.getMessageType()))
-                    .mapToLong(sms -> sms.getTotal())
+                    .mapToLong(AbstractSmsByYearMonth::getTotal)
                     .sum();
             pieSeries.add(new DataSeriesItem(actualCarrierForeach, carrierTot), false, false);
             /* Total por S*/
@@ -487,7 +462,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
                                 Long totSid = smsList.parallelStream()
                                         .filter(sms -> sms.getMessageType().equalsIgnoreCase(actualCarrierForeach)
                                                 && actualSystemIdForeach.getSystemId().equalsIgnoreCase(sms.getSomeCode()))
-                                        .mapToLong(sms -> sms.getTotal())
+                                        .mapToLong(AbstractSmsByYearMonth::getTotal)
                                         .sum();
                                 donutSeries.add(new DataSeriesItem(actualSystemIdForeach.getSystemId(), totSid));
                             }));
@@ -524,7 +499,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
                 Long tot = smsList.stream()
                         .filter(sms -> sms.getGroupBy() == actualMonthForeach
                                 && actualSystemIdForeach.getSystemId().equalsIgnoreCase(sms.getSomeCode()))
-                        .mapToLong(sms -> sms.getTotal())
+                        .mapToLong(AbstractSmsByYearMonth::getTotal)
                         .sum();
                 totalList.add(tot);
             });
@@ -539,7 +514,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         d.setWidth("75%");
         d.add(view);
         d.open();
-        view.setConsumer((s) -> d.close());
+        view.setConsumer(s -> d.close());
     }
 
     private String getStringLog() {
