@@ -4,7 +4,7 @@ import com.stt.dash.app.OProperties;
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.util.AgendaFileUtils;
-import com.stt.dash.ui.crud.OnUI;
+import com.stt.dash.ui.crud.OnUIForm;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -16,7 +16,7 @@ import com.vaadin.flow.data.binder.Binder;
 
 import java.io.InputStream;
 
-public class BulkSmsForm extends FormLayout implements OnUI {
+public class BulkSmsForm extends FormLayout implements OnUIForm {
     Binder<Agenda> binder = new BeanValidationBinder<>(Agenda.class);
     /**/
     TextField nameBox = new TextField("Nombre de la Agenda");
@@ -55,6 +55,7 @@ public class BulkSmsForm extends FormLayout implements OnUI {
             this.fileNameOriginal.setValue(fileUploader.getFileName());
         });
         horizontalLayout.add(upload);
+        nameBox.addBlurListener(t -> nameBox.setInvalid(false));
         add(nameBox, descriptionBox, horizontalLayout);
     }
 
@@ -78,5 +79,11 @@ public class BulkSmsForm extends FormLayout implements OnUI {
         });
         horizontalLayout.removeAll();
         horizontalLayout.add(upload);
+    }
+
+    @Override
+    public void onFieldUI() {
+        nameBox.setErrorMessage("El nombre ya existe");
+        nameBox.setInvalid(true);
     }
 }
