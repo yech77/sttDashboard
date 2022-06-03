@@ -619,7 +619,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
             List<String> selectedCarrierList = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
             List<String> selectedMessageTypeList = checkboxMessageType.getValue().stream().map(OMessageType::name).collect(Collectors.toList());
             CarrierMonthlyPopupView view = new CarrierMonthlyPopupView(smsHourService, actualYear, actualMonth, selectedCarrierList, selectedMessageTypeList, clientSystemIdStringList);
-            view.setTitles("Gráfico - Mensajes este mes", clientCombobox.getValue() == null ? "Cliente" : clientCombobox.getValue().getClientCod());
+            view.setTitles("Gráfico - Tráfico del mes", clientCombobox.getValue() == null ? "Cliente" : clientCombobox.getValue().getClientCod());
             d.add(view);
             d.open();
             view.setConsumer((s) -> d.close());
@@ -633,7 +633,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
             List<String> selectedCarrierList = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
             List<String> selectedMessageTypeList = checkboxMessageType.getValue().stream().map(OMessageType::name).collect(Collectors.toList());
             CarrierMonthlyPopupView view = new CarrierMonthlyPopupView(smsHourService, actualYear, actualMonth, seriesItemIndex, selectedCarrierList, selectedMessageTypeList, clientSystemIdStringList);
-            view.setTitles("Gráfico - Mensajes este mes", clientCombobox.getValue() == null ? "Cliente" : clientCombobox.getValue().getClientCod());
+            view.setTitles("Gráfico - Tráfico del mes", clientCombobox.getValue() == null ? "Cliente" : clientCombobox.getValue().getClientCod());
             d.add(view);
             d.open();
             view.setConsumer((s) -> d.close());

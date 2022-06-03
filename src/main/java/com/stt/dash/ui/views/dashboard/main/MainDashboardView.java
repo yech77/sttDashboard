@@ -176,7 +176,7 @@ public class MainDashboardView extends DashboardBase {
         Configuration conf = monthlyProductSplit.getConfiguration();
         conf.getChart().setType(ChartType.PIE);
         conf.getChart().setBorderRadius(4);
-        conf.setTitle("Distribución operadora este mes");
+        conf.setTitle("Tráfico del mes por operadora");
         List<SmsByYearMonth> groupList = smsHourService.groupCarrierByYeMoMeWhMoEqMessageTypeIn(actualYear, actualMonth, Arrays.asList("MT", "MO"), stingListGenericBean.getList());
         groupList.stream().forEach(System.out::println);
         /* Agrupar por Carrier */
@@ -230,13 +230,13 @@ public class MainDashboardView extends DashboardBase {
             }
         }
 
-        OrdersCountData smsCountDataWithChart = new OrdersCountData("Mensajes Eviados (MT)", "", (int) t_mt);
+        OrdersCountData smsCountDataWithChart = new OrdersCountData("Mensajes enviados (MT)", "", (int) t_mt);
         mtCounterLabel.setOrdersCountData(smsCountDataWithChart);
 
-        smsCountDataWithChart = new OrdersCountData("Mensajes Recibidos (MO)", "", (int) t_mo);
+        smsCountDataWithChart = new OrdersCountData("Mensajes recibidos (MO)", "", (int) t_mo);
         moCounterLabel.setOrdersCountData(smsCountDataWithChart);
 
-        smsCountDataWithChart = new OrdersCountData("Total", "", (int) (t_mo + t_mt));
+        smsCountDataWithChart = new OrdersCountData("Tráfico total", "", (int) (t_mo + t_mt));
         totalCounterLabel.setOrdersCountData(smsCountDataWithChart);
     }
 
@@ -250,7 +250,7 @@ public class MainDashboardView extends DashboardBase {
                 d.close();
             });
             MainDashboardDailyPopUpView view = new MainDashboardDailyPopUpView(smsHourService, actualYear, actualMonth, actualDay, seriesItemIndex, stingListGenericBean.getList());
-            view.setTitles("Gráfico: Enviados Hoy", LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            view.setTitles("Gráfico: Tráfico del día", LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             d.add(view);
             d.open();
             view.setConsumer((s) -> d.close());
@@ -259,7 +259,7 @@ public class MainDashboardView extends DashboardBase {
             Dialog d = new Dialog();
             d.setWidth("75%");
             MainDashboardDailyPopUpView view = new MainDashboardDailyPopUpView(smsHourService, actualYear, actualMonth, actualDay, stingListGenericBean.getList());
-            view.setTitles("Gráfico: Enviados Hoy", LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            view.setTitles("Gráfico: Tráfico del día", LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             d.add(view);
             d.open();
             view.setConsumer((s) -> d.close());
@@ -284,7 +284,7 @@ public class MainDashboardView extends DashboardBase {
         /**/
         Configuration thisDayChartConf = smsThisDayChart.getConfiguration();
         configureColumnChart(thisDayChartConf);
-        thisDayChartConf.setTitle("Enviados hoy");
+        thisDayChartConf.setTitle("Tráfico del día");
         thisDayChartConf.setExporting(true);
         thisDayChartConf.getxAxis().setCategories(MILITARY_HOURS);
         thisDayChartConf.setSeries(mtHourListSeries, moHourListSeries);
@@ -315,7 +315,7 @@ public class MainDashboardView extends DashboardBase {
 
         String[] deliveriesThisMonthCategories = IntStream.rangeClosed(1, mt.size()).mapToObj(String::valueOf).toArray(String[]::new);
 //        DataProviderSeries<SmsByYearMonthDay> series = new DataProviderSeries<>(dataProvider, SmsByYearMonthDay::getTotal);
-        monthConf.setTitle("Mensajes este mes");
+        monthConf.setTitle("Tráfico del mes");
         monthConf.setExporting(true);
         monthConf.getxAxis().setCategories(deliveriesThisMonthCategories);
         monthConf.getxAxis().setCrosshair(new Crosshair());
@@ -366,7 +366,7 @@ public class MainDashboardView extends DashboardBase {
         });
         conf.getChart().setType(ChartType.AREASPLINE);
         conf.getChart().setBorderRadius(4);
-        conf.setTitle("Enviados en los Últimos tres Meses");
+        conf.setTitle("Tráfico a tres meses");
         conf.setExporting(true);
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);

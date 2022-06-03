@@ -29,10 +29,10 @@ public class ODashAuditEvent extends AbstractEntitySequence {
         DELETE_USER(10, "usuario borrado"),
         PASSWORD_CHANGED(11, "clave cambiada"),
         DOWNLOAD_FILE_AGENDA(12, "descarga de agenda"),
-        DOWNLOAD_FILE_TRAFFIC_SMS(13, "descarga de trafico"),
+        DOWNLOAD_FILE_TRAFFIC_SMS(13, "descarga de tráfico"),
         DOWNLOAD_FILE_SEARCH_SMS(14, "descarga de busqueda sms"),
         DOWNLOAD_FILE_AUDITEVENT(15, "descarga de archivo de auditoria"),
-        ACCEPTED_SMS(16, "Aceptar envio de mensajes");
+        ACCEPTED_SMS(16, "Aceptar envío de mensajes");
 
         private int eventId;
         private String eventName;

@@ -139,7 +139,7 @@ public class SmsShowGridViewV2 extends LitTemplate implements Viewnable<SmsByYea
     private void createSomeCodeColumn() {
         someCodeColum = grid.addColumn(AbstractSmsByYearMonth::getSomeCode)
                 .setComparator(com -> com.getSomeCode())
-                .setHeader("Tipo de Mensaje")
+                .setHeader("Tipo de mensaje")
                 .setAutoWidth(true);
     }
 

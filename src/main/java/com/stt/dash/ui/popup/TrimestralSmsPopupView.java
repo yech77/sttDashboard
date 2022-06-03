@@ -67,7 +67,7 @@ public abstract class TrimestralSmsPopupView extends LitTemplate implements View
     public void createMessageType() {
         someCodeColum = grid.addColumn(AbstractSmsByYearMonth::getMessageType)
                 .setComparator(com -> com.getMessageType())
-                .setHeader("Tipo de Mensaje")
+                .setHeader("Tipo de mensaje")
                 .setAutoWidth(true);
     }
 

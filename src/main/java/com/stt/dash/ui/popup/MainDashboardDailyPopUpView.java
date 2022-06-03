@@ -36,7 +36,7 @@ public class MainDashboardDailyPopUpView extends DailySmsPopupView {
         presenter = new DailySmsPopupPresenter(smsHourService, yearSms, monthToShow, dayToShow, systemidStringList, this);
         createColumns(grid);
         grid.setHeight("75%");
-        setTitles("Gráfico - Enviados hoy", "Dashboard");
+        setTitles("Gráfico - Tráfico del día", "Dashboard");
         downloadButton.addClickListener(buttonClickEvent -> {
             if (buttonClickEvent.isFromClient()) {
                 downloadButton.setEnabled(false);
@@ -50,7 +50,7 @@ public class MainDashboardDailyPopUpView extends DailySmsPopupView {
         presenter = new DailySmsPopupPresenter(smsHourService, yearSms, monthToShow, dayToShow, hourToShow, systemidStringList, this);
         createColumns(grid);
         grid.setHeight("75%");
-        setTitles("Gráfico - Enviados hoy", "Dashboard");
+        setTitles("Gráfico - Tráfico del día", "Dashboard");
         downloadButton.addClickListener(buttonClickEvent -> {
             if (buttonClickEvent.isFromClient()) {
                 downloadButton.setEnabled(false);

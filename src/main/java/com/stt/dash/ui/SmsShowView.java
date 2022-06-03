@@ -80,9 +80,9 @@ public class SmsShowView extends LitTemplate {
     private DatePicker secondDate = new DatePicker();
     /**/
 //    private Button searchButton = new Button("Buscar");
-    private IntegerField currentPageTextbox = new IntegerField("Página actual");
+    private IntegerField currentPageTextbox = new IntegerField("Página");
     private Label totalAmountOfPagesLabel = new Label();
-    ComboBox<Integer> comboItemsPerPage = new ComboBox<>("Sms por página");
+    ComboBox<Integer> comboItemsPerPage = new ComboBox<>("Mensajes por página");
     private final ComboBox<Client> clientCombobox = new ComboBox<>("Cliente");
     FooterRow footerRow;
     /**/
@@ -324,14 +324,14 @@ public class SmsShowView extends LitTemplate {
                             return col.getDestination();
                         })
                         .withProperty("source", AbstractSMS::getSource))
-                .setComparator(client -> client.getDestination()).setHeader("destino / source")
+                .setComparator(client -> client.getDestination()).setHeader("Destino / Origen")
                 .setWidth("180px").setFlexGrow(0);
     }
 
     private void createCarrierColumn() {
         carrierColum = grid
                 .addColumn(AbstractSMS::getCarrierCharCode)
-                .setHeader("operadora")
+                .setHeader("Operadora")
                 .setAutoWidth(true);
     }
 
@@ -359,7 +359,7 @@ public class SmsShowView extends LitTemplate {
                             return col.getMessageType();
                         })
                         .withProperty("msgtext", AbstractSMS::getMessagesText))
-                .setComparator(client -> client.getMessageType()).setHeader("tipo de mensaje / mensaje")
+                .setComparator(client -> client.getMessageType()).setHeader("Tipo de mensaje / mensaje")
                 .setAutoWidth(true);
     }
 
@@ -368,7 +368,7 @@ public class SmsShowView extends LitTemplate {
                 .addColumn(new LocalDateTimeRenderer<>(
                         client -> client.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
                         DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")))
-                .setComparator(AbstractSMS::getDate).setHeader("fecha de envío")
+                .setComparator(AbstractSMS::getDate).setHeader("Fecha de envío")
                 .setAutoWidth(true);
     }
 

@@ -154,7 +154,7 @@ public class SmsShowGridHourlyView extends LitTemplate implements Viewnable<SmsB
     private void createSomeCodeColumn() {
         someCodeColum = grid.addColumn(AbstractSmsByYearMonth::getSomeCode)
                 .setComparator(com -> com.getSomeCode())
-                .setHeader("Tipo de Mensaje")
+                .setHeader("Tipo de mensaje")
                 .setAutoWidth(true);
     }
 

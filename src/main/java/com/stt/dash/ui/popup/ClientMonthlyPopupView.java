@@ -29,7 +29,7 @@ public class ClientMonthlyPopupView extends MonthlySmsPopupView {
         presenter = new MonthlySmsPopupPresenter(smsHourService, yearSms, monthSms, systemidStringList, messageType, this);
         createColumns(grid);
         grid.setHeight("75%");
-        setTitles("Gráfico - Mensajes este mes", "Cliente");
+        setTitles("Gráfico - Tráfico del mes", "Cliente");
         downloadButton.addClickListener(buttonClickEvent -> {
             if (buttonClickEvent.isFromClient()) {
                 downloadButton.setEnabled(false);
@@ -43,7 +43,7 @@ public class ClientMonthlyPopupView extends MonthlySmsPopupView {
         presenter = new MonthlySmsPopupPresenter(smsHourService, yearSms, monthSms, daySms, systemidStringList, messageType, this);
         createColumns(grid);
         grid.setHeight("75%");
-        setTitles("Gráfico - Mensajes este mes", "Cliente");
+        setTitles("Gráfico - Tráfico del mes", "Cliente");
         downloadButton.addClickListener(buttonClickEvent -> {
             if (buttonClickEvent.isFromClient()) {
                 downloadButton.setEnabled(false);

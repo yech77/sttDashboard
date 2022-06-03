@@ -133,7 +133,7 @@ public class DailySmsShowGridView extends LitTemplate implements Viewnable<SmsBy
     private void createSomeCodeColumn() {
         someCodeColum = grid.addColumn(AbstractSmsByYearMonth::getSomeCode)
                 .setComparator(com -> com.getSomeCode())
-                .setHeader("Tipo de Mensaje")
+                .setHeader("Tipo de mensaje")
                 .setAutoWidth(true);
     }
 

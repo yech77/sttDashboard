@@ -28,7 +28,7 @@ public class CarrierDailyPopupView extends DailySmsPopupView {
         presenter = new DailySmsPopupPresenter(smsHourService, actualYear, actualMonth, actualDay, carrierList, messageTypeList, systemidStringList, this);
         createColumns(grid);
         grid.setHeight("75%");
-        setTitles("Gráfico - enviados hoy", "Operadora");
+        setTitles("Gráfico - Tráfico del día", "Operadora");
         downloadButton.addClickListener(buttonClickEvent -> {
             if (buttonClickEvent.isFromClient()) {
                 downloadButton.setEnabled(false);
@@ -42,7 +42,7 @@ public class CarrierDailyPopupView extends DailySmsPopupView {
         presenter = new DailySmsPopupPresenter(smsHourService, actualYear, actualMonth, actualDay, hourSms, carrierList, messageTypeList, systemidStringList, this);
         createColumns(grid);
         grid.setHeight("75%");
-        setTitles("Gráfico - enviados hoy", "Operadora");
+        setTitles("Gráfico - Tráfico del día", "Operadora");
         downloadButton.addClickListener(buttonClickEvent -> {
             if (buttonClickEvent.isFromClient()) {
                 downloadButton.setEnabled(false);
