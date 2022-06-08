@@ -15,7 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -32,9 +34,7 @@ public class AgendaService implements FilterableCrudService<Agenda> {
     private UserRepository ouser_repo;
     private final MyAuditEventComponent auditEvent;
 
-    public AgendaService(AgendaRepository repo,
-                         UserRepository ouser_repo,
-                         MyAuditEventComponent auditEvent) {
+    public AgendaService(AgendaRepository repo, UserRepository ouser_repo, MyAuditEventComponent auditEvent) {
         this.repo = repo;
         this.ouser_repo = ouser_repo;
         this.auditEvent = auditEvent;
@@ -150,9 +150,7 @@ public class AgendaService implements FilterableCrudService<Agenda> {
     public Page<Agenda> findAnyMatching(Optional<String> filter, Pageable pageable) {
         if (filter.isPresent()) {
             String repositoryFilter = "%" + filter.get() + "%";
-            return getRepository()
-                    .findByCreator_EmailLikeIgnoreCaseOrNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(
-                            repositoryFilter, repositoryFilter, repositoryFilter, pageable);
+            return getRepository().findByCreator_EmailLikeIgnoreCaseOrNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(repositoryFilter, repositoryFilter, repositoryFilter, pageable);
         } else {
             return find(pageable);
         }
@@ -162,8 +160,7 @@ public class AgendaService implements FilterableCrudService<Agenda> {
     public long countAnyMatching(Optional<String> filter) {
         if (filter.isPresent()) {
             String repositoryFilter = "%" + filter.get() + "%";
-            return repo.countByCreator_EmailLikeIgnoreCaseOrNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(
-                    repositoryFilter, repositoryFilter, repositoryFilter);
+            return repo.countByCreator_EmailLikeIgnoreCaseOrNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(repositoryFilter, repositoryFilter, repositoryFilter);
         } else {
             return count();
         }
@@ -179,11 +176,17 @@ public class AgendaService implements FilterableCrudService<Agenda> {
     }
 
     @Override
-    public Agenda save(User currentUser, Agenda entity) {
+    public Agenda save(User currentUser, @NotNull Agenda entity) {
+        /* Si id es nulo es un save y no una actualizacion */
+        boolean isNewEntity = Objects.isNull(entity.getId());
+        if (isNewEntity) {
+            if (existAlreadyAgendaName(entity.getName())) {
+                throw new UIFieldDataException("Ya existe");
+            }
+        }
         try {
-            Long id = entity.getId();
             entity = FilterableCrudService.super.save(currentUser, entity);
-            if (id == null) {
+            if (isNewEntity) {
                 log.info("{} Saved: Agenda[{}]", getStringLog(), entity.getName());
                 try {
                     auditEvent.add(ODashAuditEvent.OEVENT_TYPE.CREATE_AGENDA, entity);
@@ -199,12 +202,10 @@ public class AgendaService implements FilterableCrudService<Agenda> {
                 }
             }
         } catch (DataIntegrityViolationException e) {
-            throw new UserFriendlyDataException(
-                    "Ya existe una agenda con ese nombe. Por favor seleccione otro nombre.");
+            throw new UserFriendlyDataException("Ya existe una agenda con ese nombe. Por favor seleccione otro nombre.");
         } catch (Exception d) {
-            log.error("{} Error on Save:", getStringLog());
             log.error("", d);
-            throw new UserFriendlyDataException("Huno un eror y no se pudo salvar la agenda");
+            throw new UserFriendlyDataException("Hubo un error y no se pudo salvar la agenda");
         }
         return entity;
     }
@@ -217,6 +218,7 @@ public class AgendaService implements FilterableCrudService<Agenda> {
             auditEvent.add(ODashAuditEvent.OEVENT_TYPE.DELETE_AGENDA, agenda);
         } catch (Exception e) {
             log.error("", e);
+            throw new UserFriendlyDataException("Hubo un error y no se pudo borar la agenda");
         }
     }
 
@@ -235,6 +237,11 @@ public class AgendaService implements FilterableCrudService<Agenda> {
     @Override
     public Agenda createNew(User currentUser) {
         return new Agenda();
+    }
+
+    private Boolean existAlreadyAgendaName(@NotNull String name) {
+        /* buscar si existe el nombre */
+        return !repo.findByName(name).isEmpty();
     }
 
 }

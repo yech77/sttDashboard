@@ -16,6 +16,7 @@ import com.stt.dash.ui.views.dashboard.main.MainDashboardView;
 import com.stt.dash.ui.views.storefront.StorefrontView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -80,6 +81,7 @@ public class MainView extends AppLayout {
     private final CurrentUser currentUser;
 
     public MainView(@Autowired CurrentUser currentUser) {
+        final String contextPath = VaadinServlet.getCurrent().getServletContext().getContextPath();
         this.currentUser = currentUser;
 //		confirmDialog.setCancelable(true);
 //		confirmDialog.setConfirmButtonTheme("raised tertiary error");
@@ -104,7 +106,8 @@ public class MainView extends AppLayout {
         menuBar.addThemeVariants(MenuBarVariant.LUMO_TERTIARY_INLINE);
         MenuItem menuItem = menuBar.addItem(avatar);
         SubMenu subMenu = menuItem.getSubMenu();
-        subMenu.addItem("Logout", menuItemClickEvent -> logout());
+//        subMenu.addItem("Logout", menuItemClickEvent -> logout());
+        subMenu.addItem(createLogoutLink(contextPath));
         /**/
         VerticalLayout verticalLayout = new VerticalLayout(menuBar);
         verticalLayout.setId("myHorizontal");
@@ -175,9 +178,6 @@ public class MainView extends AppLayout {
         if (SecurityUtils.isAccessGranted(AuditView.class)) {
             tabs.add(createTab(VaadinIcon.CLOCK, TITLE_AUDIT, AuditView.class));
         }
-        final String contextPath = VaadinServlet.getCurrent().getServletContext().getContextPath();
-        final Tab logoutTab = createTab(createLogoutLink(contextPath));
-//        tabs.add(logoutTab);
         return tabs.toArray(new Tab[tabs.size()]);
     }
 
@@ -197,7 +197,8 @@ public class MainView extends AppLayout {
     }
 
     private static Anchor createLogoutLink(String contextPath) {
-        final Anchor a = populateLink(new Anchor(), VaadinIcon.ARROW_RIGHT, TITLE_LOGOUT);
+        final Anchor a = new Anchor();
+        a.add(TITLE_LOGOUT);
         a.setHref(contextPath + "/logout");
         return a;
     }

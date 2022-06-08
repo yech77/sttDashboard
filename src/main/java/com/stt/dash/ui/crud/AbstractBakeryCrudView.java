@@ -33,8 +33,7 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
     private static String confirmTextDialog = "Confirmar";
     private static String cancelTextDialog = "Volver";
     private final Grid<E> grid;
-    private STTCrudEditor sttCrudEditor;
-    private OnUI form;
+    private OnUIForm onUiForm;
     private E oldEntity;
 
     private final CrudEntityPresenter<E> entityPresenter;
@@ -84,37 +83,6 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
                                   Grid<E> grid, CrudEditor<E> editor, CurrentUser currentUser) {
 
         super(beanType, grid, editor);
-        sttCrudEditor = new STTCrudEditor() {
-            @Override
-            public void setItem(Object o, boolean b) {
-
-            }
-
-            @Override
-            public Object getItem() {
-                return null;
-            }
-
-            @Override
-            public void clear() {
-
-            }
-
-            @Override
-            public boolean validate() {
-                return false;
-            }
-
-            @Override
-            public void writeItemChanges() {
-
-            }
-
-            @Override
-            public Component getView() {
-                return null;
-            }
-        };
         this.grid = grid;
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         CrudI18n crudI18n = CrudI18n.createDefault();
@@ -131,39 +99,12 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         setupGrid(grid);
         Crud.addEditColumn(grid);
 
-        entityPresenter = new CrudEntityPresenter<>(service, currentUser, this);
-        SearchBar searchBar = new SearchBar();
-        searchBar.setActionText("Nuevo " + entityName);
-        searchBar.setPlaceHolder("Buscar");
-        searchBar.addFilterChangeListener(e -> dataProvider.setFilter(searchBar.getFilter()));
-        searchBar.getActionButton().getElement().setAttribute("new-button", true);
-
-        setToolbar(searchBar);
-        setupCrudEventListeners(entityPresenter);
-    }
-
-    public AbstractBakeryCrudView(Class<E> beanType, FilterableCrudService<E> service,
-                                  Grid<E> grid, STTCrudEditor<E> editor, CurrentUser currentUser) {
-        super(beanType, grid, editor);
-        sttCrudEditor = editor;
-        form = (OnUI) editor.getView();
-        this.grid = grid;
-        grid.setSelectionMode(Grid.SelectionMode.NONE);
-        CrudI18n crudI18n = CrudI18n.createDefault();
-        String entityName = EntityUtil.getName(beanType);
-        crudI18n.setNewItem("Nuevo " + entityName);
-        crudI18n.setEditItem("Editar " + entityName);
-        crudI18n.setEditLabel("Editar " + entityName);
-        crudI18n.getConfirm().getCancel().setContent(String.format(DISCARD_MESSAGE, entityName));
-        crudI18n.getConfirm().getDelete().setContent(String.format(DELETE_MESSAGE, entityName));
-        crudI18n.setDeleteItem("Borrar");
-        setI18n(crudI18n);
-        CrudEntityDataProvider<E> dataProvider = new CrudEntityDataProvider<>(service, currentUser);
-        grid.setDataProvider(dataProvider);
-        setupGrid(grid);
-        Crud.addEditColumn(grid);
-
-        entityPresenter = new CrudEntityPresenter<>(service, currentUser, this);
+        if (editor.getView() instanceof OnUIForm) {
+            onUiForm = (OnUIForm) editor.getView();
+            entityPresenter = new CrudEntityPresenter<>(service, currentUser, this, onUiForm);
+        } else {
+            entityPresenter = new CrudEntityPresenter<>(service, currentUser, this);
+        }
         SearchBar searchBar = new SearchBar();
         searchBar.setActionText("Crear " + entityName);
         searchBar.setPlaceHolder("Buscar masivos (Agendas)");
@@ -185,22 +126,19 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
             throw new RuntimeException("The operation could not be performed.");
         };
         addNewListener(e -> {
-            System.out.println("Press new......");
-            if (Optional.ofNullable(form).isPresent()) {
-                form.onUI();
+            if (Optional.ofNullable(onUiForm).isPresent()) {
+                onUiForm.onUI();
             }
         });
         addEditListener(e ->
                 entityPresenter.loadEntity(e.getItem().getId(),
                         entity -> {
                             navigateToEntity(entity.getId().toString());
-                            System.out.println("GUARDO EL VALOR DEL VIEJO ENTITY");
                             setOldEntity(entity);
                         }));
 
         addCancelListener(e -> navigateToEntity(null));
         addSaveListener(e -> {
-            System.out.println("AbstractBakeryCrudView: setupCrudEventListeners -> addSaveListener");
             idBeforeSave = e.getItem().getId() == null ? 0 : e.getItem().getId();
             if (!beforeSaving(idBeforeSave, e.getItem())) {
                 throw new RuntimeException("Este es un error forzado....");
@@ -217,7 +155,6 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
     }
 
     private void setOldEntity(E entity) {
-        System.out.println("AbstractBakeryCrudView:setOldEntity-> " + entity);
         oldEntity = entity;
     }
 
@@ -230,7 +167,6 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
             }
             entityPresenter.loadEntity(id, entity -> {
                 edit(entity, EditMode.EXISTING_ITEM);
-                System.out.println("Estoy por setparameter");
                 setOldEntity(entity);
             });
         } else {
