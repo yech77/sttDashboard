@@ -329,8 +329,6 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
             Dialog d = new Dialog();
             d.setWidth("75%");
             ClientMonthlyPopupView view = new ClientMonthlyPopupView(smsHourService, actualYear, actualMonth, seriesItemIndex, slist, checkboxMessageType.getSelectedItems());
-            view.setTitles("Gráfico - Mensajes este mes", clientCombobox.getValue() == null ? "Cliente" : clientCombobox.getValue().getClientCod());
-            ClientMonthlyPopupView view = new ClientMonthlyPopupView(smsHourService, actualYear, actualMonth, seriesItemIndex, selectedSystemIdList, checkboxMessageType.getSelectedItems());
             view.setTitles("Gráfico - Tráfico del mes", clientCombobox.getValue() == null ? "Cliente" : clientCombobox.getValue().getClientCod());
             d.add(view);
             d.open();
@@ -341,8 +339,6 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
             Dialog d = new Dialog();
             d.setWidth("75%");
             ClientMonthlyPopupView view = new ClientMonthlyPopupView(smsHourService, actualYear, actualMonth, slist, checkboxMessageType.getSelectedItems());
-            view.setTitles("Gráfico - Mensajes este mes", clientCombobox.getValue() == null ? "Cliente" : clientCombobox.getValue().getClientCod());
-            ClientMonthlyPopupView view = new ClientMonthlyPopupView(smsHourService, actualYear, actualMonth, selectedSystemIdList, checkboxMessageType.getSelectedItems());
             view.setTitles("Gráfico - Tráfico del mes", clientCombobox.getValue() == null ? "Cliente" : clientCombobox.getValue().getClientCod());
             d.add(view);
             d.open();
