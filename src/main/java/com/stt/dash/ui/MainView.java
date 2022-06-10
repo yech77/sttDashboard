@@ -155,28 +155,33 @@ public class MainView extends AppLayout {
     private static Tab[] getAvailableTabs() {
         final List<Tab> tabs = new ArrayList<>(6);
         tabs.add(createTab(VaadinIcon.HOME, TITLE_DASHBOARD_MAIN, MainDashboardView.class));
-        tabs.add(createTab(VaadinIcon.ENVELOPES_O, TITLE_SMS_VIEW, SmsView.class));
-        tabs.add(createTab(VaadinIcon.ACCORDION_MENU, "Mensajes enviados", SmsShowView.class));
-        if (SecurityUtils.isAccessGranted(FileToSendFrontView.class)) {
-            tabs.add(createTab(VaadinIcon.CALENDAR_ENVELOPE, TITLE_BULKSMS_SCHEDULER, FileToSendFrontView.class));
-        }
-        if (SecurityUtils.isAccessGranted(BulkSmsView.class)) {
-            tabs.add(createTab(VaadinIcon.USER, TITLE_BULKSMS, BulkSmsView.class));
-        }
+
+        tabs.add(createTab(VaadinIcon.ACCORDION_MENU, "Tráfico por cliente", SmsShowView.class));
+
         if (SecurityUtils.isAccessGranted(ClientChartView.class)) {
             tabs.add(createTab(VaadinIcon.CHART_LINE, TITLE_CLIENT, ClientChartView.class));
         }
         if (SecurityUtils.isAccessGranted(CarrierChartView.class)) {
             tabs.add(createTab(VaadinIcon.CHART_TIMELINE, TITLE_CARRIER, CarrierChartView.class));
         }
+        tabs.add(createTab(VaadinIcon.ENVELOPES_O, TITLE_SMS_VIEW, SmsView.class));
+
+        if (SecurityUtils.isAccessGranted(BulkSmsView.class)) {
+            tabs.add(createTab(VaadinIcon.USER, TITLE_BULKSMS, BulkSmsView.class));
+        }
+
+        if (SecurityUtils.isAccessGranted(FileToSendFrontView.class)) {
+            tabs.add(createTab(VaadinIcon.CALENDAR_ENVELOPE, TITLE_BULKSMS_SCHEDULER, FileToSendFrontView.class));
+        }
+        if (SecurityUtils.isAccessGranted(AuditView.class)) {
+            tabs.add(createTab(VaadinIcon.CLOCK, TITLE_AUDIT, AuditView.class));
+        }
+
         if (SecurityUtils.isAccessGranted(UsersView.class)) {
             tabs.add(createTab(VaadinIcon.USER, TITLE_USERS, UsersView.class));
         }
         if (SecurityUtils.isAccessGranted(ORolesView.class)) {
             tabs.add(createTab(VaadinIcon.KEY, TITLE_ROLES, ORolesView.class));
-        }
-        if (SecurityUtils.isAccessGranted(AuditView.class)) {
-            tabs.add(createTab(VaadinIcon.CLOCK, TITLE_AUDIT, AuditView.class));
         }
         return tabs.toArray(new Tab[tabs.size()]);
     }
