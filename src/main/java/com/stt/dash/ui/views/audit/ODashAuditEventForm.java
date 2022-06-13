@@ -30,8 +30,8 @@ public class ODashAuditEventForm extends FormLayout {
     private Button searchButton = new Button("BUSCAR");
     private Binder<OdashAuditEventFormBean> binder = new BeanValidationBinder<>(OdashAuditEventFormBean.class);
     /**/
-    private Checkbox allUserCheck = new Checkbox("todos los usuarios");
-    private Checkbox allEventCheck = new Checkbox("todos los eventos");
+    private Checkbox allUserCheck = new Checkbox("Todos los usuarios");
+    private Checkbox allEventCheck = new Checkbox("Todos los eventos");
     private Locale esLocale = new Locale("es", "ES");
 
     public ODashAuditEventForm(List<User> userList) {
@@ -63,7 +63,7 @@ public class ODashAuditEventForm extends FormLayout {
                                 return false;
                             }
                         },
-                        "Seleccione el Usuario")
+                        "Debe seleccionar un usuario")
                 .bind(OdashAuditEventFormBean::getUserCombo, OdashAuditEventFormBean::setUserCombo);
         /* Event */
         binder.forField(eventCombo)
@@ -77,7 +77,7 @@ public class ODashAuditEventForm extends FormLayout {
                                 return false;
                             }
                         },
-                        "Seleccione el Evento")
+                        "Debe seleccionar un evento")
                 .bind(OdashAuditEventFormBean::getEventCombo, OdashAuditEventFormBean::setEventCombo);
 
 //        binder.forField(eventCombo)

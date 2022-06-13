@@ -176,7 +176,7 @@ public class MainDashboardView extends DashboardBase {
         Configuration conf = monthlyProductSplit.getConfiguration();
         conf.getChart().setType(ChartType.PIE);
         conf.getChart().setBorderRadius(4);
-        conf.setTitle("Tráfico del mes por operadora");
+        conf.setTitle("Distribución de tráfico del mes por operadora");
         List<SmsByYearMonth> groupList = smsHourService.groupCarrierByYeMoMeWhMoEqMessageTypeIn(actualYear, actualMonth, Arrays.asList("MT", "MO"), stingListGenericBean.getList());
         groupList.stream().forEach(System.out::println);
         /* Agrupar por Carrier */
@@ -236,7 +236,7 @@ public class MainDashboardView extends DashboardBase {
         smsCountDataWithChart = new OrdersCountData("Mensajes recibidos (MO)", "", (int) t_mo);
         moCounterLabel.setOrdersCountData(smsCountDataWithChart);
 
-        smsCountDataWithChart = new OrdersCountData("Tráfico total", "", (int) (t_mo + t_mt));
+        smsCountDataWithChart = new OrdersCountData("Total del mes", "", (int) (t_mo + t_mt));
         totalCounterLabel.setOrdersCountData(smsCountDataWithChart);
     }
 
