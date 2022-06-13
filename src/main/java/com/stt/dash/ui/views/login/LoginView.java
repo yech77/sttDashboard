@@ -21,18 +21,18 @@ import java.util.Map;
 
 
 @Route
-@PageTitle("Orinoco Dash")
+@PageTitle("Portal cliente STT")
 @JsModule("./styles/shared-styles.js")
 //@Viewport(BakeryConst.VIEWPORT)
 public class LoginView extends LoginOverlay
         implements AfterNavigationObserver, BeforeEnterObserver {
 
-    public LoginView() {
+        public LoginView() {
         LoginI18n i18n = LoginI18n.createDefault();
         i18n.setHeader(new LoginI18n.Header());
-        i18n.getHeader().setTitle("Orinoco Dash");
-        i18n.getHeader().setDescription(
-                "BIENVENIDOS!!");
+        i18n.getHeader().setTitle("Orinoco");
+
+        i18n.getHeader().setDescription("Portal del cliente - Soluciones TextTech");
         i18n.setAdditionalInformation(null);
         i18n.setForm(new LoginI18n.Form());
         i18n.getForm().setSubmit("Entrar");

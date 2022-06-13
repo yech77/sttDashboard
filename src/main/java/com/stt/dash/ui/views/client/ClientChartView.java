@@ -219,7 +219,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         Configuration confHourlyChart = smsHourPieChart.getConfiguration();
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
         confHourlyChart.setTitle("Hoy");
-        confHourlyChart.setSubTitle("por operadoras");
+        confHourlyChart.setSubTitle("Por operadoras");
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
@@ -235,7 +235,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
 
         confMonthlyChart.setTitle("Este Mes");
-        confMonthlyChart.setSubTitle("por operadoras");
+        confMonthlyChart.setSubTitle("Por operadoras");
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
@@ -252,7 +252,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
 //        innerPieOptions.setSize("70%")
 //
         confHourlyChart.setTitle("Trimestral");
-        confHourlyChart.setSubTitle("por operadoras");
+        confHourlyChart.setSubTitle("Por operadoras");
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
@@ -284,8 +284,8 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
             d.open();
             view.setConsumer(s -> d.close());
         });
-        confHourlyChart.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - dia de hoy");
-        confHourlyChart.setSubTitle("por hora");
+        confHourlyChart.setTitle("Trafico del día");
+        confHourlyChart.setSubTitle("Por hora");
         confHourlyChart.getyAxis().setTitle("SMS");
         confHourlyChart.setExporting(true);
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
@@ -346,10 +346,10 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         });
         /**/
         confThisMonth.getyAxis().setTitle("SMS");
-        confThisMonth.setSubTitle("por dia");
+        confThisMonth.setSubTitle("Por día");
         confThisMonth.setExporting(true);
-        confThisMonth.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - " + actualYear);
-        /**/
+        confThisMonth.setTitle("Tráfico del mes");
+        /* OMonths.valueOf(actualMonth).getMonthName() + " - " + actualYear  */
         String[] da = new String[LocalDate.now().getMonth().maxLength()];
         for (int i = 1; i <= LocalDate.now().getMonth().maxLength(); i++) {
             da[i - 1] = i + "";
@@ -391,7 +391,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
             popup(view);
         });
         conf.getyAxis().setTitle("SMS");
-        conf.setTitle("Trimestral - " + LocalDate.now().getYear());
+        conf.setTitle("Trafico a tres meses");
         conf.setExporting(true);
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
         /* Averiguar cuales son los tres meses a calular. */

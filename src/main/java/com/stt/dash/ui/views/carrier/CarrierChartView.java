@@ -236,8 +236,8 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         });
 
 
-        confHourlyChart.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - dia de hoy");
-        confHourlyChart.setSubTitle("por hora");
+        confHourlyChart.setTitle("Trafico del día");
+        confHourlyChart.setSubTitle("Por hora");
         confHourlyChart.setExporting(true);
         confHourlyChart.getyAxis().setTitle("SMS");
         PlotOptionsColumn plotColum = new PlotOptionsColumn();
@@ -429,7 +429,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         tooltip.setShared(true);
         tooltip.setValueDecimals(0);
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
-        confTriChart.setTitle("Trimestre");
+        confTriChart.setTitle("Trafico a tres meses");
         confTriChart.setExporting(true);
         confTriChart.setTooltip(tooltip);
         /* Averiguar cuales son los tres meses a calular. */
@@ -459,7 +459,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         for (DataSeries list_sery : list_series) {
             conf.addSeries(list_sery);
         }
-        conf.setTitle("Trimestre");
+        conf.setTitle("Trafico a tres meses");
     }
 
     /**
@@ -498,10 +498,10 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         });
         /**/
         confThisMonth.getyAxis().setTitle("SMS");
-        confThisMonth.setSubTitle("por dia");
+        confThisMonth.setSubTitle("Por día");
         confThisMonth.setExporting(true);
-        confThisMonth.setTitle(OMonths.valueOf(actualMonth).getMonthName() + " - " + actualYear);
-        /**/
+        confThisMonth.setTitle("Tráfico del mes");
+        /* OMonths.valueOf(actualMonth).getMonthName() + " - " + actualYear */
         String[] da = new String[LocalDate.now().getMonth().maxLength()];
         for (int i = 1; i <= LocalDate.now().getMonth().maxLength(); i++) {
             da[i - 1] = i + "";
