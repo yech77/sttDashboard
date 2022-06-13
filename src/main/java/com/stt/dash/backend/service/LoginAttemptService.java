@@ -6,7 +6,6 @@ import com.google.common.cache.LoadingCache;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class LoginAttemptService {
@@ -16,8 +15,8 @@ public class LoginAttemptService {
 
     public LoginAttemptService() {
         super();
-        attemptsCache = CacheBuilder.newBuilder().
-                expireAfterWrite(15, TimeUnit.MINUTES)
+        attemptsCache = CacheBuilder.newBuilder()
+//               .expireAfterWrite(15, TimeUnit.MINUTES)
                 .maximumSize(1000)
                 .build(new CacheLoader<String, Integer>() {
                     public Integer load(String key) {
@@ -47,5 +46,15 @@ public class LoginAttemptService {
         } catch (ExecutionException e) {
             return false;
         }
+    }
+
+
+    /**
+     * Es llamado cuando se desactiva el usuario por maximos intentos.
+     *
+     * @param key
+     */
+    public void pullOutUserOfAttemps(String key) {
+        attemptsCache.invalidate(key);
     }
 }
