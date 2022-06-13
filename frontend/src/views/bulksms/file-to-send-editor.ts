@@ -50,7 +50,7 @@ export class FileToSendEditor extends LitElement {
                 }
             </style>
             <div class="scrollable flex1" id="main">
-                <h2 id="title">Nueva Programacion</h2>
+                <h2 id="title">Nueva programacion</h2>
 
                 <div class="meta-row" id="metaContainer">
                     <span class="dim">Order #<span id="orderNumber"></span></span>
@@ -58,10 +58,10 @@ export class FileToSendEditor extends LitElement {
 
                 <vaadin-form-layout id="form1" .responsiveSteps="${this.responsiveSteps}">
                     <vaadin-form-layout id="form2" .responsiveSteps="${this.form2}">
-                        <vaadin-date-picker label="Fecha de envio" id="dueDate2"></vaadin-date-picker>
-                        <vaadin-time-picker label="Hora de envio" id="dueTime"></vaadin-time-picker>
-                        <vaadin-checkbox id="sendNow">Enviar Ya</vaadin-checkbox>
-                        <vaadin-date-time-picker label="Fecha de envio" id="dueDate"></vaadin-date-time-picker>
+                        <vaadin-date-picker label="Fecha de envío" id="dueDate2"></vaadin-date-picker>
+                        <vaadin-time-picker label="Hora de envío" id="dueTime"></vaadin-time-picker>
+                        <vaadin-checkbox id="sendNow">Enviar ya</vaadin-checkbox>
+                        <vaadin-date-time-picker label="Fecha de envío" id="dueDate"></vaadin-date-time-picker>
                     </vaadin-form-layout>
 
                     <vaadin-form-layout id="form3" colspan="3" .responsiveSteps="${this.form3}">
@@ -71,14 +71,14 @@ export class FileToSendEditor extends LitElement {
                         </vaadin-combo-box>
                         <vaadin-combo-box id="systemId" label="Credencial"
                                           clear-button-visible></vaadin-combo-box>
-                        <vaadin-text-field id="orderDescription" label="Nombre de Programacion" colspan="2"
+                        <vaadin-text-field id="orderDescription" label="Nombre" colspan="2"
                                            clear-button-visible></vaadin-text-field>
                         <vaadin-text-field id="orderName" label="Descripcion" colspan="2"
                                            clear-button-visible></vaadin-text-field>
                         <vaadin-text-area id="message" label="Escriba su mensaje" colspan="2" required
                                           clear-button-visible></vaadin-text-area>
-                        <vaadin-text-area id="messageBuilded" label="Mensaje"
-                                          helper-text="vista previa solo si Agenda es variable"
+                        <vaadin-text-area id="messageBuilded" label="Vista previa"
+                                          helper-text="Mensaje a enviar al usuario (Calculado para agendas con variables)"
                                           readonly="true"></vaadin-text-area>
 
                         <vaadin-form-item colspan="2">
@@ -92,9 +92,9 @@ export class FileToSendEditor extends LitElement {
             </div>
 
             <buttons-bar id="footer" no-scroll\\$="[[noScroll]]">
-                <vaadin-button slot="left" id="cancel">Cancel</vaadin-button>
+                <vaadin-button slot="left" id="cancel">Cancelar</vaadin-button>
                 <vaadin-button slot="right" id="review" theme="primary">
-                    Confirmar Programacion
+                    Confirmar programacion
                     <iron-icon icon="vaadin:arrow-right" slot="suffix"></iron-icon>
                 </vaadin-button>
             </buttons-bar>

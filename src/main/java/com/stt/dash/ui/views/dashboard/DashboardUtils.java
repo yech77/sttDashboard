@@ -20,7 +20,7 @@ public class DashboardUtils {
 
 	public static OrdersCountDataWithChart getTodaysOrdersCountData(DeliveryStats deliveryStats,
 			Iterator<OrderSummary> ordersIterator) {
-		OrdersCountDataWithChart ordersCountData = new OrdersCountDataWithChart("Mensajes Enviados", null,
+		OrdersCountDataWithChart ordersCountData = new OrdersCountDataWithChart("Mensajes enviados", null,
 				deliveryStats.getDueToday() - deliveryStats.getDeliveredToday(), deliveryStats.getDueToday());
 
 		LocalDate date = LocalDate.now();

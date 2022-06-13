@@ -157,7 +157,7 @@ public class MonthlySmsShowGridView extends LitTemplate implements Viewnable<Sms
         } else if (!isOneMonth) {
             someCodeColum = grid.addColumn(AbstractSmsByYearMonth::getSomeCode)
                     .setComparator(com -> com.getSomeCode())
-                    .setHeader("Tipo de Mensaje")
+                    .setHeader("Tipo de mensaje")
                     .setAutoWidth(true);
         } else if (isCarrier) {
             someCodeColum = grid.addColumn(AbstractSmsByYearMonth::getSomeCode)
@@ -170,7 +170,7 @@ public class MonthlySmsShowGridView extends LitTemplate implements Viewnable<Sms
     private void createMessageType() {
         someCodeColum = grid.addColumn(AbstractSmsByYearMonth::getMessageType)
                 .setComparator(com -> com.getSomeCode())
-                .setHeader("Tipo de Mensaje")
+                .setHeader("Tipo de mensaje")
                 .setAutoWidth(true);
     }
 

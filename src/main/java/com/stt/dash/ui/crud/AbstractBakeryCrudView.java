@@ -106,8 +106,8 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
             entityPresenter = new CrudEntityPresenter<>(service, currentUser, this);
         }
         SearchBar searchBar = new SearchBar();
-        searchBar.setActionText("Nuevo " + entityName);
-        searchBar.setPlaceHolder("Buscar");
+        searchBar.setActionText("Crear " + entityName);
+        searchBar.setPlaceHolder("Buscar masivos (Agendas)");
         searchBar.addFilterChangeListener(e -> dataProvider.setFilter(searchBar.getFilter()));
         searchBar.getActionButton().getElement().setAttribute("new-button", true);
 

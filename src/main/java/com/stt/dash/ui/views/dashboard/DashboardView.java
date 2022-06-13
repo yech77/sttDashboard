@@ -135,7 +135,7 @@ public class DashboardView extends PolymerTemplate<TemplateModel> {
         Configuration conf = monthlyProductSplit.getConfiguration();
         conf.getChart().setType(ChartType.PIE);
         conf.getChart().setBorderRadius(4);
-        conf.setTitle("Distribución de mensajes este mes por operadora");
+        conf.setTitle("Distribución de tráfico del mes por operadora");
         DataSeries deliveriesPerProductSeries = new DataSeries(productDeliveries.entrySet().stream()
                 .map(e -> new DataSeriesItem(e.getKey().getName(), e.getValue())).collect(Collectors.toList()));
         PlotOptionsPie plotOptionsPie = new PlotOptionsPie();

@@ -106,14 +106,14 @@ public class SmsShowGridAllView extends LitTemplate implements Viewnable<Abstrac
                             return col.getDestination();
                         })
                         .withProperty("source", AbstractSMS::getSource))
-                .setComparator(client -> client.getDestination()).setHeader("destino / source")
+                .setComparator(client -> client.getDestination()).setHeader("Destino / Origen")
                 .setWidth("180px").setFlexGrow(0);
     }
 
     private void createCarrierColumn() {
         carrierColum = grid
                 .addColumn(AbstractSMS::getCarrierCharCode)
-                .setHeader("operadora")
+                .setHeader("Operadora")
                 .setAutoWidth(true);
     }
 
@@ -129,7 +129,7 @@ public class SmsShowGridAllView extends LitTemplate implements Viewnable<Abstrac
         messageTypeColum = grid
                 .addColumn(AbstractSMS::getMessageType)
                 .setComparator(client -> client.getMessageType())
-                .setHeader("tipo de mensaje")
+                .setHeader("Tipo de mensaje")
                 .setAutoWidth(true);
     }
 
@@ -141,7 +141,7 @@ public class SmsShowGridAllView extends LitTemplate implements Viewnable<Abstrac
                             return col.getMessageType();
                         })
                         .withProperty("msgtext", AbstractSMS::getMessagesText))
-                .setComparator(client -> client.getMessageType()).setHeader("tipo de mensaje / mensaje")
+                .setComparator(client -> client.getMessageType()).setHeader("Tipo de mensaje / mensaje")
                 .setAutoWidth(true);
     }
 
@@ -150,7 +150,7 @@ public class SmsShowGridAllView extends LitTemplate implements Viewnable<Abstrac
                 .addColumn(new LocalDateTimeRenderer<>(
                         client -> client.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
                         DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")))
-                .setComparator(AbstractSMS::getDate).setHeader("fecha de envío")
+                .setComparator(AbstractSMS::getDate).setHeader("Fecha de envío")
                 .setAutoWidth(true);
     }
 

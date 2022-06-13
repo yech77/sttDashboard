@@ -56,9 +56,9 @@ public class FileToSendFrontView extends PolymerTemplate<TemplateModel> implemen
         this.fileToSendEditorView = fileToSendEditorView;
         this.presenter = presenter;
 
-        searchBar.setActionText("Programar nuevo masivo");
+        searchBar.setActionText("Programar masivo");
         searchBar.setCheckboxText("Ver masivos anteriores");
-        searchBar.setPlaceHolder("Buscar");
+        searchBar.setPlaceHolder("Buscar programaciones");
 
 
         grid.setSelectionMode(Grid.SelectionMode.NONE);

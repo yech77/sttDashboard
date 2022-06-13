@@ -102,7 +102,7 @@ public class SmsView extends LitTemplate {
     private MultiComboBox<SystemId> multi_systemIds = new MultiComboBox<>();
     private CheckboxGroup<OMessageType> checkboxMessageType = new CheckboxGroup<>();
     //    private Button searchButton = new Button("Buscar");
-    private IntegerField currentPageTextbox = new IntegerField("Página actual");
+    private IntegerField currentPageTextbox = new IntegerField("Página");
     private Label totalAmountOfPagesLabel = new Label();
     /**/
     HorizontalLayout layoutButtons = new HorizontalLayout();
@@ -148,7 +148,8 @@ public class SmsView extends LitTemplate {
         multi_systemIds.setValue(systemIdSetGenericBean.getSet());
         multi_systemIds.setValue(systemIdSetGenericBean.getSet());
         multi_systemIds.setRequired(true);
-        multi_systemIds.setErrorMessage("Seleccione al menos una credencial");
+        multi_systemIds.setHelperText("Seleccione al menos una credencial.");
+        multi_systemIds.setErrorMessage("Se debe seleccionar al menos una credencial");
         multi_systemIds.addValueChangeListener(change -> {
             if (change.getValue().size() == 0) {
                 multi_systemIds.setInvalid(true);
@@ -158,11 +159,11 @@ public class SmsView extends LitTemplate {
             searchButton.setEnabled(isValidSearch());
         });
         /**/
-        checkboxMessageType.setLabel("Tipo de Mensajes");
+        checkboxMessageType.setLabel("Tipo de mensajes");
         checkboxMessageType.setItems(OMessageType.values());
         checkboxMessageType.setValue(new HashSet<OMessageType>(Arrays.asList(OMessageType.values())));
         checkboxMessageType.setRequired(true);
-        checkboxMessageType.setErrorMessage("seleccionar al menos un tipo de sms");
+        checkboxMessageType.setErrorMessage("Seleccionar al menos un tipo de mensaje");
         checkboxMessageType.addValueChangeListener(change -> {
             if (checkboxMessageType.getValue().size() == 0) {
                 checkboxMessageType.setInvalid(true);
@@ -172,7 +173,8 @@ public class SmsView extends LitTemplate {
             searchButton.setEnabled(isValidSearch());
         });
         /**/
-        textPhoneNumer.setLabel("Numero a buscar");
+        textPhoneNumer.setLabel("Numero");
+        textPhoneNumer.setHelperText("Dejar en blanco para buscar todos los numeros.");
         textPhoneNumer.setClearButtonVisible(true);
         /**/
         searchButton.setText("Buscar");
@@ -248,7 +250,7 @@ public class SmsView extends LitTemplate {
             }
         });
         /**/
-        ComboBox<Integer> comboItemsPerPage = new ComboBox<>("Sms por página");
+        ComboBox<Integer> comboItemsPerPage = new ComboBox<>("Mensajes por página");
         comboItemsPerPage.setItems(Arrays.asList(25, 50, 100, 200, 400, 800));
         comboItemsPerPage.setValue(itemsPerPage);
         comboItemsPerPage.addValueChangeListener(change -> {
@@ -520,14 +522,14 @@ public class SmsView extends LitTemplate {
                             return col.getDestination();
                         })
                         .withProperty("source", AbstractSMS::getSource))
-                .setComparator(client -> client.getDestination()).setHeader("destino / source")
+                .setComparator(client -> client.getDestination()).setHeader("Destino / Origen")
                 .setWidth("180px").setFlexGrow(0);
     }
 
     private void createCarrierColumn() {
         carrierColum = grid
                 .addColumn(AbstractSMS::getCarrierCharCode)
-                .setHeader("operadora")
+                .setHeader("Operadora")
                 .setAutoWidth(true);
     }
 
@@ -543,7 +545,7 @@ public class SmsView extends LitTemplate {
         messageTypeColum = grid
                 .addColumn(AbstractSMS::getMessageType)
                 .setComparator(client -> client.getMessageType())
-                .setHeader("tipo de mensaje")
+                .setHeader("Tipo de mensaje")
                 .setAutoWidth(true);
     }
 
@@ -552,7 +554,7 @@ public class SmsView extends LitTemplate {
                 .addColumn(new LocalDateTimeRenderer<>(
                         client -> client.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
                         DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")))
-                .setComparator(AbstractSMS::getDate).setHeader("fecha de envío")
+                .setComparator(AbstractSMS::getDate).setHeader("Fecha de envío")
                 .setAutoWidth(true);
     }
 
@@ -564,7 +566,7 @@ public class SmsView extends LitTemplate {
                             return col.getMessageType();
                         })
                         .withProperty("msgtext", AbstractSMS::getMessagesText))
-                .setComparator(client -> client.getMessageType()).setHeader("tipo de mensaje / mensaje")
+                .setComparator(client -> client.getMessageType()).setHeader("Tipo de mensaje / mensaje")
                 .setAutoWidth(true);
     }
 

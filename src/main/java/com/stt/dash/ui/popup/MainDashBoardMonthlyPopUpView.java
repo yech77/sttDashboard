@@ -33,7 +33,7 @@ public class MainDashBoardMonthlyPopUpView extends MonthlySmsPopupView {
         presenter = new MonthlySmsPopupPresenter(smsHourService, yearSms, monthToShow, systemidStringList, this);
         createColumns(grid);
         grid.setHeight("75%");
-        setTitles("Gráfico - Mensajes este mes", "Dashboard");
+        setTitles("Gráfico - Tráfico del mes", "Dashboard");
         downloadButton.addClickListener(buttonClickEvent -> {
             if (buttonClickEvent.isFromClient()) {
                 downloadButton.setEnabled(false);
@@ -56,7 +56,7 @@ public class MainDashBoardMonthlyPopUpView extends MonthlySmsPopupView {
         presenter = new MonthlySmsPopupPresenter(smsHourService, yearSms, monthSms, selectedDay, systemidStringList, this);
         createColumns(grid);
         grid.setHeight("75%");
-        setTitles("Gráfico - Mensajes este mes", "Dashboard");
+        setTitles("Gráfico - Tráfico del mes", "Dashboard");
         downloadButton.addClickListener(buttonClickEvent -> {
             if (buttonClickEvent.isFromClient()) {
                 downloadButton.setEnabled(false);

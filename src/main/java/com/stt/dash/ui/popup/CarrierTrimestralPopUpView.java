@@ -76,7 +76,7 @@ public class CarrierTrimestralPopUpView extends TrimestralSmsPopupView {
             System.out.println("Daily message limit reached. Code not able to handle this size of string.");
             return "";
         }
-        StringBuilder sb = new StringBuilder("mes,\"Operadora\",\"Tipo de Mensaje\",total\n");
+        StringBuilder sb = new StringBuilder("mes,\"Operadora\",\"Tipo de mensaje\",total\n");
         for (AbstractSmsByYearMonth msg : messages) {
             sb.append(OMonths.valueOf(msg.getGroupBy()).name()).append(",");
             sb.append(msg.getSomeCode()).append(",");

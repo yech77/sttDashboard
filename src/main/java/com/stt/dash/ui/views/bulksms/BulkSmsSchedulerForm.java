@@ -129,7 +129,7 @@ public class BulkSmsSchedulerForm extends FormLayout {
             /* al comenzar desde $1 se debe restar uno para que tenga la cantidad correcta de variables*/
             vars--;
             if (varCount != vars) {
-                warningSpan.setText("Mensajes en esta Agenda necesitan "
+                warningSpan.setText("Mensajes en esta agenda necesitan "
                         + varCount
                         + " parámetros; Tienes "
                         + vars

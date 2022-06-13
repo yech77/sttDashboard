@@ -29,7 +29,7 @@ public class ODashAuditEvent extends AbstractEntitySequence {
         DELETE_USER(10, "usuario borrado"),
         PASSWORD_CHANGED(11, "clave cambiada"),
         DOWNLOAD_FILE_AGENDA(12, "descarga de agenda"),
-        DOWNLOAD_FILE_TRAFFIC_SMS(13, "descarga de trafico"),
+        DOWNLOAD_FILE_TRAFFIC_SMS(13, "descarga de tráfico"),
         DOWNLOAD_FILE_SEARCH_SMS(14, "descarga de busqueda sms"),
         DOWNLOAD_FILE_AUDITEVENT(15, "descarga de archivo de auditoria"),
         ACCEPTED_SMS(16, "Aceptar envio de mensajes"),
@@ -56,7 +56,7 @@ public class ODashAuditEvent extends AbstractEntitySequence {
     @Enumerated(EnumType.ORDINAL)
     private OEVENT_TYPE eventType;
 
-    @GridColumn(order = 3, columnName = "Descripcionnnn")
+    @GridColumn(order = 3, columnName = "Descripcion")
     @Size(min = 3)
     private String eventDesc;
 
