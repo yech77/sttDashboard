@@ -11,6 +11,9 @@ public final class EntityUtil {
         if (type.getSimpleName().equalsIgnoreCase("user")) {
             return "Usuario";
         }
+        if (type.getSimpleName().equalsIgnoreCase("filestosend")) {
+            return "Programación";
+        }
         // All main entities have simple one word names, so this is sufficient. Metadata
         // could be added to the class if necessary.
         return type.getSimpleName();

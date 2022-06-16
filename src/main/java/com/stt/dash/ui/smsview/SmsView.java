@@ -42,7 +42,6 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -196,7 +195,7 @@ public class SmsView extends LitTemplate {
         secondDate.setRequired(true);
         secondDate.setLocale(esLocale);
         /**/
-        secondline.add(new HorizontalLayout(firstDate, secondDate, checkboxMessageType),
+        firstline.add(new HorizontalLayout(firstDate, secondDate, checkboxMessageType),
                 new HorizontalLayout(textPhoneNumer, comboCarrier),
                 new HorizontalLayout(multi_systemIds));
         textPhoneNumer.setWidthFull();
@@ -287,7 +286,7 @@ public class SmsView extends LitTemplate {
                 }
             }
         });
-        footer.add(comboItemsPerPage, currentPageTextbox, totalAmountOfPagesLabel);
+        footer.add(new HorizontalLayout(comboItemsPerPage, currentPageTextbox, totalAmountOfPagesLabel));
     }
 
     private Carrier searchCarrierbyName(Set<Carrier> carrierSet, String movistar) {
@@ -461,7 +460,7 @@ public class SmsView extends LitTemplate {
             return "";
         }
         /*TODO: Cambiar a CSVFormat standard*/
-        StringBuilder sb = new StringBuilder("\"destino\",\"fecha\",\"tipo de mensaje\",\"mensaje\",\"id recibido\",\"id enviando\",\"source\",\"credencial\",\"operadora\"\n");
+        StringBuilder sb = new StringBuilder("\"destino\",\"fecha\",\"tipo de mensaje\",\"mensaje\",\"id recibido\",\"id enviando\",\"origen\",\"credencial\",\"operadora\"\n");
 
         for (AbstractSMS msg : messages) {
             sb.append(msg.getDestination()).append(",");

@@ -50,7 +50,8 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
     private final CurrentUser currentUser;
 
     public BulkSmsSchedulerView(
-            OProperties properties, SystemIdRepository systemid_repo,
+            OProperties properties,
+            SystemIdRepository systemid_repo,
             AgendaService agendaService,
             FilesToSendService service,
             CurrentUser currentUser,

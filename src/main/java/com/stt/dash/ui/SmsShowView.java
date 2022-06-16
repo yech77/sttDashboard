@@ -174,7 +174,7 @@ public class SmsShowView extends LitTemplate {
         /**/
         firstline.add(new HorizontalLayout(firstDate, secondDate), clientCombobox);
 //        secondline.add(searchButton);
-        footer.add(comboItemsPerPage, currentPageTextbox, totalAmountOfPagesLabel);
+        footer.add(new HorizontalLayout(comboItemsPerPage, currentPageTextbox, totalAmountOfPagesLabel));
         addValueChangeListener();
     }
 
@@ -262,7 +262,7 @@ public class SmsShowView extends LitTemplate {
             return "";
         }
         /*TODO: Cambiar a CSVFormat standard*/
-        StringBuilder sb = new StringBuilder("\"destino\",\"fecha\",\"tipo de mensaje\",\"mensaje\",\"id recibido\",\"id enviando\",\"source\",\"credencial\",\"operadora\"\n");
+        StringBuilder sb = new StringBuilder("\"destino\",\"fecha\",\"tipo de mensaje\",\"mensaje\",\"id recibido\",\"id enviando\",\"origen\",\"credencial\",\"operadora\"\n");
 
         for (AbstractSMS msg : messages) {
             sb.append(msg.getDestination()).append(",");

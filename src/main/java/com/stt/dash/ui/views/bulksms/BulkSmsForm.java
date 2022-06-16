@@ -10,6 +10,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.UploadI18N;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
@@ -17,10 +18,11 @@ import com.vaadin.flow.data.binder.Binder;
 import java.io.InputStream;
 
 public class BulkSmsForm extends FormLayout implements OnUIForm {
+    private static final String MOVE_FILE = "Arrastrar nuevo archivo aquí";
     Binder<Agenda> binder = new BeanValidationBinder<>(Agenda.class);
     /**/
-    TextField nameBox = new TextField("Nombre de la Agenda");
-    TextField descriptionBox = new TextField("Descripcion");
+    TextField nameBox = new TextField("Nombre de la agenda");
+    TextField descriptionBox = new TextField("Descripción");
     /**/
     private InputStream stream;
     private MemoryBuffer fileUploader = new MemoryBuffer();
@@ -67,7 +69,7 @@ public class BulkSmsForm extends FormLayout implements OnUIForm {
     public void onUI() {
         MemoryBuffer fileUploader = new MemoryBuffer();
         Upload upload = new Upload(fileUploader);  /**/
-        upload.setDropLabel(new Span("Añadir archivo aquí"));
+        upload.setDropLabel(new Span(MOVE_FILE));
         upload.setMaxFileSize(83840000);
         upload.addSucceededListener(event -> {
             stream = fileUploader.getInputStream();

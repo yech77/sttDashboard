@@ -202,7 +202,7 @@ public class SmsShowGridAllView extends LitTemplate implements Viewnable<Abstrac
             System.out.println("Daily message limit reached. Code not able to handle this size of string.");
             return "";
         }
-        StringBuilder sb = new StringBuilder("id,\"address\",datacoding,\"date\",\"iso2\",\"message_type\",\"messages_text\",\"msg_received\",\"msg_sended\",\"source\",\"systemid\",\"carrierCharCode\"\n");
+        StringBuilder sb = new StringBuilder("id,\"address\",datacoding,\"date\",\"iso2\",\"message_type\",\"messages_text\",\"msg_received\",\"msg_sended\",\"origen\",\"systemid\",\"carrierCharCode\"\n");
         for (AbstractSMS msg : messages) {
             sb.append(msg.toString());
             sb.append("\n");
