@@ -19,7 +19,6 @@ import com.vaadin.flow.data.binder.*;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.util.*;
 
@@ -37,7 +36,7 @@ public class UserForm extends FormLayout {
     MultiComboBox<SystemId> systemids = new MultiComboBox<>();
     ComboBox<Client> comboClient = new ComboBox<>();
     MultiComboBox<ORole> roles = new MultiComboBox<>();
-    Checkbox isActive = new Checkbox("ACTIVO");
+    Checkbox isActive = new Checkbox("Activo");
     ConfirmDialog dialog;
     ComboBox<User> userParentCombobox = new ComboBox<>();
     ComboBox<User.OUSER_TYPE_ORDINAL> userTypeOrdCombo = new ComboBox<>();
@@ -77,7 +76,7 @@ public class UserForm extends FormLayout {
         systemids.setWidthFull();
         email.setPlaceholder("user@something.com");
 //        formItem.add(isActive);
-        setColspan(addFormItem(userTypeOrdCombo, "Tipo de Usuario"), 1);
+        setColspan(addFormItem(userTypeOrdCombo, "Tipo de usuario"), 1);
         setColspan(addFormItem(userParentCombobox, "Creador"), 1);
         setColspan(addFormItem(first, "Nombre"), 1);
         setColspan(addFormItem(last, "Apellido"), 1);

@@ -15,6 +15,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -86,13 +87,18 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         this.grid = grid;
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         CrudI18n crudI18n = CrudI18n.createDefault();
-        String entityName = EntityUtil.getName(beanType);
-        crudI18n.setNewItem("Nuevo " + entityName);
+        String entityName = StringUtils.lowerCase(EntityUtil.getName(beanType));
+        crudI18n.setNewItem("Agregar " + entityName);
         crudI18n.setEditItem("Editar " + entityName);
         crudI18n.setEditLabel("Editar " + entityName);
         crudI18n.getConfirm().getCancel().setContent(String.format(DISCARD_MESSAGE, entityName));
         crudI18n.getConfirm().getDelete().setContent(String.format(DELETE_MESSAGE, entityName));
+        crudI18n.getConfirm().getCancel().setTitle("Descartar cambios");
+        crudI18n.getConfirm().getCancel().getButton().setDismiss("No, regresar");
+        crudI18n.getConfirm().getCancel().getButton().setConfirm("Sí, continuar");
         crudI18n.setDeleteItem("Borrar");
+        crudI18n.setCancel("Cancelar");
+        crudI18n.setSaveItem("Guardar");
         setI18n(crudI18n);
         CrudEntityDataProvider<E> dataProvider = new CrudEntityDataProvider<>(service, currentUser);
         grid.setDataProvider(dataProvider);
@@ -107,7 +113,7 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         }
         SearchBar searchBar = new SearchBar();
         searchBar.setActionText("Crear " + entityName);
-        searchBar.setPlaceHolder("Buscar masivos (Agendas)");
+        searchBar.setPlaceHolder(String.format("Buscar (%s)", entityName));
         searchBar.addFilterChangeListener(e -> dataProvider.setFilter(searchBar.getFilter()));
         searchBar.getActionButton().getElement().setAttribute("new-button", true);
 

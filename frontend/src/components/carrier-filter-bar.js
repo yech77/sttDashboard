@@ -149,7 +149,7 @@ class CarrierFilterBar extends PolymerElement {
             },
             clearText: {
                 type: String,
-                value: 'Clear search'
+                value: 'Borrar búsqueda'
             },
             showExtraFilters: {
                 type: Boolean,

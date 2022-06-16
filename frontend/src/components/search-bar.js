@@ -146,7 +146,7 @@ class SearchBar extends PolymerElement {
             },
             clearText: {
                 type: String,
-                value: 'Clear search'
+                value: 'Borrar búsqueda'
             },
             showExtraFilters: {
                 type: Boolean,
