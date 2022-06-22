@@ -9,6 +9,7 @@ import com.stt.dash.backend.data.entity.FIlesToSend;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.AgendaService;
 import com.stt.dash.ui.events.CancelEvent;
+import com.stt.dash.ui.utils.I18nUtils;
 import com.stt.dash.ui.utils.ODateUitls;
 import com.stt.dash.ui.views.HasNotifications;
 import com.stt.dash.ui.views.bulksms.events.BulkSmsReviewEvent;
@@ -251,9 +252,11 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
         /* date-to-send */
         LocalDate ld = LocalDate.now();
         dueDate2.setLocale(esLocale);
+        dueDate2.setI18n(I18nUtils.getDatepickerI18n());
         dueDate2.setValue(ld);
         dueDate2.setMin(ld);
         dueDate.setLocale(esLocale);
+        dueDate.setDatePickerI18n(I18nUtils.getDatepickerI18n());
         dueDate.setMin(LocalDateTime.now());
         dueDate.setValue(LocalDateTime.now().plusMinutes(10));
         /* time */

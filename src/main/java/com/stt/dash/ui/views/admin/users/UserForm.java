@@ -6,6 +6,7 @@ import com.stt.dash.backend.data.entity.Client;
 import com.stt.dash.backend.data.entity.ORole;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
+import com.stt.dash.ui.utils.I18nUtils;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -21,6 +22,8 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.*;
+
+import static ch.qos.logback.classic.db.names.ColumnName.I;
 
 public class UserForm extends FormLayout {
     private final List<User> allMyUsers;
@@ -61,6 +64,11 @@ public class UserForm extends FormLayout {
         setResponsiveSteps(
                 new ResponsiveStep("25em", 1, ResponsiveStep.LabelsPosition.TOP),
                 new ResponsiveStep("32em", 2, ResponsiveStep.LabelsPosition.TOP));
+        /**/
+        clients.setI18n(I18nUtils.getMulticomboI18n());
+        systemids.setI18n(I18nUtils.getMulticomboI18n());
+        roles.setI18n(I18nUtils.getMulticomboI18n());
+        /**/
         userType.setWidthFull();
         userTypeOrdCombo.setWidthFull();
         userParentCombobox.setWidthFull();

@@ -24,6 +24,7 @@ import com.stt.dash.ui.popup.ClientDailyPopupView;
 import com.stt.dash.ui.popup.ClientMonthlyPopupView;
 import com.stt.dash.ui.popup.ClientTrimestralPopUpView;
 import com.stt.dash.ui.utils.BakeryConst;
+import com.stt.dash.ui.utils.I18nUtils;
 import com.stt.dash.ui.views.HasNotifications;
 import com.stt.dash.ui.views.dashboard.DashboardBase;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
@@ -145,6 +146,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         checkboxMessageType.setItemLabelGenerator(OMessageType::name);
         /* Carrier */
         Page<Carrier> carrierPage = carrierService.findAll();
+        carrierMultiComboBox.setI18n(I18nUtils.getMulticomboI18n());
         carrierMultiComboBox.setLabel("Operadora");
         carrierMultiComboBox.setItems(carrierPage.getContent());
         carrierMultiComboBox.setItemLabelGenerator(Carrier::getCarrierCharcode);

@@ -12,6 +12,7 @@ import com.stt.dash.backend.service.AbstractSmsService;
 import com.stt.dash.backend.service.CarrierService;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.utils.BakeryConst;
+import com.stt.dash.ui.utils.I18nUtils;
 import com.stt.dash.ui.utils.ODateUitls;
 import com.vaadin.componentfactory.DateRange;
 import com.vaadin.componentfactory.EnhancedDateRangePicker;
@@ -31,6 +32,7 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.template.Id;
 import com.vaadin.flow.component.textfield.IntegerField;
@@ -141,10 +143,10 @@ public class SmsView extends LitTemplate {
         comboCarrier.setItemLabelGenerator(Carrier::getCarrierCharcode);
         comboCarrier.setHelperText("Dejar en blanco para buscar en todas las operadoras.");
         /**/
+        multi_systemIds.setI18n(I18nUtils.getMulticomboI18n());
         multi_systemIds.setLabel("Credenciales");
         multi_systemIds.setItems(systemIdSetGenericBean.getSet());
         multi_systemIds.setItemLabelGenerator(SystemId::getSystemId);
-        multi_systemIds.setValue(systemIdSetGenericBean.getSet());
         multi_systemIds.setValue(systemIdSetGenericBean.getSet());
         multi_systemIds.setRequired(true);
         multi_systemIds.setHelperText("Seleccione al menos una credencial.");
@@ -189,9 +191,11 @@ public class SmsView extends LitTemplate {
         dateOne.setPattern(" dd-MM-yyyy");
         /**/
         firstDate.setLabel("Desde");
+        firstDate.setI18n(I18nUtils.getDatepickerI18n());
         firstDate.setRequired(true);
         firstDate.setLocale(esLocale);
         secondDate.setLabel("Hasta");
+        secondDate.setI18n(I18nUtils.getDatepickerI18n());
         secondDate.setRequired(true);
         secondDate.setLocale(esLocale);
         /**/
@@ -286,7 +290,9 @@ public class SmsView extends LitTemplate {
                 }
             }
         });
-        footer.add(new HorizontalLayout(comboItemsPerPage, currentPageTextbox, totalAmountOfPagesLabel));
+        HorizontalLayout h = new HorizontalLayout(comboItemsPerPage, currentPageTextbox, totalAmountOfPagesLabel);
+        h.setVerticalComponentAlignment(FlexComponent.Alignment.END, totalAmountOfPagesLabel);
+        footer.add(h);
     }
 
     private Carrier searchCarrierbyName(Set<Carrier> carrierSet, String movistar) {
@@ -625,6 +631,7 @@ public class SmsView extends LitTemplate {
 //        filterRow.getCell(messageTypeColum).setComponent(messageTypeFilter);
 
         DatePicker dateFilter = new DatePicker();
+        dateFilter.setI18n(I18nUtils.getDatepickerI18n());
         dateFilter.setPlaceholder("Filter");
         dateFilter.setClearButtonVisible(true);
         dateFilter.setWidth("100%");

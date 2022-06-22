@@ -3,6 +3,7 @@ package com.stt.dash.ui.views.audit;
 import com.stt.dash.backend.data.entity.ODashAuditEvent;
 import com.stt.dash.backend.data.entity.OUser;
 import com.stt.dash.backend.data.entity.User;
+import com.stt.dash.ui.utils.I18nUtils;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
@@ -103,6 +104,8 @@ public class ODashAuditEventForm extends FormLayout {
         binder.setBean(new OdashAuditEventFormBean());
         secondDate.setLocale(esLocale);
         firstDate.setLocale(esLocale);
+        firstDate.setI18n(I18nUtils.getDatepickerI18n());
+        secondDate.setI18n(I18nUtils.getDatepickerI18n());
     }
 
     public OdashAuditEventFormBean getBinderBean() {

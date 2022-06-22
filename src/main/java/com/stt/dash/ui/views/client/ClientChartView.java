@@ -17,6 +17,7 @@ import com.stt.dash.ui.popup.ClientDailyPopupView;
 import com.stt.dash.ui.popup.ClientMonthlyPopupView;
 import com.stt.dash.ui.popup.ClientTrimestralPopUpView;
 import com.stt.dash.ui.utils.BakeryConst;
+import com.stt.dash.ui.utils.I18nUtils;
 import com.stt.dash.ui.views.HasNotifications;
 import com.stt.dash.ui.views.dashboard.DashboardBase;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
@@ -125,6 +126,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         });
         /* ******* */
         /* ******* SystemId */
+        systemIdMultiCombo.setI18n(I18nUtils.getMulticomboI18n());
         systemIdMultiCombo.setLabel("Credenciales");
         systemIdMultiCombo.setItemLabelGenerator(SystemId::getSystemId);
         /* ******* */
