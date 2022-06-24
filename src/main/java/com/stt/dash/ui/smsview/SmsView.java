@@ -14,6 +14,7 @@ import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.I18nUtils;
 import com.stt.dash.ui.utils.ODateUitls;
+import com.stt.dash.ui.utils.messages.Message;
 import com.vaadin.componentfactory.DateRange;
 import com.vaadin.componentfactory.EnhancedDateRangePicker;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
@@ -22,6 +23,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.grid.FooterRow;
@@ -243,13 +245,14 @@ public class SmsView extends LitTemplate {
             dataProvider.refreshAll();
             click.getSource().setEnabled(true);
             if (dataProvider.getItems().isEmpty()) {
-                Notification notification = new Notification();
-                Span label = new Span("No hay información a mostrar.");
-                Button closeButton = new Button("Cerrar", e -> notification.close());
-                notification.open();
-                notification.setPosition(Notification.Position.MIDDLE);
-                notification.setText("Para que es el texto");
-                notification.add(label, closeButton);
+                Message message = Message.NO_DATA.createMessage();
+                ConfirmDialog confirmDialog = new ConfirmDialog();
+                confirmDialog.setText(message.getMessage());
+                confirmDialog.setHeader(message.getCaption());
+                confirmDialog.setCancelText(message.getCancelText());
+                confirmDialog.setConfirmText(message.getOkText());
+                confirmDialog.setOpened(true);
+                confirmDialog.addConfirmListener(e -> confirmDialog.close());
             }
         });
         /**/

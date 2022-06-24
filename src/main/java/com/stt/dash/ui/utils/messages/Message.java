@@ -9,6 +9,8 @@ public class Message {
 
     public static final MessageSupplier UNSAVED_CHANGES = createMessage("Cambios Realizados", "Descartar", "Continuar editando",
             "Ha realizado modificaciones en %s. ¿Descartar cambios?");
+    public static final MessageSupplier NO_DATA = createMessage("Información", "Cerrar", "Cancelar",
+            "No hay datos que mostrar");
 
     public static final MessageSupplier CONFIRM_DELETE = createMessage(CONFIRM_CAPTION_DELETE, BUTTON_CAPTION_DELETE,
             BUTTON_CAPTION_CANCEL, CONFIRM_MESSAGE_DELETE);

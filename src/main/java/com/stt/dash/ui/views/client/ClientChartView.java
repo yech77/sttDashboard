@@ -34,6 +34,7 @@ import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -444,6 +445,9 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
 
     public List<DataSeries> paEntenderPie(List<? extends AbstractSmsByYearMonth> smsList, List<Integer> integerList) {
         List<DataSeries> dataSeriesList = new ArrayList<>();
+        if (CollectionUtils.isEmpty(smsList)) {
+            return dataSeriesList;
+        }
         /*TODO nullpointer*/
         /* Recorre los Carrier seleccionados. */
         List<String> carriers =

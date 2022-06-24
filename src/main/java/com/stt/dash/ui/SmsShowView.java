@@ -11,6 +11,8 @@ import com.stt.dash.backend.service.AbstractSmsService;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.I18nUtils;
 import com.stt.dash.ui.utils.ODateUitls;
+import com.stt.dash.ui.utils.messages.Message;
+import com.stt.dash.ui.views.HasConfirmation;
 import com.vaadin.componentfactory.DateRange;
 import com.vaadin.componentfactory.EnhancedDateRangePicker;
 import com.vaadin.flow.component.Component;
@@ -18,6 +20,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.model.HorizontalAlign;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.grid.FooterRow;
@@ -205,13 +208,14 @@ public class SmsShowView extends LitTemplate {
             click.getSource().setEnabled(true);
             ListDataProvider<AbstractSMS> dataProvider = (ListDataProvider<AbstractSMS>) grid.getDataProvider();
             if (dataProvider.getItems().isEmpty()) {
-                Notification notification = new Notification();
-                Span label = new Span("No hay información a mostrar.");
-                Button closeButton = new Button("Cerrar", e -> notification.close());
-                notification.open();
-                notification.setPosition(Notification.Position.MIDDLE);
-                notification.setText("Para que es el texto");
-                notification.add(label, closeButton);
+                Message message = Message.NO_DATA.createMessage();
+                ConfirmDialog confirmDialog = new ConfirmDialog();
+                confirmDialog.setText(message.getMessage());
+                confirmDialog.setHeader(message.getCaption());
+                confirmDialog.setCancelText(message.getCancelText());
+                confirmDialog.setConfirmText(message.getOkText());
+                confirmDialog.setOpened(true);
+                confirmDialog.addConfirmListener(e -> confirmDialog.close());
             }
         });
 
