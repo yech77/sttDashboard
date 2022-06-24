@@ -16,6 +16,7 @@ import com.stt.dash.backend.thread.SmsGeneratorParserRunnable;
 import com.stt.dash.backend.util.AgendaFileUtils;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.crud.AbstractBakeryCrudView;
+import com.stt.dash.ui.crud.STTBinderCrudEditor;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.ODateUitls;
 import com.vaadin.flow.component.crud.BinderCrudEditor;
@@ -82,13 +83,13 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
         grid.addColumn(role -> role.getStatus()).setHeader("Status").setWidth("150px");
     }
 
-    private static BinderCrudEditor<FIlesToSend> createForm(CurrentUser currentUser,
-                                                            AgendaService agendaService,
-                                                            SetGenericBean<SystemId> userSystemIdSet,
-                                                            ListGenericBean userChildren) {
+    private static STTBinderCrudEditor<FIlesToSend> createForm(CurrentUser currentUser,
+                                                               AgendaService agendaService,
+                                                               SetGenericBean<SystemId> userSystemIdSet,
+                                                               ListGenericBean userChildren) {
         List<Agenda> agendaList = agendaService.getAllValidAgendasInFamily(userChildren.getList());
         form = new BulkSmsSchedulerForm(agendaList, userSystemIdSet.getSet(), currentUser);
-        return new BinderCrudEditor<FIlesToSend>(form.getBinder(), form);
+        return new STTBinderCrudEditor<FIlesToSend>(form.getBinder(), form);
     }
 
     @Override

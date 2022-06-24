@@ -12,7 +12,9 @@ import com.stt.dash.backend.service.AbstractSmsService;
 import com.stt.dash.backend.service.CarrierService;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.utils.BakeryConst;
+import com.stt.dash.ui.utils.I18nUtils;
 import com.stt.dash.ui.utils.ODateUitls;
+import com.stt.dash.ui.utils.messages.Message;
 import com.vaadin.componentfactory.DateRange;
 import com.vaadin.componentfactory.EnhancedDateRangePicker;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
@@ -21,6 +23,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.grid.FooterRow;
@@ -31,6 +34,7 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.template.Id;
 import com.vaadin.flow.component.textfield.IntegerField;
@@ -141,10 +145,10 @@ public class SmsView extends LitTemplate {
         comboCarrier.setItemLabelGenerator(Carrier::getCarrierCharcode);
         comboCarrier.setHelperText("Dejar en blanco para buscar en todas las operadoras.");
         /**/
+        multi_systemIds.setI18n(I18nUtils.getMulticomboI18n());
         multi_systemIds.setLabel("Credenciales");
         multi_systemIds.setItems(systemIdSetGenericBean.getSet());
         multi_systemIds.setItemLabelGenerator(SystemId::getSystemId);
-        multi_systemIds.setValue(systemIdSetGenericBean.getSet());
         multi_systemIds.setValue(systemIdSetGenericBean.getSet());
         multi_systemIds.setRequired(true);
         multi_systemIds.setHelperText("Seleccione al menos una credencial.");
@@ -189,9 +193,11 @@ public class SmsView extends LitTemplate {
         dateOne.setPattern(" dd-MM-yyyy");
         /**/
         firstDate.setLabel("Desde");
+        firstDate.setI18n(I18nUtils.getDatepickerI18n());
         firstDate.setRequired(true);
         firstDate.setLocale(esLocale);
         secondDate.setLabel("Hasta");
+        secondDate.setI18n(I18nUtils.getDatepickerI18n());
         secondDate.setRequired(true);
         secondDate.setLocale(esLocale);
         /**/
@@ -239,13 +245,14 @@ public class SmsView extends LitTemplate {
             dataProvider.refreshAll();
             click.getSource().setEnabled(true);
             if (dataProvider.getItems().isEmpty()) {
-                Notification notification = new Notification();
-                Span label = new Span("No hay información a mostrar.");
-                Button closeButton = new Button("Cerrar", e -> notification.close());
-                notification.open();
-                notification.setPosition(Notification.Position.MIDDLE);
-                notification.setText("Para que es el texto");
-                notification.add(label, closeButton);
+                Message message = Message.NO_DATA.createMessage();
+                ConfirmDialog confirmDialog = new ConfirmDialog();
+                confirmDialog.setText(message.getMessage());
+                confirmDialog.setHeader(message.getCaption());
+                confirmDialog.setCancelText(message.getCancelText());
+                confirmDialog.setConfirmText(message.getOkText());
+                confirmDialog.setOpened(true);
+                confirmDialog.addConfirmListener(e -> confirmDialog.close());
             }
         });
         /**/
@@ -286,7 +293,9 @@ public class SmsView extends LitTemplate {
                 }
             }
         });
-        footer.add(new HorizontalLayout(comboItemsPerPage, currentPageTextbox, totalAmountOfPagesLabel));
+        HorizontalLayout h = new HorizontalLayout(comboItemsPerPage, currentPageTextbox, totalAmountOfPagesLabel);
+        h.setVerticalComponentAlignment(FlexComponent.Alignment.END, totalAmountOfPagesLabel);
+        footer.add(h);
     }
 
     private Carrier searchCarrierbyName(Set<Carrier> carrierSet, String movistar) {
@@ -625,6 +634,7 @@ public class SmsView extends LitTemplate {
 //        filterRow.getCell(messageTypeColum).setComponent(messageTypeFilter);
 
         DatePicker dateFilter = new DatePicker();
+        dateFilter.setI18n(I18nUtils.getDatepickerI18n());
         dateFilter.setPlaceholder("Filter");
         dateFilter.setClearButtonVisible(true);
         dateFilter.setWidth("100%");

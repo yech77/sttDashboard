@@ -94,8 +94,8 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         crudI18n.getConfirm().getCancel().setContent(String.format(DISCARD_MESSAGE, entityName));
         crudI18n.getConfirm().getDelete().setContent(String.format(DELETE_MESSAGE, entityName));
         crudI18n.getConfirm().getCancel().setTitle("Descartar cambios");
-        crudI18n.getConfirm().getCancel().getButton().setDismiss("No, regresar");
-        crudI18n.getConfirm().getCancel().getButton().setConfirm("Sí, continuar");
+        crudI18n.getConfirm().getCancel().getButton().setDismiss("No, continuar editando");
+        crudI18n.getConfirm().getCancel().getButton().setConfirm("Sí, descartar");
         crudI18n.setDeleteItem("Borrar");
         crudI18n.setCancel("Cancelar");
         crudI18n.setSaveItem("Guardar");
@@ -113,7 +113,7 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         }
         SearchBar searchBar = new SearchBar();
         searchBar.setActionText("Crear " + entityName);
-        searchBar.setPlaceHolder(String.format("Buscar (%s)", entityName));
+        searchBar.setPlaceHolder(String.format("Buscar %s", entityName));
         searchBar.addFilterChangeListener(e -> dataProvider.setFilter(searchBar.getFilter()));
         searchBar.getActionButton().getElement().setAttribute("new-button", true);
 
