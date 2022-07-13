@@ -98,8 +98,12 @@ public class DataGenerator implements HasLogger {
 
     @PostConstruct
     public void loadData() {
-        getLogger().info("********************* * * * * * * * * * * * " + passwordEncoder.encode("admin"));
-        getLogger().info("********************* * * * * * * * * * * * " + passwordEncoder.encode("admin"));
+        getLogger().info("1Gbandres * * * * * * * * * * * " + passwordEncoder.encode("1Gbandres"));
+        getLogger().info("1Enavas * * * * * * * * * * * " + passwordEncoder.encode("1Enavas"));
+        getLogger().info("1Admin * * * * * * * * * * * " + passwordEncoder.encode("1Admin"));
+        getLogger().info("1Yecheverria * * * * * * * * * * * " + passwordEncoder.encode("1Yecheverria"));
+        getLogger().info("1Dsolorzano * * * * * * * * * * * " + passwordEncoder.encode("1Dsolorzano"));
+        getLogger().info("1Lsuarez * * * * * * * * * * * " + passwordEncoder.encode("1Lsuarez"));
         /**/
         if (true) {
             getLogger().info("Using existing database");

@@ -8,6 +8,7 @@ import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.ui.utils.I18nUtils;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -143,7 +144,7 @@ public class UserForm extends FormLayout {
                     }
                 })
                 .bind(User::getSystemids, User::setSystemids);
-        binder.forField(comboClient)
+        Binder.Binding<User, Client> debe_escoger_un_cliente = binder.forField(comboClient)
                 .asRequired(new Validator<Client>() {
                     @Override
                     public ValidationResult apply(Client client, ValueContext valueContext) {
@@ -263,25 +264,51 @@ public class UserForm extends FormLayout {
      * @param changeListener
      */
     public void doShowClientOrd(User.OUSER_TYPE_ORDINAL changeListener) {
+        if (changeListener == null) {
+            return;
+        }
         if (changeListener == User.OUSER_TYPE_ORDINAL.USUARIO ||
                 changeListener == User.OUSER_TYPE_ORDINAL.EMPRESA) {
             /* USUARIO SOLO SELECCIONA CREDENCIALES */
             systemidsFormItem.setVisible(true);
             comboClientFormItem.setVisible(false);
-            binder.removeBinding(comboClient);
+            removeBinding(comboClient);
             clientsFormItem.setVisible(false);
         } else if (changeListener == User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
             /* ADMIN SOLO SELECCIONA CLIENTE */
             systemidsFormItem.setVisible(false);
             comboClientFormItem.setVisible(true);
+            addBinding(comboClient);
             clientsFormItem.setVisible(false);
         } else if (changeListener == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
             /* COMERCIAL SOLO SELECCIONA CLIENTES */
             systemidsFormItem.setVisible(false);
             comboClientFormItem.setVisible(false);
             clientsFormItem.setVisible(true);
-            binder.removeBinding(comboClient);
         }
+    }
+
+    private void removeBinding(HasValue<?, ?> binding) {
+        binder.removeBinding(binding);
+    }
+
+    private void addBinding(ComboBox<Client> comboClient) {
+        Binder.Binding<User, Client> debe_escoger_un_cliente = binder.forField(comboClient)
+                .asRequired(new Validator<Client>() {
+                    @Override
+                    public ValidationResult apply(Client client, ValueContext valueContext) {
+                        if (userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
+                            System.out.println("Devuelvo OK porque no es tipo empresa: " + userTypeOrdCombo.getValue());
+                            return ValidationResult.ok();
+                        }
+                        if (client != null) {
+                            System.out.println("Devuelvo OK porque client no es null " + client.getClientCod());
+                            return ValidationResult.ok();
+                        }
+                        return ValidationResult.error("Debe escoger un Cliente");
+                    }
+                })
+                .bind(User::getClient, User::setClient);
     }
 
     private void cancelar(ConfirmDialog.ConfirmEvent event) {

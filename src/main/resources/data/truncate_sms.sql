@@ -10,6 +10,7 @@ truncate mar_sms cascade;
 truncate apr_sms cascade;
 truncate may_sms cascade;
 truncate jun_sms cascade;
+truncate jul_sms cascade;
 
 truncate oct_sms cascade;
 truncate nov_sms cascade;

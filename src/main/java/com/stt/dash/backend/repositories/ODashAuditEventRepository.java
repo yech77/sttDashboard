@@ -13,61 +13,56 @@ import java.util.Optional;
 public interface ODashAuditEventRepository extends JpaRepository<ODashAuditEvent, Long> {
 
     public Page<ODashAuditEvent> findBy(Pageable pageable);
+
     /**
      * Por usuario y todos los eventos
+     *
      * @param princial
      * @param firstDate
      * @param secondDate
      * @return
      */
-    public Optional<List<ODashAuditEvent>> findAllByPrincipalAndEventDateBetweenOrderByEventDateDesc(String princial,
-                                                                                                     Date firstDate,
-                                                                                                     Date secondDate);
+    public Page<ODashAuditEvent> findAllByPrincipalAndEventDateBetweenOrderByEventDateDesc(String princial,
+                                                                                           Date firstDate,
+                                                                                           Date secondDate, Pageable pageable);
 
     /**
      * Todos los usuarios y todos los eventos
+     *
      * @param firstDate
      * @param secondDate
      * @return
      */
-    public Optional<List<ODashAuditEvent>> findAllByEventDateBetweenOrderByEventDateDesc(
+    public Page<ODashAuditEvent> findAllByEventDateBetweenOrderByEventDateDesc(
             Date firstDate,
-            Date secondDate);
+            Date secondDate, Pageable pageable);
 
-
-//    /**
-//     * Todos los usuarios y un evento.
-//     * @param eventType
-//     * @param firstDate
-//     * @param secondDate
-//     * @return
-//     */
-//    public Optional<List<ODashAuditEvent>> findAllByEventTypeAndEventDateBetweenOrderByEventDateDesc(ODashAuditEvent.OEVENT_TYPE eventType,
-//            Date firstDate,
-//            Date secondDate);
     /**
      * Todos los usuarios hijos y un evento.
+     *
      * @param principals
      * @param eventType
      * @param firstDate
      * @param secondDate
      * @return
      */
-    public Optional<List<ODashAuditEvent>> findAllByPrincipalInAndEventTypeAndEventDateBetweenOrderByEventDateDesc(
+    public Page<ODashAuditEvent> findAllByPrincipalInAndEventTypeAndEventDateBetweenOrderByEventDateDesc(
             List<String> principals,
             ODashAuditEvent.OEVENT_TYPE eventType,
             Date firstDate,
-            Date secondDate);
+            Date secondDate, Pageable pageable);
+
     /**
      * Por usuario y por tipo de evento.
+     *
      * @param princial
      * @param eventType
      * @param firstDate
      * @param secondDate
      * @return
      */
-    public Optional<List<ODashAuditEvent>> findAllByPrincipalAndEventTypeAndEventDateBetweenOrderByEventDateDesc(String princial,
-                                                                                                                 ODashAuditEvent.OEVENT_TYPE eventType,
-                                                                                                                 Date firstDate,Date secondDate);
+    public Page<ODashAuditEvent> findAllByPrincipalAndEventTypeAndEventDateBetweenOrderByEventDateDesc(String princial,
+                                                                                                       ODashAuditEvent.OEVENT_TYPE eventType,
+                                                                                                       Date firstDate, Date secondDate, Pageable pageable);
 }
 

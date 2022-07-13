@@ -27,7 +27,7 @@ import java.util.Map;
 public class LoginView extends LoginOverlay
         implements AfterNavigationObserver, BeforeEnterObserver {
 
-        public LoginView() {
+    public LoginView() {
         LoginI18n i18n = LoginI18n.createDefault();
         i18n.setHeader(new LoginI18n.Header());
         i18n.getHeader().setTitle("Orinoco");
@@ -39,6 +39,9 @@ public class LoginView extends LoginOverlay
         i18n.getForm().setTitle("Iniciar sesión");
         i18n.getForm().setUsername("Correo");
         i18n.getForm().setPassword("Clave");
+        i18n.getErrorMessage().setTitle("Ha ocurrido un error");
+        i18n.getErrorMessage().setMessage("Usuario o clave inválido");
+
         setI18n(i18n);
         setForgotPasswordButtonVisible(false);
         setAction("login");
