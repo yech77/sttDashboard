@@ -73,7 +73,9 @@ class MainView extends PolymerElement {
                     </div>
                 </vaadin-board-row>
                 <vaadin-board-row>
-                    <vaadin-chart id="deliveriesThisMonth" class="yearly-sales"></vaadin-chart>
+                    <div class="vaadin-board-cell">
+                        <vaadin-chart id="deliveriesThisMonth" class="yearly-sales"></vaadin-chart>
+                    </div>
                 </vaadin-board-row>
                 <vaadin-board-row class="custom-board-row">
                     <div class="vaadin-board-cell">
