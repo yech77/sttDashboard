@@ -60,7 +60,7 @@ import java.util.stream.Stream;
 
 import static com.stt.dash.ui.utils.BakeryConst.PAGE_AUDIT;
 
-@Route(value = PAGE_AUDIT, layout = MainView.class)
+//@Route(value = PAGE_AUDIT, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_AUDIT)
 @Secured({Role.ADMIN, "UI_AUDIT"})
 public class AuditView extends VerticalLayout {
@@ -213,32 +213,32 @@ public class AuditView extends VerticalLayout {
             Date one = ODateUitls.parseToYearMonthDay(event.getUser().getFirstDate());
             Date two = ODateUitls.parseToYearMonthDay(event.getUser().getSecondDate().plusDays(1));
             /* Buscar todos los usuarios. */
-            if (event.getUser().getUserCombo() == null) {
-                /* Todos los eventos */
-                if (event.getUser().getEventCombo() == null
-                        || "".equals(event.getUser().getEventCombo())) {
-                    items = event_serv.findAll(one, two);
-                    setItemsGrid(items);
-                } else {
-                    items = event_serv.findAll(userChildren,
-                            event.getUser().getEventCombo(),
-                            one, two);
-                    setItemsGrid(items);
-                }
-            } else {
-                /* Todos los eventos */
-                if (event.getUser().getEventCombo() == null
-                        || "".equals(event.getUser().getEventCombo())) {
-                    items = event_serv.findAll(event.getUser().getUserCombo().getEmail(),
-                            one, two);
-                    setItemsGrid(items);
-                } else {
-                    items = event_serv.findAll(event.getUser().getUserCombo().getEmail(),
-                            event.getUser().getEventCombo(),
-                            one, two);
-                    setItemsGrid(items);
-                }
-            }
+//            if (event.getUser().getUserCombo() == null) {
+//                /* Todos los eventos */
+//                if (event.getUser().getEventCombo() == null
+//                        || "".equals(event.getUser().getEventCombo())) {
+//                    items = event_serv.findAll(one, two);
+//                    setItemsGrid(items);
+//                } else {
+//                    items = event_serv.findAll(userChildren,
+//                            event.getUser().getEventCombo(),
+//                            one, two);
+//                    setItemsGrid(items);
+//                }
+//            } else {
+//                /* Todos los eventos */
+//                if (event.getUser().getEventCombo() == null
+//                        || "".equals(event.getUser().getEventCombo())) {
+//                    items = event_serv.findAll(event.getUser().getUserCombo().getEmail(),
+//                            one, two);
+//                    setItemsGrid(items);
+//                } else {
+//                    items = event_serv.findAll(event.getUser().getUserCombo().getEmail(),
+//                            event.getUser().getEventCombo(),
+//                            one, two);
+//                    setItemsGrid(items);
+//                }
+//            }
             /**/
             if (items.isEmpty()) {
                 showNotification("No hay información a mostrar.");

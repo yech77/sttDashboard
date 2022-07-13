@@ -119,7 +119,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 // Register the success handler that redirects users to the page they last tried
                 // to access
-                .successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
+                /* Comentado para que siempre entre al Dashboard*/
+//                .successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
                 // Configure logout
                 .and().logout()
                 .logoutSuccessUrl("/")

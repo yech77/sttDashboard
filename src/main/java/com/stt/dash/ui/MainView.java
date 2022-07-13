@@ -1,53 +1,34 @@
 package com.stt.dash.ui;
 
 import com.stt.dash.app.security.CurrentUser;
-import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.ui.smsview.SmsView;
 import com.stt.dash.ui.views.HasConfirmation;
-import com.stt.dash.ui.views.admin.products.ProductsView;
-import com.stt.dash.ui.views.audit.AuditView;
+import com.stt.dash.ui.views.audit.AuditViewV2;
 import com.stt.dash.ui.views.bulksms.BulkSmsView;
 import com.stt.dash.ui.views.bulksms.FileToSendFrontView;
 import com.stt.dash.ui.views.carrier.CarrierChartView;
 import com.stt.dash.ui.views.client.ClientChartView;
-import com.stt.dash.ui.views.dashboard.DashboardView;
 import com.stt.dash.ui.views.rol.ORolesView;
 import com.stt.dash.ui.views.dashboard.main.MainDashboardView;
-import com.stt.dash.ui.views.storefront.StorefrontView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
-import com.vaadin.flow.component.avatar.AvatarVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
-import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
-import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.H6;
-import com.vaadin.flow.component.html.ListItem;
-import com.vaadin.flow.component.html.Nav;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.menubar.MenuBarVariant;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Viewport;
 import com.vaadin.flow.component.tabs.Tab;
-import com.vaadin.flow.component.tabs.TabVariant;
 import com.vaadin.flow.component.tabs.Tabs;
-import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
@@ -55,15 +36,12 @@ import com.stt.dash.app.security.SecurityUtils;
 import com.stt.dash.ui.views.admin.users.UsersView;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.flow.server.VaadinServletRequest;
-import com.vaadin.flow.theme.Theme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.stt.dash.ui.utils.BakeryConst.*;
@@ -173,8 +151,8 @@ public class MainView extends AppLayout {
         if (SecurityUtils.isAccessGranted(FileToSendFrontView.class)) {
             tabs.add(createTab(VaadinIcon.CALENDAR_ENVELOPE, TITLE_BULKSMS_SCHEDULER, FileToSendFrontView.class));
         }
-        if (SecurityUtils.isAccessGranted(AuditView.class)) {
-            tabs.add(createTab(VaadinIcon.CLOCK, TITLE_AUDIT, AuditView.class));
+        if (SecurityUtils.isAccessGranted(AuditViewV2.class)) {
+            tabs.add(createTab(VaadinIcon.CLOCK, TITLE_AUDIT, AuditViewV2.class));
         }
 
         if (SecurityUtils.isAccessGranted(UsersView.class)) {
@@ -204,7 +182,8 @@ public class MainView extends AppLayout {
     private static Anchor createLogoutLink(String contextPath) {
         final Anchor a = new Anchor();
         a.add(TITLE_LOGOUT);
-        a.setHref(contextPath + "/logout");
+//        a.setHref(contextPath + "/logout");
+        a.setHref("/logout");
         return a;
     }
 

@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class LoginAttemptService {
 
-    private final int MAX_ATTEMPT = 5;
+    private final int MAX_ATTEMPT = 3;
     private LoadingCache<String, Integer> attemptsCache;
 
     public LoginAttemptService() {

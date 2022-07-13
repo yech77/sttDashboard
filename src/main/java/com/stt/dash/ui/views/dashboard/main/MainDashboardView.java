@@ -286,6 +286,7 @@ public class MainDashboardView extends DashboardBase {
         configureColumnChart(thisDayChartConf);
         thisDayChartConf.setTitle("Tráfico del día");
         thisDayChartConf.setExporting(true);
+        thisDayChartConf.getExporting().setFilename("dashboard-trafico-del-dia");
         thisDayChartConf.getxAxis().setCategories(MILITARY_HOURS);
         thisDayChartConf.setSeries(mtHourListSeries, moHourListSeries);
         thisDayChartConf.setTooltip(tooltip);
@@ -317,6 +318,7 @@ public class MainDashboardView extends DashboardBase {
 //        DataProviderSeries<SmsByYearMonthDay> series = new DataProviderSeries<>(dataProvider, SmsByYearMonthDay::getTotal);
         monthConf.setTitle("Tráfico del mes");
         monthConf.setExporting(true);
+        thisDayChartConf.getExporting().setFilename("dashboard-trafico-del-mes");
         monthConf.getxAxis().setCategories(deliveriesThisMonthCategories);
         monthConf.getxAxis().setCrosshair(new Crosshair());
         ListSeries mtListSeries = new ListSeries("MT");
@@ -368,6 +370,7 @@ public class MainDashboardView extends DashboardBase {
         conf.getChart().setBorderRadius(4);
         conf.setTitle("Tráfico a tres meses");
         conf.setExporting(true);
+        conf.getExporting().setFilename("dashboard-trafico-a-tres-meses");
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.x}</span><br/>");

@@ -424,6 +424,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         tooltip.setHeaderFormat("<span style=\"font-size: 10px\">{point.key} {point.percentage:%02.2f}%</span><br/>");
         confTriChart.setTitle("Trafico a tres meses");
         confTriChart.setExporting(true);
+        confTriChart.getExporting().setFilename("carrier-trafico-a-tres-meses");
         confTriChart.setTooltip(tooltip);
         /* Averiguar cuales son los tres meses a calular. */
         confTriChart.getxAxis().setCategories(ml);

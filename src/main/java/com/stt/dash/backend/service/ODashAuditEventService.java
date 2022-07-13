@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -65,30 +66,21 @@ public class ODashAuditEventService implements FilterableCrudService<ODashAuditE
         return audit_repo.findAll();
     }
 
-    public List<ODashAuditEvent> findAll(String principal, Date one, Date two) {
-        if (principal == null || principal == "") {
-            return new ArrayList<>();
-        }
-        return audit_repo.findAllByPrincipalAndEventDateBetweenOrderByEventDateDesc(principal, one, two).orElse(new ArrayList<>());
+    public Page<ODashAuditEvent> findAll(String principal, Date one, Date two, int page, int pageSize) {
+        return audit_repo.findAllByPrincipalAndEventDateBetweenOrderByEventDateDesc(principal, one, two, PageRequest.of(page, pageSize));
     }
 
-    public List<ODashAuditEvent> findAll(List<String> principals, ODashAuditEvent.OEVENT_TYPE event, Date one, Date two) {
-        if (principals == null || principals.isEmpty()) {
-            return new ArrayList<>();
-        }
+    public Page<ODashAuditEvent> findAll(List<String> principals, ODashAuditEvent.OEVENT_TYPE event, Date one, Date two, int page, int pageSize) {
         return audit_repo.findAllByPrincipalInAndEventTypeAndEventDateBetweenOrderByEventDateDesc(
-                principals, event, one, two).orElse(new ArrayList<>());
+                principals, event, one, two, PageRequest.of(page, pageSize));
     }
 
-    public List<ODashAuditEvent> findAll(Date one, Date two) {
-        return audit_repo.findAllByEventDateBetweenOrderByEventDateDesc(one, two).orElse(new ArrayList<>());
+    public Page<ODashAuditEvent> findAll(Date one, Date two, int page, int pageSize) {
+        return audit_repo.findAllByEventDateBetweenOrderByEventDateDesc(one, two, PageRequest.of(page, pageSize));
     }
 
-    public List<ODashAuditEvent> findAll(String principal, ODashAuditEvent.OEVENT_TYPE event, Date one, Date two) {
-        if (principal == null || principal == "") {
-            return new ArrayList<>();
-        }
-        return audit_repo.findAllByPrincipalAndEventTypeAndEventDateBetweenOrderByEventDateDesc(principal, event, one, two).orElse(new ArrayList<>());
+    public Page<ODashAuditEvent> findAll(String principal, ODashAuditEvent.OEVENT_TYPE event, Date one, Date two, int page, int pageSize) {
+        return audit_repo.findAllByPrincipalAndEventTypeAndEventDateBetweenOrderByEventDateDesc(principal, event, one, two, PageRequest.of(page, pageSize));
     }
 
     private String getStringLog() {
