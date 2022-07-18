@@ -113,22 +113,9 @@ public class AuditViewV2 extends LitTemplate {
     /**/
     private final List<String> userChildren = new ArrayList<>();
 
-    public AuditViewV2(@Autowired CurrentUser currentUser,
-                       @Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
-                       @Autowired ODashAuditEventService service,
-                       @Qualifier("getUserSystemIdString") ListGenericBean<String> stringListGenericBean) {
+    public AuditViewV2(@Autowired CurrentUser currentUser, @Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList, @Autowired ODashAuditEventService service, @Qualifier("getUserSystemIdString") ListGenericBean<String> stringListGenericBean) {
         presenter = new AuditPresenter(service, this);
-        firstDate.setI18n(I18nUtils.getDatepickerI18n());
-        firstDate.setLabel("Desde");
-        firstDate.setRequired(true);
-        firstDate.setLocale(esLocale);
-        secondDate.setLabel("Hasta");
-        secondDate.setI18n(I18nUtils.getDatepickerI18n());
-        secondDate.setRequired(true);
-        secondDate.setLocale(esLocale);
-        secondDate.addValueChangeListener(value -> {
-
-        });
+        initDatepicker();
         /**/
         createGridComponent();
         /**/
@@ -139,6 +126,7 @@ public class AuditViewV2 extends LitTemplate {
         /**/
         initCombo(user);
         initEventCombo();
+        initEventCheck();
         /**/
         Label titleSpan = new Label("Auditoría de Eventos");
         Span s = new Span(titleSpan, new Hr());
@@ -152,20 +140,16 @@ public class AuditViewV2 extends LitTemplate {
                 if (Objects.isNull(userCombo.getValue())) {
                     /* Todos los eventos */
                     if (Objects.isNull(eventCombo.getValue())) {
-                        presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(),
-                                currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
+                        presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
                     } else {
-                        presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(),
-                                userChildren, eventCombo.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
+                        presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userChildren, eventCombo.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
                     }
                 } else {
                     /* Todos los eventos */
                     if (ObjectUtils.isEmpty(eventCombo.getValue())) {
-                        presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(),
-                                userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
+                        presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
                     } else {
-                        presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(),
-                                userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
+                        presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
                     }
                 }
                 try {
@@ -185,20 +169,16 @@ public class AuditViewV2 extends LitTemplate {
                     if (Objects.isNull(userCombo.getValue())) {
                         /* Todos los eventos */
                         if (Objects.isNull(eventCombo.getValue())) {
-                            presenter.updateDataProvider(firstDate.getValue(), secondDate.getValue(),
-                                    currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
+                            presenter.updateDataProvider(firstDate.getValue(), secondDate.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
                         } else {
-                            presenter.updateDataProvider(firstDate.getValue(), secondDate.getValue(),
-                                    userChildren, eventCombo.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
+                            presenter.updateDataProvider(firstDate.getValue(), secondDate.getValue(), userChildren, eventCombo.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
                         }
                     } else {
                         /* Todos los eventos */
                         if (ObjectUtils.isEmpty(eventCombo.getValue())) {
-                            presenter.updateDataProvider(firstDate.getValue(), secondDate.getValue(),
-                                    userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
+                            presenter.updateDataProvider(firstDate.getValue(), secondDate.getValue(), userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
                         } else {
-                            presenter.updateDataProvider(firstDate.getValue(), secondDate.getValue(),
-                                    userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
+                            presenter.updateDataProvider(firstDate.getValue(), secondDate.getValue(), userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
                         }
                     }
                 } catch (Exception e) {
@@ -214,16 +194,24 @@ public class AuditViewV2 extends LitTemplate {
         h.setVerticalComponentAlignment(FlexComponent.Alignment.END, totalAmountOfPagesLabel);
         footer.add(h);
         addValueChangeListener();
+        /**/
+        searchButton.setEnabled(false);
     }
 
-    private boolean isGrantedMsgTextColumn(Set<ORole> roles) {
-        return roles.stream().filter(rol -> {
-            return rol.getAuthorities().stream().filter(auth -> {
-                        return auth.getAuthName().equalsIgnoreCase("VIEW_MSG_TEXT");
-                    })
-                    .findFirst()
-                    .isPresent();
-        }).findFirst().isPresent();
+    private void initDatepicker() {
+        firstDate.setI18n(I18nUtils.getDatepickerI18n());
+        firstDate.setLabel("Desde");
+        firstDate.setRequired(true);
+        firstDate.setLocale(esLocale);
+        firstDate.addValueChangeListener(listener -> searchButton.setEnabled(isValid()));
+        firstDate.setValue(localDateTime.toLocalDate());
+        /**/
+        secondDate.setLabel("Hasta");
+        secondDate.setI18n(I18nUtils.getDatepickerI18n());
+        secondDate.setRequired(true);
+        secondDate.setLocale(esLocale);
+        secondDate.addValueChangeListener(listener -> searchButton.setEnabled(isValid()));
+        secondDate.setValue(localDateTime.toLocalDate());
     }
 
     private void addValueChangeListener() {
@@ -232,20 +220,16 @@ public class AuditViewV2 extends LitTemplate {
             if (Objects.isNull(userCombo.getValue())) {
                 /* Todos los eventos */
                 if (Objects.isNull(eventCombo.getValue())) {
-                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(),
-                            currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
+                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
                 } else {
-                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(),
-                            userChildren, eventCombo.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
+                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userChildren, eventCombo.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
                 }
             } else {
                 /* Todos los eventos */
                 if (ObjectUtils.isEmpty(eventCombo.getValue())) {
-                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(),
-                            userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
+                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
                 } else {
-                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(),
-                            userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
+                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
                 }
             }
             grid.setPageSize(itemsPerPage);
@@ -267,6 +251,7 @@ public class AuditViewV2 extends LitTemplate {
         });
 
         clientCombobox.addValueChangeListener(clientListener -> {
+            clientCombobox.addCustomValueSetListener(listener -> searchButton.setEnabled(isValid()));
             if (CollectionUtils.isEmpty(clientListener.getValue().getSystemids())) {
                 systemIdList = new ArrayList<>(1);
                 return;
@@ -292,21 +277,14 @@ public class AuditViewV2 extends LitTemplate {
         String fileName = "" + year + "." + month + "." + day + "." + hour + ":00-Mensajes.csv";
         Button download = new Button("Descargar Datos (" + year + "/" + month + "/" + day + "-" + hour + ":00)");
 
-        FileDownloadWrapper buttonWrapper = new FileDownloadWrapper(
-                new StreamResource(fileName, () -> {
-                    return new ByteArrayInputStream(getStringData(messages).getBytes());
-                }
-                )
-        );
+        FileDownloadWrapper buttonWrapper = new FileDownloadWrapper(new StreamResource(fileName, () -> {
+            return new ByteArrayInputStream(getStringData(messages).getBytes());
+        }));
         download.addClickListener(click -> {
             LocalDate selectedStartDate = (dateOne.getValue() == null) ? null : dateOne.getValue().getStartDate();
             LocalDate selectedEndDate = (dateOne.getValue() == null) ? null : dateOne.getValue().getEndDate();
             StringBuilder sb = new StringBuilder();
-            sb
-                    .append("Desde: ")
-                    .append(ODateUitls.dd_MM_yyyy.format(ODateUitls.valueOf(selectedStartDate)))
-                    .append(" Hasta: ")
-                    .append(ODateUitls.dd_MM_yyyy.format(ODateUitls.valueOf(selectedEndDate)));
+            sb.append("Desde: ").append(ODateUitls.dd_MM_yyyy.format(ODateUitls.valueOf(selectedStartDate))).append(" Hasta: ").append(ODateUitls.dd_MM_yyyy.format(ODateUitls.valueOf(selectedEndDate)));
 //            auditEvent.add(ODashAuditEvent.OEVENT_TYPE.DOWNLOAD_FILE_SEARCH_SMS, sb.toString());
         });
         buttonWrapper.wrapComponent(download);
@@ -346,8 +324,7 @@ public class AuditViewV2 extends LitTemplate {
 
     private void createGridComponent() {
         grid.setSelectionMode(Grid.SelectionMode.NONE);
-        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER,
-                GridVariant.LUMO_COLUMN_BORDERS);
+        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
         grid.setHeightFull();
         grid.setWidthFull();
         footerRow = grid.appendFooterRow();
@@ -361,33 +338,19 @@ public class AuditViewV2 extends LitTemplate {
     }
 
     private void createUserColumn() {
-        userColumn = grid
-                .addColumn(ODashAuditEvent::getPrincipal)
-                .setHeader("Usuario")
-                .setAutoWidth(true);
+        userColumn = grid.addColumn(ODashAuditEvent::getPrincipal).setHeader("Usuario").setAutoWidth(true);
     }
 
     private void createEventColumn() {
-        eventTypeColumn = grid
-                .addColumn(ODashAuditEvent::getEventType)
-                .setHeader("Evento")
-                .setAutoWidth(true);
+        eventTypeColumn = grid.addColumn(ODashAuditEvent::getEventType).setHeader("Evento").setAutoWidth(true);
     }
 
     private void createDateColumn() {
-        dateColumn = grid
-                .addColumn(new LocalDateTimeRenderer<>(
-                        client -> client.getEventDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
-                        DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")))
-                .setComparator(ODashAuditEvent::getEventDate).setHeader("Fecha del evento")
-                .setAutoWidth(true);
+        dateColumn = grid.addColumn(new LocalDateTimeRenderer<>(client -> client.getEventDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS"))).setComparator(ODashAuditEvent::getEventDate).setHeader("Fecha del evento").setAutoWidth(true);
     }
 
     private void createEventDescColumn() {
-        eventDescColumn = grid
-                .addColumn(ODashAuditEvent::getEventDesc)
-                .setHeader("Descripción")
-                .setAutoWidth(true);
+        eventDescColumn = grid.addColumn(ODashAuditEvent::getEventDesc).setHeader("Descripción").setAutoWidth(true);
     }
 
     public void updateTotalPage(int totalSmsPage) {
@@ -414,9 +377,38 @@ public class AuditViewV2 extends LitTemplate {
         eventCombo.setClearButtonVisible(true);
         eventCombo.setItemLabelGenerator(ODashAuditEvent.OEVENT_TYPE::name);
         eventCombo.setWidthFull();
+        eventCombo.addCustomValueSetListener(listener -> searchButton.setEnabled(isValid()));
+        eventCombo.addValueChangeListener(listener -> searchButton.setEnabled(isValid()));
     }
 
+    private void initEventCheck() {
+        allUserCheck.addValueChangeListener(listener -> {
+            if (allUserCheck.getValue()) {
+                userCombo.setValue(null);
+                allEventCheck.setValue(false);
+            }
+            userCombo.setEnabled(!allUserCheck.getValue());
+            searchButton.setEnabled(isValid());
+
+        });
+        /**/
+        allEventCheck.addValueChangeListener(listener -> {
+            if (allUserCheck.getValue()) {
+                eventCombo.setValue(null);
+                allUserCheck.setValue(false);
+            }
+            eventCombo.setEnabled(!allEventCheck.getValue());
+            searchButton.setEnabled(isValid());
+        });
+    }
+
+    /**
+     * @return
+     */
     private boolean isValid() {
+        if ((Objects.isNull(userCombo.getValue()) && !allUserCheck.getValue()) || (Objects.isNull(eventCombo.getValue()) && !allEventCheck.getValue()) || Objects.isNull(firstDate.getValue()) || Objects.isNull(secondDate.getValue())) {
+            return false;
+        }
         return true;
     }
 }
