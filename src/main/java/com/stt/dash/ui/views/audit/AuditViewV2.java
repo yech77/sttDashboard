@@ -274,8 +274,9 @@ public class AuditViewV2 extends LitTemplate {
         int month = localDateTime.getMonthValue();
         int day = localDateTime.getDayOfMonth();
         int hour = localDateTime.getHour();
-        String fileName = "" + year + "." + month + "." + day + "." + hour + ":00-Mensajes.csv";
-        Button download = new Button("Descargar Datos (" + year + "/" + month + "/" + day + "-" + hour + ":00)");
+        int min = localDateTime.getMinute();
+        String fileName = "" + year + "." + month + "." + day + "." + hour + ":" + min + "-Auditoria.csv";
+        Button download = new Button("Descargar Datos (" + year + "/" + month + "/" + day + "-" + hour + ":" + min + ")");
 
         FileDownloadWrapper buttonWrapper = new FileDownloadWrapper(new StreamResource(fileName, () -> {
             return new ByteArrayInputStream(getStringData(messages).getBytes());

@@ -14,7 +14,6 @@ import com.stt.dash.ui.utils.ODateUitls;
 import com.stt.dash.ui.views.HasNotifications;
 import com.stt.dash.ui.views.bulksms.events.BulkSmsReviewEvent;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -33,7 +32,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.binder.BindingValidationStatus;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.binder.ValueContext;
@@ -67,13 +65,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 
 @Tag("file-to-send-editor")
 @JsModule("./src/views/bulksms/file-to-send-editor.ts")
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class FileToSendEditorView extends LitTemplate implements HasNotifications {
+public class FileToSendEditorViewResp extends LitTemplate implements HasNotifications {
 
     @Id("title")
     private H2 title;
@@ -155,13 +152,13 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
 
     private int totsms = 0;
 
-    public FileToSendEditorView(@Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
-                                AgendaService agendaService,
-                                @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList,
-                                WebClient webClient,
-                                OProperties properties) {
+    public FileToSendEditorViewResp(@Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
+                                    AgendaService agendaService,
+                                    @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList,
+                                    WebClient webClient,
+                                    OProperties properties) {
         /**/
-        presenter = new FileToSendEditorViewPresenter(this, userChildrenList, agendaService, systemIdList, webClient, properties);
+        presenter = new FileToSendEditorViewPresenter(null, userChildrenList, agendaService, systemIdList, webClient, properties);
         /**/
         acceptCheckbox.setVisible(false);
         dueDate.setVisible(false);
@@ -214,7 +211,7 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
                     dueDate2.getValue().getDayOfMonth(),
                     dueTime.getValue().getHour(), dueTime.getValue().getMinute());
             dueDate.setValue(l);
-            fireEvent(new BulkSmsReviewEvent(this));
+//            fireEvent(new BulkSmsReviewEvent(this));
         });
         /* El pickup Locations es el systemid*/
         presenter.setSystemIdItems();
@@ -270,13 +267,9 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
         dueTime.setValue(LocalTime.of(LocalDateTime.now().plusHours(1).getHour(), 0));
         dueTime.setStep(Duration.ofMinutes(30));
         /**/
-        binder.addValueChangeListener(e -> {
-            System.out.println("OLDVALUE ->" + e.getOldValue() + " VALUE ->" + e.getValue());
+        binder.addValueChangeListener(c -> {
+            System.out.println("OLDVALUE ->" + c.getOldValue() + " VALUE ->" + c.getValue());
             System.out.println("ADDVALUE BINDER->" + binder.hasChanges());
-
-            if (e.getOldValue() != null) {
-                programAgendaButton.setEnabled(hasChanges());
-            }
         });
     }
 
@@ -567,6 +560,26 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
         this.currentUser = currentUser;
     }
 
+//    public Stream<HasValue<?, ?>> validate() {
+//        Stream<HasValue<?, ?>> errorFields = binder.validate().getFieldValidationErrors().stream()
+//                .map(BindingValidationStatus::getField);
+//
+//        return Stream.concat(errorFields, itemsEditor.validate());
+//    }
+
+    public void read(FIlesToSend order, boolean isNew) {
+        binder.readBean(order);
+
+        this.orderNumber.setText(isNew ? "" : order.getId().toString());
+        title.setVisible(isNew);
+        metaContainer.setVisible(!isNew);
+
+        if (order.getStatus() != null) {
+//            getModel().setStatus(order.getState().name());
+        }
+        programAgendaButton.setEnabled(false);
+    }
+
     public boolean hasChanges() {
         return binder.hasChanges() /*|| itemsEditor.hasChanges()*/;
     }
@@ -580,25 +593,6 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
     public void write(FIlesToSend filesToSend) throws ValidationException {
         filesToSend.setSmsCount(totsms);
         binder.writeBean(filesToSend);
-    }
-
-    public void read(FIlesToSend filesToSend, boolean isNew) {
-        binder.readBean(filesToSend);
-
-        this.orderNumber.setText(isNew ? "" : filesToSend.getId().toString());
-        title.setVisible(isNew);
-        metaContainer.setVisible(!isNew);
-
-        if (filesToSend.getStatus() != null) {
-//            getModel().setStatus(order.getState().name());
-        }
-        programAgendaButton.setEnabled(false);
-    }
-
-    public Stream<HasValue<?, ?>> validate() {
-        Stream<HasValue<?, ?>> errorFields = binder.validate().getFieldValidationErrors().stream()
-                .map(BindingValidationStatus::getField);
-        return errorFields;
     }
 
     public Registration addReviewListener(ComponentEventListener<BulkSmsReviewEvent> listener) {

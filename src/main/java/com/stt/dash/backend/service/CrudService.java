@@ -20,16 +20,6 @@ public interface CrudService<T extends AbstractEntitySequence> {
         }
         return t;
     }
-//	default T save(T entity) {
-//		T t;
-//		try {
-//			t = getRepository().saveAndFlush(entity);
-//		}catch (Exception e){
-//			e.printStackTrace();
-//			throw e;
-//		}
-//		return t;
-//	}
 
     default void delete(User currentUser, T entity) {
         if (entity == null) {

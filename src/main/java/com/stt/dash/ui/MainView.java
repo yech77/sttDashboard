@@ -61,9 +61,9 @@ public class MainView extends AppLayout {
     public MainView(@Autowired CurrentUser currentUser) {
         final String contextPath = VaadinServlet.getCurrent().getServletContext().getContextPath();
         this.currentUser = currentUser;
-//		confirmDialog.setCancelable(true);
-//		confirmDialog.setConfirmButtonTheme("raised tertiary error");
-//		confirmDialog.setCancelButtonTheme("raised tertiary");
+        confirmDialog.setCancelable(true);
+        confirmDialog.setConfirmButtonTheme("raised tertiary error");
+        confirmDialog.setCancelButtonTheme("raised tertiary");
 
 //		this.setDrawerOpened(false);
         H1 title = new H1("Orinoco");

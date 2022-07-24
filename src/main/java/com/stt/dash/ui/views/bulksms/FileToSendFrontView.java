@@ -8,6 +8,7 @@ import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.components.SearchBar;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.views.EntityView;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -23,6 +24,7 @@ import org.springframework.security.access.annotation.Secured;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static com.stt.dash.ui.utils.BakeryConst.EDIT_SEGMENT;
 import static com.stt.dash.ui.utils.BakeryConst.ORDER_ID;
@@ -92,6 +94,7 @@ public class FileToSendFrontView extends PolymerTemplate<TemplateModel> implemen
         dialog.setOpened(opened);
     }
 
+
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         Optional<Long> orderId = event.getRouteParameters().getLong(ORDER_ID);
@@ -117,9 +120,9 @@ public class FileToSendFrontView extends PolymerTemplate<TemplateModel> implemen
         fileToSendEditorView.write(entity);
     }
 
-    //    public Stream<HasValue<?, ?>> validate() {
-//        return orderEditor.validate();
-//    }
+    public Stream<HasValue<?, ?>> validate() {
+        return fileToSendEditorView.validate();
+    }
 
     SearchBar getSearchBar() {
         return searchBar;

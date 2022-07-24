@@ -93,21 +93,22 @@ public class FileToSendDetails extends LitTemplate {
         this.fIlesToSend = fIlesToSend;
         showData();
 //        getModel().setItem(order);
+        /* TODO: Hacer que funcione desde la plantilla.
+        LitElement no trabaja con Models ais que la visibilidad de los botones se hace por aca directo en el componente.  */
         if (review) {
-            save.setVisible(review);
-            edit.setVisible(!review);
-            cancel.setVisible(!review);
-            back.setVisible(review);
-            delete.setVisible(!review);
+            save.setVisible(true);
+            edit.setVisible(false);
+            cancel.setVisible(false);
+            back.setVisible(true);
+            delete.setVisible(false);
         } else {
-            save.setVisible(review);
-            edit.setVisible(review);
-            cancel.setVisible(!review);
-            back.setVisible(review);
-            delete.setVisible(!review);
+            save.setVisible(true);
+            edit.setVisible(true);
+            cancel.setVisible(false);
+            back.setVisible(true);
             delete.setVisible(fIlesToSend.getStatus() != Status.COMPLETED);
         }
-        this.isDirty = false;
+        this.isDirty = review;
     }
 
     private void showData() {
