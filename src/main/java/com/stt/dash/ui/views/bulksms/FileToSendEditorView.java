@@ -283,7 +283,7 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
     private void addListeners() {
         dueDate2.addValueChangeListener(lister -> {
             if (lister.getValue().isEqual(LocalDate.now())) {
-                dueTime.setMinTime(LocalTime.now());
+                dueTime.setMinTime(LocalTime.of(LocalDateTime.now().plusHours(1).getHour(), 0));
             } else {
                 dueTime.setMinTime(null);
             }

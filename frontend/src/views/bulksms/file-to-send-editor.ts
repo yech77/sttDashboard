@@ -71,9 +71,9 @@ export class FileToSendEditor extends LitElement {
                         </vaadin-combo-box>
                         <vaadin-combo-box id="systemId" label="Credencial"
                                           clear-button-visible></vaadin-combo-box>
-                        <vaadin-text-field id="orderDescription" label="Nombre" colspan="2"
+                        <vaadin-text-field id="orderName" label="Nombre" colspan="2"
                                            clear-button-visible></vaadin-text-field>
-                        <vaadin-text-field id="orderName" label="Descripcion" colspan="2"
+                        <vaadin-text-field id="orderDescription" label="Descripcion" colspan="2"
                                            clear-button-visible></vaadin-text-field>
                         <vaadin-text-area id="message" label="Escriba su mensaje" colspan="2" required
                                           clear-button-visible></vaadin-text-area>

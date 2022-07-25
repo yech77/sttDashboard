@@ -32,7 +32,7 @@ public class FIlesToSend extends AbstractEntitySequence implements FileToSendSum
     private int smsCount;
     private Status status;
 
-    @NotNull(message = "No puede estar vacio.")
+    //    @NotNull(message = "No puede estar vacio.")
     @NotEmpty(message = "no puede estar vacio")
     @Size(max = 100)
     @Column(length = 100, unique = true)
@@ -53,7 +53,7 @@ public class FIlesToSend extends AbstractEntitySequence implements FileToSendSum
     private String fileId;
 
     @NotEmpty(message = "Seleccione una credencial")
-    @NotNull(message = "seleccione una credencial")
+//    @NotNull(message = "seleccione una credencial")
     @Size(min = 3, max = 20)
     @Column(length = 20)
     private String systemId;
@@ -65,7 +65,7 @@ public class FIlesToSend extends AbstractEntitySequence implements FileToSendSum
     private String filePath;
 
     @NotEmpty(message = "Escriba su mensaje")
-    @NotNull(message = "escriba su mensaje")
+//    @NotNull(message = "escriba su mensaje")
     @Size(message = "debe ser entre 5 y 255 caracteres", min = 5, max = 255)
     @Column(name = "message_with_param")
     private String messageWithParam;
