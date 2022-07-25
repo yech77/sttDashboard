@@ -15,6 +15,8 @@ import com.stt.dash.ui.crud.EntityPresenter;
 import com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider;
 import com.stt.dash.ui.utils.ODateUitls;
 import com.stt.dash.ui.views.storefront.beans.OrderCardHeader;
+import com.vaadin.flow.component.Focusable;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +29,11 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
 
 import static com.stt.dash.ui.utils.BakeryConst.PAGE_BULK_STOREFRONT_ORDER_EDIT;
 
@@ -120,18 +124,32 @@ public class FileToSendPresenter {
         view.setDialogElementsVisibility(true);
     }
 
-    void review() {
-//         Using collect instead of findFirst to assure all streams are
-//         traversed, and every validation updates its view
-//        List<HasValue<?, ?>> fields = view.validate().collect(Collectors.toList());
-//        if (fields.isEmpty()) {
-        if (entityPresenter.writeEntity()) {
-            view.setDialogElementsVisibility(false);
-            view.getOpenedOrderDetails().display(entityPresenter.getEntity(), true);
-        }
-//        } else if (fields.get(0) instanceof Focusable) {
-//            ((Focusable<?>) fields.get(0)).focus();
+    //
+//    void review() {
+////         Using collect instead of findFirst to assure all streams are
+////         traversed, and every validation updates its view
+////        List<HasValue<?, ?>> fields = view.validate().collect(Collectors.toList());
+////        if (fields.isEmpty()) {
+//        if (entityPresenter.writeEntity()) {
+//            view.setDialogElementsVisibility(false);
+//            view.getOpenedOrderDetails().display(entityPresenter.getEntity(), true);
 //        }
+////        } else if (fields.get(0) instanceof Focusable) {
+////            ((Focusable<?>) fields.get(0)).focus();
+////        }
+//    }
+    void review() {
+        // Using collect instead of findFirst to assure all streams are
+        // traversed, and every validation updates its view
+        List<HasValue<?, ?>> fields = view.validate().collect(Collectors.toList());
+        if (fields.isEmpty()) {
+            if (entityPresenter.writeEntity()) {
+                view.setDialogElementsVisibility(false);
+                view.getOpenedOrderDetails().display(entityPresenter.getEntity(), true);
+            }
+        } else if (fields.get(0) instanceof Focusable) {
+            ((Focusable<?>) fields.get(0)).focus();
+        }
     }
 
     void save() {
@@ -146,6 +164,8 @@ public class FileToSendPresenter {
             if (entityPresenter.isNew()) {
                 view.showCreatedNotification();
                 dataProvider.refreshAll();
+                /* Debo repetir el close porque colocarlo fuera al final del if no se ejecuta por el mono.block. */
+                close();
                 /**/
                 // Crea Nuevo hilo
                 ScheduledExecutorService localExecutor = Executors.newSingleThreadScheduledExecutor();
@@ -166,14 +186,15 @@ public class FileToSendPresenter {
                 try {
                     Mono<SystemIdBalanceOResponse> mono = balanceWebClient.callSyncData(e.getSystemId(), e.getTotalSmsToSend());
                     SystemIdBalanceOResponse block = mono.block();
+                    System.out.println("Aca");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
             } else {
                 view.showUpdatedNotification();
                 dataProvider.refreshItem(e);
+                close();
             }
-            close();
         });
     }
 
