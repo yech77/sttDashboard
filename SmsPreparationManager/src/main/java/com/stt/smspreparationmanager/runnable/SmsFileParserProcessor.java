@@ -27,6 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Crear las líneas del archivo recibido, creado por Dashboard,  en la tabla SendingSms.
  *
  * @author Enrique
  */
@@ -47,11 +48,12 @@ public class SmsFileParserProcessor implements Runnable {
     private String iso2;
     private String filePath;
     private String[] directory;
+    /* TODO: Llamar al servicio */
     private final String regex = "^(58)(412|414|416|424|426)([0-9]{7})$";
     private final Pattern regexPattern = Pattern.compile(regex);
 
     public SmsFileParserProcessor(File smsFile, SendingSmsRepository sending_repo,
-            FilesToSendService files_service) {
+                                  FilesToSendService files_service) {
         this.smsFile = smsFile;
         this.sending_repo = sending_repo;
         this.files_service = files_service;
@@ -154,7 +156,7 @@ public class SmsFileParserProcessor implements Runnable {
             log.info("To save in DB..");
             sending_repo.saveAll(batch);
             log.info("saved in DB ({})..", numLine);
-             batch.clear();
+            batch.clear();
         }
         String newPath = smsFile.getParentFile().getParentFile().getAbsolutePath() + "/success/" + smsFile.getName();
 
@@ -166,7 +168,7 @@ public class SmsFileParserProcessor implements Runnable {
             Path temp = Files.move(
                     Paths.get(smsFile.getAbsolutePath()),
                     Paths.get(newLoc.getAbsolutePath()));
-            log.info("Archivo se ha movido a la carpeta [success].");
+            log.info("MOVED TO DIRECTORY [success]. [{}]", smsFile.getName());
         } catch (IOException ex) {
             log.error("", ex);
         }

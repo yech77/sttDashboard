@@ -53,11 +53,13 @@ public class SmsPreparationManagerApplication {
     public void findNewFiles() {
         log.info("[{}] Looking for new files in {}", getAPP_NAME(), properties.getAgendafilePathBase());
         File base = new File(properties.getAgendafilePathBase());
+//        @TODO: Nullpointer de base.
         File[] clients = base.listFiles();
         if (clients == null || clients.length == 0) {
             log.info("NOT DIRECTORIES FOUND. CLIENT LEVEL [{}]", properties.getAgendafilePathBase());
             return;
         }
+        /* Recorre los subdirectorios que representan a los clientes: CODPRO*/
         for (File client : clients) {
             if (!client.isDirectory()) {
                 log.info("IS NOT A DIRECTORY. CLIENT LEVEL [{}]", client.getAbsolutePath());
@@ -68,6 +70,7 @@ public class SmsPreparationManagerApplication {
                 log.info("NOT DIRECTORIES FOUND. SID LEVEL [{}]", properties.getAgendafilePathBase());
                 continue;
             }
+            /* Recorre los subdirectorios que representan a los SystemIds: SYSTEMID */
             for (File sys_id : sys_ids) {
                 if (!sys_id.isDirectory()) {
                     log.info("IS NOT A DIRECTORY. SID LEVEL [{}]", client.getAbsolutePath());
@@ -93,9 +96,8 @@ public class SmsPreparationManagerApplication {
                             scheduler.schedule(
                                     new SmsFileParserProcessor(f, sending_repo, files_service),
                                     1, TimeUnit.SECONDS);
-                            log.error("Moving file threw exception!");
                         } catch (Exception ex) {
-                            log.error("", ex);
+                            log.error("Moving file threw exception!", ex);
                         }
 //                        if (!completedTasks.containsKey(smsFile.getAbsolutePath())) {
 //                            if (!pendingTasks.containsKey(smsFile.getAbsolutePath()) && !completedTasks.containsKey(smsFile.getAbsolutePath())) {
