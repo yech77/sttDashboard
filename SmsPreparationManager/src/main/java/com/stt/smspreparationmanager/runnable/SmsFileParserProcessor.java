@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.stt.smspreparationmanager.SmsPreparationManagerApplication.APP_NAME;
+
 /**
  * Crear las líneas del archivo recibido, creado por Dashboard,  en la tabla SendingSms.
  *
@@ -58,7 +60,6 @@ public class SmsFileParserProcessor implements Runnable {
         this.sending_repo = sending_repo;
         this.files_service = files_service;
         filePath = smsFile.getAbsolutePath();
-        //directory = filePath.split("\\");
         directory = filePath.split(Matcher.quoteReplacement(System.getProperty("file.separator")));
         datacoding = 3;
         source = "22800";
@@ -66,29 +67,30 @@ public class SmsFileParserProcessor implements Runnable {
 
     @Override
     public void run() {
-        /*Dejar solo el nombre sin su extension que es el id. */
-        String id = smsFile.getName().substring(0, smsFile.getName().length() - 4);
         try {
-            log.info("[{}] BEGIN THREAD. FINDING ID [{}] [{}]", SmsPreparationManagerApplication.getAPP_NAME(), id, Arrays.toString(directory));
+            /*Dejar solo el nombre sin su extension que es el id. */
+            String id = smsFile.getName().substring(0, smsFile.getName().length() - 4);
             fileToSend = files_service.findById(Long.parseLong(id));
-            log.info("[{}] FOUND [{}] [{}]", SmsPreparationManagerApplication.getAPP_NAME(), fileToSend.getFilePath(), fileToSend.getFileName());
+            log.info("[{}] [{}] BEGIN THREAD. FINDING ID [{}] [{}]", APP_NAME, fileToSend.getOrderName(), id, Arrays.toString(directory));
+            /* TODO: Tomar en cuneta que no se encuentra el archivo. */
+            log.info("[{}] [{}] FOUND [{}] [{}]", APP_NAME, fileToSend.getOrderName(), fileToSend.getFilePath(), fileToSend.getFileName());
             stream = new FileInputStream(smsFile);
+            log.info("[{}] [{}] BEGIN PROCESSING FILE", APP_NAME, fileToSend.getOrderName());
+            prepareSms();
+            log.info("[{}] [{}] END PROCESSING FILE", APP_NAME, fileToSend.getOrderName());
+            log.info("[{}] [{}] [{}] END THREAD ID [{}]", APP_NAME, fileToSend.getOrderName(), id);
         } catch (FileNotFoundException ex) {
             log.error("", ex);
-            return;
         } catch (NumberFormatException ex) {
             log.error("", ex);
-            return;
+        }catch (Exception ex) {
+            log.error("", ex);
         }
-        log.info("[{}] BEGIN PROCESSING FILE: {}/{}", SmsPreparationManagerApplication.getAPP_NAME(), fileToSend.getFilePath(), fileToSend.getFileName());
-        prepareSms();
-        log.info("[{}] END PROCESSING FILE: {}/{}", SmsPreparationManagerApplication.getAPP_NAME(), fileToSend.getFilePath(), fileToSend.getFileName());
-        log.info("[{}] END THREAD ID [{}]", SmsPreparationManagerApplication.getAPP_NAME(), id);
     }
 
     public void prepareSms() {
         if (stream == null) {
-            log.error("{} [{}] El archivo es null.", getStringLog(), smsFile.getName());
+            log.error("[{}] [{}] [{}] El archivo es null.", APP_NAME, fileToSend.getOrderName(), smsFile.getName());
             return;
         }
 
@@ -106,19 +108,18 @@ public class SmsFileParserProcessor implements Runnable {
                 }
             }
             if (pos == -1) {
-                log.error("Problema analizando directorio; \"processing\" no existe");
+                log.error("[{}] Problema analizando directorio; \"processing\" no existe", APP_NAME);
                 return;
             }
 
-            InputStreamReader isr = new InputStreamReader(stream,
-                    StandardCharsets.UTF_8);
+            InputStreamReader isr = new InputStreamReader(stream, StandardCharsets.UTF_8);
             /* LEER EL ARCHIVO HECHO POR ODAHS */
             Iterable<CSVRecord> records = CSVFormat.newFormat(',')
                     .withQuote('"')
                     .withIgnoreEmptyLines(true)
                     .parse(new BufferedReader(isr));
 
-            log.info("[{}] [{}] PARSING CSV", getStringLog(), fileToSend.getFileName());
+            log.info("[{}] [{}] [{}] PARSING CSV", APP_NAME, fileToSend.getOrderName(), fileToSend.getFileName());
             for (CSVRecord record : records) {
                 SendingSms msg = new SendingSms();
                 msg.setFileToSend(fileToSend);
@@ -132,6 +133,7 @@ public class SmsFileParserProcessor implements Runnable {
                 msg.setMsgSended("");
                 msg.setMsgReceived("");
                 msg.setCarrierCharCode("DAHS");
+                /* TODO: Puedo colocar este valor en una variable */
                 msg.setSystemId(directory[pos]);
                 batch.add(msg);
                 msgPreparedCount++;
@@ -140,12 +142,13 @@ public class SmsFileParserProcessor implements Runnable {
                 if (batch.size() >= batchSize) {
                     log.info("To save in DB..");
                     sending_repo.saveAll(batch);
-                    log.info("saved in DB ({})..", numLine);
+                    log.info("[{}] [{}] saved in DB ({})..", APP_NAME, fileToSend.getOrderName(), numLine);
                     batch.clear();
                 }
+                /* Todo puede ser un acumulativo de batch.size() */
                 numLine++;
             }
-            log.info("{} [{}] Cerrando Arhivo", getStringLog(), smsFile.getName());
+            log.info("[{}] [{}] [{}] Cerrando Arhivo", APP_NAME, fileToSend.getOrderName(), smsFile.getName());
             isr.close();
         } catch (Exception ex) {
             log.error("", ex);
@@ -153,31 +156,29 @@ public class SmsFileParserProcessor implements Runnable {
         }
 
         if (!batch.isEmpty()) {
-            log.info("To save in DB..");
             sending_repo.saveAll(batch);
-            log.info("saved in DB ({})..", numLine);
+            log.info("[{}] [{}] saved in DB ({})..", APP_NAME, fileToSend.getOrderName(), numLine);
             batch.clear();
         }
         String newPath = smsFile.getParentFile().getParentFile().getAbsolutePath() + "/success/" + smsFile.getName();
 
         File newLoc = new File(newPath);
-        log.info("[{}] [{}] CREATING DIRECTORY", SmsPreparationManagerApplication.getAPP_NAME(), newLoc.getParentFile());
+        log.info("[{}] [{}] [{}] CREATING DIRECTORY", APP_NAME, fileToSend.getOrderName(), newLoc.getParentFile());
         newLoc.getParentFile().mkdirs();
         try {
-            log.info("[{}] MOVING FROM [{}] TO [{}]", SmsPreparationManagerApplication.getAPP_NAME(), smsFile.getAbsolutePath(), newLoc.getAbsolutePath());
+            log.info("[{}] [{}] MOVING FROM [{}] TO [{}]", APP_NAME, fileToSend.getOrderName(), smsFile.getAbsolutePath(), newLoc.getAbsolutePath());
             Path temp = Files.move(
                     Paths.get(smsFile.getAbsolutePath()),
                     Paths.get(newLoc.getAbsolutePath()));
-            log.info("MOVED TO DIRECTORY [success]. [{}]", smsFile.getName());
+            log.info("[{}] [{}] MOVED TO DIRECTORY [success]. [{}]", APP_NAME, fileToSend.getOrderName(), smsFile.getName());
         } catch (IOException ex) {
             log.error("", ex);
         }
         fileToSend.setBeingProcessed(false);
         fileToSend.setReadyToSend(true);
         fileToSend.setStatus(FilesToSend.Status.WAITING_TO_SEND);
-//        log.info("[{}] UPDATING BEING PROCESSED->FALSE AND READY TO SEND->TRUE: [{}]", SmsPreparationManagerApplication.getAPP_NAME(), newLoc.getAbsolutePath());
         files_service.save(fileToSend);
-        log.info("[{}] MOVED AND WAITING TO SEND : [{}]", SmsPreparationManagerApplication.getAPP_NAME(), newLoc.getAbsolutePath());
+        log.info("[{}] [{}] MOVED AND WAITING TO SEND : [{}]", APP_NAME, fileToSend.getOrderName(), newLoc.getAbsolutePath());
     }
 
     @Deprecated
@@ -188,9 +189,5 @@ public class SmsFileParserProcessor implements Runnable {
     public boolean validatePhoneRegex(String number) {
         Matcher m = regexPattern.matcher(number);
         return m.matches();
-    }
-
-    private String getStringLog() {
-        return "[" + SmsPreparationManagerApplication.getAPP_NAME() + "] ";
     }
 }

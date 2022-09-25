@@ -225,6 +225,9 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
         /**/
         agendaComboBox.setItemLabelGenerator(agenda -> agenda.getName() + (
                 StringUtils.isNotBlank(agenda.getDescription()) ? " - " + agenda.getDescription() : ""));
+        sendNow.addValueChangeListener(listener->{
+            dueTime.setValue(LocalTime.now());
+        });
         /* contador de caracteres  */
         paragraphCharCounter.setText("(1) 0/160 caracteres");
         /**/
