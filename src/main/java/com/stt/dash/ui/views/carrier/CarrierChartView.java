@@ -185,7 +185,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
             VaadinSession.getCurrent().setAttribute(CARRIER_VIEW_SELECTED_CLIENT, clientCombobox.getValue());
             UI.getCurrent().getPage().reload();
         });
-        filterButton.setEnabled(true);
+        filterButton.setEnabled(isValidSearch());
 
         clientCombobox.addValueChangeListener(blur -> {
             filterButton.setEnabled(isValidSearch());
