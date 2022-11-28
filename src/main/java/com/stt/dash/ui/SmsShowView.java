@@ -84,8 +84,6 @@ public class SmsShowView extends LitTemplate {
     private EnhancedDateRangePicker dateOne = new EnhancedDateRangePicker();
     private DatePicker firstDate = new DatePicker();
     private DatePicker secondDate = new DatePicker();
-    /**/
-//    private Button searchButton = new Button("Buscar");
     private IntegerField currentPageTextbox = new IntegerField("Página");
     private Label totalAmountOfPagesLabel = new Label();
     ComboBox<Integer> comboItemsPerPage = new ComboBox<>("Mensajes por página");
@@ -119,18 +117,11 @@ public class SmsShowView extends LitTemplate {
         dateOne.setLabel("Rango de busqueda");
         dateOne.setPattern(" dd-MM-yyyy");
         /**/
-        firstDate.setI18n(I18nUtils.getDatepickerI18n());
-        firstDate.setLabel("Desde");
-        firstDate.setRequired(true);
-        firstDate.setLocale(esLocale);
-        secondDate.setLabel("Hasta");
-        secondDate.setI18n(I18nUtils.getDatepickerI18n());
-        secondDate.setRequired(true);
-        secondDate.setLocale(esLocale);
+        inicDate(firstDate, "Desde");
+        inicDate(secondDate, "Hasta");
         /**/
         searchButton.setText("Buscar");
-
-//        dateOne.setWidthFull();
+        searchButton.setEnabled(false);
         /**/
         createGridComponent();
         /**/
@@ -146,6 +137,14 @@ public class SmsShowView extends LitTemplate {
             /*TODO: Seleccionar por defecto el unico cliente. Validar que no este vacio.*/
             clientCombobox.setReadOnly(true);
         }
+        clientCombobox.addValueChangeListener(change -> {
+            if (change.getValue() == null) {
+                clientCombobox.setInvalid(true);
+            } else {
+                clientCombobox.setInvalid(false);
+            }
+            searchButton.setEnabled(isValidSearch());
+        });
         /**/
         comboItemsPerPage.setItems(Arrays.asList(25, 50, 100, 200, 400, 800));
         comboItemsPerPage.setValue(itemsPerPage);
@@ -187,6 +186,25 @@ public class SmsShowView extends LitTemplate {
         addValueChangeListener();
     }
 
+    private void inicDate(DatePicker datePicker, String label) {
+        datePicker.setI18n(I18nUtils.getDatepickerI18n());
+        datePicker.setLabel(label);
+        datePicker.setRequired(true);
+        datePicker.setLocale(esLocale);
+        datePicker.setValue(LocalDate.now());
+        /**/
+        datePicker.isRequired();
+        /**/
+        datePicker.addValueChangeListener(datePickerLocalDateComponentValueChangeEvent -> {
+            searchButton.setEnabled(isValidSearch());
+        });
+    }
+
+    private boolean idValidData() {
+        return !firstDate.isInvalid() && !secondDate.isInvalid() && !clientCombobox.isInvalid();
+    }
+
+
     private boolean isGrantedMsgTextColumn(Set<ORole> roles) {
         return roles.stream().filter(rol -> {
             return rol.getAuthorities().stream().filter(auth -> {
@@ -226,6 +244,12 @@ public class SmsShowView extends LitTemplate {
             }
             systemIdList.clear();
             systemIdList.addAll(clientListener.getValue().getSystemids());
+            if (clientListener.getValue() == null) {
+                clientCombobox.setInvalid(true);
+            } else {
+                clientCombobox.setInvalid(false);
+            }
+            searchButton.setEnabled(isValidSearch());
         });
     }
 
@@ -390,5 +414,9 @@ public class SmsShowView extends LitTemplate {
         currentPageTextbox.setMax(totalSmsPage);
         /**/
         totalAmountOfPagesLabel.setText(" de " + totalSmsPage);
+    }
+
+    private boolean isValidSearch() {
+        return (!firstDate.isInvalid() && !secondDate.isInvalid() && !clientCombobox.isInvalid());
     }
 }
