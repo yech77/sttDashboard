@@ -168,7 +168,11 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
 
     private void addValueChangeListener() {
         clientCombobox.addValueChangeListener(clientListener -> {
-            systemIdMultiCombo.setItems(clientListener.getValue().getSystemids());
+            if (clientListener.getValue() != null && clientListener.getValue().getSystemids() != null) {
+                systemIdMultiCombo.setItems(clientListener.getValue().getSystemids());
+            } else {
+                systemIdMultiCombo.setItems(new ArrayList<>());
+            }
             Optional<Object> op = getCurrentSessionAttributeAndNullIt(CLIENT_VIEW_SELECTED_SYSTEMID);
             if (op.isPresent()) {
                 systemIdMultiCombo.setValue((Set<SystemId>) op.get());
