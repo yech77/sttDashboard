@@ -192,14 +192,8 @@ public class SmsView extends LitTemplate {
         dateOne.setLabel("Rango de busqueda");
         dateOne.setPattern(" dd-MM-yyyy");
         /**/
-        firstDate.setLabel("Desde");
-        firstDate.setI18n(I18nUtils.getDatepickerI18n());
-        firstDate.setRequired(true);
-        firstDate.setLocale(esLocale);
-        secondDate.setLabel("Hasta");
-        secondDate.setI18n(I18nUtils.getDatepickerI18n());
-        secondDate.setRequired(true);
-        secondDate.setLocale(esLocale);
+        datePickerConf(firstDate, "Desde");
+        datePickerConf(secondDate, "Hasta");
         /**/
         firstline.add(new HorizontalLayout(firstDate, secondDate, checkboxMessageType),
                 new HorizontalLayout(textPhoneNumer, comboCarrier),
@@ -296,6 +290,19 @@ public class SmsView extends LitTemplate {
         HorizontalLayout h = new HorizontalLayout(comboItemsPerPage, currentPageTextbox, totalAmountOfPagesLabel);
         h.setVerticalComponentAlignment(FlexComponent.Alignment.END, totalAmountOfPagesLabel);
         footer.add(h);
+    }
+
+    private void datePickerConf(DatePicker datePicker, String label) {
+        datePicker.setLabel(label);
+        datePicker.setRequired(true);
+        datePicker.setLocale(esLocale);
+        datePicker.setValue(LocalDate.now());
+        /**/
+        datePicker.isRequired();
+        /**/
+        datePicker.addValueChangeListener(datePickerLocalDateComponentValueChangeEvent -> {
+            searchButton.setEnabled(isValidSearch());
+        });
     }
 
     private Carrier searchCarrierbyName(Set<Carrier> carrierSet, String movistar) {

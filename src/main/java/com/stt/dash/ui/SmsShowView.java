@@ -12,13 +12,11 @@ import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.I18nUtils;
 import com.stt.dash.ui.utils.ODateUitls;
 import com.stt.dash.ui.utils.messages.Message;
-import com.stt.dash.ui.views.HasConfirmation;
 import com.vaadin.componentfactory.DateRange;
 import com.vaadin.componentfactory.EnhancedDateRangePicker;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.charts.model.HorizontalAlign;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -28,9 +26,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.littemplate.LitTemplate;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.template.Id;
@@ -117,8 +113,8 @@ public class SmsShowView extends LitTemplate {
         dateOne.setLabel("Rango de busqueda");
         dateOne.setPattern(" dd-MM-yyyy");
         /**/
-        inicDate(firstDate, "Desde");
-        inicDate(secondDate, "Hasta");
+        datePickerConf(firstDate, "Desde");
+        datePickerConf(secondDate, "Hasta");
         /**/
         searchButton.setText("Buscar");
         searchButton.setEnabled(false);
@@ -186,7 +182,7 @@ public class SmsShowView extends LitTemplate {
         addValueChangeListener();
     }
 
-    private void inicDate(DatePicker datePicker, String label) {
+    private void datePickerConf(DatePicker datePicker, String label) {
         datePicker.setI18n(I18nUtils.getDatepickerI18n());
         datePicker.setLabel(label);
         datePicker.setRequired(true);
@@ -238,7 +234,7 @@ public class SmsShowView extends LitTemplate {
         });
 
         clientCombobox.addValueChangeListener(clientListener -> {
-            if (CollectionUtils.isEmpty(clientListener.getValue().getSystemids())) {
+            if (clientListener.getValue() == null || CollectionUtils.isEmpty(clientListener.getValue().getSystemids())) {
                 systemIdList = new ArrayList<>(1);
                 return;
             }
