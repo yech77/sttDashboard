@@ -19,7 +19,7 @@ import java.util.concurrent.*;
 @SpringBootApplication
 @EnableScheduling
 public class SmsPreparationManagerApplication {
-    private static String APP_NAME = "OPREP";
+    public static String APP_NAME = "OPREP";
     private static Logger log = LogManager.getLogger(SmsPreparationManagerApplication.class);
     // REPO
     @Autowired
@@ -45,37 +45,40 @@ public class SmsPreparationManagerApplication {
         SpringApplication.run(SmsPreparationManagerApplication.class, args);
 //        Clients.generateClients();
 //        scheduler = Executors.newScheduledThreadPool(4);
-        log.info("[{}] Comenzando Ejecución", getAPP_NAME());
+        log.info("[{}] Comenzando Ejecución", APP_NAME);
     }
 
     @Scheduled(cron = "0 */1 * * * ?")
     /* TODO: Agregar ScheduledLock */
     public void findNewFiles() {
-        log.info("[{}] Looking for new files in {}", getAPP_NAME(), properties.getAgendafilePathBase());
+        log.info("[{}] Looking for new files in {}", APP_NAME, properties.getAgendafilePathBase());
         File base = new File(properties.getAgendafilePathBase());
+//        @TODO: Nullpointer de base.
         File[] clients = base.listFiles();
         if (clients == null || clients.length == 0) {
-            log.info("NOT DIRECTORIES FOUND. CLIENT LEVEL [{}]", properties.getAgendafilePathBase());
+            log.info("[{}] NOT DIRECTORIES FOUND. CLIENT LEVEL [{}]", APP_NAME, properties.getAgendafilePathBase());
             return;
         }
+        /* Recorre los subdirectorios que representan a los clientes: CODPRO*/
         for (File client : clients) {
             if (!client.isDirectory()) {
-                log.info("IS NOT A DIRECTORY. CLIENT LEVEL [{}]", client.getAbsolutePath());
+                log.info("[{}] IS NOT A DIRECTORY. CLIENT LEVEL [{}]", APP_NAME, client.getAbsolutePath());
                 continue;
             }
             File[] sys_ids = client.listFiles();
             if (sys_ids == null || sys_ids.length == 0) {
-                log.info("NOT DIRECTORIES FOUND. SID LEVEL [{}]", properties.getAgendafilePathBase());
+                log.info("[{}] NOT DIRECTORIES FOUND. SID LEVEL [{}]", APP_NAME, properties.getAgendafilePathBase());
                 continue;
             }
+            /* Recorre los subdirectorios que representan a los SystemIds: SYSTEMID */
             for (File sys_id : sys_ids) {
                 if (!sys_id.isDirectory()) {
-                    log.info("IS NOT A DIRECTORY. SID LEVEL [{}]", client.getAbsolutePath());
+                    log.info("[{}] IS NOT A DIRECTORY. SID LEVEL [{}]", APP_NAME, client.getAbsolutePath());
                     continue;
                 }
                 File httpFolder = new File(sys_id.getAbsolutePath() + "/http");
                 if (!httpFolder.exists()) {
-                    log.warn("FOLDER DOES NOT EXIST [{}]", sys_id.getAbsolutePath() + "/http");
+                    log.warn("[{}] FOLDER DOES NOT EXIST [{}]", APP_NAME, sys_id.getAbsolutePath() + "/http");
                     continue;
                 }
                 File[] smsFiles = httpFolder.listFiles();
@@ -83,74 +86,25 @@ public class SmsPreparationManagerApplication {
                     for (File smsFile : smsFiles) {
                         File f = new File(sys_id.getAbsolutePath() + "/processing/" + smsFile.getName());
                         f.getParentFile().mkdirs();
-                        log.info("DIRECTORY CREATED: {}", f.getAbsolutePath());
+                        log.info(" [{}] DIRECTORY CREATED: {}", APP_NAME, f.getAbsolutePath());
                         try {
-                            log.info("{} MOVING FILE FROM {} TO {} ", smsFile.getAbsolutePath(), f.getAbsolutePath());
+                            log.info("[{}] MOVING FILE FROM {} TO {} ", APP_NAME, smsFile.getAbsolutePath(), f.getAbsolutePath());
                             Files.move(
                                     Paths.get(smsFile.getAbsolutePath()),
                                     Paths.get(f.getAbsolutePath()));
-                            log.info("[{}] SCHEDULING - [{}]", SmsPreparationManagerApplication.getAPP_NAME(), f.getAbsolutePath());
+                            log.info("[{}] SCHEDULING - [{}]", APP_NAME, f.getAbsolutePath());
                             scheduler.schedule(
                                     new SmsFileParserProcessor(f, sending_repo, files_service),
-                                    1, TimeUnit.SECONDS);
-                            log.error("Moving file threw exception!");
+                                    2, TimeUnit.SECONDS);
                         } catch (Exception ex) {
-                            log.error("", ex);
+                            log.error("Moving file threw exception!", ex);
                         }
-//                        if (!completedTasks.containsKey(smsFile.getAbsolutePath())) {
-//                            if (!pendingTasks.containsKey(smsFile.getAbsolutePath()) && !completedTasks.containsKey(smsFile.getAbsolutePath())) {
-//                                ScheduledFuture<?> fut = scheduler.schedule(
-//                                        new SmsFileProcessor(smsFile, sending_repo, files_service),
-//                                        1, TimeUnit.SECONDS);
-//                                pendingTasks.put(smsFile.getAbsolutePath(), fut);
-//                                System.out.println("[SmsPreparationManager] - New task scheduled for file: " + smsFile.getAbsolutePath());
-//                            } else if (pendingTasks.get(smsFile.getAbsolutePath()).isDone()) {
-//                                completedTasks.put(smsFile.getAbsolutePath(), pendingTasks.remove(smsFile.getAbsolutePath()));
-//
-//                                //smsFile.delete();
-//                            }
-//                        }
-
                     }
                 }
             }
         }
-        log.info("DONE. Looking for new files in {}.", properties.getAgendafilePathBase());
+        log.info("[{}] DONE. Looking for new files in {}.", APP_NAME, properties.getAgendafilePathBase());
     }
-//
-//    @RequestMapping(value = "/createfile/{client}/{systemid}/{filename}/{size}")
-//    public void hello(@PathVariable String client, @PathVariable String systemid,
-//            @PathVariable String filename, @PathVariable int size) {
-//        System.out.println("Creando archivo con " + size + " mensajes llamado " + filename + ".csv con el cliente " + client + "y el systemId " + systemid);
-//        File targetFile = new File(properties.getAgendafilePathBase() + "/" + client + "/" + systemid + "/http/" + filename + ".csv");
-//        try {
-//            FileWriter fw = new FileWriter(targetFile);
-//            for (int i = 0; i < size; i++) {
-//                fw.write("" + (3000 + i) + "," + "Este es un mensaje de prueba." + "\n");
-//            }
-//            fw.close();
-//            System.out.println("Archivo creado!");
-//        } catch (IOException ex) {
-//            System.out.println("Error creando archivo");
-//        }
-//
-//    }
-
-    //    @RequestMapping(value = "/progress")
-//    public void hello2(@PathVariable String pendingtasks) {
-//        System.out.println("Archivos detectados por procesar:");
-//        Iterator it = pendingTasks.entrySet().iterator();
-//        while (it.hasNext()) {
-//            Map.Entry mapElement = (Map.Entry) it.next();
-//            System.out.println(mapElement.getKey());
-//        }
-//        System.out.println("\nArchivos ya procesados:");
-//        Iterator it2 = completedTasks.entrySet().iterator();
-//        while (it.hasNext()) {
-//            Map.Entry mapElement = (Map.Entry) it.next();
-//            System.out.println(mapElement.getKey());
-//        }
-//    }
     public static String getAPP_NAME() {
         return APP_NAME;
     }

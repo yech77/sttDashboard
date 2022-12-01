@@ -58,29 +58,9 @@ public class FileToSendDetails extends LitTemplate {
     @Id("orderDescription")
     private Paragraph orderDescription;
 
-//    @Id("history")
-//    private Element history;
-//
-//    @Id("comment")
-//    private Element comment;
-//
-//    @Id("sendComment")
-//    private Button sendComment;
-//
-//    @Id("commentField")
-//    private TextField commentField;
-
     private boolean isDirty;
 
     public FileToSendDetails() {
-//        sendComment.addClickListener(e -> {
-//            String message = commentField.getValue();
-//            message = message == null ? "" : message.trim();
-//            if (!message.isEmpty()) {
-//                commentField.clear();
-//                fireEvent(new CommentEvent(this, order.getId(), message));
-//            }
-//        });
         save.addClickListener(e -> fireEvent(new SaveEvent(this, false)));
         cancel.addClickListener(e -> fireEvent(new CancelEvent(this, false)));
         delete.addClickListener(e -> fireEvent(new DeleteEventFileToSend(this)));
@@ -88,26 +68,25 @@ public class FileToSendDetails extends LitTemplate {
 
     public void display(FIlesToSend fIlesToSend, boolean review) {
         log.info("DISPLLAY: {}", review);
-//        getModel().setReview(review);
-//        getElement().setProperty("showing", true);
         this.fIlesToSend = fIlesToSend;
         showData();
 //        getModel().setItem(order);
+        /* TODO: Hacer que funcione desde la plantilla.
+        LitElement no trabaja con Models ais que la visibilidad de los botones se hace por aca directo en el componente.  */
         if (review) {
-            save.setVisible(review);
-            edit.setVisible(!review);
-            cancel.setVisible(!review);
-            back.setVisible(review);
-            delete.setVisible(!review);
+            save.setVisible(true);
+            edit.setVisible(false);
+            cancel.setVisible(false);
+            back.setVisible(true);
+            delete.setVisible(false);
         } else {
-            save.setVisible(review);
-            edit.setVisible(review);
-            cancel.setVisible(!review);
-            back.setVisible(review);
-            delete.setVisible(!review);
+            save.setVisible(false);
+            edit.setVisible(false);
+            cancel.setVisible(true);
+            back.setVisible(false);
             delete.setVisible(fIlesToSend.getStatus() != Status.COMPLETED);
         }
-        this.isDirty = false;
+        this.isDirty = review;
     }
 
     private void showData() {
@@ -125,24 +104,6 @@ public class FileToSendDetails extends LitTemplate {
     public void setDirty(boolean isDirty) {
         this.isDirty = isDirty;
     }
-
-   /* public interface Model extends TemplateModel {
-        @Include({ "id", "dueDate.day", "dueDate.weekday", "dueDate.date", "dueTime", "state", "pickupLocation.name",
-                "customer.fullName", "customer.phoneNumber", "customer.details", "items.product.name", "items.comment",
-                "items.quantity", "items.product.price", "history.message", "history.createdBy.firstName",
-                "history.timestamp", "history.newState", "totalPrice" })
-        @Encode(value = LongToStringConverter.class, path = "id")
-        @Encode(value = StorefrontLocalDateConverter.class, path = "dueDate")
-        @Encode(value = LocalTimeConverter.class, path = "dueTime")
-        @Encode(value = OrderStateConverter.class, path = "state")
-        @Encode(value = CurrencyFormatter.class, path = "items.product.price")
-        @Encode(value = LocalDateTimeConverter.class, path = "history.timestamp")
-        @Encode(value = OrderStateConverter.class, path = "history.newState")
-        @Encode(value = CurrencyFormatter.class, path = "totalPrice")
-        void setItem(Order order);
-
-        void setReview(boolean review);
-    }*/
 
     public Registration addSaveListenter(ComponentEventListener<SaveEvent> listener) {
         return addListener(SaveEvent.class, listener);

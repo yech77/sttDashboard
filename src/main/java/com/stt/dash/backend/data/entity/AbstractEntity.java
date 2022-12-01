@@ -9,7 +9,7 @@ public abstract class AbstractEntity implements Serializable {
 
     @Id
     private Long id;
-
+                                                                                                                                                     
     @Version
     @Column(columnDefinition = "integer default 0")
     private int version = 0;

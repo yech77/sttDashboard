@@ -95,24 +95,24 @@ public class SmsGeneratorParserRunnable implements Runnable {
             fileToSend = files_service.updateState(currentUser, fileToSend);
             return;
         }
+        log.info("[{}] [{}] UPDATING -> GENERATING_MESSAGES", getStringLog(), fileToSend.getFileName());
         fileToSend.setStatus(Status.GENERATING_MESSAGES);
-        log.info("[{}] [{}] UPDATING -> GENERATING_MESSAGES", getStringLog(),
-                fileToSend.getFileName());
         fileToSend = files_service.updateState(currentUser, fileToSend);
         int numLine = 0;
         StringBuilder sbLine = new StringBuilder();
         try {
             char separatorChar = '0';
-            InputStreamReader isr = new InputStreamReader(stream,
-                    StandardCharsets.UTF_8);
+            InputStreamReader isr = new InputStreamReader(stream, StandardCharsets.UTF_8);
             BufferedReader br = new BufferedReader(isr);
+
             /* Marcar el principio del archivo para luego regresarme. */
             br.mark(1);
+
             /* Buscar el primer caracter no numero de la primera columna para obtener el separador */
             while (Character.isDigit(separatorChar)) {
                 separatorChar = (char) br.read();
-//                log.info("{} PASING CHAR '{}'", getStringLog(), separatorChar);
             }
+
             /* TODO: Esto debe enviar error, tener un separador por defecto no parece ser util. VALIDAR. */
             /* Asignar separador por defecto. */
             if (separatorChar != ';' && separatorChar != ',' && separatorChar != '|') {
@@ -120,25 +120,32 @@ public class SmsGeneratorParserRunnable implements Runnable {
                 log.info("{} SEPARATOR NOT FOUND. ASSIGNED ['{}']", getStringLog(), separatorChar);
             }
             log.info("{} SEPARATOR FOUND ['{}']", getStringLog(), separatorChar);
+
             /* Ir al inicio marcado */
             br.reset();
+
             /* READER */
             Iterable<CSVRecord> records = CSVFormat.newFormat(separatorChar)
                     .withQuote('"')
                     .withIgnoreEmptyLines(true)
                     .parse(br);
             log.info("[{}] [{}] PARSING CSV", getStringLog(), fileToSend.getFileName());
+
+            /* crea nuevas lineas  del archivo con el mensaje final */
             for (CSVRecord record : records) {
                 numLine++;
                 String newMsg = messagesText;
+
                 /* agrega el numero de telefono */
                 sbLine.append(record.get(0)).append(",");
+
+                /* sustituye variables por parameros en tod el mensaje */
                 if (record.size() > 2) {
-                    /* sustituye variables por parameros */
                     for (int i = 1; i < record.size(); i++) {
                         newMsg = newMsg.replace("$" + i, record.get(i));
                     }
                 }
+
                 /* Agrega la linea para el archivo */
                 if (newMsg.contains(",")) {
                     sbLine.append("\"").append(newMsg).append("\"");
@@ -146,16 +153,13 @@ public class SmsGeneratorParserRunnable implements Runnable {
                     sbLine.append(newMsg);
                 }
                 sbLine.append('\n');
-                System.out.println(newMsg);
                 if (numLine % updateInterval == 0) {
                     fileToSend.setNumGenerated(numLine);
                     log.info("[{}] [{}] UPDATING -> NUMGENERATED", Application.getAPP_NAME(),
                             fileToSend.getFileName());
-//                    fileToSend = files_service.save(fileToSend, userEmail);
                     fileToSend = files_service.updateState(currentUser, fileToSend);
                 }
             }
-
             fileToSend.setNumGenerated(numLine);
             fileToSend.setSmsCount(numLine);
             fileToSend.setStatus(Status.PREPARING_SMS);

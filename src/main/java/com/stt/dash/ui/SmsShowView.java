@@ -12,13 +12,11 @@ import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.I18nUtils;
 import com.stt.dash.ui.utils.ODateUitls;
 import com.stt.dash.ui.utils.messages.Message;
-import com.stt.dash.ui.views.HasConfirmation;
 import com.vaadin.componentfactory.DateRange;
 import com.vaadin.componentfactory.EnhancedDateRangePicker;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.charts.model.HorizontalAlign;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -28,9 +26,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.littemplate.LitTemplate;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.template.Id;
@@ -84,8 +80,6 @@ public class SmsShowView extends LitTemplate {
     private EnhancedDateRangePicker dateOne = new EnhancedDateRangePicker();
     private DatePicker firstDate = new DatePicker();
     private DatePicker secondDate = new DatePicker();
-    /**/
-//    private Button searchButton = new Button("Buscar");
     private IntegerField currentPageTextbox = new IntegerField("Página");
     private Label totalAmountOfPagesLabel = new Label();
     ComboBox<Integer> comboItemsPerPage = new ComboBox<>("Mensajes por página");
@@ -119,18 +113,11 @@ public class SmsShowView extends LitTemplate {
         dateOne.setLabel("Rango de busqueda");
         dateOne.setPattern(" dd-MM-yyyy");
         /**/
-        firstDate.setI18n(I18nUtils.getDatepickerI18n());
-        firstDate.setLabel("Desde");
-        firstDate.setRequired(true);
-        firstDate.setLocale(esLocale);
-        secondDate.setLabel("Hasta");
-        secondDate.setI18n(I18nUtils.getDatepickerI18n());
-        secondDate.setRequired(true);
-        secondDate.setLocale(esLocale);
+        datePickerConf(firstDate, "Desde");
+        datePickerConf(secondDate, "Hasta");
         /**/
         searchButton.setText("Buscar");
-
-//        dateOne.setWidthFull();
+        searchButton.setEnabled(false);
         /**/
         createGridComponent();
         /**/
@@ -146,6 +133,14 @@ public class SmsShowView extends LitTemplate {
             /*TODO: Seleccionar por defecto el unico cliente. Validar que no este vacio.*/
             clientCombobox.setReadOnly(true);
         }
+        clientCombobox.addValueChangeListener(change -> {
+            if (change.getValue() == null) {
+                clientCombobox.setInvalid(true);
+            } else {
+                clientCombobox.setInvalid(false);
+            }
+            searchButton.setEnabled(isValidSearch());
+        });
         /**/
         comboItemsPerPage.setItems(Arrays.asList(25, 50, 100, 200, 400, 800));
         comboItemsPerPage.setValue(itemsPerPage);
@@ -187,6 +182,25 @@ public class SmsShowView extends LitTemplate {
         addValueChangeListener();
     }
 
+    private void datePickerConf(DatePicker datePicker, String label) {
+        datePicker.setI18n(I18nUtils.getDatepickerI18n());
+        datePicker.setLabel(label);
+        datePicker.setRequired(true);
+        datePicker.setLocale(esLocale);
+        datePicker.setValue(LocalDate.now());
+        /**/
+        datePicker.isRequired();
+        /**/
+        datePicker.addValueChangeListener(datePickerLocalDateComponentValueChangeEvent -> {
+            searchButton.setEnabled(isValidSearch());
+        });
+    }
+
+    private boolean idValidData() {
+        return !firstDate.isInvalid() && !secondDate.isInvalid() && !clientCombobox.isInvalid();
+    }
+
+
     private boolean isGrantedMsgTextColumn(Set<ORole> roles) {
         return roles.stream().filter(rol -> {
             return rol.getAuthorities().stream().filter(auth -> {
@@ -220,12 +234,18 @@ public class SmsShowView extends LitTemplate {
         });
 
         clientCombobox.addValueChangeListener(clientListener -> {
-            if (CollectionUtils.isEmpty(clientListener.getValue().getSystemids())) {
+            if (clientListener.getValue() == null || CollectionUtils.isEmpty(clientListener.getValue().getSystemids())) {
                 systemIdList = new ArrayList<>(1);
                 return;
             }
             systemIdList.clear();
             systemIdList.addAll(clientListener.getValue().getSystemids());
+            if (clientListener.getValue() == null) {
+                clientCombobox.setInvalid(true);
+            } else {
+                clientCombobox.setInvalid(false);
+            }
+            searchButton.setEnabled(isValidSearch());
         });
     }
 
@@ -242,8 +262,9 @@ public class SmsShowView extends LitTemplate {
         int month = localDateTime.getMonthValue();
         int day = localDateTime.getDayOfMonth();
         int hour = localDateTime.getHour();
-        String fileName = "" + year + "." + month + "." + day + "." + hour + ":00-Mensajes.csv";
-        Button download = new Button("Descargar Datos (" + year + "/" + month + "/" + day + "-" + hour + ":00)");
+        int min = localDateTime.getMinute();
+        String fileName = "" + year + "." + month + "." + day + "." + hour + ":" + min + "-Mensajes.csv";
+        Button download = new Button("Descargar Datos (" + year + "/" + month + "/" + day + "-" + hour + ":" + min + ")");
 
         FileDownloadWrapper buttonWrapper = new FileDownloadWrapper(
                 new StreamResource(fileName, () -> {
@@ -389,5 +410,9 @@ public class SmsShowView extends LitTemplate {
         currentPageTextbox.setMax(totalSmsPage);
         /**/
         totalAmountOfPagesLabel.setText(" de " + totalSmsPage);
+    }
+
+    private boolean isValidSearch() {
+        return (!firstDate.isInvalid() && !secondDate.isInvalid() && !clientCombobox.isInvalid());
     }
 }

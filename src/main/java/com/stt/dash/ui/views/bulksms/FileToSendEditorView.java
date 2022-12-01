@@ -14,6 +14,7 @@ import com.stt.dash.ui.utils.ODateUitls;
 import com.stt.dash.ui.views.HasNotifications;
 import com.stt.dash.ui.views.bulksms.events.BulkSmsReviewEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -30,7 +31,12 @@ import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
-import com.vaadin.flow.data.binder.*;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.BindingValidationStatus;
+import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.shared.Registration;
@@ -61,6 +67,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 @Tag("file-to-send-editor")
 @JsModule("./src/views/bulksms/file-to-send-editor.ts")
@@ -218,6 +225,9 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
         /**/
         agendaComboBox.setItemLabelGenerator(agenda -> agenda.getName() + (
                 StringUtils.isNotBlank(agenda.getDescription()) ? " - " + agenda.getDescription() : ""));
+        sendNow.addValueChangeListener(listener->{
+            dueTime.setValue(LocalTime.now());
+        });
         /* contador de caracteres  */
         paragraphCharCounter.setText("(1) 0/160 caracteres");
         /**/
@@ -263,16 +273,20 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
         dueTime.setValue(LocalTime.of(LocalDateTime.now().plusHours(1).getHour(), 0));
         dueTime.setStep(Duration.ofMinutes(30));
         /**/
-        binder.addValueChangeListener(c -> {
-            System.out.println("OLDVALUE ->" + c.getOldValue() + " VALUE ->" + c.getValue());
+        binder.addValueChangeListener(e -> {
+            System.out.println("OLDVALUE ->" + e.getOldValue() + " VALUE ->" + e.getValue());
             System.out.println("ADDVALUE BINDER->" + binder.hasChanges());
+
+            if (e.getOldValue() != null) {
+                programAgendaButton.setEnabled(hasChanges());
+            }
         });
     }
 
     private void addListeners() {
         dueDate2.addValueChangeListener(lister -> {
             if (lister.getValue().isEqual(LocalDate.now())) {
-                dueTime.setMinTime(LocalTime.now());
+                dueTime.setMinTime(LocalTime.of(LocalDateTime.now().plusHours(1).getHour(), 0));
             } else {
                 dueTime.setMinTime(null);
             }
@@ -556,26 +570,6 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
         this.currentUser = currentUser;
     }
 
-//    public Stream<HasValue<?, ?>> validate() {
-//        Stream<HasValue<?, ?>> errorFields = binder.validate().getFieldValidationErrors().stream()
-//                .map(BindingValidationStatus::getField);
-//
-//        return Stream.concat(errorFields, itemsEditor.validate());
-//    }
-
-    public void read(FIlesToSend order, boolean isNew) {
-        binder.readBean(order);
-
-        this.orderNumber.setText(isNew ? "" : order.getId().toString());
-        title.setVisible(isNew);
-        metaContainer.setVisible(!isNew);
-
-        if (order.getStatus() != null) {
-//            getModel().setStatus(order.getState().name());
-        }
-        programAgendaButton.setEnabled(false);
-    }
-
     public boolean hasChanges() {
         return binder.hasChanges() /*|| itemsEditor.hasChanges()*/;
     }
@@ -589,6 +583,25 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
     public void write(FIlesToSend filesToSend) throws ValidationException {
         filesToSend.setSmsCount(totsms);
         binder.writeBean(filesToSend);
+    }
+
+    public void read(FIlesToSend filesToSend, boolean isNew) {
+        binder.readBean(filesToSend);
+
+        this.orderNumber.setText(isNew ? "" : filesToSend.getId().toString());
+        title.setVisible(isNew);
+        metaContainer.setVisible(!isNew);
+
+        if (filesToSend.getStatus() != null) {
+//            getModel().setStatus(order.getState().name());
+        }
+        programAgendaButton.setEnabled(false);
+    }
+
+    public Stream<HasValue<?, ?>> validate() {
+        Stream<HasValue<?, ?>> errorFields = binder.validate().getFieldValidationErrors().stream()
+                .map(BindingValidationStatus::getField);
+        return errorFields;
     }
 
     public Registration addReviewListener(ComponentEventListener<BulkSmsReviewEvent> listener) {

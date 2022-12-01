@@ -76,13 +76,9 @@ public class SmsTransferToQueueApplication extends SpringBootServletInitializer 
             }
         }
         try {
+            log.info("[{}] [{}] SCHEDULING [{}]", APP_NAME, file.getOrderName());
             scheduler.schedule(new SmsSenderThread(file, sending_service, files_service, p),
                     1, TimeUnit.SECONDS);
-            log.info("[{}] SCHEDULED TO SEND FILE ID [{}] ORDER NAME [{}]. FILE NAME [{}]",
-                    getAPP_NAME(),
-                    file.getFileId(),
-                    file.getOrderName(),
-                    file.getFileName());
             /* TODO: esta actualizacion debe realizar en el hilo que que se ejecuta. */
             file.setBeingProcessed(true);
             files_service.save(file);
