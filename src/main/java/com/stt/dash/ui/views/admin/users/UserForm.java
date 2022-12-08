@@ -19,14 +19,12 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.*;
 import com.vaadin.flow.data.provider.DataProvider;
-import com.vaadin.flow.data.provider.ListDataProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.*;
 
-import static ch.qos.logback.classic.db.names.ColumnName.I;
-
 public class UserForm extends FormLayout {
+    public static final String MSG_DEBE_ESCOGER_UN_CLIENTE1 = "Debe escoger un Cliente";
     private final List<User> allMyUsers;
     private final CurrentUser currentUser;
     /**/
@@ -66,114 +64,46 @@ public class UserForm extends FormLayout {
                 new ResponsiveStep("25em", 1, ResponsiveStep.LabelsPosition.TOP),
                 new ResponsiveStep("32em", 2, ResponsiveStep.LabelsPosition.TOP));
         /**/
-        clients.setI18n(I18nUtils.getMulticomboI18n());
-        systemids.setI18n(I18nUtils.getMulticomboI18n());
-        roles.setI18n(I18nUtils.getMulticomboI18n());
+        doMulticomboI18N();
         /**/
-        userType.setWidthFull();
-        userTypeOrdCombo.setWidthFull();
-        userParentCombobox.setWidthFull();
-        first.setWidthFull();
-        last.setWidthFull();
-        email.setWidthFull();
-        password.setWidthFull();
-//        createdDate.setWidthFull();
-        h.setWidthFull();
-        roles.setWidthFull();
-        comboClient.setWidthFull();
-        clients.setWidthFull();
-        systemids.setWidthFull();
+        doWidthFull(email, first, last, password);
         email.setPlaceholder("user@something.com");
 //        formItem.add(isActive);
-        setColspan(addFormItem(userTypeOrdCombo, "Tipo de usuario"), 1);
-        setColspan(addFormItem(userParentCombobox, "Creador"), 1);
-        setColspan(addFormItem(first, "Nombre"), 1);
-        setColspan(addFormItem(last, "Apellido"), 1);
-//        setColspan(addFormItem(createdDate, "Fecha de Creación"), 1);
-//        setColspan(addFormItem(userType, ""), 2);
-        setColspan(addFormItem(email, isActive), 1);
-        setColspan(addFormItem(password, "Clave"), 1);
-        clientsFormItem = addFormItem(clients, "Clientes");
-        setColspan(clientsFormItem, 2);
-        comboClientFormItem = addFormItem(comboClient, "Cliente");
-        setColspan(comboClientFormItem, 2);
-        systemidsFormItem = addFormItem(systemids, "Credenciales");
-        setColspan(systemidsFormItem, 2);
-        setColspan(addFormItem(roles, "Roles"), 2);
+        doColSpan(email, first, last, password);
         /**/
-        binder.bind(first, "firstName");
-        binder.bind(last, "lastName");
-        binder.forField(userTypeOrdCombo).bind(User::getUserTypeOrd, User::setUserTypeOrd);
-        binder.forField(userType).bind(User::getUserType, User::setUserType);
-        binder.forField(isActive).bind(User::isActive, User::setActive);
-        binder.bind(email, "email");
-        binder.bind(role, "role");
-        binder.bind(roles, "roles");
-        binder.forField(userParentCombobox)
-                .asRequired("Seleccione un usuario")
-                .bind(User::getUserParent, User::setUserParent);
+        doBinder(passwordEncoder, email, first, last, password);
         /**/
-        binder.forField(clients)
-                .asRequired(new Validator<Set<Client>>() {
-                    @Override
-                    public ValidationResult apply(Set<Client> clients, ValueContext valueContext) {
-                        if (userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
-                            System.out.println("En Clients devuelvo ok poruqe no es comercial: " + userTypeOrdCombo.getValue());
-                            return ValidationResult.ok();
-                        }
-                        if (clients != null && clients.size() > 0) {
-                            System.out.println("En Clients devuelvo ok poruqe client no es null y tiene: " + clients.size());
-                            return ValidationResult.ok();
-                        }
-                        return ValidationResult.error("Debe seleccionar al menos un cliente");
-                    }
-                })
-                .bind(User::getClients, User::setClients);
-        binder.forField(systemids)
-                .asRequired(new Validator<Set<SystemId>>() {
-                    @Override
-                    public ValidationResult apply(Set<SystemId> systemIds, ValueContext valueContext) {
-                        if (userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.USUARIO &&
-                                userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.EMPRESA) {
-                            return ValidationResult.ok();
-                        }
-                        if (systemIds != null && systemIds.size() > 0) {
-                            return ValidationResult.ok();
-                        }
-                        return ValidationResult.error("Debe tener al menos una Credencial");
-                    }
-                })
-                .bind(User::getSystemids, User::setSystemids);
-        Binder.Binding<User, Client> debe_escoger_un_cliente = binder.forField(comboClient)
-                .asRequired(new Validator<Client>() {
-                    @Override
-                    public ValidationResult apply(Client client, ValueContext valueContext) {
-                        if (userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
-                            System.out.println("Devuelvo OK porque no es tipo empresa: " + userTypeOrdCombo.getValue());
-                            return ValidationResult.ok();
-                        }
-                        if (client != null) {
-                            System.out.println("Devuelvo OK porque client no es null " + client.getClientCod());
-                            return ValidationResult.ok();
-                        }
-                        return ValidationResult.error("Debe escoger un Cliente");
-                    }
-                })
-                .bind(User::getClient, User::setClient);
-        binder.forField(password)
-                .withValidator(pass -> pass.matches("^(|(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,})$"),
-                        "más de 6 caracteres, combinando dígitos, minúsculas y mayúsculas")
-                .bind(user -> password.getEmptyValue(), (user, pass) -> {
-                    if (!password.getEmptyValue().equals(pass)) {
-                        user.setPasswordHash(passwordEncoder.encode(pass));
-                    }
-                });
+        doSetItems(allRoles, parClients, allUsers);
+        doValueListeners();
+
         /**/
+        fillUserType(currentUser.getUser().getUserType(),
+                currentUser.getUser().getUserTypeOrd(),
+                userType, userTypeOrdCombo);
+        doShowClientOrd(currentUser.getUser().getUserTypeOrd());
+    }
+
+    private void doSetItems(List<ORole> allRoles, List<Client> parClients, List<User> allUsers) {
         userTypeOrdCombo.setItems(User.OUSER_TYPE_ORDINAL.values());
         userType.setItems(User.OUSER_TYPE.values());
         /**/
+        doSetItemsClients(parClients);
+        doSetItemsClient(parClients);
+        systemids.setItemLabelGenerator(SystemId::getSystemId);
+        /**/
+        doSetItemsRoles(allRoles);
+        /**/
+        doSetItemsUserParent(allUsers);
+        /**/
+        doSetItemsRole();
+    }
+
+    private void doSetItemsClients(List<Client> parClients) {
         clients.setItems(parClients);
         clients.setItemLabelGenerator(Client::getClientName);
+    }
+
+    private void doSetItemsClient(List<Client> parClients) {
         comboClient.setItems(parClients);
         comboClient.setItemLabelGenerator(Client::getClientName);
         comboClient.addValueChangeListener((evt) -> {
@@ -183,20 +113,33 @@ public class UserForm extends FormLayout {
             systemids.setItems(evt.getSource().getValue().getSystemids());
             systemids.setValue(new HashSet<>(evt.getSource().getValue().getSystemids()));
         });
-        systemids.setItemLabelGenerator(SystemId::getSystemId);
-        /**/
+    }
+
+    private void doSetItemsRoles(List<ORole> allRoles) {
         roles.setItems(allRoles);
         roles.setItemLabelGenerator(ORole::getRolName);
-        /**/
+    }
+
+    private void doSetItemsUserParent(List<User> allUsers) {
         userParentCombobox.setItems(allUsers);
         setUserParentList(User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS);
         userParentCombobox.setItemLabelGenerator(User::getEmail);
-        /**/
-        ListDataProvider<String> roleProvider = DataProvider.ofItems(Role.getAllRoles());
+    }
+
+    private void doSetItemsRole() {
         role.setLabel("Role");
         role.setItemLabelGenerator(s -> s != null ? s : "");
-        role.setDataProvider(roleProvider);
+        role.setDataProvider(DataProvider.ofItems(Role.getAllRoles()));
+    }
+
+    private void doValueListeners() {
         /* CHANGE LISTENER */
+        addChangeListenerUserParent();
+        addChangeListenerIsActive();
+        addChageListenerUserType();
+    }
+
+    private void addChangeListenerUserParent() {
         userParentCombobox.addValueChangeListener(listener -> {
             if (!listener.isFromClient()) {
                 return;
@@ -217,6 +160,9 @@ public class UserForm extends FormLayout {
             }
 
         });
+    }
+
+    private void addChangeListenerIsActive() {
         isActive.addValueChangeListener(change -> {
             if (!change.isFromClient()) {
                 return;
@@ -227,6 +173,9 @@ public class UserForm extends FormLayout {
                 dialog.open();
             }
         });
+    }
+
+    private void addChageListenerUserType() {
         userTypeOrdCombo.addValueChangeListener((evt) -> {
             System.out.println("OCURRIO UN VALUE CHANGEDLISTENER DE USERTYPEORD");
             User.OUSER_TYPE type;
@@ -250,12 +199,114 @@ public class UserForm extends FormLayout {
             userType.setValue(type);
             doShowClientOrd(evt.getSource().getValue());
         });
+    }
 
+    private void doMulticomboI18N() {
+        clients.setI18n(I18nUtils.getMulticomboI18n());
+        systemids.setI18n(I18nUtils.getMulticomboI18n());
+        roles.setI18n(I18nUtils.getMulticomboI18n());
+    }
+
+    private void doWidthFull(EmailField email, TextField first, TextField last, PasswordField password) {
+        userType.setWidthFull();
+        userTypeOrdCombo.setWidthFull();
+        userParentCombobox.setWidthFull();
+        first.setWidthFull();
+        last.setWidthFull();
+        email.setWidthFull();
+        password.setWidthFull();
+//        createdDate.setWidthFull();
+        h.setWidthFull();
+        roles.setWidthFull();
+        comboClient.setWidthFull();
+        clients.setWidthFull();
+        systemids.setWidthFull();
+    }
+
+    private void doBinder(PasswordEncoder passwordEncoder, EmailField email, TextField first, TextField last, PasswordField password) {
+        binder.bind(first, "firstName");
+        binder.bind(last, "lastName");
+        binder.forField(userTypeOrdCombo).bind(User::getUserTypeOrd, User::setUserTypeOrd);
+        binder.forField(userType).bind(User::getUserType, User::setUserType);
+        binder.forField(isActive).bind(User::isActive, User::setActive);
+        binder.bind(email, "email");
+        binder.bind(role, "role");
+        binder.bind(roles, "roles");
+        binder.forField(userParentCombobox)
+                .asRequired("Seleccione un usuario")
+                .bind(User::getUserParent, User::setUserParent);
         /**/
-        fillUserType(currentUser.getUser().getUserType(),
-                currentUser.getUser().getUserTypeOrd(),
-                userType, userTypeOrdCombo);
-        doShowClientOrd(currentUser.getUser().getUserTypeOrd());
+        doBinderClients();
+        doBinderSystemid();
+        doBinderClient();
+        doBinderPassword(passwordEncoder, password);
+    }
+
+    private void doBinderSystemid() {
+        binder.forField(systemids)
+                .asRequired(new Validator<Set<SystemId>>() {
+                    @Override
+                    public ValidationResult apply(Set<SystemId> systemIds, ValueContext valueContext) {
+                        if (userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.USUARIO &&
+                                userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.EMPRESA) {
+                            return ValidationResult.ok();
+                        }
+                        if (systemIds != null && systemIds.size() > 0) {
+                            return ValidationResult.ok();
+                        }
+                        return ValidationResult.error("Debe tener al menos una Credencial");
+                    }
+                })
+                .bind(User::getSystemids, User::setSystemids);
+    }
+
+    private void doBinderPassword(PasswordEncoder passwordEncoder, PasswordField password) {
+        binder.forField(password)
+                .withValidator(pass -> pass.matches("^(|(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,})$"),
+                        "más de 6 caracteres, combinando dígitos, minúsculas y mayúsculas")
+                .bind(user -> password.getEmptyValue(), (user, pass) -> {
+                    if (!password.getEmptyValue().equals(pass)) {
+                        user.setPasswordHash(passwordEncoder.encode(pass));
+                    }
+                });
+    }
+
+    private void doBinderClient() {
+        binder.forField(comboClient)
+                .asRequired(new Validator<Client>() {
+                    @Override
+                    public ValidationResult apply(Client client, ValueContext valueContext) {
+                        if (userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
+                            System.out.println("Devuelvo OK porque no es tipo empresa: " + userTypeOrdCombo.getValue());
+                            return ValidationResult.ok();
+                        }
+                        if (client != null) {
+                            System.out.println("Devuelvo OK porque client no es null " + client.getClientCod());
+                            return ValidationResult.ok();
+                        }
+                        return ValidationResult.error(MSG_DEBE_ESCOGER_UN_CLIENTE1);
+                    }
+                })
+                .bind(User::getClient, User::setClient);
+    }
+
+    private void doBinderClients() {
+        binder.forField(clients)
+                .asRequired(new Validator<Set<Client>>() {
+                    @Override
+                    public ValidationResult apply(Set<Client> clients, ValueContext valueContext) {
+                        if (userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+                            System.out.println("En Clients devuelvo ok poruqe no es comercial: " + userTypeOrdCombo.getValue());
+                            return ValidationResult.ok();
+                        }
+                        if (clients != null && clients.size() > 0) {
+                            System.out.println("En Clients devuelvo ok poruqe client no es null y tiene: " + clients.size());
+                            return ValidationResult.ok();
+                        }
+                        return ValidationResult.error("Debe seleccionar al menos un cliente");
+                    }
+                })
+                .bind(User::getClients, User::setClients);
     }
 
     /**
@@ -298,14 +349,12 @@ public class UserForm extends FormLayout {
                     @Override
                     public ValidationResult apply(Client client, ValueContext valueContext) {
                         if (userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
-                            System.out.println("Devuelvo OK porque no es tipo empresa: " + userTypeOrdCombo.getValue());
                             return ValidationResult.ok();
                         }
                         if (client != null) {
-                            System.out.println("Devuelvo OK porque client no es null " + client.getClientCod());
                             return ValidationResult.ok();
                         }
-                        return ValidationResult.error("Debe escoger un Cliente");
+                        return ValidationResult.error(MSG_DEBE_ESCOGER_UN_CLIENTE1);
                     }
                 })
                 .bind(User::getClient, User::setClient);
@@ -417,5 +466,23 @@ public class UserForm extends FormLayout {
             }
         }
         return values;
+    }
+
+    private void doColSpan(EmailField email, TextField first, TextField last, PasswordField password) {
+        setColspan(addFormItem(userTypeOrdCombo, "Tipo de usuario"), 1);
+        setColspan(addFormItem(userParentCombobox, "Creador"), 1);
+        setColspan(addFormItem(first, "Nombre"), 1);
+        setColspan(addFormItem(last, "Apellido"), 1);
+//        setColspan(addFormItem(createdDate, "Fecha de Creación"), 1);
+//        setColspan(addFormItem(userType, ""), 2);
+        setColspan(addFormItem(email, isActive), 1);
+        setColspan(addFormItem(password, "Clave"), 1);
+        clientsFormItem = addFormItem(clients, "Clientes");
+        setColspan(clientsFormItem, 2);
+        comboClientFormItem = addFormItem(comboClient, "Cliente");
+        setColspan(comboClientFormItem, 2);
+        systemidsFormItem = addFormItem(systemids, "Credenciales");
+        setColspan(systemidsFormItem, 2);
+        setColspan(addFormItem(roles, "Roles"), 2);
     }
 }
