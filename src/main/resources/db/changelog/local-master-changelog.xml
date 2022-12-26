@@ -18,4 +18,6 @@
     <include file="db/changelog/scripts/changelog_3.sql"/>
     <!-- FilesToSend: Agregar total sms a enviar  -->
     <include file="db/changelog/scripts/changelog_4.sql"/>
+    <!-- Creacioin de Indices  -->
+    <include file="db/changelog/scripts/changelog_5.sql"/>
 </databaseChangeLog>

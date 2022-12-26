@@ -76,7 +76,7 @@ public class User extends AbstractEntitySequence {
     @Enumerated(EnumType.ORDINAL)
     private User.OUSER_TYPE_ORDINAL userTypeOrd;
 
-    /*Usuario tiene cliente(s) si es de tipo HAS o IS*/
+    /*+*/
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_has_clients",

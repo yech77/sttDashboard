@@ -73,7 +73,7 @@ public class UserForm extends FormLayout {
         /**/
         doBinder(passwordEncoder, email, first, last, password);
         /**/
-        doSetItems(allRoles, parClients, allUsers);
+        doSetItems(allRoles, parClients, allClient, allUsers);
         doValueListeners();
 
         /**/
@@ -83,11 +83,11 @@ public class UserForm extends FormLayout {
         doShowClientOrd(currentUser.getUser().getUserTypeOrd());
     }
 
-    private void doSetItems(List<ORole> allRoles, List<Client> parClients, List<User> allUsers) {
+    private void doSetItems(List<ORole> allRoles, List<Client> parClients, List<Client> allClients, List<User> allUsers) {
         userTypeOrdCombo.setItems(User.OUSER_TYPE_ORDINAL.values());
         userType.setItems(User.OUSER_TYPE.values());
         /**/
-        doSetItemsClients(parClients);
+        doSetItemsClients(allClients);
         doSetItemsClient(parClients);
         systemids.setItemLabelGenerator(SystemId::getSystemId);
         /**/
@@ -277,11 +277,9 @@ public class UserForm extends FormLayout {
                     @Override
                     public ValidationResult apply(Client client, ValueContext valueContext) {
                         if (userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
-                            System.out.println("Devuelvo OK porque no es tipo empresa: " + userTypeOrdCombo.getValue());
                             return ValidationResult.ok();
                         }
                         if (client != null) {
-                            System.out.println("Devuelvo OK porque client no es null " + client.getClientCod());
                             return ValidationResult.ok();
                         }
                         return ValidationResult.error(MSG_DEBE_ESCOGER_UN_CLIENTE1);
@@ -320,18 +318,19 @@ public class UserForm extends FormLayout {
         }
         if (changeListener == User.OUSER_TYPE_ORDINAL.USUARIO ||
                 changeListener == User.OUSER_TYPE_ORDINAL.EMPRESA) {
+            removeBinding(comboClient);
             /* USUARIO SOLO SELECCIONA CREDENCIALES */
             systemidsFormItem.setVisible(true);
             comboClientFormItem.setVisible(false);
-            removeBinding(comboClient);
             clientsFormItem.setVisible(false);
         } else if (changeListener == User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
+            doBinderClient();
             /* ADMIN SOLO SELECCIONA CLIENTE */
             systemidsFormItem.setVisible(false);
             comboClientFormItem.setVisible(true);
-            addBinding(comboClient);
             clientsFormItem.setVisible(false);
         } else if (changeListener == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            removeBinding(comboClient);
             /* COMERCIAL SOLO SELECCIONA CLIENTES */
             systemidsFormItem.setVisible(false);
             comboClientFormItem.setVisible(false);
@@ -341,23 +340,6 @@ public class UserForm extends FormLayout {
 
     private void removeBinding(HasValue<?, ?> binding) {
         binder.removeBinding(binding);
-    }
-
-    private void addBinding(ComboBox<Client> comboClient) {
-        Binder.Binding<User, Client> debe_escoger_un_cliente = binder.forField(comboClient)
-                .asRequired(new Validator<Client>() {
-                    @Override
-                    public ValidationResult apply(Client client, ValueContext valueContext) {
-                        if (userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
-                            return ValidationResult.ok();
-                        }
-                        if (client != null) {
-                            return ValidationResult.ok();
-                        }
-                        return ValidationResult.error(MSG_DEBE_ESCOGER_UN_CLIENTE1);
-                    }
-                })
-                .bind(User::getClient, User::setClient);
     }
 
     private void cancelar(ConfirmDialog.ConfirmEvent event) {

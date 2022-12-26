@@ -37,6 +37,7 @@ import static com.stt.dash.ui.utils.BakeryConst.PAGE_USERS;
 @Secured({Role.ADMIN, "UI_USER"})
 public class UsersView extends AbstractBakeryCrudView<User> implements HasLogger {
     private static Logger log = LoggerFactory.getLogger(UsersView.class);
+
     @Autowired
     public UsersView(UserService service,
                      CurrentUser currentUser,
@@ -85,7 +86,7 @@ public class UsersView extends AbstractBakeryCrudView<User> implements HasLogger
                                                      PasswordEncoder passwordEncoder,
                                                      ClientService clientService) {
         SessionObjectUtils sessionObjectUtils = new SessionObjectUtils(currentUser);
-        List<User> allUsers=new ArrayList<>();
+        List<User> allUsers = new ArrayList<>();
         if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
             allUsers.addAll(userService.getRepository().findAll());
         } else {
@@ -97,5 +98,11 @@ public class UsersView extends AbstractBakeryCrudView<User> implements HasLogger
                 comercial.getSet(),
                 allUsers, currentUser, passwordEncoder);
         return new BinderCrudEditor<User>(form.getBinder(), form);
+    }
+
+    @Override
+    protected boolean beforeSaving(long idBeforeSave, User entity) {
+
+        return false;
     }
 }
