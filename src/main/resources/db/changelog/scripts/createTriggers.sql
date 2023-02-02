@@ -18,7 +18,7 @@ CREATE TRIGGER trigger_insert_clientToCommercialUser
     FOR EACH ROW
 EXECUTE PROCEDURE assingClientToUserHas();
 
-alter function insertintotempsms() owner to postgres;
+alter function insertintotempsms() owner to odash;
 /*******
 Crea SOLO los triggers.
  ****/
@@ -38,7 +38,7 @@ as
     END;
 ';
 
-alter function insertintotempsms() owner to postgres;
+alter function insertintotempsms() owner to odash;
 
 
 /******

@@ -1,3 +1,4 @@
+truncate nov_sms;
 insert into public.nov_sms(id, carrier_char_code, datacoding, date, destination, iso2, message_type, messages_text,
                            msg_received, msg_sended, source, system_id)
 values (76627, 'DIGITEL', 3, '2022-11-26 07:07:07.000000', '584125045017', 'VE', 'MT', 'Este es un mensaje artificial.',

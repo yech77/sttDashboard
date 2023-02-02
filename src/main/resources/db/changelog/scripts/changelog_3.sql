@@ -12,4 +12,4 @@ create table if not exists odash_conf
 );
 
 alter table odash_conf
-    owner to postgres;
+    owner to odash;

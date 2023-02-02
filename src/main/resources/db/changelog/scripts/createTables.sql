@@ -1,5 +1,5 @@
 create sequence hibernate_sequence;
-alter sequence hibernate_sequence owner to postgres;
+alter sequence hibernate_sequence owner to odash;
 
 create table if not exists sending_sms
 (
@@ -21,7 +21,7 @@ create table if not exists sending_sms
 );
 
 alter table sending_sms
-    owner to postgres;
+    owner to odash;
 
 create table if not exists apr_sms
 (
@@ -42,7 +42,7 @@ create table if not exists apr_sms
 );
 
 alter table apr_sms
-    owner to postgres;
+    owner to odash;
 
 create table if not exists aug_sms
 (
@@ -63,7 +63,7 @@ create table if not exists aug_sms
 );
 
 alter table aug_sms
-    owner to postgres;
+    owner to odash;
 
 create table if not exists carrier
 (
@@ -79,7 +79,7 @@ create table if not exists carrier
 );
 
 alter table carrier
-    owner to postgres;
+    owner to odash;
 
 create table if not exists client
 (
@@ -98,7 +98,7 @@ create table if not exists client
 );
 
 alter table client
-    owner to postgres;
+    owner to odash;
 
 create table if not exists customer
 (
@@ -112,7 +112,7 @@ create table if not exists customer
 );
 
 alter table customer
-    owner to postgres;
+    owner to odash;
 
 create table if not exists dec_sms
 (
@@ -133,7 +133,7 @@ create table if not exists dec_sms
 );
 
 alter table dec_sms
-    owner to postgres;
+    owner to odash;
 
 create table if not exists feb_sms
 (
@@ -154,7 +154,7 @@ create table if not exists feb_sms
 );
 
 alter table feb_sms
-    owner to postgres;
+    owner to odash;
 
 create table if not exists jan_sms
 (
@@ -175,7 +175,7 @@ create table if not exists jan_sms
 );
 
 alter table jan_sms
-    owner to postgres;
+    owner to odash;
 
 create table if not exists jul_sms
 (
@@ -196,7 +196,7 @@ create table if not exists jul_sms
 );
 
 alter table jul_sms
-    owner to postgres;
+    owner to odash;
 
 create table if not exists jun_sms
 (
@@ -217,7 +217,7 @@ create table if not exists jun_sms
 );
 
 alter table jun_sms
-    owner to postgres;
+    owner to odash;
 
 create table if not exists mar_sms
 (
@@ -238,7 +238,7 @@ create table if not exists mar_sms
 );
 
 alter table mar_sms
-    owner to postgres;
+    owner to odash;
 
 create table if not exists may_sms
 (
@@ -259,7 +259,7 @@ create table if not exists may_sms
 );
 
 alter table may_sms
-    owner to postgres;
+    owner to odash;
 
 create table if not exists nov_sms
 (
@@ -280,7 +280,7 @@ create table if not exists nov_sms
 );
 
 alter table nov_sms
-    owner to postgres;
+    owner to odash;
 
 create table if not exists oauthority
 (
@@ -293,7 +293,7 @@ create table if not exists oauthority
 );
 
 alter table oauthority
-    owner to postgres;
+    owner to odash;
 
 create table if not exists oct_sms
 (
@@ -314,7 +314,7 @@ create table if not exists oct_sms
 );
 
 alter table oct_sms
-    owner to postgres;
+    owner to odash;
 
 create table if not exists odash_audit_event
 (
@@ -329,7 +329,7 @@ create table if not exists odash_audit_event
 );
 
 alter table odash_audit_event
-    owner to postgres;
+    owner to odash;
 
 create table if not exists orole
 (
@@ -343,7 +343,7 @@ create table if not exists orole
 );
 
 alter table orole
-    owner to postgres;
+    owner to odash;
 
 create table if not exists ouser
 (
@@ -370,7 +370,7 @@ create table if not exists ouser
 );
 
 alter table ouser
-    owner to postgres;
+    owner to odash;
 
 create index if not exists idxj26wq1cukqdd00d6t36kxqmlg
     on ouser (user_email);
@@ -387,7 +387,7 @@ create table if not exists pickup_location
 );
 
 alter table pickup_location
-    owner to postgres;
+    owner to odash;
 
 create table if not exists order_info
 (
@@ -407,7 +407,7 @@ create table if not exists order_info
 );
 
 alter table order_info
-    owner to postgres;
+    owner to odash;
 
 create index if not exists idxd8bqjebi2o4fxpq5d3fp55ub7
     on order_info (due_date);
@@ -427,7 +427,7 @@ create table if not exists product
 );
 
 alter table product
-    owner to postgres;
+    owner to odash;
 
 create table if not exists order_item
 (
@@ -449,7 +449,7 @@ create table if not exists order_item
 );
 
 alter table order_item
-    owner to postgres;
+    owner to odash;
 
 create table if not exists role_has_authority
 (
@@ -464,7 +464,7 @@ create table if not exists role_has_authority
 );
 
 alter table role_has_authority
-    owner to postgres;
+    owner to odash;
 
 create table if not exists sep_sms
 (
@@ -485,7 +485,7 @@ create table if not exists sep_sms
 );
 
 alter table sep_sms
-    owner to postgres;
+    owner to odash;
 
 create table if not exists sms_hour
 (
@@ -505,7 +505,7 @@ create table if not exists sms_hour
 );
 
 alter table sms_hour
-    owner to postgres;
+    owner to odash;
 
 create table if not exists system_id
 (
@@ -523,7 +523,7 @@ create table if not exists system_id
 );
 
 alter table system_id
-    owner to postgres;
+    owner to odash;
 
 create table if not exists temp_sms
 (
@@ -544,7 +544,7 @@ create table if not exists temp_sms
 );
 
 alter table temp_sms
-    owner to postgres;
+    owner to odash;
 
 create table if not exists user_info
 (
@@ -571,7 +571,7 @@ create table if not exists user_info
 );
 
 alter table user_info
-    owner to postgres;
+    owner to odash;
 
 create table if not exists agenda
 (
@@ -597,7 +597,7 @@ create table if not exists agenda
 );
 
 alter table agenda
-    owner to postgres;
+    owner to odash;
 
 create table if not exists files_to_send
 (
@@ -630,7 +630,7 @@ create table if not exists files_to_send
 );
 
 alter table files_to_send
-    owner to postgres;
+    owner to odash;
 
 create table if not exists history_item
 (
@@ -651,7 +651,7 @@ create table if not exists history_item
 );
 
 alter table history_item
-    owner to postgres;
+    owner to odash;
 
 create table if not exists user_has_clients
 (
@@ -666,7 +666,7 @@ create table if not exists user_has_clients
 );
 
 alter table user_has_clients
-    owner to postgres;
+    owner to odash;
 
 create table if not exists user_has_roles
 (
@@ -681,7 +681,7 @@ create table if not exists user_has_roles
 );
 
 alter table user_has_roles
-    owner to postgres;
+    owner to odash;
 
 create table if not exists user_has_sids
 (
@@ -696,7 +696,7 @@ create table if not exists user_has_sids
 );
 
 alter table user_has_sids
-    owner to postgres;
+    owner to odash;
 
 create function insertintotempsms() returns trigger
     language plpgsql
@@ -713,5 +713,5 @@ BEGIN
 END;
 $$;
 
-alter function insertintotempsms() owner to postgres;
+alter function insertintotempsms() owner to odash;
 
