@@ -7,6 +7,10 @@
     - Operadoras
     - y sus relaciones.
  */
+
+/* BASE: Obtenida de otro sitio */
+truncate client cascade;
+truncate system_id cascade;
 /* BASE */
 truncate table oauthority cascade;
 truncate table orole cascade;
@@ -35,7 +39,7 @@ truncate table temp_sms;
 truncate table sms_hour;
 
 /* Reinicializar la secuencia */
-ALTER SEQUENCE hibernate_sequence RESTART WITH 1;
+ALTER SEQUENCE hibernate_sequence RESTART WITH 100;
 /*********************************/
 insert into public.oauthority (id, auth_desc, auth_name)
 values (1, 'Permite ver la Pantalla AUDITEVEN', 'UI_AUDIT'),

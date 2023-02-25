@@ -9,7 +9,7 @@
     <!-- Crea los triggers neesarios -->
     <include file="db/changelog/scripts/createTriggers.sql"/>
     <!-- Trunca las tablas y reinicia las secuencias. Crea la data base(roles, usuarios, etc) -->
-    <include file="db/changelog/scripts/createDataBase.sql"/>
+    <!--    <include file="db/changelog/scripts/createDataBase.sql"/>-->
     <!-- sending_sms: aumentar messages_text a 500 -->
     <include file="db/changelog/scripts/changelog_1.sql"/>
     <!-- Crear el campo sizeLines -->
