@@ -99,10 +99,4 @@ public class UsersView extends AbstractBakeryCrudView<User> implements HasLogger
                 allUsers, currentUser, passwordEncoder);
         return new BinderCrudEditor<User>(form.getBinder(), form);
     }
-
-    @Override
-    protected boolean beforeSaving(long idBeforeSave, User entity) {
-
-        return false;
-    }
 }

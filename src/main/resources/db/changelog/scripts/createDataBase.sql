@@ -11,6 +11,7 @@
 /* BASE: Obtenida de otro sitio */
 truncate client cascade;
 truncate system_id cascade;
+truncate odash_conf cascade;
 /* BASE */
 truncate table oauthority cascade;
 truncate table orole cascade;
@@ -19,7 +20,7 @@ truncate table carrier cascade;
 /* BULK */
 truncate table agenda cascade;
 truncate table files_to_send cascade;
--- truncate table sending_sms cascade;
+truncate table sending_sms cascade;
 /* AUDITORIA */
 truncate table odash_audit_event cascade;
 /* SMS */
