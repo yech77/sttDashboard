@@ -119,11 +119,13 @@ public class Application extends SpringBootServletInitializer {
                                 /* Buscar el cliente por id. */
                                 systemId.setId(systemIdCopycatDTO.getId());
                                 systemId.setSystemId(systemIdCopycatDTO.getSystemId());
-                                /* TODO: Valicacion de cliente no exist.*/
-                                systemId.setClient(clientService.findById(systemIdCopycatDTO.getClientId()).get());
-                                systemId.setPaymentType(SystemId.PaymentMode.valueOf(systemIdCopycatDTO.getPaymentType()));
-                                ConfMap.put("SYS_ID", String.valueOf(systemIdCopycatDTO.getId()));
-                                systemidService.sync(systemId, ConfMap, systemIdCopycatDTO.getId());
+                                Optional<Client> optionalClient = clientService.findById(systemIdCopycatDTO.getClientId());
+                                if (optionalClient.isPresent()) {
+                                    systemId.setClient(optionalClient.get());
+                                    systemId.setPaymentType(SystemId.PaymentMode.valueOf(systemIdCopycatDTO.getPaymentType()));
+                                    ConfMap.put("SYS_ID", String.valueOf(systemIdCopycatDTO.getId()));
+                                    systemidService.sync(systemId, ConfMap, systemIdCopycatDTO.getId());
+                                }
                             }
                         })
                         .subscribe();

@@ -86,7 +86,7 @@ public class CrudEntityPresenter<E extends AbstractEntitySequence> implements Ha
     }
 
     private void consumeError() {
-        if (!Objects.isNull(viewForNotificacion)) {
+        if (Objects.nonNull(viewForNotificacion)) {
             viewForOnUIForm.onFieldUI();
         }
     }

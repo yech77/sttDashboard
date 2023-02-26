@@ -118,7 +118,7 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         searchBar.getActionButton().getElement().setAttribute("new-button", true);
 
         setToolbar(searchBar);
-         setupCrudEventListeners(entityPresenter);
+        setupCrudEventListeners(entityPresenter);
     }
 
     private void setupCrudEventListeners(CrudEntityPresenter<E> entityPresenter) {

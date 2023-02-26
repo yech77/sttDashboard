@@ -62,7 +62,6 @@ public class AgendaFileUtils {
 
             File targetFile = new File(baseDir + fileName);
             if (targetFile.exists()) {
-                System.out.println("Over-writing new Agenda onto old Agenda");
                 targetFile.delete();
             }
             OutputStream outStream = new FileOutputStream(targetFile);
