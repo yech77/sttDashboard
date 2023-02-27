@@ -9,9 +9,9 @@
  */
 
 /* BASE: Obtenida de otro sitio */
-truncate client cascade;
-truncate system_id cascade;
-truncate odash_conf cascade;
+truncate table client cascade;
+truncate table system_id cascade;
+truncate table odash_conf cascade;
 /* BASE */
 truncate table oauthority cascade;
 truncate table orole cascade;
@@ -38,7 +38,6 @@ truncate table nov_sms;
 truncate table dec_sms;
 truncate table temp_sms;
 truncate table sms_hour;
-
 /* Reinicializar la secuencia */
 ALTER SEQUENCE hibernate_sequence RESTART WITH 100;
 /*********************************/
@@ -80,6 +79,11 @@ values (20, 9),
        (26, 10),
        (28, 8),
        (30, 11);
+/******* OPERADORAS **********/
+insert into public.carrier (id, carrier_charcode, carrier_name, country_iso2)
+values (1, 'MOVILNET', 'MOVILNET, C.A', 'VE'),
+       (2, 'DIGITEL', 'DIGITEL, C.A', 'VE'),
+       (3, 'MOVISTAR', 'MOVISTAR, C.A', 'VE');
 /******* USUARIOS **********/
 insert into public.user_info (id, version, active, created_by, created_date, email, first_name, last_name, locked,
                               password_hash, role, user_type, user_type_ord, user_parent_id)
@@ -191,8 +195,36 @@ values (51, 30),
        (10, 23),
        (10, 22),
        (10, 20);
--- OPERADORAS
-insert into public.carrier (id, carrier_charcode, carrier_name, country_iso2)
-values (1, 'MOVILNET', 'MOVILNET, C.A', 'VE'),
-       (2, 'DIGITEL', 'DIGITEL, C.A', 'VE'),
-       (3, 'MOVISTAR', 'MOVISTAR, C.A', 'VE');
+/******* Se graban los clientes para las asociaciones que vienen **********/
+insert into public.client (id, version, client_cod, client_name, cuadrante, email, last_modified_date)
+values (3, 0, 'CLI01', 'RAZON CLI01', 'FINANZAS', 'cli01@gmail.com', '2023-02-27 05:51:00.669086'),
+       (10, 0, 'BUENBANCO', 'TU BUEN BANCO, C.A', 'FINANZAS', 'tubuenbanco@gmail.com', '2023-02-27 05:51:00.764536'),
+       (11, 0, 'EXCEALIA', 'EXCELENTE ALIADO, CA', 'ALIADO', 'aliado01@gmail.com', '2023-02-27 05:51:00.780088'),
+       (12, 0, 'EMPRE01', 'LA EMPRESA, CA', 'EMPRESAS', 'empresa01@gmail.com', '2023-02-27 05:51:00.791008');
+/******* Se graban las credenciales para las asociaciones que vienen **********/
+insert into public.system_id (id, version, payment_type, system_id, client_id)
+values (100, 0, 'POSTPAGO', 'CCLI01', 3),
+       (101, 0, 'POSTPAGO', 'CRBABOPO01', 10),
+       (102, 0, 'POSTPAGO', 'CRALBOPO01', 11),
+       (103, 0, 'POSTPAGO', 'CREMBOPO01', 12),
+       (104, 0, 'POSTPAGO', 'CREMBOPO02', 12),
+       (105, 0, 'POSTPAGO', 'DINAMA', 11);
+
+/******* USUARIOS TIENEN CLIENTES: Existe un trigger que asigna los clientes a lños usuarios HAS. Aca se graban los demas **********/
+insert into public.user_has_clients (ouser_id, client_id)
+values (2, 12),
+       (8, 10);
+/******* USUARIOS TIENEN CREDENCIALES **********/
+insert into public.user_has_sids (ouser_id, systemid_id)
+values (2, 104),
+       (2, 103),
+       (4, 104),
+       (4, 103),
+       (6, 104),
+       (6, 103),
+       (8, 101),
+       (10, 101);
+
+/******* Archivo de actualizaciones **********/
+insert into public.odash_conf (id, sync_id, sync_data, version, last_modified_date)
+values (24101, 1, '{"CLI_ID":"103","SYS_ID":"105"}', 9, '2023-02-27 05:41:01.168288');

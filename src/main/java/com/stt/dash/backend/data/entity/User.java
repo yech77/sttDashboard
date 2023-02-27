@@ -95,6 +95,7 @@ public class User extends AbstractEntitySequence {
 
     /*Usuario puede tener un padre*/
     @ManyToOne(fetch = FetchType.EAGER)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private User userParent;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "userParent")

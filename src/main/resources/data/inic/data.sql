@@ -1,5 +1,5 @@
 truncate table public.user_has_clients cascade;
-insert into public.user_has_clients (ouser_id, client_id)
+/*insert into public.user_has_clients (ouser_id, client_id)
 values (2, 12),
        (8, 10),
        (51, 3),
@@ -18,3 +18,4 @@ values (2, 12),
        (54, 10),
        (54, 11),
        (54, 12);
+  */
