@@ -134,6 +134,7 @@ public class SmsGeneratorParserRunnable implements Runnable {
             /* crea nuevas lineas  del archivo con el mensaje final */
             for (CSVRecord record : records) {
                 numLine++;
+                /* Este mensaje puede ser el mensaje con parametros o solo el mensaje */
                 String newMsg = messagesText;
 
                 /* agrega el numero de telefono */
@@ -144,6 +145,8 @@ public class SmsGeneratorParserRunnable implements Runnable {
                     for (int i = 1; i < record.size(); i++) {
                         newMsg = newMsg.replace("$" + i, record.get(i));
                     }
+                } else if (record.size() == 2) {
+                    newMsg = record.get(1);
                 }
 
                 /* Agrega la linea para el archivo */
