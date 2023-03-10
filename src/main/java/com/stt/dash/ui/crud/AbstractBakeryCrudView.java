@@ -17,6 +17,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -51,6 +52,9 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
      * @param idBeforeSave si es 0 es un SAVE. Si es distinto de 0, es un UPDATE
      */
     protected void afterSaving(long idBeforeSave, E entity) {
+        if (Objects.nonNull(onUiForm)) {
+            onUiForm.onSaveUI(idBeforeSave, entity);
+        }
         if (idBeforeSave != 0) {
             System.out.println("----------------- Modificando: " + idBeforeSave);
         } else {

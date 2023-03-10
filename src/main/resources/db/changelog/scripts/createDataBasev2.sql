@@ -85,9 +85,11 @@ values (1, 'MOVILNET', 'MOVILNET, C.A', 'VE'),
        (2, 'DIGITEL', 'DIGITEL, C.A', 'VE'),
        (3, 'MOVISTAR', 'MOVISTAR, C.A', 'VE');
 /******* USUARIOS **********/
-insert into public.user_info (id, version, active, created_by, created_date, email, first_name, last_name, locked,
-                              password_hash, role, user_type, user_type_ord, user_parent_id)
-values (1, 0, true, null, '2021-07-23 15:00:53.987278', 'adminstt@soltextech.com', 'Name Admin', 'Last Admin', true,
+insert into public.user_info (id, version, active, created_by, created_date, email,
+                              first_name, last_name, locked, password_hash, role,
+                              user_type, user_type_ord, user_parent_id)
+values (1, 0, true, null, '2021-07-23 15:00:53.987278', 'adminstt@soltextech.com',
+        'Name Admin', 'Last Admin', true,
         '$2a$10$KcQI.OQnX3/obH8W0/X8weVVoK2A/GPW1SK6EveNRODDfXb0rmpzm', null, 1, 0, null);
 insert into public.user_info (id, version, active, created_by, created_date, email, first_name, last_name, locked,
                               password_hash, role, user_type, user_type_ord, user_parent_id)
@@ -105,6 +107,18 @@ insert into public.user_info (id, version, active, created_by, created_date, ema
                               password_hash, role, user_type, user_type_ord, user_parent_id)
 values (5, 0, true, 'adminstt@soltextech.com', '2023-03-09 17:16:01.087207', 'yecheverria@soltextech.com', 'Yermi',
         'Echeverria', false, '$2a$10$A12a4uG8HM7cQKTdXPT3/u53OUNj0PrxNxJmJvbVKQowdWema2eyq', null, 1, 0, 1);
+insert into public.user_info (id, version, active, created_by, created_date, email, first_name, last_name, locked,
+                              password_hash, role, user_type, user_type_ord, user_parent_id)
+values (6, 0, true, 'yecheverria@soltextech.com', '2023-03-10 01:02:25.096307', 'adminempresaa@soltextech.com',
+        'AdminEmpresaA', '', false, '$2a$10$wvOhmMNVgrXxM2vwq6JYqOoMn3ulrpQ3cWIM9rDrR65q.xdjsBQgm', null, 0, 1, 5);
+insert into public.user_info (id, version, active, created_by, created_date, email, first_name, last_name, locked,
+                              password_hash, role, user_type, user_type_ord, user_parent_id)
+values (7, 0, true, 'yecheverria@soltextech.com', '2023-03-10 01:04:35.328847', 'empresaa@soltextech.com', 'EmpreA01',
+        '', false, '$2a$10$avbngBul8J3MoZUXG0YsJ.0X3pArXn8hH1vtkHpYOYYvmLn2rw/P2', null, 2, 2, 6);
+insert into public.user_info (id, version, active, created_by, created_date, email, first_name, last_name, locked,
+                              password_hash, role, user_type, user_type_ord, user_parent_id)
+values (8, 0, true, 'yecheverria@soltextech.com', '2023-03-10 01:19:05.888815', 'adminempresab@soltextech.com',
+        'AdminEmpresaB', '', false, '$2a$10$ooJ2714VN9vF4AQzEAPGOOVgA60U6A5V2bw5UTZoWiG.faT6/9VFy', null, 0, 1, 5);
 
 /* Roles */
 insert into public.user_has_roles (ouser_id, orole_id)
@@ -217,3 +231,59 @@ insert into public.user_has_roles (ouser_id, orole_id)
 values (5, 21);
 insert into public.user_has_roles (ouser_id, orole_id)
 values (5, 20);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (6, 30);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (6, 29);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (6, 28);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (6, 26);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (6, 25);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (6, 24);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (6, 23);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (6, 22);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (6, 21);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (6, 20);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (7, 30);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (7, 28);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (7, 26);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (7, 25);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (7, 24);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (7, 23);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (7, 22);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (7, 20);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (8, 30);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (8, 29);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (8, 28);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (8, 26);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (8, 25);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (8, 24);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (8, 23);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (8, 22);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (8, 21);
+insert into public.user_has_roles (ouser_id, orole_id)
+values (8, 20);
