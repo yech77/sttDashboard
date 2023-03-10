@@ -23,7 +23,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
-import  java.io.BufferedReader;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -60,6 +60,7 @@ public class BulkSmsSchedulerForm extends FormLayout {
     private boolean hasEnougharmeters = false;
     /**/
     private int sendTime = 1;
+
     public BulkSmsSchedulerForm(List<Agenda> agendaList, Collection<SystemId> systemIdCollection, CurrentUser currentUser) {
         setResponsiveSteps(
                 new ResponsiveStep("25em", 1, ResponsiveStep.LabelsPosition.TOP),
@@ -169,7 +170,7 @@ public class BulkSmsSchedulerForm extends FormLayout {
             hasMessageAllParameter = !hasEnougharmeters;
             messageBox.setEnabled(hasEnougharmeters);
         });
-        sendNow.addValueChangeListener(changeEvent->{
+        sendNow.addValueChangeListener(changeEvent -> {
             dateTimePicker.setValue(LocalDateTime.now());
         });
 
@@ -189,9 +190,9 @@ public class BulkSmsSchedulerForm extends FormLayout {
 
                     @Override
                     public LocalDateTime convertToPresentation(Date date, ValueContext valueContext) {
-                       if(date==null){
-                           return LocalDateTime.now();
-                       }
+                        if (date == null) {
+                            return LocalDateTime.now();
+                        }
                         return ODateUitls.valueOf(date);
                     }
                 })
@@ -232,6 +233,7 @@ public class BulkSmsSchedulerForm extends FormLayout {
     public boolean isValidData() {
         return binder.isValid() && hasMessageAllParameter;
     }
+
     /**
      * Clase para este form
      */

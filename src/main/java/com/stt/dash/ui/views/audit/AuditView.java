@@ -14,7 +14,6 @@ import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.UserRepository;
 import com.stt.dash.backend.service.ODashAuditEventService;
 import com.stt.dash.backend.service.OUserService;
-import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.ODateUitls;
 import com.vaadin.flow.component.button.Button;
@@ -35,10 +34,8 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.QuerySortOrder;
-import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.function.SerializableComparator;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,8 +54,6 @@ import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.stt.dash.ui.utils.BakeryConst.PAGE_AUDIT;
 
 //@Route(value = PAGE_AUDIT, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_AUDIT)
@@ -92,7 +87,7 @@ public class AuditView extends VerticalLayout {
     private final List<String> userChildren = new ArrayList<>();
 
     public AuditView(@Autowired CurrentUser currentUser,
-                     @Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
+                     @Qualifier("getMyChildrenAndItsChildrenAndMe") ListGenericBean<User> userChildrenList,
                      @Autowired ODashAuditEventService event_serv,
                      @Autowired OUserService user_serv,
                      @Autowired OUserSession ouser_session,

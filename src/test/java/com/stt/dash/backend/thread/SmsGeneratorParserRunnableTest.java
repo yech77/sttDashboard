@@ -27,7 +27,6 @@ import java.util.HashSet;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled
 class SmsGeneratorParserRunnableTest {
     @Test
     void testConstructor() {

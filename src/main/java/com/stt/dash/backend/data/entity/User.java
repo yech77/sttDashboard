@@ -174,7 +174,6 @@ public class User extends AbstractEntitySequence {
     }
 
     public void setClients(Set<Client> clients) {
-        System.out.println("Llame a setClients con: " + clients.size());
         this.clients = clients;
     }
 

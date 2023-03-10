@@ -152,7 +152,7 @@ public class FileToSendEditorViewResp extends LitTemplate implements HasNotifica
 
     private int totsms = 0;
 
-    public FileToSendEditorViewResp(@Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
+    public FileToSendEditorViewResp(@Qualifier("getMyChildrenAndItsChildrenAndMe") ListGenericBean<User> userChildrenList,
                                     AgendaService agendaService,
                                     @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList,
                                     WebClient webClient,

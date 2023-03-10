@@ -51,6 +51,7 @@ export class FileToSendEditor extends LitElement {
             </style>
             <div class="scrollable flex1" id="main">
                 <h2 id="title">Nueva programacion</h2>
+                <span style="font-size: var(--lumo-font-size-m); color: var(--lumo-secondary-text-color)">Recuerda, si utilizas acentos y la letra ñ, éstos serán cambiados por la vocal sin acento y letra n</span>
 
                 <div class="meta-row" id="metaContainer">
                     <span class="dim">Order #<span id="orderNumber"></span></span>

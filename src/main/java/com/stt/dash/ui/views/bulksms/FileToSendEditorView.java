@@ -155,7 +155,7 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
 
     private int totsms = 0;
 
-    public FileToSendEditorView(@Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
+    public FileToSendEditorView(@Qualifier("getMyChildrenAndItsChildrenAndMe") ListGenericBean<User> userChildrenList,
                                 AgendaService agendaService,
                                 @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList,
                                 WebClient webClient,
@@ -225,7 +225,7 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
         /**/
         agendaComboBox.setItemLabelGenerator(agenda -> agenda.getName() + (
                 StringUtils.isNotBlank(agenda.getDescription()) ? " - " + agenda.getDescription() : ""));
-        sendNow.addValueChangeListener(listener->{
+        sendNow.addValueChangeListener(listener -> {
             dueTime.setValue(LocalTime.now());
         });
         /* contador de caracteres  */

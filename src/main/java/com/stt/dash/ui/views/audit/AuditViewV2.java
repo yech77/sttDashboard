@@ -5,7 +5,6 @@ import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.Role;
 import com.stt.dash.backend.data.entity.Client;
 import com.stt.dash.backend.data.entity.ODashAuditEvent;
-import com.stt.dash.backend.data.entity.ORole;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.ODashAuditEventService;
@@ -57,7 +56,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.stt.dash.ui.utils.BakeryConst.PAGE_AUDIT;
@@ -113,7 +111,7 @@ public class AuditViewV2 extends LitTemplate {
     /**/
     private final List<String> userChildren = new ArrayList<>();
 
-    public AuditViewV2(@Autowired CurrentUser currentUser, @Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList, @Autowired ODashAuditEventService service, @Qualifier("getUserSystemIdString") ListGenericBean<String> stringListGenericBean) {
+    public AuditViewV2(@Autowired CurrentUser currentUser, @Qualifier("getMyChildrenAndItsChildrenAndMe") ListGenericBean<User> userChildrenList, @Autowired ODashAuditEventService service, @Qualifier("getUserSystemIdString") ListGenericBean<String> stringListGenericBean) {
         presenter = new AuditPresenter(service, this);
         initDatepicker();
         /**/

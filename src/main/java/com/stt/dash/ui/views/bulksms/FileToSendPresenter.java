@@ -182,14 +182,15 @@ public class FileToSendPresenter {
                                 currentUser.getUser()),
                         ODateUitls.localDateTimeToDate(LocalDateTime.now().plusSeconds(5)));
                 /* Disminuir saldo a usar */
-                BalanceWebClient balanceWebClient = new BalanceWebClient(webClient, SystemIdBalanceOResponse.class);
-                try {
-                    Mono<SystemIdBalanceOResponse> mono = balanceWebClient.callSyncData(e.getSystemId(), e.getTotalSmsToSend());
-                    SystemIdBalanceOResponse block = mono.block();
-                    System.out.println("Aca");
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+                /*TODO: FIX. Disminuir el saldo a usar. */
+//                BalanceWebClient balanceWebClient = new BalanceWebClient(webClient, SystemIdBalanceOResponse.class);
+//                try {
+//                    Mono<SystemIdBalanceOResponse> mono = balanceWebClient.callSyncData(e.getSystemId(), e.getTotalSmsToSend());
+//                    SystemIdBalanceOResponse block = mono.block();
+//                    System.out.println("Aca");
+//                } catch (IOException ex) {
+//                    throw new RuntimeException(ex);
+//                }
             } else {
                 view.showUpdatedNotification();
                 dataProvider.refreshItem(e);

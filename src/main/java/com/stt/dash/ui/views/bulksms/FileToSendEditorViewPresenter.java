@@ -27,7 +27,7 @@ public class FileToSendEditorViewPresenter {
     public final static String yyyy_MM_dd = "yyyy-MM-dd";
 
     public FileToSendEditorViewPresenter(FileToSendEditorView view,
-                                         @Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
+                                         @Qualifier("getMyChildrenAndItsChildrenAndMe") ListGenericBean<User> userChildrenList,
                                          AgendaService agendaService,
                                          @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList,
                                          WebClient webClient,

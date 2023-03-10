@@ -84,7 +84,7 @@ public class STTConfiguration {
     }
 
     /**
-     * Devuelve todos los User hijos de CurrentUser y el mismo
+     * Devuelve todos los User hijos de CurrentUser, sus hijos  y el mismo.
      * Usuario actual.
      *
      * @param currentUser
@@ -92,7 +92,7 @@ public class STTConfiguration {
      */
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public ListGenericBean<User> getUserMeAndChildren(CurrentUser currentUser) {
+    public ListGenericBean<User> getMyChildrenAndItsChildrenAndMe(CurrentUser currentUser) {
         User thisUser = currentUser.getUser();
         List<User> allUsers = new ArrayList<>();
         List<User> currentFam = new ArrayList<>();

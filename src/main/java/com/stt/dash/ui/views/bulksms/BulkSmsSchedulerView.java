@@ -19,7 +19,6 @@ import com.stt.dash.ui.crud.AbstractBakeryCrudView;
 import com.stt.dash.ui.crud.STTBinderCrudEditor;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.ODateUitls;
-import com.vaadin.flow.component.crud.BinderCrudEditor;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.PageTitle;
@@ -56,7 +55,7 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
             AgendaService agendaService,
             FilesToSendService service,
             CurrentUser currentUser,
-            @Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
+            @Qualifier("getMyChildrenAndItsChildrenAndMe") ListGenericBean<User> userChildrenList,
             SetGenericBean<SystemId> userSystemIdSet) {
         super(FIlesToSend.class, null, new Grid<FIlesToSend>(), createForm(currentUser, agendaService, userSystemIdSet, userChildrenList), currentUser);
         this.files_service = service;
