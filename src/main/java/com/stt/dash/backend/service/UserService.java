@@ -78,6 +78,7 @@ public class UserService implements FilterableCrudService<User> {
     }
 
     public Page<User> find(CurrentUser currentUser, Pageable pageable) {
+        /* Los Comerciales son tipo HAS*/
         if (currentUser.getUser().getUserType() == User.OUSER_TYPE.HAS) {
             Page<User> p = getRepository().findAllByUserParentIsNotNull(pageable);
             isotherCounter = p.getTotalElements();
@@ -170,6 +171,5 @@ public class UserService implements FilterableCrudService<User> {
 
         return allUsers;
     }
-
 
 }

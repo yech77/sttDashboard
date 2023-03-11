@@ -25,7 +25,11 @@ public interface AgendaRepository extends JpaRepository<Agenda, Long> {
     @Query("select a from Agenda a "
             + "WHERE a.creator IN (:users) "
             + "AND a.status = :status")
-    public List<Agenda> getAllValidAgendasInFamily(List<User> users, Agenda.Status status);
+    List<Agenda> getAllValidAgendasInFamily(List<User> users, Agenda.Status status);
+
+    @Query("select a from Agenda a "
+            + "WHERE a.creator IN (:users)")
+    Page<Agenda> findMyAgendasAndMyAgendasSon(List<User> users, Pageable pageable);
 
     /**/
     Agenda findByCreatorEmailIgnoreCase(String email);

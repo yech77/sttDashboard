@@ -1,6 +1,7 @@
 package com.stt.dash.backend.service;
 
 import com.stt.dash.app.security.CurrentUser;
+import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.data.entity.MyAuditEventComponent;
 import com.stt.dash.backend.data.entity.ODashAuditEvent;
@@ -9,13 +10,17 @@ import com.stt.dash.backend.repositories.AgendaRepository;
 import com.stt.dash.backend.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -33,7 +38,9 @@ public class AgendaService implements FilterableCrudService<Agenda> {
     private AgendaRepository repo;
     private UserRepository ouser_repo;
     private final MyAuditEventComponent auditEvent;
+    private long isotherCounter = -1;
 
+    @Autowired
     public AgendaService(AgendaRepository repo, UserRepository ouser_repo, MyAuditEventComponent auditEvent) {
         this.repo = repo;
         this.ouser_repo = ouser_repo;
@@ -157,11 +164,23 @@ public class AgendaService implements FilterableCrudService<Agenda> {
     }
 
     @Override
+    public Page<Agenda> findAnyMatching(CurrentUser currentUser, Optional<String> filter, Pageable pageable) {
+        Page<Agenda> myAgendasAndMyAgendasSon = repo.findMyAgendasAndMyAgendasSon(getMeAndSon(currentUser.getUser()), pageable);
+        isotherCounter = myAgendasAndMyAgendasSon.getTotalElements();
+        return myAgendasAndMyAgendasSon;
+    }
+
+    @Override
     public long countAnyMatching(Optional<String> filter) {
         if (filter.isPresent()) {
             String repositoryFilter = "%" + filter.get() + "%";
             return repo.countByCreator_EmailLikeIgnoreCaseOrNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(repositoryFilter, repositoryFilter, repositoryFilter);
         } else {
+            if (isotherCounter > -1) {
+                long d = isotherCounter;
+                isotherCounter = -1;
+                return d;
+            }
             return count();
         }
     }
@@ -222,18 +241,6 @@ public class AgendaService implements FilterableCrudService<Agenda> {
         }
     }
 
-    private void throwIfDeletingSelf(User currentUser, Agenda user) {
-        if (currentUser.equals(user)) {
-            throw new UserFriendlyDataException(DELETING_SELF_NOT_PERMITTED);
-        }
-    }
-
-    private void throwIfUserLocked(User entity) {
-        if (entity != null && entity.isLocked()) {
-            throw new UserFriendlyDataException(MODIFY_LOCKED_USER_NOT_PERMITTED);
-        }
-    }
-
     @Override
     public Agenda createNew(User currentUser) {
         return new Agenda();
@@ -244,4 +251,25 @@ public class AgendaService implements FilterableCrudService<Agenda> {
         return !repo.findByName(name).isEmpty();
     }
 
+    private List<User> getMeAndSon(User currentUser) {
+        List<User> allUsers = new ArrayList<>();
+        List<User> currentFam = new ArrayList<>();
+        List<User> addingChildren = new ArrayList<>();
+
+        currentFam.add(currentUser);
+        addingChildren.addAll(currentUser.getUserChildren());
+        while (addingChildren.size() > 0) {
+            allUsers.addAll(currentFam);
+            currentFam.clear();
+            currentFam.addAll(addingChildren);
+            addingChildren.clear();
+            for (User user : currentFam) {
+                addingChildren.addAll(user.getUserChildren());
+            }
+        }
+        allUsers.addAll(currentFam);
+        System.out.println("Usuarios en la familia de " + currentUser.getEmail());
+
+        return allUsers;
+    }
 }

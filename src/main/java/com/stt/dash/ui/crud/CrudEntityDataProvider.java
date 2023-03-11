@@ -15,40 +15,40 @@ import com.vaadin.flow.data.provider.QuerySortOrderBuilder;
 
 public class CrudEntityDataProvider<T extends AbstractEntitySequence> extends FilterablePageableDataProvider<T, String> {
 
-	private final FilterableCrudService<T> crudService;
-	private List<QuerySortOrder> defaultSortOrders;
-	private  CurrentUser currentUser;
+    private final FilterableCrudService<T> crudService;
+    private List<QuerySortOrder> defaultSortOrders;
+    private CurrentUser currentUser;
 
-	public CrudEntityDataProvider(FilterableCrudService<T> crudService) {
-		this.crudService = crudService;
-		setSortOrders();
-	}
-	public CrudEntityDataProvider(FilterableCrudService<T> crudService, CurrentUser currentUser) {
-		this(crudService);
-		this.currentUser = currentUser;
-	}
+    public CrudEntityDataProvider(FilterableCrudService<T> crudService) {
+        this.crudService = crudService;
+        setSortOrders();
+    }
 
-	private void setSortOrders() {
-		QuerySortOrderBuilder builder = new QuerySortOrderBuilder();
-		builder.thenAsc("id");
-		defaultSortOrders = builder.build();
-	}
+    public CrudEntityDataProvider(FilterableCrudService<T> crudService, CurrentUser currentUser) {
+        this(crudService);
+        this.currentUser = currentUser;
+    }
 
-	@Override
-	protected Page<T> fetchFromBackEnd(Query<T, String> query, Pageable pageable) {
-		System.out.println("FECHAFROMBACKEND");
-		return crudService.findAnyMatching(currentUser, query.getFilter(), pageable);
-	}
+    private void setSortOrders() {
+        QuerySortOrderBuilder builder = new QuerySortOrderBuilder();
+        builder.thenAsc("id");
+        defaultSortOrders = builder.build();
+    }
 
-	@Override
-	protected List<QuerySortOrder> getDefaultSortOrders() {
-		return defaultSortOrders;
-	}
+    @Override
+    protected Page<T> fetchFromBackEnd(Query<T, String> query, Pageable pageable) {
+        return crudService.findAnyMatching(currentUser, query.getFilter(), pageable);
+    }
 
-	@Override
-	protected int sizeInBackEnd(Query<T, String> query) {
-		return (int) crudService.countAnyMatching(query.getFilter());
-	}
+    @Override
+    protected List<QuerySortOrder> getDefaultSortOrders() {
+        return defaultSortOrders;
+    }
+
+    @Override
+    protected int sizeInBackEnd(Query<T, String> query) {
+        return (int) crudService.countAnyMatching(query.getFilter());
+    }
 
 }
 
