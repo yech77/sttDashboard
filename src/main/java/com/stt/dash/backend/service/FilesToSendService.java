@@ -1,6 +1,7 @@
 package com.stt.dash.backend.service;
 
 import com.stt.dash.Application;
+import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.Status;
 import com.stt.dash.backend.data.entity.*;
 import com.stt.dash.backend.repositories.FilesToSendRepository;
@@ -14,17 +15,17 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.*;
-import java.util.function.BiConsumer;
 
 @Service
 public class FilesToSendService implements CrudService<FIlesToSend> {
 
-    private static final String NO_SE_PUEDEN_BORRAR_PROGRAMACIONES_YA_ENVIADAS = "No se pueden borrar Programaciones ya enviadas.";
+    private static final String
+            NO_SE_PUEDEN_BORRAR_PROGRAMACIONES_YA_ENVIADAS = "No se pueden borrar Programaciones ya enviadas.";
     //    private MyAuditEventComponent auditEvent;
     private static String UI_CODE = "SERV";
     private FilesToSendRepository filesToSendRepository;
     private final MyAuditEventComponent auditEvent;
-
+    private long isotherCounter = -1;
     private static final Logger log = LoggerFactory.getLogger(FilesToSendService.class.getName());
 
     @Autowired
@@ -128,21 +129,46 @@ public class FilesToSendService implements CrudService<FIlesToSend> {
         }
     }
 
+    public Page<FIlesToSend> findAnyMatchingAfterDateToSend(CurrentUser currentUser, Optional<String> optionalFilter,
+                                                            Optional<Date> optionalFilterDate, Pageable pageable) {
+        if (optionalFilter.isPresent() && !optionalFilter.get().isEmpty()) {
+            if (optionalFilterDate.isPresent()) {
+                return filesToSendRepository.findFIlesToSendByOrderNameContainingIgnoreCaseAndDateToSendAfter(
+                        optionalFilter.get(), optionalFilterDate.get(), pageable);
+            } else {
+                return filesToSendRepository.findFIlesToSendByOrderNameContainingIgnoreCase(optionalFilter.get(), pageable);
+            }
+        } else {
+            List<User> lu = getUserFamily(currentUser.getUser());
+            /* es para indicar que el counter debe contar este*/
+            isotherCounter = lu.size();
+            if (optionalFilterDate.isPresent()) {
+                return filesToSendRepository.findByUserCreatorInAndDateToSendAfter(lu, optionalFilterDate.get(), pageable);
+            } else {
+                return filesToSendRepository.findByUserCreatorInOrderByDateToSendDesc(lu, pageable);
+            }
+        }
+    }
+
     @Transactional
     public List<FileToSendSummary> findAnyMatchingStartingToday() {
         return filesToSendRepository.findFIlesToSendByDateToSendGreaterThanEqual(new Date());
     }
 
-    public long countAnyMatchingAfterDateToSend(Optional<String> optionalFilter, Optional<Date> optionalFilterDate) {
+    public long countAnyMatchingAfterDateToSend(CurrentUser currentUser, Optional<String> optionalFilter, Optional<Date> optionalFilterDate) {
         if (optionalFilter.isPresent() && optionalFilterDate.isPresent()) {
-            return filesToSendRepository.countAllByOrderNameContainingIgnoreCaseAndDateToSendAfter(optionalFilter.get(),
+//            return filesToSendRepository.countAllByOrderNameContainingIgnoreCaseAndDateToSendAfter(optionalFilter.get(),
+//                    optionalFilterDate.get());
+            return filesToSendRepository.countAllByUserCreatorInAndOrderNameContainingIgnoreCaseAndDateToSendAfter(getUserFamily(currentUser.getUser()), optionalFilter.get(),
                     optionalFilterDate.get());
         } else if (optionalFilter.isPresent()) {
-            return filesToSendRepository.countAllByOrderNameContainingIgnoreCase(optionalFilter.get());
+//            return filesToSendRepository.countAllByOrderNameContainingIgnoreCase(optionalFilter.get());
+            return filesToSendRepository.countAllByUserCreatorInAndOrderNameContainingIgnoreCase(getUserFamily(currentUser.getUser()), optionalFilter.get());
         } else if (optionalFilterDate.isPresent()) {
-            return filesToSendRepository.countAllByDateToSendAfter(optionalFilterDate.get());
+//            return filesToSendRepository.countAllByDateToSendAfter(optionalFilterDate.get());
+            return filesToSendRepository.countAllByUserCreatorInAndDateToSendAfter(getUserFamily(currentUser.getUser()), optionalFilterDate.get());
         } else {
-            return filesToSendRepository.count();
+            return filesToSendRepository.countByUserCreatorIn(getUserFamily(currentUser.getUser()));
         }
     }
 
@@ -168,5 +194,27 @@ public class FilesToSendService implements CrudService<FIlesToSend> {
         if (entity.getStatus() == Status.COMPLETED) {
             throw new UserFriendlyDataException(NO_SE_PUEDEN_BORRAR_PROGRAMACIONES_YA_ENVIADAS);
         }
+    }
+
+    private List<User> getUserFamily(User currentUser) {
+        List<User> allUsers = new ArrayList<>();
+        List<User> currentFam = new ArrayList<>();
+        List<User> addingChildren = new ArrayList<>();
+
+        currentFam.add(currentUser);
+        addingChildren.addAll(currentUser.getUserChildren());
+        while (addingChildren.size() > 0) {
+            allUsers.addAll(currentFam);
+            currentFam.clear();
+            currentFam.addAll(addingChildren);
+            addingChildren.clear();
+            for (User user : currentFam) {
+                addingChildren.addAll(user.getUserChildren());
+            }
+        }
+        allUsers.addAll(currentFam);
+        System.out.println("Usuarios en la familia de " + currentUser.getEmail());
+
+        return allUsers;
     }
 }

@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.stt.dash.app.OProperties;
+import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.Status;
 import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.data.entity.Client;
@@ -24,10 +25,11 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashSet;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class SmsGeneratorParserRunnableTest {
+    CurrentUser currentUser = () -> new User();
+
     @Test
     void testConstructor() {
         OProperties properties = new OProperties();

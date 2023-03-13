@@ -3,16 +3,30 @@ package com.stt.dash.backend.repositories;
 import com.stt.dash.backend.data.entity.FIlesToSend;
 import com.stt.dash.backend.data.entity.FileToSendSummary;
 import com.stt.dash.backend.data.entity.OUser;
+import com.stt.dash.backend.data.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.lang.NonNull;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 public interface FilesToSendRepository extends JpaRepository<FIlesToSend, Long> {
+    Page<FIlesToSend> findByUserCreatorInOrderByDateToSendDesc(@NonNull Collection<User> userCreators, Pageable pageable);
+
+    long countByUserCreatorIn(@NonNull Collection<User> userCreators);
+
+    Page<FIlesToSend> findByUserCreatorInAndDateToSendAfter(@NonNull Collection<User> userCreators, @NonNull Date dateToSend, Pageable pageable);
+
+    long countAllByUserCreatorInAndOrderNameContainingIgnoreCaseAndDateToSendAfter(Collection<User> userCreators, String orderName, Date dateToSend);
+
+    long countAllByUserCreatorInAndOrderNameContainingIgnoreCase(Collection<User> userCreators, String searchQuery);
+
+    long countAllByUserCreatorInAndDateToSendAfter(Collection<User> userCreators, Date filterDate);
 
     @Query("select f from FIlesToSend f "
             + "WHERE lower(f.fileName) like lower(concat('%', :filterText, '%'))"
@@ -50,16 +64,20 @@ public interface FilesToSendRepository extends JpaRepository<FIlesToSend, Long> 
     //    @EntityGraph(value = Order.ENTITY_GRAPTH_BRIEF, type = EntityGraphType.LOAD)
     Page<FIlesToSend> findFIlesToSendByOrderNameContainingIgnoreCaseAndDateToSendAfter(String searchQuery, Date dateToSend, Pageable pageable);
 
+
     long countAllByOrderNameContainingIgnoreCaseAndDateToSendAfter(String searchQuery, Date dateToSend);
 
     //    @EntityGraph(value = Order.ENTITY_GRAPTH_BRIEF, type = EntityGraphType.LOAD)
     Page<FIlesToSend> findFIlesToSendByOrderNameContainingIgnoreCase(String searchQuery, Pageable pageable);
+
     long countAllByOrderNameContainingIgnoreCase(String searchQuery);
 
 
     //    @EntityGraph(value = Order.ENTITY_GRAPTH_BRIEF, type = EntityGraphType.LOAD)
     Page<FIlesToSend> findFIlesToSendByDateToSendAfter(Date filterDate, Pageable pageable);
+
     long countAllByDateToSendAfter(Date filterDate);
-//    //    @EntityGraph(value = Order.ENTITY_GRAPTH_BRIEF, type = EntityGraphType.LOAD)
+
+    //    //    @EntityGraph(value = Order.ENTITY_GRAPTH_BRIEF, type = EntityGraphType.LOAD)
     List<FileToSendSummary> findFIlesToSendByDateToSendGreaterThanEqual(Date dateToSend);
 }
