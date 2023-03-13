@@ -83,7 +83,7 @@ public class SmsFileParserProcessor implements Runnable {
             log.error("", ex);
         } catch (NumberFormatException ex) {
             log.error("", ex);
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             log.error("", ex);
         }
     }
@@ -97,7 +97,7 @@ public class SmsFileParserProcessor implements Runnable {
         List<SendingSms> batch;
         BufferedReader reader;
         int msgPreparedCount = 0;
-        int numLine = 1;
+        int numLine = 0;
         try {
             fileToSend.setStatus(FilesToSend.Status.PREPARING_SMS);
             batch = new ArrayList<>();

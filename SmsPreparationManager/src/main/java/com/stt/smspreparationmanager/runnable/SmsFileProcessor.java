@@ -25,7 +25,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
  * @author Enrique
  */
 public class SmsFileProcessor implements Runnable {
@@ -49,7 +48,7 @@ public class SmsFileProcessor implements Runnable {
     private final Pattern regexPattern = Pattern.compile(regex);
 
     public SmsFileProcessor(File smsFile, SendingSmsRepository sending_repo,
-            FilesToSendService files_service) {
+                            FilesToSendService files_service) {
         this.smsFile = smsFile;
         this.sending_repo = sending_repo;
         this.files_service = files_service;
@@ -94,11 +93,11 @@ public class SmsFileProcessor implements Runnable {
         int numLine = 1;
         try {
 
-            
+
             fileToSend.setStatus(FilesToSend.Status.PREPARING_SMS);
             batch = new ArrayList<>();
             InputStreamReader isr = new InputStreamReader(stream,
-                    StandardCharsets.UTF_8);
+                    StandardCharsets.ISO_8859_1);
             reader = new BufferedReader(isr);
 
             String line = reader.readLine();
@@ -215,7 +214,7 @@ public class SmsFileProcessor implements Runnable {
     public boolean validatePhone(String number) {
         return true;
     }
-    
+
     public boolean validatePhoneRegex(String number) {
         Matcher m = regexPattern.matcher(number);
         return m.matches();
