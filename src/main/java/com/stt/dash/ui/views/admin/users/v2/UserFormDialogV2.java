@@ -1,4 +1,4 @@
-package com.stt.dash.ui.views.admin.users;
+package com.stt.dash.ui.views.admin.users.v2;
 
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.Role;
@@ -6,7 +6,6 @@ import com.stt.dash.backend.data.entity.Client;
 import com.stt.dash.backend.data.entity.ORole;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
-import com.stt.dash.backend.service.UserService;
 import com.stt.dash.ui.crud.OnUIForm;
 import com.stt.dash.ui.utils.I18nUtils;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
@@ -19,35 +18,42 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.*;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationResult;
+import com.vaadin.flow.data.binder.Validator;
+import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.provider.DataProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-public class UserForm extends FormLayout implements OnUIForm<User> {
+public class UserFormDialogV2 extends FormLayout implements OnUIForm<User> {
     public static final String MSG_DEBE_ESCOGER_UN_CLIENTE1 = "Debe escoger un Cliente";
     private final List<User> allMyUsers;
     private final CurrentUser currentUser;
-    /**/ FormItem clientsFormItem;
     FormItem comboClientFormItem;
     FormItem systemidsFormItem;
     /**/ BeanValidationBinder<User> binder = new BeanValidationBinder<>(User.class);
     HorizontalLayout h = new HorizontalLayout();
-    MultiComboBox<Client> clients = new MultiComboBox<>();
     MultiComboBox<SystemId> systemids = new MultiComboBox<>();
     ComboBox<Client> comboClient = new ComboBox<>();
-    MultiComboBox<ORole> roles = new MultiComboBox<>();
     Checkbox isActive = new Checkbox("Activo");
     ConfirmDialog dialog;
-    ComboBox<User> userParentCombobox = new ComboBox<>();
-    ComboBox<User.OUSER_TYPE_ORDINAL> userTypeOrdCombo = new ComboBox<>();
     ComboBox<User.OUSER_TYPE> userType = new ComboBox<>();
+    ComboBox<User.OUSER_TYPE_ORDINAL> userTypeOrdCombo = new ComboBox<>();
+    ComboBox<User> userParentCombobox = new ComboBox<>();
     ComboBox<String> role = new ComboBox<>();
 
-    public UserForm(List<ORole> allRoles, List<Client> parClients, List<Client> allClient, Collection<SystemId> parSystemids, List<User> allUsers, CurrentUser currentUser, PasswordEncoder passwordEncoder) {
+    public UserFormDialogV2(List<ORole> allRoles, List<Client> parClients, List<Client> allClient, Collection<SystemId> parSystemids, List<User> allUsers, CurrentUser currentUser, PasswordEncoder passwordEncoder) {
         this.allMyUsers = allUsers;
         this.currentUser = currentUser;
+        /**/
+        userTypeOrdCombo.setItems(User.OUSER_TYPE_ORDINAL.values());
         /**/
         EmailField email = new EmailField();
         TextField first = new TextField();
@@ -69,28 +75,26 @@ public class UserForm extends FormLayout implements OnUIForm<User> {
         doValueListeners();
 
         /**/
-        fillUserType(currentUser.getUser().getUserType(), currentUser.getUser().getUserTypeOrd(), userType, userTypeOrdCombo);
+        fillUserType(currentUser.getUser().getUserType(), currentUser.getUser().getUserTypeOrd(), userType);
         doShowClientOrd(currentUser.getUser().getUserTypeOrd());
+        /* Cada vez que se cambia el correo se llena este set que ya no esta en pantalla. */
+        email.addBlurListener(event -> {
+            userTypeOrdCombo.setValue(User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS);
+            userParentCombobox.setValue(currentUser.getUser());
+            userType.setValue(User.OUSER_TYPE.IS);
+        });
     }
 
     private void doSetItems(List<ORole> allRoles, List<Client> parClients, List<Client> allClients, List<User> allUsers) {
-        userTypeOrdCombo.setItems(User.OUSER_TYPE_ORDINAL.values());
-        userType.setItems(User.OUSER_TYPE.values());
+        userType.setItems(currentUser.getUser().getUserType());
         /**/
-        doSetItemsClients(allClients);
-        doSetItemsClient(parClients);
+        doSetItemsClient(allClients);
         systemids.setItemLabelGenerator(SystemId::getSystemId);
         /**/
-        doSetItemsRoles(allRoles);
+        doSetItemsUserParent();
         /**/
-        doSetItemsUserParent(allUsers);
         /**/
         doSetItemsRole();
-    }
-
-    private void doSetItemsClients(List<Client> parClients) {
-        clients.setItems(parClients);
-        clients.setItemLabelGenerator(Client::getClientName);
     }
 
     private void doSetItemsClient(List<Client> parClients) {
@@ -105,15 +109,9 @@ public class UserForm extends FormLayout implements OnUIForm<User> {
         });
     }
 
-    private void doSetItemsRoles(List<ORole> allRoles) {
-        roles.setItems(allRoles);
-        roles.setItemLabelGenerator(ORole::getRolName);
-    }
-
-    private void doSetItemsUserParent(List<User> allUsers) {
-        userParentCombobox.setItems(allUsers);
-        setUserParentList(User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS);
-        userParentCombobox.setItemLabelGenerator(User::getEmail);
+    private void doSetItemsUserParent() {
+        userParentCombobox.setItems(currentUser.getUser());
+        userParentCombobox.setValue(currentUser.getUser());
     }
 
     private void doSetItemsRole() {
@@ -124,32 +122,8 @@ public class UserForm extends FormLayout implements OnUIForm<User> {
 
     private void doValueListeners() {
         /* CHANGE LISTENER */
-        addChangeListenerUserParent();
         addChangeListenerIsActive();
         addChageListenerUserType();
-    }
-
-    private void addChangeListenerUserParent() {
-        userParentCombobox.addValueChangeListener(listener -> {
-            if (!listener.isFromClient()) {
-                return;
-            }
-            /* obtener solo los roles del padre */
-            roles.setItems(listener.getValue().getRoles());
-            switch (listener.getSource().getValue().getUserTypeOrd()) {
-                case COMERCIAL:
-                    comboClient.setItems(listener.getSource().getValue().getClients());
-                    break;
-                case ADMIN_EMPRESAS:
-                    systemids.setItems(listener.getSource().getValue().getClient().getSystemids());
-                    break;
-                case EMPRESA:
-                case USUARIO:
-                    systemids.setItems(listener.getSource().getValue().getSystemids());
-                    break;
-            }
-
-        });
     }
 
     private void addChangeListenerIsActive() {
@@ -165,50 +139,22 @@ public class UserForm extends FormLayout implements OnUIForm<User> {
     }
 
     private void addChageListenerUserType() {
-        userTypeOrdCombo.addValueChangeListener((evt) -> {
-            System.out.println("OCURRIO UN VALUE CHANGEDLISTENER DE USERTYPEORD");
-            User.OUSER_TYPE type;
-//            if (!evt.isFromClient()) {
-//                return;
-//            }
-            userParentCombobox.setValue(null);
-            if (evt.getSource().getValue() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
-                type = User.OUSER_TYPE.HAS;
-                userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.COMERCIAL));
-            } else if (evt.getSource().getValue() == User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
-                type = User.OUSER_TYPE.IS;
-                userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.COMERCIAL));
-            } else if (evt.getSource().getValue() == User.OUSER_TYPE_ORDINAL.EMPRESA) {
-                type = User.OUSER_TYPE.BY;
-                userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS));
-            } else {
-                type = User.OUSER_TYPE.BY;
-                userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.EMPRESA, User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS));
-            }
-            userType.setValue(type);
-            doShowClientOrd(evt.getSource().getValue());
-        });
+        doShowClientOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
     }
 
     private void doMulticomboI18N() {
-        clients.setI18n(I18nUtils.getMulticomboI18n());
         systemids.setI18n(I18nUtils.getMulticomboI18n());
-        roles.setI18n(I18nUtils.getMulticomboI18n());
     }
 
     private void doWidthFull(EmailField email, TextField first, TextField last, PasswordField password) {
         userType.setWidthFull();
-        userTypeOrdCombo.setWidthFull();
-        userParentCombobox.setWidthFull();
         first.setWidthFull();
         last.setWidthFull();
         email.setWidthFull();
         password.setWidthFull();
 //        createdDate.setWidthFull();
         h.setWidthFull();
-        roles.setWidthFull();
         comboClient.setWidthFull();
-        clients.setWidthFull();
         systemids.setWidthFull();
     }
 
@@ -220,10 +166,8 @@ public class UserForm extends FormLayout implements OnUIForm<User> {
         binder.forField(isActive).bind(User::isActive, User::setActive);
         binder.bind(email, "email");
         binder.bind(role, "role");
-        binder.bind(roles, "roles");
-        binder.forField(userParentCombobox).asRequired("Seleccione un usuario").bind(User::getUserParent, User::setUserParent);
+        binder.forField(userParentCombobox).bind(User::getUserParent, User::setUserParent);
         /**/
-        doBinderClients();
         doBinderSystemid();
         doBinderClient();
         doBinderPassword(passwordEncoder, password);
@@ -233,9 +177,6 @@ public class UserForm extends FormLayout implements OnUIForm<User> {
         binder.forField(systemids).asRequired(new Validator<Set<SystemId>>() {
             @Override
             public ValidationResult apply(Set<SystemId> systemIds, ValueContext valueContext) {
-                if (userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.USUARIO && userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.EMPRESA) {
-                    return ValidationResult.ok();
-                }
                 if (systemIds != null && systemIds.size() > 0) {
                     return ValidationResult.ok();
                 }
@@ -258,32 +199,12 @@ public class UserForm extends FormLayout implements OnUIForm<User> {
         binder.forField(comboClient).asRequired(new Validator<Client>() {
             @Override
             public ValidationResult apply(Client client, ValueContext valueContext) {
-                if (userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
-                    return ValidationResult.ok();
-                }
                 if (client != null) {
                     return ValidationResult.ok();
                 }
                 return ValidationResult.error(MSG_DEBE_ESCOGER_UN_CLIENTE1);
             }
         }).bind(User::getClient, User::setClient);
-    }
-
-    private void doBinderClients() {
-        binder.forField(clients).asRequired(new Validator<Set<Client>>() {
-            @Override
-            public ValidationResult apply(Set<Client> clients, ValueContext valueContext) {
-                if (userTypeOrdCombo.getValue() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
-                    System.out.println("En Clients devuelvo ok poruqe no es comercial: " + userTypeOrdCombo.getValue());
-                    return ValidationResult.ok();
-                }
-                if (clients != null && clients.size() > 0) {
-                    System.out.println("En Clients devuelvo ok poruqe client no es null y tiene: " + clients.size());
-                    return ValidationResult.ok();
-                }
-                return ValidationResult.error("Debe seleccionar al menos un cliente");
-            }
-        }).bind(User::getClients, User::setClients);
     }
 
     /**
@@ -295,25 +216,8 @@ public class UserForm extends FormLayout implements OnUIForm<User> {
         if (changeListener == null) {
             return;
         }
-        if (changeListener == User.OUSER_TYPE_ORDINAL.USUARIO || changeListener == User.OUSER_TYPE_ORDINAL.EMPRESA) {
-            removeBinding(comboClient);
-            /* USUARIO SOLO SELECCIONA CREDENCIALES */
-            systemidsFormItem.setVisible(true);
-            comboClientFormItem.setVisible(false);
-            clientsFormItem.setVisible(false);
-        } else if (changeListener == User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
-            doBinderClient();
-            /* ADMIN SOLO SELECCIONA CLIENTE */
-            systemidsFormItem.setVisible(false);
-            comboClientFormItem.setVisible(true);
-            clientsFormItem.setVisible(false);
-        } else if (changeListener == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
-            removeBinding(comboClient);
-            /* COMERCIAL SOLO SELECCIONA CLIENTES */
-            systemidsFormItem.setVisible(false);
-            comboClientFormItem.setVisible(false);
-            clientsFormItem.setVisible(true);
-        }
+        systemidsFormItem.setVisible(true);
+        comboClientFormItem.setVisible(true);
     }
 
     private void removeBinding(HasValue<?, ?> binding) {
@@ -330,27 +234,6 @@ public class UserForm extends FormLayout implements OnUIForm<User> {
         return binder;
     }
 
-    private void setUserParentList(User.OUSER_TYPE_ORDINAL type) {
-        if (null == type) {
-            userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.EMPRESA, User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS));
-            return;
-        }
-        switch (type) {
-            case COMERCIAL:
-                userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.COMERCIAL));
-                break;
-            case ADMIN_EMPRESAS:
-                userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.COMERCIAL));
-                break;
-            case EMPRESA:
-                userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS));
-                break;
-            default:
-                userParentCombobox.setItems(filterUsersOfType(this.allMyUsers, User.OUSER_TYPE_ORDINAL.EMPRESA, User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS));
-                break;
-        }
-    }
-
     public void setUser(User user) {
 //        binder.removeBean();
         System.out.println("Llamado le setUser de User: " + user);
@@ -360,26 +243,16 @@ public class UserForm extends FormLayout implements OnUIForm<User> {
         binder.setBean(user);
         System.out.println("Seting usertype: " + user.getUserType());
         userType.setValue(user.getUserType());
-        userTypeOrdCombo.setValue(user.getUserTypeOrd());
-        setUserParentList(user.getUserTypeOrd());
         doShowClientOrd(user.getUserTypeOrd());
 
         // No permite que el usuario pueda cambiar sus propios datos criticos
         if (user.equals(currentUser.getUser())) {
-            userParentCombobox.setReadOnly(true);
-            userTypeOrdCombo.setReadOnly(true);
-            roles.setReadOnly(true);
             userType.setReadOnly(true);
             systemids.setReadOnly(true);
-            clients.setReadOnly(true);
             comboClient.setReadOnly(true);
             isActive.setReadOnly(true);
         } else {
-            userParentCombobox.setReadOnly(false);
-            userTypeOrdCombo.setReadOnly(false);
-            roles.setReadOnly(false);
             systemids.setReadOnly(false);
-            clients.setReadOnly(false);
             comboClient.setReadOnly(false);
 
         }
@@ -394,20 +267,9 @@ public class UserForm extends FormLayout implements OnUIForm<User> {
      * @param usertype
      * @param userTypeCombo
      */
-    private void fillUserType(User.OUSER_TYPE usertype, User.OUSER_TYPE_ORDINAL userTypeOrd, ComboBox<User.OUSER_TYPE> userTypeCombo, ComboBox<User.OUSER_TYPE_ORDINAL> userTypeOrdinalCombo) {
+    private void fillUserType(User.OUSER_TYPE usertype, User.OUSER_TYPE_ORDINAL userTypeOrd, ComboBox<User.OUSER_TYPE> userTypeCombo) {
         userTypeCombo.clear();
         userTypeCombo.setItems(User.OUSER_TYPE.values());
-        userTypeOrdinalCombo.clear();
-        if (userTypeOrd == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
-            userTypeOrdinalCombo.setItems(User.OUSER_TYPE_ORDINAL.values());
-        } else if (userTypeOrd == User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
-            userTypeOrdinalCombo.setItems(User.OUSER_TYPE_ORDINAL.EMPRESA, User.OUSER_TYPE_ORDINAL.USUARIO);
-        } else if (userTypeOrd == User.OUSER_TYPE_ORDINAL.EMPRESA) {
-            userTypeOrdinalCombo.setItems(User.OUSER_TYPE_ORDINAL.USUARIO);
-        } else {
-            userTypeOrdinalCombo.setItems(User.OUSER_TYPE_ORDINAL.USUARIO);
-            userTypeCombo.setEnabled(false);
-        }
     }
 
     private List<User> filterUsersOfType(List<User> users, User.OUSER_TYPE_ORDINAL... targetTypes) {
@@ -425,21 +287,16 @@ public class UserForm extends FormLayout implements OnUIForm<User> {
     }
 
     private void doColSpan(EmailField email, TextField first, TextField last, PasswordField password) {
-        setColspan(addFormItem(userTypeOrdCombo, "Tipo de usuario"), 1);
-        setColspan(addFormItem(userParentCombobox, "Creador"), 1);
         setColspan(addFormItem(first, "Nombre"), 1);
         setColspan(addFormItem(last, "Apellido"), 1);
 //        setColspan(addFormItem(createdDate, "Fecha de Creación"), 1);
 //        setColspan(addFormItem(userType, ""), 2);
         setColspan(addFormItem(email, isActive), 1);
         setColspan(addFormItem(password, "Clave"), 1);
-        clientsFormItem = addFormItem(clients, "Clientes");
-        setColspan(clientsFormItem, 2);
         comboClientFormItem = addFormItem(comboClient, "Cliente");
         setColspan(comboClientFormItem, 2);
         systemidsFormItem = addFormItem(systemids, "Credenciales");
         setColspan(systemidsFormItem, 2);
-        setColspan(addFormItem(roles, "Roles"), 2);
     }
 
     @Override

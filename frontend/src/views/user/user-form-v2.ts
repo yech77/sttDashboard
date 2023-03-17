@@ -54,7 +54,7 @@ export class UserFormV2 extends LitElement {
                 <vaadin-vertical-layout>
                     <vaadin-email-field id="userEmail" label="Email" clear-button-visible
                                         style="width: 100%"></vaadin-email-field>
-                    <vaadin-checkbox id="active" label="Activo"></vaadin-checkbox>
+                    <vaadin-checkbox id="active" checked>activo</vaadin-checkbox>
                 </vaadin-vertical-layout>
                 <vaadin-password-field id="password" label="Password"></vaadin-password-field>
                 <vaadin-combo-box id="clients" label="Cliente" clear-button-visible></vaadin-combo-box>
@@ -65,8 +65,7 @@ export class UserFormV2 extends LitElement {
 
             <buttons-bar id="footer" no-scroll\\$="[[noScroll]]">
                 <vaadin-button slot="left" id="cancel">Cancelar</vaadin-button>
-                <vaadin-button slot="right" id="review" theme="primary">
-                    Confirmar programacion
+                <vaadin-button slot="right" id="save" theme="primary">Crear usuario
                     <iron-icon icon="vaadin:arrow-right" slot="suffix"></iron-icon>
                 </vaadin-button>
             </buttons-bar>

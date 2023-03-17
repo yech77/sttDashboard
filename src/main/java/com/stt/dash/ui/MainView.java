@@ -5,6 +5,7 @@ import com.stt.dash.ui.smsview.SmsView;
 import com.stt.dash.ui.views.HasConfirmation;
 import com.stt.dash.ui.views.admin.users.UserAuthorities;
 import com.stt.dash.ui.views.admin.users.UserFormV2;
+import com.stt.dash.ui.views.admin.users.v2.UsersViewv2;
 import com.stt.dash.ui.views.audit.AuditViewV2;
 import com.stt.dash.ui.views.bulksms.BulkSmsView;
 import com.stt.dash.ui.views.bulksms.FileToSendFrontView;
@@ -160,12 +161,15 @@ public class MainView extends AppLayout {
         if (SecurityUtils.isAccessGranted(UsersView.class)) {
             tabs.add(createTab(VaadinIcon.USER, TITLE_USERS, UsersView.class));
         }
+        
         if (SecurityUtils.isAccessGranted(ORolesView.class)) {
             tabs.add(createTab(VaadinIcon.KEY, TITLE_ROLES, ORolesView.class));
         }
 
-        tabs.add(createTab(VaadinIcon.USERS, "Usuarios v2", UserFormV2.class));
-        tabs.add(createTab(VaadinIcon.EYE_SLASH, "Permisos", UserAuthorities.class));
+        if (SecurityUtils.isAccessGranted(UsersView.class)) {
+            tabs.add(createTab(VaadinIcon.USERS, TITLE_USERS, UsersViewv2.class));
+        }
+        tabs.add(createTab(VaadinIcon.USER_CHECK, "Permisos", UserAuthorities.class));
         return tabs.toArray(new Tab[tabs.size()]);
     }
 
