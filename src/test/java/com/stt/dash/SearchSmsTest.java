@@ -3,7 +3,6 @@ package com.stt.dash;
 import com.stt.dash.backend.repositories.SmsHourRepository;
 import com.stt.dash.backend.repositories.sms.AugSmsRepository;
 import com.stt.dash.backend.repositories.sms.TempSmsRepository;
-import com.stt.dash.backend.service.ClientService;
 import com.stt.dash.backend.service.TempSmsService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +29,11 @@ import java.util.Arrays;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ActiveProfiles("local")
 @Sql({"/scripts/schema.sql"})
-@Import(value = {ClientService.class, TempSmsService.class})
+@Import(value = {TempSmsService.class})
 @Rollback
 @Transactional
 @Disabled("mientras se termina el traspaso a Uma")
 public class SearchSmsTest {
-    @Autowired
-    ClientService clientService;
     @Autowired
     Environment environment;
     @Autowired
