@@ -49,8 +49,6 @@ export class UserFormV2 extends LitElement {
                 }
             </style>
             <vaadin-form-layout id="form1" .responsiveSteps="${this.responsiveSteps}">
-                <vaadin-combo-box id="clients" label="Cliente" clear-button-visible></vaadin-combo-box>
-                <br>
                 <vaadin-text-field id="userName" label="Nombre" clear-button-visible></vaadin-text-field>
                 <vaadin-text-field id="userLastname" label="Apellido" clear-button-visible></vaadin-text-field>
                 <vaadin-vertical-layout>
@@ -59,6 +57,8 @@ export class UserFormV2 extends LitElement {
                     <vaadin-checkbox id="active" label="Activo"></vaadin-checkbox>
                 </vaadin-vertical-layout>
                 <vaadin-password-field id="password" label="Password"></vaadin-password-field>
+                <vaadin-combo-box id="clients" label="Cliente" clear-button-visible></vaadin-combo-box>
+                <br>
                 <vcf-multiselect-combo-box id="systemids" label="Credenciales"
                                            clear-button-visible></vcf-multiselect-combo-box>
             </vaadin-form-layout>
