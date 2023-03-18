@@ -5,6 +5,7 @@ import com.stt.dash.backend.repositories.OAuthorityRepository;
 import com.vaadin.flow.server.VaadinSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,25 +21,25 @@ public class OAuthorityService {
         this.auth_repo = auth_repo;
     }
 
-    private String getStringLog(){
+    private String getStringLog() {
         String id = VaadinSession.getCurrent().getSession().getId();
         StringBuilder sb = new StringBuilder();
         sb.append('[').append(id).append("] [").append(UI_CODE).append("]");
         return sb.toString();
     }
 
-    public List<OAuthority> findAll(){
-        return auth_repo.findAll();
+    public List<OAuthority> findAll() {
+        return auth_repo.findAll(Sort.by(Sort.Direction.ASC, "authDesc"));
     }
 
-    public List<OAuthority> findAll(String filterText){
-        if(filterText.length()<1){
+    public List<OAuthority> findAll(String filterText) {
+        if (filterText.length() < 1) {
             return auth_repo.findAll();
         }
         return auth_repo.findByAuthName(filterText);
     }
 
-    public List<OAuthority> findByAuthName(String authName){
+    public List<OAuthority> findByAuthName(String authName) {
         return auth_repo.findByAuthName(authName);
     }
 
@@ -60,7 +61,7 @@ public class OAuthorityService {
         try {
             Long id = auth.getId();
             auth_repo.save(auth);
-            if(id == null) {
+            if (id == null) {
                 log.info("{} Saved: OAuthority[{}]", getStringLog(), auth.getAuthName());
             } else {
                 log.info("{} Updated: OAuthority[{}]", getStringLog(), auth.getAuthName());

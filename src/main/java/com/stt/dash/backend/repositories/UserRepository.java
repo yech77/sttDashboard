@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Page<User> findBy(Pageable pageable);
 
-    Page<User> findAllByUserParentIsNotNull(Pageable pageable);
+    Page<User> findAllByUserParentIsNotNullAndEmailIsNot(String email, Pageable pageable);
 
     Page<User> findByEmailLikeIgnoreCaseOrFirstNameLikeIgnoreCaseOrLastNameLikeIgnoreCaseOrRoleLikeIgnoreCase(
             String emailLike, String firstNameLike, String lastNameLike, String roleLike, Pageable pageable);

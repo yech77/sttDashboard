@@ -42,17 +42,18 @@ truncate table sms_hour;
 ALTER SEQUENCE hibernate_sequence RESTART WITH 100;
 /*********************************/
 insert into public.oauthority (id, auth_desc, auth_name)
-values (1, 'Permite ver la Pantalla AUDITEVEN', 'UI_AUDIT'),
-       (2, 'Permite ver la Pantalla ROL', 'UI_ROL'),
-       (3, 'Permite ver la Pantalla USER', 'UI_USER'),
-       (4, 'Permite ver la Pantalla OPERADORAS', 'UI_EVOLUTION_CARRIER'),
-       (5, 'Permite ver la Pantalla ROL', 'UI_EVOLUTION_CLIENT'),
-       (6, 'Permite ver la Pantalla USER', 'UI_EVOLUTION_SYSTEMID'),
-       (7, 'Permite ver la Pantalla BUSCAR SMS', 'UI_SEARCH_SMS'),
-       (8, 'Permite ver la Pantalla TRAFICO', 'UI_TRAFFIC_SMS'),
-       (9, 'Permite ver la Pantalla AGENDA', 'UI_AGENDA_SMS'),
-       (10, 'Permite ver la Pantalla MANEJO DE RECADOS', 'UI_PROGRAM_SMS'),
-       (11, 'Permite ver el mensaje de text', 'VIEW_MSG_TEXT');
+values (1, 'Auditoria', 'UI_AUDIT'),
+       (2, 'Permisos', 'UI_ROL'),
+       (3, 'Usuarios', 'UI_USER'),
+       (4, 'Evolución Operadora', 'UI_EVOLUTION_CARRIER'),
+       (5, 'Evolución Cliente', 'UI_EVOLUTION_CLIENT'),
+       (6, 'Evolución Credenciales', 'UI_EVOLUTION_SYSTEMID'),
+       (7, 'Búsqueda de mensaje', 'UI_SEARCH_SMS'),
+       (8, 'Tráfico por Cliente', 'UI_TRAFFIC_SMS'),
+       (9, 'Crear Masivos', 'UI_AGENDA_SMS'),
+       (10, 'Programar Masivos', 'UI_PROGRAM_SMS'),
+       (11, 'Ver mensaje de Texto', 'VIEW_MSG_TEXT'),
+       (12, 'Dashboard', 'UI_DASHBOARD');
 /*********/
 insert into public.orole (id, rol_name)
 values (20, 'AGENDAR_SMS'),

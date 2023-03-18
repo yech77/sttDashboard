@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ORoleService implements FilterableCrudService<ORole>{
+public class ORoleService implements FilterableCrudService<ORole> {
 
     private static String UI_CODE = "SERV_ROL";
     private static final Logger log = LoggerFactory.getLogger(ORoleService.class.getName());
@@ -67,30 +67,15 @@ public class ORoleService implements FilterableCrudService<ORole>{
     }
 
     public List<ORole> findAll(String filterText) {
-        if (filterText==null || filterText.length() < 1) {
+        if (filterText == null || filterText.length() < 1) {
             return role_repo.findAll();
         }
         return role_repo.searchAll(filterText);
     }
 
-    public List<ORole> findByRolName(String roleName) {
+    public ORole findByRolName(String roleName) {
         return role_repo.findByRolName(roleName);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Override

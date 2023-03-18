@@ -80,12 +80,11 @@ public class UserService implements FilterableCrudService<User> {
     public Page<User> find(CurrentUser currentUser, Pageable pageable) {
         /* Los Comerciales son tipo HAS*/
         if (currentUser.getUser().getUserType() == User.OUSER_TYPE.HAS) {
-            Page<User> p = getRepository().findAllByUserParentIsNotNull(pageable);
+            Page<User> p = getRepository().findAllByUserParentIsNotNullAndEmailIsNot(currentUser.getUser().getEmail(), pageable);
             isotherCounter = p.getTotalElements();
             return p;
         }
         List<User> lu = getUserFamily(currentUser.getUser());
-        /* es para indicar que el counter debe contar este*/
         isotherCounter = lu.size();
         Page<User> u = new PageImpl<>(lu);
         return u;

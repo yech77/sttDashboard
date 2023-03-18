@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface ORoleRepository extends JpaRepository<ORole, Long> {
 
-    List<ORole> findByRolName(String rol_name);
+    ORole findByRolName(String rol_name);
 
     @Query("select r from ORole r " +
             "WHERE lower(r.rolName) like lower(concat('%', :filterText, '%'))")
