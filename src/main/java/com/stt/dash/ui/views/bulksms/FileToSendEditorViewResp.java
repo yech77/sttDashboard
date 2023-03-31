@@ -67,7 +67,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Tag("file-to-send-editor")
-@JsModule("./src/views/bulksms/file-to-send-editor.ts")
+@JsModule("./src/views/bulksms/file-to-send-editor.js")
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class FileToSendEditorViewResp extends LitTemplate implements HasNotifications {

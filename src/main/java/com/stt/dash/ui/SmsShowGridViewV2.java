@@ -33,7 +33,7 @@ import java.util.function.Consumer;
 
 
 @Tag("sms-show-grid-view-v2")
-@JsModule("./src/views/smsgridview/sms-show-grid-view-v2.ts")
+@JsModule("./src/views/smsgridview/sms-show-grid-view-v2.js")
 @PageTitle(BakeryConst.TITLE_SMS_SHOW_VIEW)
 public class SmsShowGridViewV2 extends LitTemplate implements Viewnable<SmsByYearMonthDay> {
 

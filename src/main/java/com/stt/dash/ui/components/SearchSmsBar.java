@@ -7,11 +7,11 @@ import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.template.Id;
 
 @Tag("search-sms-bar")
-@JsModule("./src/components/search-sms-bar.ts")
+@JsModule("./src/components/search-sms-bar.js")
 public class SearchSmsBar extends LitTemplate {
     @Id("dueDate")
     EnhancedDateRangePicker dateRangePicker;
 
-    public SearchSmsBar(){
+    public SearchSmsBar() {
     }
 }

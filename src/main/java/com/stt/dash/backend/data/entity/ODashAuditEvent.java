@@ -85,7 +85,10 @@ public class ODashAuditEvent extends AbstractEntitySequence {
     }
 
     public String getEventDesc() {
-        return eventDesc;
+        if (eventDesc == null) {
+            return "";
+        }
+        return eventDesc.substring(0, 254);
     }
 
     public void setEventDesc(String eventDesc) {

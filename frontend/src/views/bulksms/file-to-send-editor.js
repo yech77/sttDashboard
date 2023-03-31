@@ -1,26 +1,24 @@
-import {customElement, html, LitElement} from 'lit-element';
+import {html, LitElement} from 'lit-element';
 import {FormLayoutResponsiveStep} from "@vaadin/vaadin-form-layout";
 
-// @ts-ignore
-@customElement('file-to-send-editor')
-export class FileToSendEditor extends LitElement {
+class FileToSendEditor extends LitElement {
     createRenderRoot() {
         // Do not use a shadow root
         return this;
     }
 
-    private responsiveSteps: FormLayoutResponsiveStep[] = [
-        {columns: 1, labelsPosition: 'top'},
-        {minWidth: '600px', columns: 4, labelsPosition: 'top'}
-    ];
-    private form2: FormLayoutResponsiveStep[] = [
-        {columns: 1, labelsPosition: 'top'},
-        {minWidth: '360px', columns: 2, labelsPosition: 'top'}
-    ];
-    private form3: FormLayoutResponsiveStep[] = [
-        {columns: 1, labelsPosition: 'top'},
-        {minWidth: '500px', columns: 3, labelsPosition: 'top'}
-    ];
+    // private responsiveSteps: FormLayoutResponsiveStep[] = [
+    //     {columns: 1, labelsPosition: 'top'},
+    //     {minWidth: '600px', columns: 4, labelsPosition: 'top'}
+    // ];
+    // private form2: FormLayoutResponsiveStep[] = [
+    //     {columns: 1, labelsPosition: 'top'},
+    //     {minWidth: '360px', columns: 2, labelsPosition: 'top'}
+    // ];
+    // private form3: FormLayoutResponsiveStep[] = [
+    //     {columns: 1, labelsPosition: 'top'},
+    //     {minWidth: '500px', columns: 3, labelsPosition: 'top'}
+    // ];
 
     render() {
         return html`
@@ -117,19 +115,20 @@ export class FileToSendEditor extends LitElement {
     //     };
     // }
 
-    // ready() {
-    //     // super.ready();
-    //
-    //     // Not using attributes since Designer does not suppor single-quote attributes
-    //     this.form1.responsiveSteps = [
-    //     ];
-    //     this.$.form2.responsiveSteps = [
-    //         {columns: 1, labelsPosition: 'top'},
-    //         {minWidth: '360px', columns: 2, labelsPosition: 'top'}
-    //     ];
-    //     this.$.form3.responsiveSteps = [
-    //         {columns: 1, labelsPosition: 'top'},
-    //         {minWidth: '500px', columns: 3, labelsPosition: 'top'}
-    //     ];
-    // }
+    ready() {
+        // super.ready();
+
+        // Not using attributes since Designer does not suppor single-quote attributes
+        this.form1.responsiveSteps = [];
+        this.$.form2.responsiveSteps = [
+            {columns: 1, labelsPosition: 'top'},
+            {minWidth: '360px', columns: 2, labelsPosition: 'top'}
+        ];
+        this.$.form3.responsiveSteps = [
+            {columns: 1, labelsPosition: 'top'},
+            {minWidth: '500px', columns: 3, labelsPosition: 'top'}
+        ];
+    }
 }
+
+customElements.define('file-to-send-editor', FileToSendEditor)

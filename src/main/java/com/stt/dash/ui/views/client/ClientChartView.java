@@ -35,6 +35,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -135,13 +136,14 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         clientCombobox.setLabel("Cliente");
         clientCombobox.setItemLabelGenerator(Client::getClientName);
         /* Client & Systemids*/
-        if (currentUser.getUser().getUserType() == User.OUSER_TYPE.HAS) {
+        if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
             clientCombobox.setItems(currentUser.getUser().getClients());
-        } else if (currentUser.getUser().getUserType() == User.OUSER_TYPE.IS) {
-            clientCombobox.setItems(currentUser.getUser().getClient());
-            /*TODO: Seleccionar por defecto el unico cliente. Validar que no este vacio.*/
-            clientCombobox.setReadOnly(true);
-            systemIdMultiCombo.setItems(currentUser.getUser().getClient().getSystemids());
+        } else {
+            /* Solo usearios Comerciales tendran Clientes. El resto tendrán Credenciales asignadas. */
+            /*TODO: Enviar un mensaje dado que el cliente puede no tener credenciales .*/
+            Client client = currentUser.getUser().getSystemids().stream().findFirst().get().getClient();
+            clientCombobox.setItems(client);
+            clientCombobox.setValue(client);
         }
         op = getCurrentSessionAttributeAndNullIt(CLIENT_VIEW_SELECTED_CLIENT);
         op.ifPresent(o -> clientCombobox.setValue((Client) o));
@@ -168,20 +170,24 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
 
     private void addValueChangeListener() {
         clientCombobox.addValueChangeListener(clientListener -> {
-            if (clientListener.getValue() != null && clientListener.getValue().getSystemids() != null) {
+            if (ObjectUtils.isEmpty(clientListener.getValue())) {
+                systemIdMultiCombo.clear();
+                return;
+            }
+            if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+                /* Solo los comerciales tienen todos los systemids del cliente */
                 systemIdMultiCombo.setItems(clientListener.getValue().getSystemids());
             } else {
-                systemIdMultiCombo.setItems(new ArrayList<>());
+                systemIdMultiCombo.setItems(currentUser.getUser().getSystemids());
             }
             Optional<Object> op = getCurrentSessionAttributeAndNullIt(CLIENT_VIEW_SELECTED_SYSTEMID);
             if (op.isPresent()) {
                 systemIdMultiCombo.setValue((Set<SystemId>) op.get());
-            } else {
-                systemIdMultiCombo.setValue(new HashSet<>(clientListener.getValue().getSystemids()));
+                return;
             }
         });
 
-        clientCombobox.addValueChangeListener(blur -> searchButton.setEnabled(isValidSearch()));
+        clientCombobox.addValueChangeListener(value -> searchButton.setEnabled(isValidSearch()));
 
         systemIdMultiCombo.addValueChangeListener(blur -> {
             searchButton.setEnabled(isValidSearch());

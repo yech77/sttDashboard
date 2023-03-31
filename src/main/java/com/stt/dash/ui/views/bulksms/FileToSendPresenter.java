@@ -77,7 +77,7 @@ public class FileToSendPresenter {
         this.entityPresenter.setView(view);
         this.view = view;
         view.getGrid().setDataProvider(dataProvider);
-        view.getOpenedFileToSendEditorView().setCurrentUser(currentUser.getUser());
+        view.getOpenedFileToSendEditorView().setUser(currentUser.getUser());
         view.getOpenedFileToSendEditorView().addCancelListener(e -> cancel());
         view.getOpenedFileToSendEditorView().addReviewListener(e -> review());
         view.getOpenedOrderDetails().addSaveListenter(e -> save());

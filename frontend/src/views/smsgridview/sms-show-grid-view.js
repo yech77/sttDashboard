@@ -1,7 +1,6 @@
-import {customElement, html, LitElement} from 'lit-element';
+import {html, LitElement} from 'lit-element';
 
-@customElement('sms-show-grid-view')
-export class SmsShowGridView extends LitElement {
+class SmsShowGridView extends LitElement {
 
     createRenderRoot() {
         // Do not use a shadow root
@@ -25,3 +24,5 @@ export class SmsShowGridView extends LitElement {
         `;
     }
 }
+
+customElements.define('sms-show-grid-view', SmsShowGridView)

@@ -2,6 +2,7 @@ package com.stt.dash.ui;
 
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.ListGenericBean;
+import com.stt.dash.backend.data.Role;
 import com.stt.dash.backend.data.entity.Client;
 import com.stt.dash.backend.data.entity.ORole;
 import com.stt.dash.backend.data.entity.SystemId;
@@ -40,6 +41,7 @@ import com.vaadin.flow.server.StreamResource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.annotation.Secured;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
@@ -54,9 +56,10 @@ import java.util.Locale;
 import java.util.Set;
 
 @Tag("sms-show-view")
-@JsModule("./src/views/smsview/sms-show-view.ts")
+@JsModule("./src/views/smsview/sms-show-view.js")
 @Route(value = BakeryConst.PAGE_SMS_SHOW_VIEW, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_SMS_SHOW_VIEW)
+@Secured({Role.ADMIN, "UI_TRAFFIC_SMS"})
 public class SmsShowView extends LitTemplate {
     @Id("firstline")
     Div firstline;
@@ -126,12 +129,10 @@ public class SmsShowView extends LitTemplate {
         clientCombobox.setItemLabelGenerator(Client::getClientName);
         clientCombobox.setWidth("100%");
         /* Client & Systemids*/
-        if (currentUser.getUser().getUserType() == User.OUSER_TYPE.HAS) {
-            clientCombobox.setItems(currentUser.getUser().getClients());
-        } else if (currentUser.getUser().getUserType() == User.OUSER_TYPE.IS) {
+        if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.NO_COMERCIAL) {
             clientCombobox.setItems(currentUser.getUser().getClient());
-            /*TODO: Seleccionar por defecto el unico cliente. Validar que no este vacio.*/
-            clientCombobox.setReadOnly(true);
+        } else {
+            clientCombobox.setItems(currentUser.getUser().getClients());
         }
         clientCombobox.addValueChangeListener(change -> {
             if (change.getValue() == null) {

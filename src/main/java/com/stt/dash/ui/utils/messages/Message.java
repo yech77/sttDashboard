@@ -11,6 +11,8 @@ public class Message {
             "Ha realizado modificaciones en %s. ¿Descartar cambios?");
     public static final MessageSupplier NO_DATA = createMessage("Información", "Cerrar", "Cancelar",
             "No hay datos que mostrar");
+    public static final MessageSupplier SAVED_DATA = createMessage("Información", "Cerrar", "Cancelar",
+            "Guardado correctamente");
 
     public static final MessageSupplier CONFIRM_DELETE = createMessage(CONFIRM_CAPTION_DELETE, BUTTON_CAPTION_DELETE,
             BUTTON_CAPTION_CANCEL, CONFIRM_MESSAGE_DELETE);

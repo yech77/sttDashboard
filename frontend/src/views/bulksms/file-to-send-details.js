@@ -1,4 +1,4 @@
-import {customElement, html, LitElement} from 'lit-element';
+import {html, LitElement} from 'lit-element';
 import '@polymer/iron-icon/iron-icon.js';
 import '@vaadin/vaadin-icons/vaadin-icons.js';
 import '@vaadin/vaadin-button/src/vaadin-button.js';
@@ -9,24 +9,47 @@ import '../../components/buttons-bar.js';
 import '../../components/utils-mixin.js';
 import './filetosend-status-badge.js';
 import '../../../styles/shared-styles.js';
+import '@vaadin/vaadin-text-field';
+import '@vaadin/vaadin-button';
+import '@vaadin/vaadin-checkbox';
+import '@vaadin/vaadin-radio-button/vaadin-radio-button';
+import '@vaadin/vaadin-radio-button/vaadin-radio-group';
+import '../../components/buttons-bar.js'
 import {FormLayoutResponsiveStep} from "@vaadin/vaadin-form-layout";
 // import {html} from '@polymer/polymer/lib/utils/html-tag.js';
 
 // class OrderDetails extends window.ScrollShadowMixin(PolymerElement) {
+let showing = true;
 
-@customElement('file-to-send-details')
-export class FileToSendDetails extends LitElement {
-    showing = true;
+class FileToSendDetails extends LitElement {
+
 
     createRenderRoot() {
         // Do not use a shadow root
         return this;
     }
 
-    private form1: FormLayoutResponsiveStep[] = [
-        {columns: 1, labelsPosition: 'top'},
-        {minWidth: '600px', columns: 4, labelsPosition: 'top'}
-    ];
+    // ready() {
+    //     super.ready();
+    //
+    //     this.$.form1.responsiveSteps = this.$.form3.responsiveSteps = [
+    //         {columns: 1, labelsPosition: 'top'},
+    //         {minWidth: '600px', columns: 4, labelsPosition: 'top'}
+    //     ];
+    //
+    //     this.$.form2.responsiveSteps = [
+    //         {columns: 1}, {minWidth: '180px', columns: 2}
+    //     ];
+    //
+    //     this.$.form4.responsiveSteps = [
+    //         {columns: 1, labelsPosition: 'top'}
+    //     ];
+    // }
+
+    // private form1: FormLayoutResponsiveStep[] = [
+    //     {columns: 1, labelsPosition: 'top'},
+    //     {minWidth: '600px', columns: 4, labelsPosition: 'top'}
+    // ];
     //
     // private form2: FormLayoutResponsiveStep[] = [
     //     {columns: 1}, {minWidth: '180px', columns: 2}
@@ -225,22 +248,6 @@ export class FileToSendDetails extends LitElement {
     //     };
     // }
 
-    // ready() {
-    //     // super.ready();
-    //
-    //     this.$.form1.responsiveSteps = this.$.form3.responsiveSteps = [
-    //         {columns: 1, labelsPosition: 'top'},
-    //         {minWidth: '600px', columns: 4, labelsPosition: 'top'}
-    //     ];
-    //
-    //     this.$.form2.responsiveSteps = [
-    //         {columns: 1}, {minWidth: '180px', columns: 2}
-    //     ];
-    //
-    //     this.$.form4.responsiveSteps = [
-    //         {columns: 1, labelsPosition: 'top'}
-    //     ];
-    // }
 
     // _onCommentKeydown(event) {
     //     if (event.key === 'Enter' || event.keyCode == 13) {
@@ -251,5 +258,6 @@ export class FileToSendDetails extends LitElement {
     // }
 }
 
+customElements.define('file-to-send-details', FileToSendDetails)
 //
 // window.customElements.define(OrderDetails.is, OrderDetails);

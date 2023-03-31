@@ -28,7 +28,7 @@ import java.util.List;
 
 
 @Tag("sms-show-grid-view")
-@JsModule("./src/views/smsgridview/sms-show-grid-view.ts")
+@JsModule("./src/views/smsgridview/sms-show-grid-view.js")
 //@Route(value = BakeryConst.PAGE_SMS_SHOW_GRID_VIEW, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_SMS_SHOW_VIEW)
 public class SmsShowGridHourlyView extends LitTemplate implements Viewnable<SmsByYearMonthDayHour> {

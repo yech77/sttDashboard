@@ -1,6 +1,6 @@
-import {customElement, html, LitElement} from 'lit-element';
-@customElement('file-to-send-card')
-export class FileToSendCard extends LitElement {
+import {html, LitElement} from 'lit-element';
+
+class FileToSendCard extends LitElement {
     createRenderRoot() {
         // Do not use a shadow root
         return this;
@@ -168,7 +168,10 @@ export class FileToSendCard extends LitElement {
             </div>
         `;
     }
+
     _cardClick() {
         this.dispatchEvent(new CustomEvent('card-click'));
     }
 }
+
+customElements.define('file-to-send-card', FileToSendCard)

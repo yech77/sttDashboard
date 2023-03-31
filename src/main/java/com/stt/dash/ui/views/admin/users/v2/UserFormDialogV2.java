@@ -24,15 +24,23 @@ import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterListener;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveObserver;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
-public class UserFormDialogV2 extends FormLayout implements OnUIForm<User> {
+public class UserFormDialogV2 extends FormLayout implements OnUIForm<User>, BeforeEnterObserver, BeforeLeaveObserver {
     public static final String MSG_DEBE_ESCOGER_UN_CLIENTE1 = "Debe escoger un Cliente";
     private final List<User> allMyUsers;
     private final CurrentUser currentUser;
@@ -42,19 +50,19 @@ public class UserFormDialogV2 extends FormLayout implements OnUIForm<User> {
     HorizontalLayout h = new HorizontalLayout();
     MultiComboBox<SystemId> systemids = new MultiComboBox<>();
     ComboBox<Client> comboClient = new ComboBox<>();
-    Checkbox isActive = new Checkbox("Activo");
-    ConfirmDialog dialog;
-    ComboBox<User.OUSER_TYPE> userType = new ComboBox<>();
     ComboBox<User.OUSER_TYPE_ORDINAL> userTypeOrdCombo = new ComboBox<>();
-    ComboBox<User> userParentCombobox = new ComboBox<>();
-    ComboBox<String> role = new ComboBox<>();
+    Checkbox isActive = new Checkbox("Activo");
+    Checkbox isCompanyAdmin = new Checkbox("Administrador de Empresa");
+    //    ComboBox<User> userParentCombobox = new ComboBox<>();
+    ConfirmDialog dialog;
+    private final List<SystemId> list;
+    private final Collection<User> userBelongList;
 
-    public UserFormDialogV2(List<ORole> allRoles, List<Client> parClients, List<Client> allClient, Collection<SystemId> parSystemids, List<User> allUsers, CurrentUser currentUser, PasswordEncoder passwordEncoder) {
+    public UserFormDialogV2(List<ORole> allRoles, List<SystemId> parSystemids, List<User> allUsers, Collection<User> userBelongList, CurrentUser currentUser, PasswordEncoder passwordEncoder) {
         this.allMyUsers = allUsers;
         this.currentUser = currentUser;
-        /**/
-        userTypeOrdCombo.setItems(User.OUSER_TYPE_ORDINAL.values());
-        /**/
+        this.list = parSystemids;
+        this.userBelongList = userBelongList;
         EmailField email = new EmailField();
         TextField first = new TextField();
         TextField last = new TextField();
@@ -65,65 +73,56 @@ public class UserFormDialogV2 extends FormLayout implements OnUIForm<User> {
         doMulticomboI18N();
         /**/
         doWidthFull(email, first, last, password);
+        first.setPlaceholder("Nombre");
         email.setPlaceholder("user@something.com");
 //        formItem.add(isActive);
         doColSpan(email, first, last, password);
         /**/
         doBinder(passwordEncoder, email, first, last, password);
         /**/
-        doSetItems(allRoles, parClients, allClient, allUsers);
+        doSetItems(allRoles, currentUser.getUser().getClients(), allUsers);
         doValueListeners();
 
         /**/
-        fillUserType(currentUser.getUser().getUserType(), currentUser.getUser().getUserTypeOrd(), userType);
-        doShowClientOrd(currentUser.getUser().getUserTypeOrd());
-        /* Cada vez que se cambia el correo se llena este set que ya no esta en pantalla. */
-        email.addBlurListener(event -> {
-            userTypeOrdCombo.setValue(User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS);
-            userParentCombobox.setValue(currentUser.getUser());
-            userType.setValue(User.OUSER_TYPE.IS);
+        if (ObjectUtils.isNotEmpty(list)) {
+            systemids.setItems(list);
+        }
+        /**/
+        userTypeOrdCombo.setItems(User.OUSER_TYPE_ORDINAL.values());
+        /**/
+        if (currentUser.getUser().getUserTypeOrd() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            isCompanyAdmin.setValue(false);
+            isCompanyAdmin.setEnabled(false);
+        }
+        isCompanyAdmin.addValueChangeListener(event -> {
+            userTypeOrdCombo.setValue(isCompanyAdmin.getValue() ? User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS : User.OUSER_TYPE_ORDINAL.EMPRESA);
         });
     }
 
-    private void doSetItems(List<ORole> allRoles, List<Client> parClients, List<Client> allClients, List<User> allUsers) {
-        userType.setItems(currentUser.getUser().getUserType());
+    private void doSetItems(List<ORole> allRoles, Collection<Client> parClients, List<User> allUsers) {
         /**/
-        doSetItemsClient(allClients);
+        doSetItemsClient(parClients);
         systemids.setItemLabelGenerator(SystemId::getSystemId);
         /**/
-        doSetItemsUserParent();
-        /**/
-        /**/
-        doSetItemsRole();
     }
 
-    private void doSetItemsClient(List<Client> parClients) {
+    private void doSetItemsClient(Collection<Client> parClients) {
         comboClient.setItems(parClients);
         comboClient.setItemLabelGenerator(Client::getClientName);
         comboClient.addValueChangeListener((evt) -> {
-            if (evt.getSource().getValue() == null) {
+            if (!evt.isFromClient() || evt.getSource().getValue() == null) {
                 return;
             }
-            systemids.setItems(evt.getSource().getValue().getSystemids());
-            systemids.setValue(new HashSet<>(evt.getSource().getValue().getSystemids()));
+            /* TODO: Verificar porque se hace esta condicion para el set de items. */
+            if (User.OUSER_TYPE_ORDINAL.COMERCIAL == currentUser.getUser().getUserTypeOrd()) {
+                systemids.setItems(evt.getSource().getValue().getSystemids());
+            }
         });
-    }
-
-    private void doSetItemsUserParent() {
-        userParentCombobox.setItems(currentUser.getUser());
-        userParentCombobox.setValue(currentUser.getUser());
-    }
-
-    private void doSetItemsRole() {
-        role.setLabel("Role");
-        role.setItemLabelGenerator(s -> s != null ? s : "");
-        role.setDataProvider(DataProvider.ofItems(Role.getAllRoles()));
     }
 
     private void doValueListeners() {
         /* CHANGE LISTENER */
         addChangeListenerIsActive();
-        addChageListenerUserType();
     }
 
     private void addChangeListenerIsActive() {
@@ -138,16 +137,11 @@ public class UserFormDialogV2 extends FormLayout implements OnUIForm<User> {
         });
     }
 
-    private void addChageListenerUserType() {
-        doShowClientOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
-    }
-
     private void doMulticomboI18N() {
         systemids.setI18n(I18nUtils.getMulticomboI18n());
     }
 
     private void doWidthFull(EmailField email, TextField first, TextField last, PasswordField password) {
-        userType.setWidthFull();
         first.setWidthFull();
         last.setWidthFull();
         email.setWidthFull();
@@ -162,11 +156,9 @@ public class UserFormDialogV2 extends FormLayout implements OnUIForm<User> {
         binder.bind(first, "firstName");
         binder.bind(last, "lastName");
         binder.forField(userTypeOrdCombo).bind(User::getUserTypeOrd, User::setUserTypeOrd);
-        binder.forField(userType).bind(User::getUserType, User::setUserType);
         binder.forField(isActive).bind(User::isActive, User::setActive);
         binder.bind(email, "email");
-        binder.bind(role, "role");
-        binder.forField(userParentCombobox).bind(User::getUserParent, User::setUserParent);
+//        binder.forField(userParentCombobox).bind(User::getUserParent, User::setUserParent);
         /**/
         doBinderSystemid();
         doBinderClient();
@@ -207,19 +199,6 @@ public class UserFormDialogV2 extends FormLayout implements OnUIForm<User> {
         }).bind(User::getClient, User::setClient);
     }
 
-    /**
-     * Muestra el combo o el multicombo dependiendo del tipo de usuario ordinal
-     *
-     * @param changeListener
-     */
-    public void doShowClientOrd(User.OUSER_TYPE_ORDINAL changeListener) {
-        if (changeListener == null) {
-            return;
-        }
-        systemidsFormItem.setVisible(true);
-        comboClientFormItem.setVisible(true);
-    }
-
     private void removeBinding(HasValue<?, ?> binding) {
         binder.removeBinding(binding);
     }
@@ -232,44 +211,6 @@ public class UserFormDialogV2 extends FormLayout implements OnUIForm<User> {
     public Binder<User> getBinder() {
         System.out.println("Llamado getBinder de User");
         return binder;
-    }
-
-    public void setUser(User user) {
-//        binder.removeBean();
-        System.out.println("Llamado le setUser de User: " + user);
-        if (user == null) {
-            return;
-        }
-        binder.setBean(user);
-        System.out.println("Seting usertype: " + user.getUserType());
-        userType.setValue(user.getUserType());
-        doShowClientOrd(user.getUserTypeOrd());
-
-        // No permite que el usuario pueda cambiar sus propios datos criticos
-        if (user.equals(currentUser.getUser())) {
-            userType.setReadOnly(true);
-            systemids.setReadOnly(true);
-            comboClient.setReadOnly(true);
-            isActive.setReadOnly(true);
-        } else {
-            systemids.setReadOnly(false);
-            comboClient.setReadOnly(false);
-
-        }
-//        binder.setBean(user);
-        //activeStatus.setValue(user.getUserStatus() == OUser.OUSER_STATUS.ACTIVO);
-    }
-
-    /**
-     * Llena el combo de tipo de usuario. Un usuario de Tipo IS solo pueden crear
-     * user tipo BY. Los tipo BY solo tienen asignados SIDS.
-     *
-     * @param usertype
-     * @param userTypeCombo
-     */
-    private void fillUserType(User.OUSER_TYPE usertype, User.OUSER_TYPE_ORDINAL userTypeOrd, ComboBox<User.OUSER_TYPE> userTypeCombo) {
-        userTypeCombo.clear();
-        userTypeCombo.setItems(User.OUSER_TYPE.values());
     }
 
     private List<User> filterUsersOfType(List<User> users, User.OUSER_TYPE_ORDINAL... targetTypes) {
@@ -287,10 +228,10 @@ public class UserFormDialogV2 extends FormLayout implements OnUIForm<User> {
     }
 
     private void doColSpan(EmailField email, TextField first, TextField last, PasswordField password) {
+        setColspan(addFormItem(isCompanyAdmin, ""), 2);
+//        setColspan(addFormItem(userParentCombobox, "Pertenece a"), 1);
         setColspan(addFormItem(first, "Nombre"), 1);
         setColspan(addFormItem(last, "Apellido"), 1);
-//        setColspan(addFormItem(createdDate, "Fecha de Creación"), 1);
-//        setColspan(addFormItem(userType, ""), 2);
         setColspan(addFormItem(email, isActive), 1);
         setColspan(addFormItem(password, "Clave"), 1);
         comboClientFormItem = addFormItem(comboClient, "Cliente");
@@ -304,5 +245,13 @@ public class UserFormDialogV2 extends FormLayout implements OnUIForm<User> {
         if (idBeforeSave == 0) {
             allMyUsers.add(entity);
         }
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+    }
+
+    @Override
+    public void beforeLeave(BeforeLeaveEvent beforeLeaveEvent) {
     }
 }

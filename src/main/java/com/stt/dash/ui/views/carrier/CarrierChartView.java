@@ -5,6 +5,7 @@ import com.stt.dash.app.OMonths;
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.AbstractSmsByYearMonth;
+import com.stt.dash.backend.data.Role;
 import com.stt.dash.backend.data.SmsByYearMonth;
 import com.stt.dash.backend.data.SmsByYearMonthDay;
 import com.stt.dash.backend.data.SmsByYearMonthDayHour;
@@ -41,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.annotation.Secured;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -51,6 +53,7 @@ import java.util.stream.Collectors;
 @JsModule("./src/views/carrier/carrier-chart-view.js")
 @Route(value = BakeryConst.PAGE_CARRIER, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_CARRIER)
+@Secured({Role.ADMIN, "UI_EVOLUTION_CARRIER"})
 public class CarrierChartView extends DashboardBase implements HasNotifications {
     @Id("deliveriesThisMonth")
     private Chart smsLastThreeMonthChart;
@@ -111,12 +114,14 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         clientCombobox.setLabel("Cliente");
         clientCombobox.setItemLabelGenerator(Client::getClientName);
         /* Client & Systemids*/
-        if (currentUser.getUser().getUserType() == User.OUSER_TYPE.HAS) {
+        if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
             clientCombobox.setItems(currentUser.getUser().getClients());
-        } else if (currentUser.getUser().getUserType() == User.OUSER_TYPE.IS) {
-            clientCombobox.setItems(currentUser.getUser().getClient());
-            /*TODO: Seleccionar por defecto el unico cliente. Validar que no este vacio.*/
-            clientCombobox.setReadOnly(true);
+        } else {
+            /* Solo usearios Comerciales tendran Clientes. El resto tendrán Credenciales asignadas. */
+            /*TODO: Enviar un mensaje dado que el cliente puede no tener credenciales .*/
+            Client client = currentUser.getUser().getSystemids().stream().findFirst().get().getClient();
+            clientCombobox.setItems(client);
+            clientCombobox.setValue(client);
         }
 
         if (VaadinSession.getCurrent().getAttribute(CARRIER_VIEW_SELECTED_CLIENT) != null) {
@@ -167,10 +172,17 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         checkboxMessageType.setRequired(true);
 
         try {
-            clientSystemIdStringList = clientCombobox.getValue().getSystemids()
-                    .stream()
-                    .map(SystemId::getSystemId)
-                    .collect(Collectors.toList());
+            if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+                clientSystemIdStringList = clientCombobox.getValue().getSystemids()
+                        .stream()
+                        .map(SystemId::getSystemId)
+                        .collect(Collectors.toList());
+            } else {
+                clientSystemIdStringList = currentUser.getUser().getSystemids()
+                        .stream()
+                        .map(SystemId::getSystemId)
+                        .collect(Collectors.toList());
+            }
         } catch (Exception e) {
             clientSystemIdStringList = new ArrayList<>();
         }

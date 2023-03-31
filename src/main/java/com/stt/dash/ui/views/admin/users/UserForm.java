@@ -21,11 +21,13 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.*;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.*;
 
-public class UserForm extends FormLayout implements OnUIForm<User> {
+public class UserForm extends FormLayout implements OnUIForm<User>, BeforeEnterObserver {
     public static final String MSG_DEBE_ESCOGER_UN_CLIENTE1 = "Debe escoger un Cliente";
     private final List<User> allMyUsers;
     private final CurrentUser currentUser;
@@ -447,5 +449,10 @@ public class UserForm extends FormLayout implements OnUIForm<User> {
         if (idBeforeSave == 0) {
             allMyUsers.add(entity);
         }
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+        System.out.println("ENTRÉ.................");
     }
 }

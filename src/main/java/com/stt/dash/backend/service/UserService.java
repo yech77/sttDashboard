@@ -3,6 +3,7 @@ package com.stt.dash.backend.service;
 import java.util.*;
 
 import com.stt.dash.app.security.CurrentUser;
+import com.stt.dash.backend.data.entity.Client;
 import com.stt.dash.backend.data.entity.MyAuditEventComponent;
 import com.stt.dash.backend.data.entity.ODashAuditEvent;
 import org.springframework.data.domain.Page;
@@ -64,6 +65,10 @@ public class UserService implements FilterableCrudService<User> {
         }
     }
 
+    public Page<User> findByUserTypeOrdAndClients(User.OUSER_TYPE_ORDINAL userTypeOrd, Client client, Pageable pageable) {
+        return getRepository().findByUserTypeOrdAndClients(userTypeOrd, client, pageable);
+    }
+
     public User findByEmailIgnoreCase(String email) {
         return getRepository().findByEmailIgnoreCase(email);
     }
@@ -78,12 +83,18 @@ public class UserService implements FilterableCrudService<User> {
     }
 
     public Page<User> find(CurrentUser currentUser, Pageable pageable) {
-        /* Los Comerciales son tipo HAS*/
-        if (currentUser.getUser().getUserType() == User.OUSER_TYPE.HAS) {
+        /* Comercial ve todos los usuarios */
+        if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
             Page<User> p = getRepository().findAllByUserParentIsNotNullAndEmailIsNot(currentUser.getUser().getEmail(), pageable);
             isotherCounter = p.getTotalElements();
             return p;
+        } else if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
+            /* ADMIN_EMPRESAS ve todos los usuarios de su empresa */
+            Page<User> p = getRepository().findByClientsInAndUserTypeOrdNotAndIdIsNot(currentUser.getUser().getClients(), User.OUSER_TYPE_ORDINAL.COMERCIAL, currentUser.getUser().getId(), pageable);
+            isotherCounter = p.getTotalElements();
+            return p;
         }
+        /* Usuario no comercial y no admin_empresas solo ve su familia*/
         List<User> lu = getUserFamily(currentUser.getUser());
         isotherCounter = lu.size();
         Page<User> u = new PageImpl<>(lu);

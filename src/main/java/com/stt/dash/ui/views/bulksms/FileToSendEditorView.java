@@ -3,9 +3,11 @@ package com.stt.dash.ui.views.bulksms;
 import com.google.gson.Gson;
 import com.googlecode.gentyref.TypeToken;
 import com.stt.dash.app.OProperties;
+import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.data.entity.FIlesToSend;
+import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.AgendaService;
 import com.stt.dash.ui.events.CancelEvent;
@@ -67,10 +69,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Tag("file-to-send-editor")
-@JsModule("./src/views/bulksms/file-to-send-editor.ts")
+@JsModule("./src/views/bulksms/file-to-send-editor.js")
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class FileToSendEditorView extends LitTemplate implements HasNotifications {
@@ -135,7 +138,7 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
     private final String SMS_MESSAGE_WITH_PARAMETER = "Mensaje contiene %s  parámetros; Tienes usados %s.";
 //    private FileToSendEditorView fileToSendEditor;
 
-    private User currentUser;
+    private User user;
 
     private Binder<FIlesToSend> binder = new BeanValidationBinder<>(FIlesToSend.class);
     /**/
@@ -159,9 +162,17 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
                                 AgendaService agendaService,
                                 @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList,
                                 WebClient webClient,
-                                OProperties properties) {
+                                OProperties properties,
+                                CurrentUser currentuser) {
         /**/
-        presenter = new FileToSendEditorViewPresenter(this, userChildrenList, agendaService, systemIdList, webClient, properties);
+        if (currentuser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            presenter = new FileToSendEditorViewPresenter(this, userChildrenList, agendaService, systemIdList, webClient, properties);
+        } else {
+            /* convert Set to List Lambda*/
+            List<String> stringList = currentuser.getUser().getSystemids().stream().map(SystemId::getSystemId).collect(Collectors.toList());
+            ListGenericBean<String> stringListGenericBean = () -> stringList;
+            presenter = new FileToSendEditorViewPresenter(this, userChildrenList, agendaService, stringListGenericBean, webClient, properties);
+        }
         /**/
         acceptCheckbox.setVisible(false);
         dueDate.setVisible(false);
@@ -566,8 +577,8 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
         return lineByValues;
     }
 
-    public void setCurrentUser(User currentUser) {
-        this.currentUser = currentUser;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public boolean hasChanges() {

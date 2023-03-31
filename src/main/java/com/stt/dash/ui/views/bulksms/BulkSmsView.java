@@ -11,6 +11,7 @@ import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.crud.AbstractBakeryCrudView;
 import com.stt.dash.ui.crud.STTBinderCrudEditor;
 import com.stt.dash.ui.utils.BakeryConst;
+import com.stt.dash.ui.utils.BeforeSavingResponse;
 import com.stt.dash.ui.views.agenda.EditAgendaView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -87,11 +88,13 @@ public class BulkSmsView extends AbstractBakeryCrudView<Agenda> {
     }
 
     @Override
-    protected boolean beforeSaving(long idBeforeSave, Agenda entity) {
+    protected BeforeSavingResponse beforeSaving(long idBeforeSave, Agenda entity) {
+        BeforeSavingResponse bsr = new BeforeSavingResponse();
+        bsr.setSuccess(true);
         if (idBeforeSave == 0l) {
             entity.setCreator(currentUser.getUser());
         }
-        return true;
+        return bsr;
     }
 
     private Button createDownloadButton(Grid<Agenda> grid, Agenda agenda) {

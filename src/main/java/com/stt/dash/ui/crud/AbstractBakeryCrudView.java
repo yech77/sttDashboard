@@ -5,6 +5,7 @@ import com.stt.dash.backend.data.entity.AbstractEntitySequence;
 import com.stt.dash.backend.data.entity.util.EntityUtil;
 import com.stt.dash.backend.service.FilterableCrudService;
 import com.stt.dash.ui.components.SearchBar;
+import com.stt.dash.ui.utils.BeforeSavingResponse;
 import com.stt.dash.ui.utils.TemplateUtil;
 import com.stt.dash.ui.views.HasNotifications;
 import com.vaadin.flow.component.Component;
@@ -78,8 +79,10 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
      * @param idBeforeSave si es 0 es un SAVE. Si es distinto de 0, es un UPDATE
      * @return true si se desea salvar.
      */
-    protected boolean beforeSaving(long idBeforeSave, E entity) {
-        return true;
+    protected BeforeSavingResponse beforeSaving(long idBeforeSave, E entity) {
+        BeforeSavingResponse bsr = new BeforeSavingResponse();
+        bsr.setSuccess(true);
+        return bsr;
     }
 
     protected abstract void setupGrid(Grid<E> grid);
@@ -150,8 +153,12 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
         addCancelListener(e -> navigateToEntity(null));
         addSaveListener(e -> {
             idBeforeSave = e.getItem().getId() == null ? 0 : e.getItem().getId();
-            if (!beforeSaving(idBeforeSave, e.getItem())) {
-                throw new RuntimeException("Este es un error forzado....");
+            BeforeSavingResponse response = beforeSaving(idBeforeSave, e.getItem());
+            if (!response.isSuccess()) {
+                if (StringUtils.isNotEmpty(response.getMessage())) {
+                    showNotification(response.getMessage(), false);
+                }
+                throw new RuntimeException(response.getMessage());
             }
             entityPresenter.save(e.getItem(), onSuccessSaved, onFail);
 

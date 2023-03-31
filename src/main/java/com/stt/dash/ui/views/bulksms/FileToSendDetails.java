@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Tag("file-to-send-details")
-@JsModule("./src/views/bulksms/file-to-send-details.ts")
+@JsModule("./src/views/bulksms/file-to-send-details.js")
 public class FileToSendDetails extends LitTemplate {
     Logger log = LoggerFactory.getLogger(FileToSendDetails.class);
 

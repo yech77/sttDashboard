@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
 import static com.stt.dash.ui.utils.BakeryConst.PAGE_AUDIT;
 
 @Tag("sms-show-view")
-@JsModule("./src/views/smsview/sms-show-view.ts")
+@JsModule("./src/views/smsview/sms-show-view.js")
 @PageTitle(BakeryConst.TITLE_AUDIT)
 @Route(value = PAGE_AUDIT, layout = MainView.class)
 @Secured({Role.ADMIN, "UI_AUDIT"})

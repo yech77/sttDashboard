@@ -41,32 +41,36 @@ truncate table sms_hour;
 /* Reinicializar la secuencia */
 ALTER SEQUENCE hibernate_sequence RESTART WITH 100;
 /*********************************/
-insert into public.oauthority (id, auth_desc, auth_name)
-values (1, 'Auditoria', 'UI_AUDIT'),
-       (2, 'Permisos', 'UI_ROL'),
-       (3, 'Usuarios', 'UI_USER'),
-       (4, 'Evolución Operadora', 'UI_EVOLUTION_CARRIER'),
-       (5, 'Evolución Cliente', 'UI_EVOLUTION_CLIENT'),
-       (6, 'Evolución Credenciales', 'UI_EVOLUTION_SYSTEMID'),
-       (7, 'Búsqueda de mensaje', 'UI_SEARCH_SMS'),
-       (8, 'Tráfico por Cliente', 'UI_TRAFFIC_SMS'),
-       (9, 'Crear Masivos', 'UI_AGENDA_SMS'),
-       (10, 'Programar Masivos', 'UI_PROGRAM_SMS'),
-       (11, 'Ver mensaje de Texto', 'VIEW_MSG_TEXT'),
-       (12, 'Dashboard', 'UI_DASHBOARD');
+insert into public.oauthority (id, version, auth_desc, auth_name)
+values (1, 0, 'Auditoria', 'UI_AUDIT'),
+       (2, 0, 'Roles', 'UI_ROL'),
+       (3, 0, 'Usuarios', 'UI_USER'),
+       (4, 0, 'Evolución Operadora', 'UI_EVOLUTION_CARRIER'),
+       (5, 0, 'Evolución Cliente', 'UI_EVOLUTION_CLIENT'),
+       (6, 0, 'Evolución Credenciales', 'UI_EVOLUTION_SYSTEMID'),
+       (7, 0, 'Búsqueda de mensaje', 'UI_SEARCH_SMS'),
+       (8, 0, 'Tráfico por Cliente', 'UI_TRAFFIC_SMS'),
+       (9, 0, 'Crear Masivos', 'UI_AGENDA_SMS'),
+       (10, 0, 'Programar Masivos', 'UI_PROGRAM_SMS'),
+       (11, 0, 'Ver mensaje de Texto', 'VIEW_MSG_TEXT'),
+       (12, 0, 'Dashboard', 'UI_DASHBOARD'),
+       (13, 0, 'Permisos', 'UI_PERMISSIONS');
 /*********/
-insert into public.orole (id, rol_name)
-values (20, 'AGENDAR_SMS'),
-       (21, 'AUDITORIA'),
-       (22, 'BUSQUEDA_SMS'),
-       (23, 'EVOLUCION_CLIENTE'),
-       (24, 'EVOLUCION_OPERADORA'),
-       (25, 'EVOLUCION_PASAPORTES'),
-       (26, 'PROGRAMAR_SMS'),
-       (27, 'ROLES'),
-       (28, 'TRAFICO_SMS'),
-       (29, 'USUARIOS'),
-       (30, 'VER_MSGTEXT');
+insert into public.orole (id, version, rol_name)
+values (20, 0, 'AGENDAR_SMS'),
+       (21, 0, 'AUDITORIA'),
+       (22, 0, 'BUSQUEDA_SMS'),
+       (23, 0, 'EVOLUCION_CLIENTE'),
+       (24, 0, 'EVOLUCION_OPERADORA'),
+       (25, 0, 'EVOLUCION_PASAPORTES'),
+       (26, 0, 'PROGRAMAR_SMS'),
+       (27, 0, 'ROLES'),
+       (28, 0, 'TRAFICO_SMS'),
+       (29, 0, 'USUARIOS'),
+       (30, 0, 'VER_MSGTEXT'),
+       (31, 0, 'PERMISOS'),
+       (32, 0, 'rol-yecheverria@soltextech.com');
+
 /*********/
 insert into public.role_has_authority (orole_id, oauthority_id)
 values (20, 9),
@@ -79,18 +83,33 @@ values (20, 9),
        (25, 6),
        (26, 10),
        (28, 8),
-       (30, 11);
+       (30, 11),
+       (31, 13),
+       (32, 1),
+       (32, 13),
+       (32, 12),
+       (32, 11),
+       (32, 10),
+       (32, 9),
+       (32, 8),
+       (32, 7),
+       (32, 6),
+       (32, 5),
+       (32, 4),
+       (32, 3),
+       (32, 2);
 /******* OPERADORAS **********/
 insert into public.carrier (id, carrier_charcode, carrier_name, country_iso2)
 values (1, 'MOVILNET', 'MOVILNET, C.A', 'VE'),
        (2, 'DIGITEL', 'DIGITEL, C.A', 'VE'),
        (3, 'MOVISTAR', 'MOVISTAR, C.A', 'VE');
-/******* USUARIOS **********/insert into public.user_info (id, version, active, created_by, created_date, email,
-                                                           first_name, last_name, locked, password_hash, role,
-                                                           user_type, user_type_ord, user_parent_id)
-                             values (1, 0, true, null, '2021-07-23 15:00:53.987278', 'adminstt@soltextech.com',
-                                     'Name Admin', 'Last Admin', true,
-                                     '$2a$10$KcQI.OQnX3/obH8W0/X8weVVoK2A/GPW1SK6EveNRODDfXb0rmpzm', null, 1, 0, null);
+/******* USUARIOS **********/
+insert into public.user_info (id, version, active, created_by, created_date, email,
+                              first_name, last_name, locked, password_hash, role,
+                              user_type, user_type_ord, user_parent_id)
+values (1, 0, true, null, '2021-07-23 15:00:53.987278', 'adminstt@soltextech.com',
+        'Name Admin', 'Last Admin', true,
+        '$2a$10$KcQI.OQnX3/obH8W0/X8weVVoK2A/GPW1SK6EveNRODDfXb0rmpzm', null, 1, 0, null);
 insert into public.user_info (id, version, active, created_by, created_date, email, first_name, last_name, locked,
                               password_hash, role, user_type, user_type_ord, user_parent_id)
 values (2, 0, true, 'adminstt@soltextech.com', '2023-03-09 17:04:33.272108', 'gbandres@soltextech.com', 'Gleryxa',
@@ -110,181 +129,19 @@ values (5, 0, true, 'adminstt@soltextech.com', '2023-03-09 17:16:01.087207', 'ye
 
 insert into public.user_info (id, version, active, created_by, created_date, email, first_name, last_name, locked,
                               password_hash, role, user_type, user_type_ord, user_parent_id)
-values (6, 1, true, 'yecheverria@soltextech.com', '2023-03-10 01:02:25.096307', 'adminempresaa@soltextech.com',
-        'AdminEmpresaA', '', false, '$2a$10$9YokIhhpcBaV.9utwt6Qru7aV7F7JWQ5IUP9ZkHqJxS7Sd8gyst42', null, 0, 1, 5);
-insert into public.user_info (id, version, active, created_by, created_date, email, first_name, last_name, locked,
-                              password_hash, role, user_type, user_type_ord, user_parent_id)
-values (7, 0, true, 'yecheverria@soltextech.com', '2023-03-10 01:04:35.328847', 'empresaa@soltextech.com', 'EmpreA01',
-        '', false, '$2a$10$avbngBul8J3MoZUXG0YsJ.0X3pArXn8hH1vtkHpYOYYvmLn2rw/P2', null, 2, 2, 6);
-insert into public.user_info (id, version, active, created_by, created_date, email, first_name, last_name, locked,
-                              password_hash, role, user_type, user_type_ord, user_parent_id)
-values (8, 1, true, 'yecheverria@soltextech.com', '2023-03-10 01:19:05.888815', 'adminempresab@soltextech.com',
-        'AdminEmpresaB', '', false, '$2a$10$RFxsAh6WV3SL4lWNvVEWDu.1Ufju7qt31nsNpkE9c3kDXuNdZRP/S', null, 0, 1, 5);
-
+values (6, 1, true, 'adminstt@soltextech.com', '2023-03-10 01:02:25.096307', 'lsuarez@soltextech.com',
+        'Luis', 'Suarez', false, '$2a$10$9YokIhhpcBaV.9utwt6Qru7aV7F7JWQ5IUP9ZkHqJxS7Sd8gyst42', null, 1, 0, 1);
 /* Roles */
 insert into public.user_has_roles (ouser_id, orole_id)
-values (1, 30);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (1, 29);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (1, 28);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (1, 27);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (1, 26);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (1, 25);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (1, 24);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (1, 23);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (1, 22);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (1, 21);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (1, 20);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (2, 30);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (2, 29);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (2, 28);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (2, 27);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (2, 26);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (2, 25);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (2, 24);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (2, 23);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (2, 22);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (2, 21);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (2, 20);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (3, 30);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (3, 29);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (3, 28);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (3, 27);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (3, 26);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (3, 25);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (3, 24);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (3, 23);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (3, 22);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (3, 21);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (3, 20);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (4, 30);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (4, 29);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (4, 28);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (4, 27);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (4, 26);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (4, 25);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (4, 24);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (4, 23);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (4, 22);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (4, 21);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (4, 20);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (5, 30);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (5, 29);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (5, 28);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (5, 27);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (5, 26);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (5, 25);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (5, 24);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (5, 23);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (5, 22);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (5, 21);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (5, 20);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (6, 30);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (6, 29);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (6, 28);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (6, 26);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (6, 25);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (6, 24);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (6, 23);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (6, 22);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (6, 21);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (6, 20);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (7, 30);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (7, 28);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (7, 26);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (7, 25);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (7, 24);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (7, 23);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (7, 22);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (7, 20);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (8, 30);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (8, 29);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (8, 28);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (8, 26);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (8, 25);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (8, 24);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (8, 23);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (8, 22);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (8, 21);
-insert into public.user_has_roles (ouser_id, orole_id)
-values (8, 20);
+values (1, 30),
+       (1, 29),
+       (1, 28),
+       (1, 27),
+       (1, 26),
+       (1, 25),
+       (1, 24),
+       (1, 23),
+       (1, 22),
+       (1, 21),
+       (1, 20),
+       (5, 32);

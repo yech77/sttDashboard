@@ -1,7 +1,6 @@
-import {customElement, html, LitElement} from 'lit-element';
+import {html, LitElement} from 'lit-element';
 
-@customElement('sms-view')
-export class SmsView extends LitElement {
+class SmsView extends LitElement {
 
     createRenderRoot() {
         // Do not use a shadow root
@@ -84,3 +83,5 @@ export class SmsView extends LitElement {
         `;
     }
 }
+
+customElements.define('sms-view', SmsView)

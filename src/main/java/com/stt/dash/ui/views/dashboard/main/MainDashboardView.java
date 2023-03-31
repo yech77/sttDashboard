@@ -5,6 +5,7 @@ import com.stt.dash.app.OMonths;
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.AbstractSmsByYearMonth;
+import com.stt.dash.backend.data.Role;
 import com.stt.dash.backend.data.SmsByYearMonth;
 import com.stt.dash.backend.data.SmsByYearMonthDay;
 import com.stt.dash.backend.data.SmsByYearMonthDayHour;
@@ -57,6 +58,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.annotation.Secured;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -75,6 +77,7 @@ import static java.util.stream.Collectors.groupingBy;
 @Route(value = BakeryConst.PAGE_DASHBOARD_MAIN, layout = MainView.class)
 @RouteAlias(value = BakeryConst.PAGE_ROOT, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_DASHBOARD_MAIN)
+@Secured({Role.ADMIN, "UI_DASHBOARD"})
 public class MainDashboardView extends DashboardBase {
     private Logger log = LoggerFactory.getLogger(MainDashboardView.class);
     private final OrderService orderService;

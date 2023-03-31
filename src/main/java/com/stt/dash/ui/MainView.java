@@ -38,6 +38,7 @@ import com.stt.dash.app.security.SecurityUtils;
 import com.stt.dash.ui.views.admin.users.UsersView;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.flow.server.VaadinServletRequest;
+import liquibase.pro.packaged.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
@@ -134,18 +135,23 @@ public class MainView extends AppLayout {
 
     private static Tab[] getAvailableTabs() {
         final List<Tab> tabs = new ArrayList<>(6);
-        tabs.add(createTab(VaadinIcon.HOME, TITLE_DASHBOARD_MAIN, MainDashboardView.class));
 
-        tabs.add(createTab(VaadinIcon.ACCORDION_MENU, "Tráfico por cliente", SmsShowView.class));
+        if (SecurityUtils.isAccessGranted(MainDashboardView.class)) {
+            tabs.add(createTab(VaadinIcon.HOME, TITLE_DASHBOARD_MAIN, MainDashboardView.class));
+        }
 
+        if (SecurityUtils.isAccessGranted(SmsShowView.class)) {
+            tabs.add(createTab(VaadinIcon.ACCORDION_MENU, "Tráfico por cliente", SmsShowView.class));
+        }
         if (SecurityUtils.isAccessGranted(ClientChartView.class)) {
             tabs.add(createTab(VaadinIcon.CHART_LINE, TITLE_CLIENT, ClientChartView.class));
         }
         if (SecurityUtils.isAccessGranted(CarrierChartView.class)) {
             tabs.add(createTab(VaadinIcon.CHART_TIMELINE, TITLE_CARRIER, CarrierChartView.class));
         }
-        tabs.add(createTab(VaadinIcon.ENVELOPES_O, TITLE_SMS_VIEW, SmsView.class));
-
+        if (SecurityUtils.isAccessGranted(SmsView.class)) {
+            tabs.add(createTab(VaadinIcon.ENVELOPES_O, TITLE_SMS_VIEW, SmsView.class));
+        }
         if (SecurityUtils.isAccessGranted(BulkSmsView.class)) {
             tabs.add(createTab(VaadinIcon.NEWSPAPER, TITLE_BULKSMS, BulkSmsView.class));
         }
@@ -157,18 +163,12 @@ public class MainView extends AppLayout {
             tabs.add(createTab(VaadinIcon.CLOCK, TITLE_AUDIT, AuditViewV2.class));
         }
 
-        if (SecurityUtils.isAccessGranted(UsersView.class)) {
-            tabs.add(createTab(VaadinIcon.USER, TITLE_USERS, UsersView.class));
-        }
-
-        if (SecurityUtils.isAccessGranted(ORolesView.class)) {
-            tabs.add(createTab(VaadinIcon.KEY, TITLE_ROLES, ORolesView.class));
-        }
-
-        if (SecurityUtils.isAccessGranted(UsersView.class)) {
+        if (SecurityUtils.isAccessGranted(UsersViewv2.class)) {
             tabs.add(createTab(VaadinIcon.USERS, TITLE_USERS, UsersViewv2.class));
         }
-        tabs.add(createTab(VaadinIcon.USER_CHECK, "Permisos", UserAuthoritiesForm.class));
+        if (SecurityUtils.isAccessGranted(UserAuthoritiesForm.class)) {
+            tabs.add(createTab(VaadinIcon.USER_CHECK, "Permisos", UserAuthoritiesForm.class));
+        }
         return tabs.toArray(new Tab[tabs.size()]);
     }
 

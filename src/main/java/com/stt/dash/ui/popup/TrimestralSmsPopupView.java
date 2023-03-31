@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 
 @Tag("sms-show-grid-view-v2")
-@JsModule("./src/views/smsgridview/sms-show-grid-view-v2.ts")
+@JsModule("./src/views/smsgridview/sms-show-grid-view-v2.js")
 public abstract class TrimestralSmsPopupView extends LitTemplate implements Viewnable<SmsByYearMonth> {
 
     @Id("grid-title")

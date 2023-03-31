@@ -1,4 +1,4 @@
-import {customElement, html, LitElement} from 'lit-element';
+import {html, LitElement} from 'lit-element';
 import {FormLayoutResponsiveStep} from "@vaadin/vaadin-form-layout";
 import '@vaadin/vaadin-text-field';
 import '@vaadin/vaadin-button';
@@ -8,18 +8,32 @@ import '@vaadin/vaadin-radio-button/vaadin-radio-group';
 import '../../components/buttons-bar.js'
 
 
-// @ts-ignore
-@customElement('user-form-v2')
-export class UserFormV2 extends LitElement {
+class UserFormV2 extends LitElement {
     createRenderRoot() {
         // Do not use a shadow root
         return this;
     }
 
-    private responsiveSteps: FormLayoutResponsiveStep[] = [
-        {columns: 1, labelsPosition: 'top'},
-        {minWidth: '600px', columns: 2, labelsPosition: 'top'}
-    ];
+    // private responsiveSteps: FormLayoutResponsiveStep[] = [
+    //     {columns: 1, labelsPosition: 'top'},
+    //     {minWidth: '600px', columns: 2, labelsPosition: 'top'}
+    // ];
+    ready() {
+        super.ready();
+
+        this.$.form1.responsiveSteps = this.$.form3.responsiveSteps = [
+            {columns: 1, labelsPosition: 'top'},
+            {minWidth: '600px', columns: 2, labelsPosition: 'top'}
+        ];
+        //
+        //     this.$.form2.responsiveSteps = [
+        //         {columns: 1}, {minWidth: '180px', columns: 2}
+        //     ];
+        //
+        //     this.$.form4.responsiveSteps = [
+        //         {columns: 1, labelsPosition: 'top'}
+        //     ];
+    }
 
     render() {
         return html`
@@ -73,3 +87,5 @@ export class UserFormV2 extends LitElement {
         `;
     }
 }
+
+customElements.define('user-form-v2', UserFormV2)

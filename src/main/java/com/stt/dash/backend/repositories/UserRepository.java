@@ -1,10 +1,12 @@
 package com.stt.dash.backend.repositories;
 
+import com.stt.dash.backend.data.entity.Client;
 import com.stt.dash.backend.data.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+
+import java.util.Collection;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -14,11 +16,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Page<User> findAllByUserParentIsNotNullAndEmailIsNot(String email, Pageable pageable);
 
+    Page<User> findByClientsInAndUserTypeOrdNotAndIdIsNot(Collection<Client> clients, User.OUSER_TYPE_ORDINAL userTypeOrd, Long id, Pageable pageable);
+
+
     Page<User> findByEmailLikeIgnoreCaseOrFirstNameLikeIgnoreCaseOrLastNameLikeIgnoreCaseOrRoleLikeIgnoreCase(
             String emailLike, String firstNameLike, String lastNameLike, String roleLike, Pageable pageable);
 
     long countByEmailLikeIgnoreCaseOrFirstNameLikeIgnoreCaseOrLastNameLikeIgnoreCaseOrRoleLikeIgnoreCase(
             String emailLike, String firstNameLike, String lastNameLike, String roleLike);
+
+    Page<User> findByUserTypeOrdAndClients(User.OUSER_TYPE_ORDINAL userTypeOrd, Client clients, Pageable pageable);
+
 
 //    @Query(value = "WITH RECURSIVE subordinates AS ( SELECT * " +
 //            "FROM user_info	u WHERE u.id = :keyid " +

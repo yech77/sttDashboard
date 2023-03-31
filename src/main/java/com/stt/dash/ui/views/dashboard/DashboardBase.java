@@ -8,6 +8,10 @@ import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.PlotOptionsColumn;
 import com.vaadin.flow.component.charts.model.Series;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
 import java.time.LocalDate;
@@ -21,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class DashboardBase extends PolymerTemplate<TemplateModel> {
+public abstract class DashboardBase extends PolymerTemplate<TemplateModel> implements BeforeEnterObserver, BeforeLeaveObserver {
 
     protected static final String[] MONTH_LABELS = new String[]{"ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"};
     public static final String[] MILITARY_HOURS = new String[]{"0:00", "1:00", "2:00", "3:00", "4:00", "5:00", "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"};
@@ -153,4 +157,21 @@ public abstract class DashboardBase extends PolymerTemplate<TemplateModel> {
         }
     }
 
+    @Override
+    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+        doBeforeEnter(beforeEnterEvent);
+    }
+
+    public void doBeforeEnter(BeforeEnterEvent beforeEnterEvent) {
+
+    }
+
+    @Override
+    public void beforeLeave(BeforeLeaveEvent beforeLeaveEvent) {
+        doBeforeLeave(beforeLeaveEvent);
+    }
+
+    public void doBeforeLeave(BeforeLeaveEvent beforeLeaveEvent) {
+
+    }
 }

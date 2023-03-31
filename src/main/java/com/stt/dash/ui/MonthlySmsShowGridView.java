@@ -32,7 +32,7 @@ import java.util.Set;
 
 
 @Tag("sms-show-grid-view")
-@JsModule("./src/views/smsgridview/sms-show-grid-view.ts")
+@JsModule("./src/views/smsgridview/sms-show-grid-view.js")
 //@Route(value = BakeryConst.PAGE_SMS_SHOW_GRID_VIEW, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_SMS_SHOW_VIEW)
 public class MonthlySmsShowGridView extends LitTemplate implements Viewnable<SmsByYearMonth> {

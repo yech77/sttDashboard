@@ -18,6 +18,7 @@ import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.crud.AbstractBakeryCrudView;
 import com.stt.dash.ui.crud.STTBinderCrudEditor;
 import com.stt.dash.ui.utils.BakeryConst;
+import com.stt.dash.ui.utils.BeforeSavingResponse;
 import com.stt.dash.ui.utils.ODateUitls;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
@@ -38,7 +39,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 @Route(value = BakeryConst.PAGE_BULKSMS_SCHEDULER, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_BULKSMS_SCHEDULER)
-@Secured({Role.ADMIN, "UI_USER"})
+@Secured({Role.ADMIN, "UI_PROGRAM_SMS"})
 @Deprecated
 public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
 
@@ -92,11 +93,13 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
     }
 
     @Override
-    protected boolean beforeSaving(long idBeforeSave, FIlesToSend entity) {
+    protected BeforeSavingResponse beforeSaving(long idBeforeSave, FIlesToSend entity) {
+        BeforeSavingResponse bsr = new BeforeSavingResponse();
+        bsr.setSuccess(true);
         if (idBeforeSave == 0) {
             entity.setFileName(form.agendaCombo.getValue().getFileName());
         }
-        return true;
+        return bsr;
     }
 
     @Override

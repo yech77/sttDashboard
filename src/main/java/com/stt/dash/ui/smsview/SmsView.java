@@ -4,9 +4,11 @@ import com.stt.dash.app.OMessageType;
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.SetGenericBean;
 import com.stt.dash.backend.data.OUserSession;
+import com.stt.dash.backend.data.Role;
 import com.stt.dash.backend.data.entity.Carrier;
 import com.stt.dash.backend.data.entity.ORole;
 import com.stt.dash.backend.data.entity.SystemId;
+import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.data.entity.sms.AbstractSMS;
 import com.stt.dash.backend.service.AbstractSmsService;
 import com.stt.dash.backend.service.CarrierService;
@@ -50,6 +52,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.annotation.Secured;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
@@ -64,11 +67,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Tag("sms-view")
-@JsModule("./src/views/smsview/sms-view.ts")
+@JsModule("./src/views/smsview/sms-view.js")
 @Route(value = BakeryConst.PAGE_SMS_VIEW, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_SMS_VIEW)
+@Secured({Role.ADMIN, "UI_SEARCH_SMS"})
 public class SmsView extends LitTemplate {
     @Id("firstline")
     Div firstline;
@@ -147,9 +152,14 @@ public class SmsView extends LitTemplate {
         /**/
         multi_systemIds.setI18n(I18nUtils.getMulticomboI18n());
         multi_systemIds.setLabel("Credenciales");
-        multi_systemIds.setItems(systemIdSetGenericBean.getSet());
         multi_systemIds.setItemLabelGenerator(SystemId::getSystemId);
-        multi_systemIds.setValue(systemIdSetGenericBean.getSet());
+        if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            multi_systemIds.setItems(systemIdSetGenericBean.getSet());
+            multi_systemIds.setValue(systemIdSetGenericBean.getSet());
+        } else {
+            multi_systemIds.setItems(currentUser.getUser().getSystemids());
+            multi_systemIds.setValue(currentUser.getUser().getSystemids());
+        }
         multi_systemIds.setRequired(true);
         multi_systemIds.setHelperText("Seleccione al menos una credencial.");
         multi_systemIds.setErrorMessage("Se debe seleccionar al menos una credencial");

@@ -176,7 +176,7 @@ public class MyAuditEventComponent implements AuditEventRepository {
                 + ", " + (user.isActive() ? "Activo" : "Desactivado")
                 + ", Roles: " + sjRol.toString()
                 + ", " + data;
-        return desc;
+        return desc.substring(0, desc.length() > 253 ? 253 : desc.length());
     }
 
     public void add(ODashAuditEvent.OEVENT_TYPE type, User user, String changes) {

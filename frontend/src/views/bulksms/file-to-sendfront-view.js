@@ -1,4 +1,4 @@
-import {customElement, html, LitElement} from 'lit-element';
+import {html, LitElement} from 'lit-element';
 import '@vaadin/vaadin-grid/src/vaadin-grid.js';
 import '@vaadin/vaadin-dialog/src/vaadin-dialog.js';
 import '../../components/search-bar.js';
@@ -9,8 +9,7 @@ import '../../../styles/shared-styles.js';
 
 // import {html} from '@polymer/polymer/lib/utils/html-tag.js';
 
-@customElement('file-to-sendfront-view')
-export class FileToSendFrontView extends LitElement {
+class FileToSendFrontView extends LitElement {
 
     createRenderRoot() {
         // Do not use a shadow root
@@ -47,5 +46,6 @@ export class FileToSendFrontView extends LitElement {
     // }
 }
 
+customElements.define('file-to-sendfront-view', FileToSendFrontView)
 //
 // window.customElements.define(FileToSendFrontView.is, FileToSendFrontView);

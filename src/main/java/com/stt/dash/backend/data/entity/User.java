@@ -23,7 +23,7 @@ public class User extends AbstractEntitySequence {
     }
 
     public static enum OUSER_TYPE_ORDINAL {
-        COMERCIAL, ADMIN_EMPRESAS, EMPRESA, USUARIO
+        COMERCIAL, ADMIN_EMPRESAS, EMPRESA, USUARIO, NO_COMERCIAL
     }
 
     @NotEmpty
@@ -165,7 +165,6 @@ public class User extends AbstractEntitySequence {
          * es un tipo de useuario distinto de has, cada vez que
          * asigne el cliente instancia el hash. */
         this.clients = new HashSet<>();
-        System.out.println("VALOR DEL CLIENTE: " + clients + " ---- " + client);
         clients.add(client);
     }
 
