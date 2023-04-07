@@ -17,6 +17,7 @@ import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
@@ -38,6 +39,7 @@ import com.stt.dash.app.security.SecurityUtils;
 import com.stt.dash.ui.views.admin.users.UsersView;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.flow.server.VaadinServletRequest;
+import com.vaadin.flow.server.VaadinSession;
 import liquibase.pro.packaged.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -88,7 +90,7 @@ public class MainView extends AppLayout {
         MenuItem menuItem = menuBar.addItem(avatar);
         SubMenu subMenu = menuItem.getSubMenu();
 //        subMenu.addItem("Logout", menuItemClickEvent -> logout());
-        subMenu.addItem(createLogoutLink(contextPath));
+        subMenu.addItem(createLogoutButton(contextPath));
         /**/
         VerticalLayout verticalLayout = new VerticalLayout(menuBar);
         verticalLayout.setId("myHorizontal");
@@ -193,6 +195,15 @@ public class MainView extends AppLayout {
 //        a.setHref(contextPath + "/logout");
         a.setHref("/logout");
         return a;
+    }
+
+    private static Button createLogoutButton(String contextPath) {
+        final Button logout = new Button(TITLE_LOGOUT);
+        /*TODO: CAMBIAR*/
+        logout.addClickListener(e -> {
+            VaadinSession.getCurrent().getSession().invalidate();
+        });
+        return logout;
     }
 
     private static <T extends HasComponents> T populateLink(T a, VaadinIcon vaadinIcon, String title) {

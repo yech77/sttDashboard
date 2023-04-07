@@ -10,6 +10,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
@@ -22,6 +23,7 @@ import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.server.VaadinServlet;
+import com.vaadin.flow.server.VaadinSession;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,7 +112,7 @@ public class MainViewV0 extends AppLayout {
             tabs.add(createTab(VaadinIcon.CALENDAR, TITLE_PRODUCTS, ProductsView.class));
         }
         final String contextPath = VaadinServlet.getCurrent().getServletContext().getContextPath();
-        final Tab logoutTab = createTab(createLogoutLink(contextPath));
+        final Tab logoutTab = createTab(createLogoutButton(contextPath));
         tabs.add(logoutTab);
         return tabs.toArray(new Tab[tabs.size()]);
     }
@@ -126,10 +128,12 @@ public class MainViewV0 extends AppLayout {
         return tab;
     }
 
-    private static Anchor createLogoutLink(String contextPath) {
-        final Anchor a = populateLink(new Anchor(), VaadinIcon.ARROW_RIGHT, TITLE_LOGOUT);
-        a.setHref(contextPath + "/logout");
-        return a;
+    private static Button createLogoutButton(String contextPath) {
+        final Button logout = new Button(TITLE_LOGOUT);
+        logout.addClickListener(e -> {
+            VaadinSession.getCurrent().getSession().invalidate();
+        });
+        return logout;
     }
 
     private static <T extends HasComponents> T populateLink(T a, VaadinIcon icon, String title) {
