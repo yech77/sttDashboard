@@ -7,6 +7,7 @@ import com.stt.dash.backend.data.entity.ORole;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.OAuthorityService;
 import com.stt.dash.backend.service.ORoleService;
+import com.stt.dash.backend.service.UserFriendlyDataException;
 import com.stt.dash.backend.service.UserService;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.views.BaseFom;
@@ -39,6 +40,10 @@ import java.util.stream.Stream;
 @PageTitle("BakeryConst.TITLE_SMS_SHOW_VIEW")
 @Secured({Role.ADMIN, "UI_PERMISSIONS"})
 public class UserAuthoritiesForm extends BaseFom {
+    private final GroupHelper groupHelper = new GroupHelper();
+    private final UserService clientService;
+    private final OAuthorityService authorityService;
+    private final ORoleService roleService;
     @Id("clients")
     private ComboBox<User> userComboBox;
     @Id("checkbox1")
@@ -53,13 +58,9 @@ public class UserAuthoritiesForm extends BaseFom {
     private Button selectAllButton;
     @Id("remove-all")
     private Button removeAllButton;
-    private CheckboxGroupHelper groupHelper1;
-    private CheckboxGroupHelper groupHelper2;
-    private CheckboxGroupHelper groupHelper3;
-    private final GroupHelper groupHelper = new GroupHelper();
-    private final UserService clientService;
-    private final OAuthorityService authorityService;
-    private final ORoleService roleService;
+    private final CheckboxGroupHelper groupHelper1;
+    private final CheckboxGroupHelper groupHelper2;
+    private final CheckboxGroupHelper groupHelper3;
 
     public UserAuthoritiesForm(CurrentUser currentUser, UserService userService, OAuthorityService authorityService, ORoleService roleService) {
         super(currentUser);
@@ -104,17 +105,23 @@ public class UserAuthoritiesForm extends BaseFom {
                 role.setRolName(roleName);
             }
             role.setAuthorities(new HashSet<>(authorities));
-            role = roleService.save(userComboBox.getValue(), role);
-            HashSet<ORole> roleHashSet = new HashSet<>();
-            roleHashSet.add(role);
-            userComboBox.getValue().setRoles(roleHashSet);
-            User userSaved = userService.save(currentUser.getUser(), userComboBox.getValue());
-            if (userSaved != null) {
-                showNotification("Guardado Correctamente", false);
-                updateUserComboItems(userSaved);
-                userComboBox.setValue(userSaved);
+//            role = roleService.save(userComboBox.getValue(), role);
+//            HashSet<ORole> roleHashSet = new HashSet<>();
+//            roleHashSet.add(role);
+//            userComboBox.getValue().setRoles(roleHashSet);
+            try {
+                User userSaved = roleService.saveRolToUser(currentUser, userComboBox.getValue(), role);
+//                User userSaved = userService.save(currentUser.getUser(), userComboBox.getValue());
+                if (userSaved != null) {
+                    showNotification("Guardado Correctamente", false);
+                    updateUserComboItems(userSaved);
+                    userComboBox.setValue(userSaved);
+                }
+            } catch (UserFriendlyDataException ufde) {
+                showNotification(ufde.getMessage(), true);
+            } finally {
+                saveButton.setEnabled(true);
             }
-            saveButton.setEnabled(true);
         });
         userComboBox.addValueChangeListener(event -> {
             saveButton.setEnabled(isValid());
@@ -190,9 +197,9 @@ public class UserAuthoritiesForm extends BaseFom {
         private final List<String> authGroup2 = Arrays.asList("Auditoria", "Búsqueda de mensaje", "Ver mensaje de Texto");
         private final List<String> authGroup3 = Arrays.asList("Usuarios", "Permisos");
         private final List<OAuthority> authorityList;
-        private List<OAuthority> myAuthorityList;
-        private List<String> groupItemList;
         private final CheckboxGroup<OAuthority> checkboxGroup;
+        private final List<OAuthority> myAuthorityList;
+        private List<String> groupItemList;
 
         public CheckboxGroupHelper(CheckboxGroup<OAuthority> checkboxGroup, int group, List<OAuthority> authorityList) {
             this.authorityList = authorityList;

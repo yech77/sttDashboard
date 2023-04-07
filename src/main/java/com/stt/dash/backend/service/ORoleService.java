@@ -1,5 +1,6 @@
 package com.stt.dash.backend.service;
 
+import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.entity.ORole;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.ORoleRepository;
@@ -12,25 +13,29 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class ORoleService implements FilterableCrudService<ORole> {
 
-    private static String UI_CODE = "SERV_ROL";
     private static final Logger log = LoggerFactory.getLogger(ORoleService.class.getName());
-    private ORoleRepository role_repo;
+    private static final String UI_CODE = "SERV_ROL";
+    private final UserService userService;
+    private final ORoleRepository role_repo;
 
-    public ORoleService(ORoleRepository role_repo) {
+    public ORoleService(ORoleRepository role_repo,
+                        UserService userService) {
         this.role_repo = role_repo;
+        this.userService = userService;
     }
 
     private String getStringLog() {
         String id = VaadinSession.getCurrent().getSession().getId();
-        StringBuilder sb = new StringBuilder();
-        sb.append('[').append(id).append("] [").append(UI_CODE).append("]");
-        return sb.toString();
+        return '[' + id + "] [" + UI_CODE + "]";
     }
 
     public long count() {
@@ -121,6 +126,15 @@ public class ORoleService implements FilterableCrudService<ORole> {
             throw new UserFriendlyDataException(
                     "There is already a product with that name. Please select a unique name for the product.");
         }
+    }
 
+    @Transactional
+    public User saveRolToUser(CurrentUser currentUser, User userToSave, ORole entity) {
+        ORole savedRole = save(userToSave, entity);
+        Set<ORole> hashSet = new HashSet<>(1);
+        hashSet.add(savedRole);
+        userToSave.setRoles(hashSet);
+        User saved = userService.save(currentUser.getUser(), userToSave);
+        return saved;
     }
 }
