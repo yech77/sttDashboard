@@ -103,8 +103,9 @@ public class UserService implements FilterableCrudService<User> {
 
     @Override
     public User save(User currentUser, User entity) {
-        boolean isNew = entity.getId() == null ? true : false;
+        boolean isNew = entity.getId() == null;
         throwIfUserLocked(entity);
+        throwIfComercialTryToModifyComerciald(currentUser, entity);
         User u = FilterableCrudService.super.save(currentUser, entity);
         if (isNew) {
             audit.add(ODashAuditEvent.OEVENT_TYPE.CREATE_USER, entity);
@@ -115,12 +116,12 @@ public class UserService implements FilterableCrudService<User> {
         return u;
     }
 
-	/*public User save(User currentUser, User entity, String changes) {
-		throwIfUserLocked(entity);
-		User u = getRepository().saveAndFlush(entity);
-		audit.add(ODashAuditEvent.OEVENT_TYPE.UPDATE_USER, entity, changes);
-		return u;
-	}*/
+    /*public User save(User currentUser, User entity, String changes) {
+        throwIfUserLocked(entity);
+        User u = getRepository().saveAndFlush(entity);
+        audit.add(ODashAuditEvent.OEVENT_TYPE.UPDATE_USER, entity, changes);
+        return u;
+    }*/
 
     @Override
     @Transactional
@@ -140,6 +141,12 @@ public class UserService implements FilterableCrudService<User> {
     private void throwIfUserLocked(User entity) {
         if (entity != null && entity.isLocked()) {
             throw new UserFriendlyDataException(MODIFY_LOCKED_USER_NOT_PERMITTED);
+        }
+    }
+
+    private void throwIfComercialTryToModifyComerciald(User currentUser, User userToSave) {
+        if (userToSave.getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL && currentUser.getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            throw new UserFriendlyDataException("Debe entrar como usuario Administrador para modificar un usuario Comercial");
         }
     }
 

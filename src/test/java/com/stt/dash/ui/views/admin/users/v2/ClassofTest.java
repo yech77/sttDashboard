@@ -28,7 +28,7 @@ class ClassofTest {
     @InjectMocks
     Classof classof;
 
-    User comercial, admin_empresa, empresa, lRodriguez;
+    User comercial, comercial2, admin_empresa, empresa, lRodriguez;
 
     @BeforeEach
     void setUp() {
@@ -51,6 +51,19 @@ class ClassofTest {
         comercial.setUserParent(null);
         comercial.setUserType(User.OUSER_TYPE.HAS);
         comercial.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+        /**/
+        comercial2 = new User();
+        comercial2.setActive(true);
+        comercial2.setClient(client);
+        comercial2.setCreatedBy("gbandres@soltextech.com");
+        comercial2.setEmail("gbandres@soltextech.com");
+        comercial2.setFirstName("Gleryxa");
+        comercial2.setLastName("Bandres");
+        comercial2.setLocked(false);
+        comercial2.setPasswordHash("1Unica");
+        comercial2.setUserParent(null);
+        comercial2.setUserType(User.OUSER_TYPE.HAS);
+        comercial2.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
         /**/
         admin_empresa = new User();
         admin_empresa.setActive(true);

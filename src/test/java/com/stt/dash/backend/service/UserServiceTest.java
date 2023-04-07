@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class UserServiceTest {
@@ -34,7 +36,7 @@ class UserServiceTest {
     @InjectMocks
     UserService userService;
 
-    User comercial, admin_empresa, empresa, lRodriguez;
+    User comercial, comercial2, admin_empresa, empresa, lRodriguez;
 
     @BeforeEach
     void setUp() {
@@ -57,6 +59,19 @@ class UserServiceTest {
         comercial.setUserParent(null);
         comercial.setUserType(User.OUSER_TYPE.HAS);
         comercial.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
+        /**/
+        comercial2 = new User();
+        comercial2.setActive(true);
+        comercial2.setClient(client);
+        comercial2.setCreatedBy("yecheverria@soltextech.com");
+        comercial2.setEmail("yecheverria@soltextech.com");
+        comercial2.setFirstName("Gleryxa");
+        comercial2.setLastName("Bandres");
+        comercial2.setLocked(false);
+        comercial2.setPasswordHash("1Unica");
+        comercial2.setUserParent(null);
+        comercial2.setUserType(User.OUSER_TYPE.HAS);
+        comercial2.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.COMERCIAL);
         /**/
         admin_empresa = new User();
         admin_empresa.setActive(true);
@@ -96,6 +111,28 @@ class UserServiceTest {
         lRodriguez.setUserParent(empresa);
         lRodriguez.setUserType(User.OUSER_TYPE.BY);
         lRodriguez.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.USUARIO);
+    }
+
+    @Test
+    @DisplayName("Comercial no puede modificar data de usuario Comercial")
+    void testSave1() {
+        currentUser = () -> comercial;
+        when(userRepository.findAllByUserParentIsNotNullAndEmailIsNot(anyString(), any())).thenReturn(new PageImpl<User>(Arrays.asList(admin_empresa, empresa, lRodriguez), PageRequest.of(0, 3, Sort.by("firstName")), 3));
+        assertThrows(UserFriendlyDataException.class, () -> userService.save(currentUser.getUser(), comercial2));
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Comercial puede modificar data de usuario No Comercial")
+    void testSave2() {
+        currentUser = () -> comercial;
+        userService.save(currentUser.getUser(), admin_empresa);
+        userService.save(currentUser.getUser(), empresa);
+        userService.save(currentUser.getUser(), lRodriguez);
+        /* Ocurre el llamado a save and flush en CrudService */
+        verify(userRepository, times(1)).saveAndFlush(admin_empresa);
+        verify(userRepository, times(1)).saveAndFlush(empresa);
+        verify(userRepository, times(1)).saveAndFlush(lRodriguez);
     }
 
     @Test
