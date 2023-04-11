@@ -44,6 +44,8 @@ public class UserFormDialogV2 extends FormLayout implements OnUIForm<User>, Befo
     public static final String MSG_DEBE_ESCOGER_UN_CLIENTE1 = "Debe escoger un Cliente";
     private final List<User> allMyUsers;
     private final CurrentUser currentUser;
+    private final List<SystemId> list;
+    private final Collection<User> userBelongList;
     FormItem comboClientFormItem;
     FormItem systemidsFormItem;
     /**/ BeanValidationBinder<User> binder = new BeanValidationBinder<>(User.class);
@@ -55,8 +57,6 @@ public class UserFormDialogV2 extends FormLayout implements OnUIForm<User>, Befo
     Checkbox isCompanyAdmin = new Checkbox("Administrador de Empresa");
     //    ComboBox<User> userParentCombobox = new ComboBox<>();
     ConfirmDialog dialog;
-    private final List<SystemId> list;
-    private final Collection<User> userBelongList;
 
     public UserFormDialogV2(List<ORole> allRoles, List<SystemId> parSystemids, List<User> allUsers, Collection<User> userBelongList, CurrentUser currentUser, PasswordEncoder passwordEncoder) {
         this.allMyUsers = allUsers;
@@ -94,9 +94,9 @@ public class UserFormDialogV2 extends FormLayout implements OnUIForm<User>, Befo
             isCompanyAdmin.setValue(false);
             isCompanyAdmin.setEnabled(false);
         }
-        isCompanyAdmin.addValueChangeListener(event -> {
-            userTypeOrdCombo.setValue(isCompanyAdmin.getValue() ? User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS : User.OUSER_TYPE_ORDINAL.EMPRESA);
-        });
+//        isCompanyAdmin.addValueChangeListener(event -> {
+//            userTypeOrdCombo.setValue(isCompanyAdmin.getValue() ? User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS : User.OUSER_TYPE_ORDINAL.EMPRESA);
+//        });
     }
 
     private void doSetItems(List<ORole> allRoles, Collection<Client> parClients, List<User> allUsers) {
@@ -157,6 +157,14 @@ public class UserFormDialogV2 extends FormLayout implements OnUIForm<User>, Befo
         binder.bind(last, "lastName");
         binder.forField(userTypeOrdCombo).bind(User::getUserTypeOrd, User::setUserTypeOrd);
         binder.forField(isActive).bind(User::isActive, User::setActive);
+        binder.forField(isCompanyAdmin).bind(user -> user.getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS,
+                (user, isAdmin) -> {
+                    if (Boolean.TRUE.equals(isAdmin)) {
+                        user.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS);
+                    } else {
+                        user.setUserTypeOrd(User.OUSER_TYPE_ORDINAL.EMPRESA);
+                    }
+                });
         binder.bind(email, "email");
 //        binder.forField(userParentCombobox).bind(User::getUserParent, User::setUserParent);
         /**/
@@ -169,7 +177,7 @@ public class UserFormDialogV2 extends FormLayout implements OnUIForm<User>, Befo
         binder.forField(systemids).asRequired(new Validator<Set<SystemId>>() {
             @Override
             public ValidationResult apply(Set<SystemId> systemIds, ValueContext valueContext) {
-                if (systemIds != null && systemIds.size() > 0) {
+                if (systemIds != null && !systemIds.isEmpty()) {
                     return ValidationResult.ok();
                 }
                 return ValidationResult.error("Debe tener al menos una Credencial");
