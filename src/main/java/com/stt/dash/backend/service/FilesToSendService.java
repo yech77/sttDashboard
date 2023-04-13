@@ -46,6 +46,9 @@ public class FilesToSendService implements CrudService<FIlesToSend> {
             return null;
         }
         Long id = fIlesToSend.getId();
+        if (id == null) {
+            fIlesToSend.setUserCreator(currentUser);
+        }
         boolean acceptedsms = fIlesToSend.isSmsAccepted();
         FIlesToSend f = CrudService.super.save(currentUser, fIlesToSend);
         f.setSmsAccepted(acceptedsms);

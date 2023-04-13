@@ -168,7 +168,7 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
         if (currentuser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
             presenter = new FileToSendEditorViewPresenter(this, userChildrenList, agendaService, systemIdList, webClient, properties);
         } else {
-            /* convert Set to List Lambda*/
+            /* Usuario solo puede ver sus SYstemIds */
             List<String> stringList = currentuser.getUser().getSystemids().stream().map(SystemId::getSystemId).collect(Collectors.toList());
             ListGenericBean<String> stringListGenericBean = () -> stringList;
             presenter = new FileToSendEditorViewPresenter(this, userChildrenList, agendaService, stringListGenericBean, webClient, properties);
