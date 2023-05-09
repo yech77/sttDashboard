@@ -21,7 +21,7 @@ public interface HasNotifications extends HasElement {
             Button close = new Button("Cerrar");
             close.getElement().setAttribute("theme", "tertiary small error");
             Notification notification = new Notification(new Text(message), close);
-            notification.setPosition(Position.TOP_START);
+            notification.setPosition(Position.TOP_CENTER);
             notification.setDuration(0);
             close.addClickListener(event -> notification.close());
             notification.open();

@@ -5,6 +5,7 @@ import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.util.AgendaFileUtils;
 import com.stt.dash.ui.crud.OnUIForm;
+import com.stt.dash.uiv2.util.UIUtils;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -22,8 +23,8 @@ public class BulkSmsForm extends FormLayout implements OnUIForm {
     private static final String MOVE_FILE_MSG = "Arrastrar nuevo archivo aquí";
     Binder<Agenda> binder = new BeanValidationBinder<>(Agenda.class);
     /**/
-    TextField nameBox = new TextField("Nombre de la agenda");
-    TextField descriptionBox = new TextField("Descripción");
+    TextField nameBox = new TextField();
+    TextField descriptionBox = new TextField();
     /**/
     private InputStream stream;
     private final HorizontalLayout horizontalLayout = new HorizontalLayout();
@@ -53,7 +54,14 @@ public class BulkSmsForm extends FormLayout implements OnUIForm {
 //        nameBox.addBlurListener(t -> {
 //            fileName.setInvalid(isFileUploaded);
 //        });
-        add(nameBox, descriptionBox, horizontalLayout);
+        nameBox.setWidthFull();
+        descriptionBox.setWidthFull();
+        horizontalLayout.setWidthFull();
+        FormItem nombreDeLaAgenda = addFormItem(nameBox, "Nombre de la agenda");
+        FormItem descripcion = addFormItem(descriptionBox, "Descripción");
+        FormItem formItem = addFormItem(horizontalLayout, "");
+        UIUtils.setColSpan(1, nombreDeLaAgenda, descripcion);
+        UIUtils.setColSpan(2, formItem);
     }
 
     private void doUpload(String uploadLabel, OProperties properties) {

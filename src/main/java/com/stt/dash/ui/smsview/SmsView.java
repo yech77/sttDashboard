@@ -494,7 +494,7 @@ public class SmsView extends LitTemplate {
             sb.append(ODateUitls.dd_MM_yyyy_HH_mm_SS.format(msg.getDate())).append(",");
             sb.append(msg.getMessageType()).append(",");
             if (hasAuthToViewMsgTextColumn) {
-                sb.append(msg.getMessagesText()).append(",");
+                sb.append("\"").append(msg.getMessagesText()).append("\"").append(",");
             } else {
                 sb.append("").append(",");
             }
