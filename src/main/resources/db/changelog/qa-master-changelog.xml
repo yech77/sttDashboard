@@ -20,4 +20,6 @@
     <include file="db/changelog/scripts/changelog_4.sql"/>
     <!-- Creacioin de Indices  -->
     <include file="db/changelog/scripts/changelog_5.sql"/>
+    <!-- Aumentar cantidad de caracteres(459) en DB en FilesToSend-->
+    <include file="db/changelog/scripts/changelog_6.sql"/>
 </databaseChangeLog>

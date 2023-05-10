@@ -66,7 +66,7 @@ public class FIlesToSend extends AbstractEntitySequence implements FileToSendSum
 
     @NotEmpty(message = "Escriba su mensaje")
 //    @NotNull(message = "escriba su mensaje")
-    @Size(message = "debe ser entre 5 y 255 caracteres", min = 5, max = 255)
+    @Size(message = "debe ser entre 5 y 459 caracteres", min = 5, max = 459)
     @Column(name = "message_with_param")
     private String messageWithParam;
 
