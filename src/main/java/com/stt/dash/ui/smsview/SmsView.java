@@ -99,7 +99,7 @@ public class SmsView extends LitTemplate {
     /**/
     private boolean hasAuthToViewMsgTextColumn = false;
     /* Hora del servidor para establecer busquedas de YYYY-MM-DD*/
-    public static LocalDateTime localDateTime = LocalDateTime.now();
+//    public static LocalDateTime localDateTime = LocalDateTime.now();
     /**/
     private EnhancedDateRangePicker dateOne = new EnhancedDateRangePicker();
     private DatePicker firstDate = new DatePicker();
@@ -413,13 +413,14 @@ public class SmsView extends LitTemplate {
     }
 
     private Component getDownloadButton(List<? extends AbstractSMS> messages) {
-        int year = localDateTime.getYear();
-        int month = localDateTime.getMonthValue();
-        int day = localDateTime.getDayOfMonth();
-        int hour = localDateTime.getHour();
-        int min = localDateTime.getMinute();
-        String fileName = "" + year + "." + month + "." + day + "." + hour + ":" + min + "-Mensajes.csv";
-        Button download = new Button("Descargar Datos (" + year + "/" + month + "/" + day + "-" + hour + ":" + min + ")");
+        LocalDateTime now = LocalDateTime.now();
+        int year = now.getYear();
+        int month = now.getMonthValue();
+        int day = now.getDayOfMonth();
+        int hour = now.getHour();
+        int min = now.getMinute();
+        String fileName = "" + year + "." + month + "." + day + "." + hour + ":" + (min < 9 ? "0" + min : min) + "-Mensajes.csv";
+        Button download = new Button("Descargar Datos (" + year + "/" + month + "/" + day + "-" + hour + ":" + (min < 9 ? "0" + min : min) + ")");
 
         FileDownloadWrapper buttonWrapper = new FileDownloadWrapper(
                 new StreamResource(fileName, () -> {
@@ -596,80 +597,6 @@ public class SmsView extends LitTemplate {
                 .setAutoWidth(true);
     }
 
-    private void addFiltersToGrid() {
-//        HeaderRow filterRow = grid.appendHeaderRow();
-
-        TextField idFilter = new TextField();
-        idFilter.setPlaceholder("Filter");
-        idFilter.setClearButtonVisible(true);
-        idFilter.setWidth("100%");
-        idFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        idFilter.addValueChangeListener(
-                event -> dataProvider.addFilter(client -> StringUtils
-                        .containsIgnoreCase(Long.toString(client.getId()),
-                                idFilter.getValue())));
-//        filterRow.getCell(idColumn).setComponent(idFilter);
-
-        TextField phoneFilter = new TextField();
-        phoneFilter.setPlaceholder("Filter");
-        phoneFilter.setClearButtonVisible(true);
-        phoneFilter.setWidth("100%");
-        phoneFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        phoneFilter.addValueChangeListener(event -> dataProvider.addFilter(
-                client -> StringUtils.containsIgnoreCase(client.getDestination(),
-                        phoneFilter.getValue())));
-//        filterRow.getCell(phoneColum).setComponent(phoneFilter);
-
-        TextField carrierFilter = new TextField();
-        carrierFilter.setPlaceholder("Filter");
-        carrierFilter.setClearButtonVisible(true);
-        carrierFilter.setWidth("100%");
-        carrierFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        carrierFilter.addValueChangeListener(event -> dataProvider.addFilter(
-                client -> StringUtils.containsIgnoreCase(client.getCarrierCharCode(),
-                        carrierFilter.getValue())));
-//        filterRow.getCell(carrierColum).setComponent(carrierFilter);
-
-        TextField systemIdFilter = new TextField();
-        systemIdFilter.setPlaceholder("Filter");
-        systemIdFilter.setClearButtonVisible(true);
-        systemIdFilter.setWidth("100%");
-        systemIdFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        systemIdFilter.addValueChangeListener(event -> dataProvider.addFilter(
-                client -> StringUtils.containsIgnoreCase(client.getSystemId(),
-                        systemIdFilter.getValue())));
-//        filterRow.getCell(systemIdColumn).setComponent(systemIdFilter);
-
-        TextField messageTypeFilter = new TextField();
-//        messageTypeFilter.setItems(Arrays.asList("Pending", "Success", "Error"));
-        messageTypeFilter.setPlaceholder("Filter");
-        messageTypeFilter.setClearButtonVisible(true);
-        messageTypeFilter.setWidth("100%");
-        systemIdFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        messageTypeFilter.addValueChangeListener(event -> dataProvider.addFilter(
-                client -> StringUtils.containsIgnoreCase(client.getMessageType(),
-                        messageTypeFilter.getValue())));
-//        filterRow.getCell(messageTypeColum).setComponent(messageTypeFilter);
-
-        DatePicker dateFilter = new DatePicker();
-        dateFilter.setI18n(I18nUtils.getDatepickerI18n());
-        dateFilter.setPlaceholder("Filter");
-        dateFilter.setClearButtonVisible(true);
-        dateFilter.setWidth("100%");
-        dateFilter.addValueChangeListener(event -> dataProvider
-                .addFilter(client -> areDatesEqual(client, dateFilter)));
-//        filterRow.getCell(dateColumn).setComponent(dateFilter);
-    }
-
-    private boolean areDatesEqual(AbstractSMS client, DatePicker dateFilter) {
-        LocalDate dateFilterValue = dateFilter.getValue();
-        if (dateFilterValue != null) {
-            LocalDate clientDate = client.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            return dateFilterValue.equals(clientDate);
-        }
-        return true;
-    }
-
     private void createGrid() {
         createGridComponent();
         addColumnsToGrid();
@@ -688,13 +615,6 @@ public class SmsView extends LitTemplate {
         grid.setDataProvider(dataProvider);
         grid.setPageSize(itemsPerPage);
         footerRow = grid.appendFooterRow();
-    }
-
-    private Page<AbstractSMS> updateDataPage(int itemsPerPage, int page) {
-        Page<AbstractSMS> pageSms = sms_serv.findAll(page, itemsPerPage);
-        grid.setPageSize(itemsPerPage);
-        grid.setItems(pageSms.getContent());
-        return pageSms;
     }
 
     private void updateDataView(Page<? extends AbstractSMS> pageSms) {

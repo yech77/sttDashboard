@@ -259,13 +259,14 @@ public class SmsShowView extends LitTemplate {
     }
 
     private Component getDownloadButton(List<? extends AbstractSMS> messages) {
-        int year = localDateTime.getYear();
-        int month = localDateTime.getMonthValue();
-        int day = localDateTime.getDayOfMonth();
-        int hour = localDateTime.getHour();
-        int min = localDateTime.getMinute();
-        String fileName = "" + year + "." + month + "." + day + "." + hour + ":" + min + "-Mensajes.csv";
-        Button download = new Button("Descargar Datos (" + year + "/" + month + "/" + day + "-" + hour + ":" + min + ")");
+        LocalDateTime now = LocalDateTime.now();
+        int year = now.getYear();
+        int month = now.getMonthValue();
+        int day = now.getDayOfMonth();
+        int hour = now.getHour();
+        int min = now.getMinute();
+        String fileName = "" + year + "." + month + "." + day + "." + hour + ":" + (min < 9 ? "0" + min : min) + "-Mensajes.csv";
+        Button download = new Button("Descargar Datos (" + year + "/" + month + "/" + day + "-" + hour + ":" + (min < 9 ? "0" + min : min) + ")");
 
         FileDownloadWrapper buttonWrapper = new FileDownloadWrapper(
                 new StreamResource(fileName, () -> {
