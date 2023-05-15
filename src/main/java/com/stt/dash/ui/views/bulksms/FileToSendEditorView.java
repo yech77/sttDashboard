@@ -219,6 +219,9 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
                 showNotification("Saldo insuficiente", true);
                 return;
             }
+            /* Se debe notificar al usuario siempre el saldo que le queda */
+            showNotification("Tiene " + block + " sms restantes para usar.", true);
+
             /* Agregar al la hora qe va al bind, lo seleccionado en los campos.*/
             LocalDateTime l = LocalDateTime.of(dueDate2.getValue().getYear(),
                     dueDate2.getValue().getMonthValue(),
