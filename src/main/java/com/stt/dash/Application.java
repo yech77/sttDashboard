@@ -58,19 +58,10 @@ public class Application extends SpringBootServletInitializer {
 
     private final static String ORINOCO_HOST = "http://localhost:8081";
 
-//    private static void builderWebclient(String host) {
-//        webClient = WebClient.builder()
-//                .baseUrl(host)
-//                .defaultHeaders(header -> header.setBasicAuth("orinoco", "0R1n0coRIv3r$"))
-//                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-//                .build();
-//    }
-
     private static String APP_NAME = "ODASH";
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
-//        builderWebclient(ORINOCO_HOST);
     }
 
     @Override

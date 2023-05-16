@@ -4,7 +4,11 @@ import com.stt.dash.app.OProperties;
 import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.AgendaService;
+import com.stt.dash.backend.service.SystemIdBalanceWebClientService;
+import com.stt.dash.backend.service.SystemIdWebClientService;
 import com.stt.dash.backend.util.ws.OWebClient;
+import com.stt.dash.backend.util.ws.SystemIdBalanceOResponse;
+import com.stt.dash.backend.util.ws.SystemIdOResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,6 +18,7 @@ import reactor.core.publisher.Mono;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 public class FileToSendEditorViewPresenter {
     private final static Logger log = LoggerFactory.getLogger(FileToSendEditorViewPresenter.class);
@@ -23,6 +28,8 @@ public class FileToSendEditorViewPresenter {
     private final ListGenericBean<String> systemIdList;
     private final OProperties properties;
     private final WebClient webClient;
+    private final SystemIdBalanceWebClientService webClientService;
+    private final SystemIdWebClientService systemidService;
 
     public final static String yyyy_MM_dd = "yyyy-MM-dd";
 
@@ -31,13 +38,17 @@ public class FileToSendEditorViewPresenter {
                                          AgendaService agendaService,
                                          @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList,
                                          WebClient webClient,
-                                         OProperties properties) {
+                                         OProperties properties,
+                                         SystemIdBalanceWebClientService webClientService,
+                                         SystemIdWebClientService systemidService) {
         this.view = view;
         this.agendaService = agendaService;
         this.userChildrenList = userChildrenList;
         this.systemIdList = systemIdList;
         this.properties = properties;
         this.webClient = webClient;
+        this.webClientService = webClientService;
+        this.systemidService = systemidService;
     }
 
     public void setAgendaItems() {
@@ -60,5 +71,13 @@ public class FileToSendEditorViewPresenter {
             log.error("", e);
             throw e;
         }
+    }
+
+    public SystemIdBalanceOResponse findSystemIdBalance(String systemid) {
+        return webClientService.findSystemIdBalance(systemid);
+    }
+
+    public Optional<SystemIdOResponse> findSystemId(String systemid) {
+        return systemidService.findSystemIdByName(systemid);
     }
 }

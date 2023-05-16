@@ -10,6 +10,10 @@ import com.stt.dash.backend.data.entity.FIlesToSend;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.AgendaService;
+import com.stt.dash.backend.service.SystemIdBalanceWebClientService;
+import com.stt.dash.backend.service.SystemIdWebClientService;
+import com.stt.dash.backend.util.ws.SystemIdBalanceOResponse;
+import com.stt.dash.backend.util.ws.SystemIdOResponse;
 import com.stt.dash.ui.events.CancelEvent;
 import com.stt.dash.ui.utils.I18nUtils;
 import com.stt.dash.ui.utils.ODateUitls;
@@ -62,11 +66,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -163,15 +163,17 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
                                 @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList,
                                 WebClient webClient,
                                 OProperties properties,
-                                CurrentUser currentuser) {
+                                CurrentUser currentuser,
+                                SystemIdBalanceWebClientService webClientService,
+                                SystemIdWebClientService systemidService) {
         /**/
         if (currentuser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
-            presenter = new FileToSendEditorViewPresenter(this, userChildrenList, agendaService, systemIdList, webClient, properties);
+            presenter = new FileToSendEditorViewPresenter(this, userChildrenList, agendaService, systemIdList, webClient, properties, webClientService, systemidService);
         } else {
             /* Usuario solo puede ver sus SYstemIds */
             List<String> stringList = currentuser.getUser().getSystemids().stream().map(SystemId::getSystemId).collect(Collectors.toList());
             ListGenericBean<String> stringListGenericBean = () -> stringList;
-            presenter = new FileToSendEditorViewPresenter(this, userChildrenList, agendaService, stringListGenericBean, webClient, properties);
+            presenter = new FileToSendEditorViewPresenter(this, userChildrenList, agendaService, stringListGenericBean, webClient, properties, webClientService, systemidService);
         }
         /**/
         acceptCheckbox.setVisible(false);
@@ -219,8 +221,20 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
                 showNotification("Saldo insuficiente", true);
                 return;
             }
-            /* Se debe notificar al usuario siempre el saldo que le queda */
-            showNotification("Tiene " + block + " sms restantes para usar.", true);
+            /*TODO: Validar si a este punto el system,ID siempre debe estar presente. */
+            Optional<SystemIdOResponse> optSystemid = presenter.findSystemId(systemIdMulti.getValue());
+            if (optSystemid.isPresent()) {
+                if (optSystemid.get().getPayment_type().equalsIgnoreCase("POSTPAGO")) {
+                    /* Se debe notificar al usuario siempre el saldo que le queda. Excepto POSTPAGO Ilimitado*/
+                    if (block == 10_000_000) {
+//                        showNotification(String.format("La Credencial %s es POSTPAGO Ilimitado", systemIdMulti.getValue()));
+                    } else {
+                        showNotification(String.format("La Credencial %s es POSTPAGO Limitado y tiene aprox %s sms restantes para su uso", systemIdMulti.getValue(), block));
+                    }
+                } else {
+                    showNotification(String.format("La Credencial %s tiene aproximadamente %s sms restantes para usar.", systemIdMulti.getValue(), block));
+                }
+            }
 
             /* Agregar al la hora qe va al bind, lo seleccionado en los campos.*/
             LocalDateTime l = LocalDateTime.of(dueDate2.getValue().getYear(),

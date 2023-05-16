@@ -8,6 +8,8 @@ import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.data.entity.FIlesToSend;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.AgendaService;
+import com.stt.dash.backend.service.SystemIdBalanceWebClientService;
+import com.stt.dash.backend.service.SystemIdWebClientService;
 import com.stt.dash.ui.events.CancelEvent;
 import com.stt.dash.ui.utils.I18nUtils;
 import com.stt.dash.ui.utils.ODateUitls;
@@ -152,13 +154,16 @@ public class FileToSendEditorViewResp extends LitTemplate implements HasNotifica
 
     private int totsms = 0;
 
+    @Deprecated
     public FileToSendEditorViewResp(@Qualifier("getMyChildrenAndItsChildrenAndMe") ListGenericBean<User> userChildrenList,
                                     AgendaService agendaService,
                                     @Qualifier("getUserSystemIdString") ListGenericBean<String> systemIdList,
                                     WebClient webClient,
-                                    OProperties properties) {
+                                    OProperties properties,
+                                    SystemIdBalanceWebClientService webClientService,
+                                    SystemIdWebClientService systemidService) {
         /**/
-        presenter = new FileToSendEditorViewPresenter(null, userChildrenList, agendaService, systemIdList, webClient, properties);
+        presenter = new FileToSendEditorViewPresenter(null, userChildrenList, agendaService, systemIdList, webClient, properties, webClientService, systemidService);
         /**/
         acceptCheckbox.setVisible(false);
         dueDate.setVisible(false);

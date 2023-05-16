@@ -18,7 +18,7 @@ public class SystemIdBalanceOResponse extends OResponse {
     private int credit_plus;
     private LocalDate expiration_date;
     private boolean auto_reboot;
-    private SystemIdBalanceOResponse systemid;
+    private SystemIdOResponse systemid;
 
 //    public SystemIdBalanceOResponse(SystemIdBalance s) {
 //        setAuto_reboot(s.isAuto_reboot());
@@ -38,11 +38,11 @@ public class SystemIdBalanceOResponse extends OResponse {
         this.balance_credit = balance_credit;
     }
 
-    public SystemIdBalanceOResponse getSystemid() {
+    public SystemIdOResponse getSystemid() {
         return systemid;
     }
 
-    public void setSystemid(SystemIdBalanceOResponse systemid) {
+    public void setSystemid(SystemIdOResponse systemid) {
         this.systemid = systemid;
     }
 

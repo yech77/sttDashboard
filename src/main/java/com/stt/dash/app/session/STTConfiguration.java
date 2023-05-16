@@ -1,5 +1,7 @@
 package com.stt.dash.app.session;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.RemovalListener;
 import com.stt.dash.app.OProperties;
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.security.SecurityUtils;
@@ -11,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -21,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Configuration
@@ -126,6 +131,22 @@ public class STTConfiguration {
                 .build();
     }
 
+    @Bean(name = "cacheRefresh")
+    public CacheManager cacheManagerRefresh() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        cacheManager.setCaffeine(caffeineCacheBuilderRefresh());
+        return cacheManager;
+    }
+
+    private Caffeine<Object, Object> caffeineCacheBuilderRefresh() {
+        return Caffeine.newBuilder()
+                .initialCapacity(100)
+                .maximumSize(500)
+                .expireAfterAccess(1, TimeUnit.MINUTES)
+                .removalListener(getObjectRemovalListener())
+                .recordStats();
+    }
+
     private class SpringSecurityAuditorAware implements AuditorAware<String> {
         @Override
         public Optional<String> getCurrentAuditor() {
@@ -139,5 +160,11 @@ public class STTConfiguration {
             }
             return s;
         }
+    }
+
+    private static RemovalListener<Object, Object> getObjectRemovalListener() {
+        return (key, value, removalCause) -> {
+            log.info("**** CACHE REMOVAL key: [{}] value: [{}] cause: [{}]", key, value, removalCause.toString());
+        };
     }
 }
