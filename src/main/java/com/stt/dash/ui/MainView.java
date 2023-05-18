@@ -6,6 +6,7 @@ import com.stt.dash.ui.views.HasConfirmation;
 import com.stt.dash.ui.views.admin.users.UserAuthoritiesForm;
 import com.stt.dash.ui.views.admin.users.v2.UsersViewv2;
 import com.stt.dash.ui.views.audit.AuditViewV2;
+import com.stt.dash.ui.views.balance.BalanceView;
 import com.stt.dash.ui.views.bulksms.BulkSmsView;
 import com.stt.dash.ui.views.bulksms.FileToSendFrontView;
 import com.stt.dash.ui.views.carrier.CarrierChartView;
@@ -170,6 +171,9 @@ public class MainView extends AppLayout {
         }
         if (SecurityUtils.isAccessGranted(UserAuthoritiesForm.class)) {
             tabs.add(createTab(VaadinIcon.USER_CHECK, "Permisos", UserAuthoritiesForm.class));
+        }
+        if (SecurityUtils.isAccessGranted(BalanceView.class)) {
+            tabs.add(createTab(VaadinIcon.USER_CHECK, "Balance", BalanceView.class));
         }
         return tabs.toArray(new Tab[tabs.size()]);
     }

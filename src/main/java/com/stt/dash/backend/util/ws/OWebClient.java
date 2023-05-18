@@ -12,6 +12,8 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @param <T>
@@ -31,7 +33,7 @@ public class OWebClient<T> {
     final static String url_sync_sys = "orinoco-admin/ws/data/sync/sys/{id}";
     public final static String url_update_balance = "orinoco-admin/ws/data/sid/balance/cod/{system_id}/{credit_used}";
 
-
+    protected final static String url_systemBalanceList = "orinoco-admin/ws/data/sid/balance/list/";
     // TODO: Descablear
     final static String url_smsSave = "orinoco-admin/ws/data/sms/save/";
     final static String url_smsSaveAll = "orinoco-admin/ws/data/sms/saveall/";
@@ -40,7 +42,7 @@ public class OWebClient<T> {
     final static String url_routingAll = "orinoco-admin/ws/data/routing/all";
     final static String url_carrierRangesCharcode = "orinoco-admin/ws/data/range/carrier/cod/";
     final static String url_systemBalanceSet = "orinoco-admin/ws/data/sid/balance/cod/";
-    final static String url_systemBalanceCharcode = "orinoco-admin/ws/data/sid/balance/cod/";
+    protected final static String url_systemBalanceCharcode = "orinoco-admin/ws/data/sid/balance/cod/";
     final static String url_smppClientCharcode = "orinoco-admin/ws/data/clientport/cod/";
     final static String url_integrationPortIntCharcode = "orinoco-admin/ws/data/port/integration/cod/";
     final static String url_integrationPortAll = "orinoco-admin/ws/data/port/all";
