@@ -113,12 +113,12 @@ public class UserAuthoritiesForm extends BaseFom {
                 User userSaved = roleService.saveRolToUser(currentUser, userComboBox.getValue(), role);
 //                User userSaved = userService.save(currentUser.getUser(), userComboBox.getValue());
                 if (userSaved != null) {
-                    showNotification("Guardado Correctamente", false);
+                    showNotificationSuccess("Guardado Correctamente", false);
                     updateUserComboItems(userSaved);
                     userComboBox.setValue(userSaved);
                 }
             } catch (UserFriendlyDataException ufde) {
-                showNotification(ufde.getMessage(), true);
+                showNotificationError(ufde.getMessage(), true);
             } finally {
                 saveButton.setEnabled(true);
             }

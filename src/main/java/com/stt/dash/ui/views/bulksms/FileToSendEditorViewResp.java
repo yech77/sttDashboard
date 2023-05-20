@@ -175,11 +175,11 @@ public class FileToSendEditorViewResp extends LitTemplate implements HasNotifica
             try {
                 block = presenter.callBalance(systemIdMulti.getValue(), dueDate.getValue());
             } catch (Exception ex) {
-                showNotification("Ha ocurrido un Error al obtener Saldo. Favor intente nuevamente.", true);
+                showNotificationError("Ha ocurrido un Error al obtener Saldo. Favor intente nuevamente.", true);
                 return;
             }
             if (block <= 0) {
-                showNotification("No se puede Programar. Verifique saldo o fecha de Vencimiento de: " + systemIdMulti.getValue(), true);
+                showNotificationError("No se puede Programar. Verifique saldo o fecha de Vencimiento de: " + systemIdMulti.getValue(), true);
                 return;
             }
             String m = message.getValue().replaceAll("$[0-9]", "");

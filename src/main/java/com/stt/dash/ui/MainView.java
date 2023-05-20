@@ -173,7 +173,7 @@ public class MainView extends AppLayout {
             tabs.add(createTab(VaadinIcon.USER_CHECK, "Permisos", UserAuthoritiesForm.class));
         }
         if (SecurityUtils.isAccessGranted(BalanceView.class)) {
-            tabs.add(createTab(VaadinIcon.USER_CHECK, "Balance", BalanceView.class));
+            tabs.add(createTab(VaadinIcon.SCALE_UNBALANCE, "Balance", BalanceView.class));
         }
         return tabs.toArray(new Tab[tabs.size()]);
     }

@@ -266,7 +266,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         confHourlyChart.setTooltip(tooltip);
         /**/
         if (carrierMultiComboBox.getValue() == null) {
-            showNotification("Por favor seleccione una Operadora");
+            showNotificationInformation("Por favor seleccione una Operadora");
             return;
         }
         /* Convertir Set<Carrier> seleccionados en un List<String>*/

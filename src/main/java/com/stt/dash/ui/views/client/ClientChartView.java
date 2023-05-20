@@ -313,7 +313,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         confHourlyChart.setTooltip(tooltip);
         /**/
         if (systemIdMultiCombo.getValue() == null) {
-            showNotification("Por favor seleccione Credenciales.");
+            showNotificationInformation("Por favor seleccione Credenciales.");
             return;
         }
         /* Column Chart*/

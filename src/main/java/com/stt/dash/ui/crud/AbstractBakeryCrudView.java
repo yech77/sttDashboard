@@ -156,7 +156,7 @@ AbstractBakeryCrudView<E extends AbstractEntitySequence> extends Crud<E>
             BeforeSavingResponse response = beforeSaving(idBeforeSave, e.getItem());
             if (!response.isSuccess()) {
                 if (StringUtils.isNotEmpty(response.getMessage())) {
-                    showNotification(response.getMessage(), false);
+                    showNotificationError(response.getMessage(), false);
                 }
                 throw new RuntimeException(response.getMessage());
             }

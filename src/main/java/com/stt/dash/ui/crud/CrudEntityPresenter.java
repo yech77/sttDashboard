@@ -93,7 +93,7 @@ public class CrudEntityPresenter<E extends AbstractEntitySequence> implements Ha
 
     private void consumeError(Exception e, String message, boolean isPersistent) {
         getLogger().debug(message, e);
-        viewForNotificacion.showNotification(message, isPersistent);
+        viewForNotificacion.showNotificationError(message, false);
     }
 
     private void saveEntity(E entity) {

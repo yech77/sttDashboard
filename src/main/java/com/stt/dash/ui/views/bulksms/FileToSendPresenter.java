@@ -156,7 +156,7 @@ public class FileToSendPresenter {
         Optional<SystemId> bySystemId = systemIdService.findBySystemId(entityPresenter.getEntity().getSystemId());
         /* Solo llama a salvar si encuentra el cliente del system id */
         if (!bySystemId.isPresent()) {
-            view.showNotification("No se puedo crear la programacion. Si el problema persiste llame a su Administrador", true);
+            view.showNotificationError("No se puedo crear la programacion. Si el problema persiste llame a su Administrador", true);
             return;
         }
         entityPresenter.save(e -> {
@@ -213,7 +213,7 @@ public class FileToSendPresenter {
         if (entityPresenter.getEntity().getStatus() != Status.COMPLETED) {
             entityPresenter.delete(onSuccess);
         } else {
-            view.showNotification(DELETE_DENIED_INCORRECT_STATUS, true);
+            view.showNotificationError(DELETE_DENIED_INCORRECT_STATUS, false);
         }
     }
 

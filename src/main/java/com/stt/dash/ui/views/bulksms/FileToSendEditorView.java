@@ -186,11 +186,11 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
             try {
                 block = presenter.callBalance(systemIdMulti.getValue(), dueDate.getValue());
             } catch (Exception ex) {
-                showNotification("Ha ocurrido un Error al obtener Saldo. Favor intente nuevamente.", true);
+                showNotificationError("No se puede Programar. Verifique en la pantalla Balance el saldo.");
                 return;
             }
             if (block <= 0) {
-                showNotification("No se puede Programar. Verifique saldo o fecha de Vencimiento de: " + systemIdMulti.getValue(), true);
+                showNotificationError("No se puede Programar. Verifique saldo o fecha de Vencimiento de: " + systemIdMulti.getValue(), true);
                 return;
             }
             String m = message.getValue().replaceAll("$[0-9]", "");
@@ -218,7 +218,7 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
             }
 
             if (totsms > block) {
-                showNotification("Saldo insuficiente", true);
+                showNotificationError("Saldo insuficiente", false);
                 return;
             }
             /*TODO: Validar si a este punto el system,ID siempre debe estar presente. */
@@ -229,10 +229,10 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
                     if (block == 10_000_000) {
 //                        showNotification(String.format("La Credencial %s es POSTPAGO Ilimitado", systemIdMulti.getValue()));
                     } else {
-                        showNotification(String.format("La Credencial %s es POSTPAGO Limitado y tiene aprox %s sms restantes para su uso", systemIdMulti.getValue(), block));
+                        showNotificationInformation(String.format("%s tiene aproximadamente %ssms para su uso.", systemIdMulti.getValue(), block));
                     }
                 } else {
-                    showNotification(String.format("La Credencial %s tiene aproximadamente %s sms restantes para usar.", systemIdMulti.getValue(), block));
+                    showNotificationInformation(String.format("%s tiene aproximadamente %ssms para su uso.", systemIdMulti.getValue(), block));
                 }
             }
 
