@@ -155,6 +155,9 @@ public class MainView extends AppLayout {
         if (SecurityUtils.isAccessGranted(SmsView.class)) {
             tabs.add(createTab(VaadinIcon.ENVELOPES_O, TITLE_SMS_VIEW, SmsView.class));
         }
+        if (SecurityUtils.isAccessGranted(BalanceView.class)) {
+            tabs.add(createTab(VaadinIcon.SCALE_UNBALANCE, "Balance", BalanceView.class));
+        }
         if (SecurityUtils.isAccessGranted(BulkSmsView.class)) {
             tabs.add(createTab(VaadinIcon.NEWSPAPER, TITLE_BULKSMS, BulkSmsView.class));
         }
@@ -171,9 +174,6 @@ public class MainView extends AppLayout {
         }
         if (SecurityUtils.isAccessGranted(UserAuthoritiesForm.class)) {
             tabs.add(createTab(VaadinIcon.USER_CHECK, "Permisos", UserAuthoritiesForm.class));
-        }
-        if (SecurityUtils.isAccessGranted(BalanceView.class)) {
-            tabs.add(createTab(VaadinIcon.SCALE_UNBALANCE, "Balance", BalanceView.class));
         }
         return tabs.toArray(new Tab[tabs.size()]);
     }

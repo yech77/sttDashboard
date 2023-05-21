@@ -14,8 +14,16 @@ import com.stt.dash.uiv2.components.detailsdrawer.DetailsDrawerHeader;
 import com.stt.dash.views.ViewFrame;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.annotation.Secured;
@@ -27,11 +35,11 @@ public class BalanceView extends ViewFrame {
     private final BalancePresenter presenter;
     private MultiComboBox<SystemId> systemIdMultiComboBox;
     private Grid<SystemIdBalanceOResponse> grid;
-    private ListDataProvider<SystemIdBalanceOResponse> listDataProvider;
 
     private DetailsDrawer detailsDrawer;
     private DetailsDrawerHeader detailsDrawerHeader;
     private DetailsDrawerFooter detailsDrawerFooter;
+    private TextField searchTextField;
 
     public BalanceView(SystemIdBalanceWebClientService balanceWebClientService,
                        @Qualifier("getUserSystemIdString") ListGenericBean<String> stringListGenericBean,
@@ -39,27 +47,47 @@ public class BalanceView extends ViewFrame {
         this.balanceWebClientService = balanceWebClientService;
         setViewContent(createContent());
         presenter = new BalancePresenter(balanceWebClientService, stringListGenericBean, this);
+        searchTextField.setClearButtonVisible(true);
+        searchTextField.setWidth("50%");
+        searchTextField.setPlaceholder("Ingrese credencial a buscar");
+        searchTextField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
+        searchTextField.setValueChangeMode(ValueChangeMode.EAGER);
+        searchTextField.addValueChangeListener(e -> presenter.applyFilter(searchTextField.getValue()));
     }
 
     private Component createContent() {
-        FlexBoxLayout flexBoxLayout = new FlexBoxLayout(createGrid());
-
+        searchTextField = new TextField();
+        VerticalLayout verticalLayout = new VerticalLayout(searchTextField, createGrid());
+        FlexBoxLayout flexBoxLayout = new FlexBoxLayout(verticalLayout);
         return flexBoxLayout;
     }
 
     private Component createGrid() {
         grid = new Grid<>();
         grid.addColumn(v -> {
-            return v.getSystemid().getSystem_id();
-        }).setHeader("Credencial");
-        grid.addColumn(SystemIdBalanceOResponse::getBalance_credit).setHeader("Credito");
-        grid.addColumn(SystemIdBalanceOResponse::getCredit_used).setHeader("Usado");
-        grid.addColumn(SystemIdBalanceOResponse::getExpiration_date).setHeader("Vencimiento");
+                    return v.getSystemid().getSystem_id();
+                })
+                .setSortable(true)
+                .setHeader("Credencial");
+        grid.addColumn(SystemIdBalanceOResponse::getBalance_credit)
+                .setSortable(true)
+                .setHeader("Credito");
+        grid.addColumn(SystemIdBalanceOResponse::getCredit_used)
+                .setSortable(true)
+                .setHeader("Usado");
+        grid.addColumn(v -> {
+                    return v.getBalance_credit() - v.getCredit_used();
+                })
+                .setSortable(true)
+                .setHeader("Disponible");
+        grid.addColumn(SystemIdBalanceOResponse::getExpiration_date)
+                .setSortable(true)
+                .setHeader("Vencimiento");
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         return grid;
     }
 
     public void setDataProvider(ListDataProvider<SystemIdBalanceOResponse> listDataProvider) {
-        this.listDataProvider = listDataProvider;
         grid.setDataProvider(listDataProvider);
     }
 

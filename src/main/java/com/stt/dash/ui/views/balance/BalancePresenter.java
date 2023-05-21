@@ -1,6 +1,7 @@
 package com.stt.dash.ui.views.balance;
 
 import com.stt.dash.app.session.ListGenericBean;
+import com.stt.dash.backend.data.entity.ODashAuditEvent;
 import com.stt.dash.backend.service.SystemIdBalanceWebClientService;
 import com.stt.dash.backend.util.ws.SystemIdBalanceOResponse;
 import com.vaadin.flow.data.provider.ListDataProvider;
@@ -34,4 +35,10 @@ public class BalancePresenter {
         dataProvider.refreshAll();
     }
 
+    public void applyFilter(String filter) {
+        if (filter == null || filter.isEmpty()) {
+            dataProvider.clearFilters();
+        }
+        dataProvider.addFilter(person -> person.getSystemid().getSystem_id().contains(filter.toUpperCase()));
+    }
 }
