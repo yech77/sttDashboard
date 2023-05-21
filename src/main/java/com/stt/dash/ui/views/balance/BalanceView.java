@@ -14,6 +14,7 @@ import com.stt.dash.uiv2.components.detailsdrawer.DetailsDrawerHeader;
 import com.stt.dash.views.ViewFrame;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.board.Board;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -29,7 +30,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.annotation.Secured;
 
 @Route(value = "balance", layout = MainView.class)
-@Secured({Role.ADMIN, "UI_AUDIT"})
+@Secured({Role.ADMIN, "UI_BALANCE"})
 public class BalanceView extends ViewFrame {
     private final SystemIdBalanceWebClientService balanceWebClientService;
     private final BalancePresenter presenter;

@@ -54,7 +54,8 @@ values (1, 0, 'Auditoria', 'UI_AUDIT'),
        (10, 0, 'Programar Masivos', 'UI_PROGRAM_SMS'),
        (11, 0, 'Ver mensaje de Texto', 'VIEW_MSG_TEXT'),
        (12, 0, 'Dashboard', 'UI_DASHBOARD'),
-       (13, 0, 'Permisos', 'UI_PERMISSIONS');
+       (13, 0, 'Permisos', 'UI_PERMISSIONS'),
+       (14, 0, 'Balance', 'UI_BALANCE');
 /*********/
 insert into public.orole (id, version, rol_name)
 values (20, 0, 'AGENDAR_SMS'),
@@ -87,6 +88,7 @@ values (20, 9),
        (31, 13),
        (32, 1),
        (32, 13),
+       (32, 14),
        (32, 12),
        (32, 11),
        (32, 10),

@@ -193,7 +193,7 @@ public class UserAuthoritiesForm extends BaseFom {
     }
 
     private class CheckboxGroupHelper {
-        private final List<String> authGroup1 = Arrays.asList("Dashboard", "Evolución Operadora", "Evolución Cliente", "Tráfico por Cliente", "Crear Masivos", "Programar Masivos");
+        private final List<String> authGroup1 = Arrays.asList("Dashboard", "Evolución Operadora", "Evolución Cliente", "Tráfico por Cliente", "Crear Masivos", "Programar Masivos", "Balance");
         private final List<String> authGroup2 = Arrays.asList("Auditoria", "Búsqueda de mensaje", "Ver mensaje de Texto");
         private final List<String> authGroup3 = Arrays.asList("Usuarios", "Permisos");
         private final List<OAuthority> authorityList;
