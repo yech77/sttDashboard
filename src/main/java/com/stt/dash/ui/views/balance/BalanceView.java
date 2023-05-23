@@ -76,8 +76,11 @@ public class BalanceView extends ViewFrame {
         grid.addColumn(SystemIdBalanceOResponse::getCredit_used)
                 .setSortable(true)
                 .setHeader("Usado");
+        grid.addColumn(SystemIdBalanceOResponse::getLocked_balance)
+                .setSortable(true)
+                .setHeader("Reservado");
         grid.addColumn(v -> {
-                    return v.getBalance_credit() - v.getCredit_used();
+                    return v.getBalance_credit() - (v.getCredit_used() + v.getLocked_balance());
                 })
                 .setSortable(true)
                 .setHeader("Disponible");

@@ -32,6 +32,7 @@ public class OWebClient<T> {
     final static String url_sync_cli = "orinoco-admin/ws/data/sync/cli/{id}";
     final static String url_sync_sys = "orinoco-admin/ws/data/sync/sys/{id}";
     public final static String url_update_balance = "orinoco-admin/ws/data/sid/balance/cod/{system_id}/{credit_used}";
+    public final static String url_update_lockbalance = "orinoco-admin/ws/data/sid/lockbalance/cod/{system_id}/{lockedbalance}";
 
     protected final static String url_systemBalanceList = "orinoco-admin/ws/data/sid/balance/list/";
     // TODO: Descablear

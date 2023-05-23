@@ -14,7 +14,7 @@ public class BalanceWebClient extends OWebClient<SystemIdBalanceOResponse> {
     }
 
     public Mono<SystemIdBalanceOResponse> callSyncData(String systemid, Integer creditUsed) throws IOException {
-        String url = url_update_balance.replace("{system_id}", systemid).replace("{credit_used}", String.valueOf(creditUsed));
+        String url = url_update_lockbalance.replace("{system_id}", systemid).replace("{credit_used}", String.valueOf(creditUsed));
         return super.getMonoOResponse(url);
     }
 

@@ -18,6 +18,7 @@ public class SystemIdBalanceOResponse extends OResponse {
     private int credit_plus;
     private LocalDate expiration_date;
     private boolean auto_reboot;
+    private int locked_balance;
     private SystemIdOResponse systemid;
 
 //    public SystemIdBalanceOResponse(SystemIdBalance s) {
@@ -76,6 +77,15 @@ public class SystemIdBalanceOResponse extends OResponse {
 
     public void setCredit_plus(int credit_plus) {
         this.credit_plus = credit_plus;
+    }
+
+
+    public int getLocked_balance() {
+        return locked_balance;
+    }
+
+    public void setLocked_balance(int locked_balance) {
+        this.locked_balance = locked_balance;
     }
 
     @Override

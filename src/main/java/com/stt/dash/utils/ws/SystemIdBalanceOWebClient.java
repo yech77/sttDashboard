@@ -50,6 +50,11 @@ public class SystemIdBalanceOWebClient extends OWebClient<SystemIdBalanceORespon
         return mono.block();
     }
 
+    public SystemIdBalanceOResponse updateSystemIdBalanceLockedBalance(String charcode, int lockedBalance) throws IOException {
+        String url = url_update_lockbalance.replace("{system_id}", charcode).replace("{lockedbalance}", String.valueOf(lockedBalance));
+        return super.getMonoOResponse(url).block();
+    }
+
 
     public Flux<SystemIdBalanceOResponse> getFluxSaveSmsAll(List<String> l) throws IOException {
         String[] nsns = new String[l.size()];

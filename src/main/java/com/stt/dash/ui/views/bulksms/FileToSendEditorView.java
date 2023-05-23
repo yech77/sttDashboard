@@ -610,6 +610,7 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
 
     public void write(FIlesToSend filesToSend) throws ValidationException {
         filesToSend.setSmsCount(totsms);
+        filesToSend.setTotalSmsToSend(totsms);
         binder.writeBean(filesToSend);
     }
 

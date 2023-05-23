@@ -15,6 +15,7 @@ import com.stt.dash.ui.crud.EntityPresenter;
 import com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider;
 import com.stt.dash.ui.utils.ODateUitls;
 import com.stt.dash.ui.views.storefront.beans.OrderCardHeader;
+import com.stt.dash.utils.ws.SystemIdBalanceOWebClient;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.UI;
@@ -52,6 +53,7 @@ public class FileToSendPresenter {
     private final FilesToSendService service;
     private final SystemIdService systemIdService;
     private final OProperties properties;
+    private final SystemIdBalanceOWebClient systemIdBalanceOWebClient;
 
     @Autowired
     FileToSendPresenter(@Autowired FilesToSendService service,
@@ -60,12 +62,14 @@ public class FileToSendPresenter {
                         @Autowired FilesToSendGridDataProvider dataProvider,
                         @Autowired EntityPresenter<FIlesToSend, FileToSendFrontView> entityPresenter,
                         @Autowired WebClient webClient,
+                        @Autowired SystemIdBalanceOWebClient systemIdBalanceOWebClient,
                         @Autowired CurrentUser currentUser) {
         this.entityPresenter = entityPresenter;
         this.dataProvider = dataProvider;
         this.currentUser = currentUser;
         this.service = service;
         this.systemIdService = systemIdService;
+        this.systemIdBalanceOWebClient = systemIdBalanceOWebClient;
         headersGenerator = new FileToSendCardHeaderGenerator();
         headersGenerator.resetHeaderChain(false);
         dataProvider.setPageObserver(p -> headersGenerator.filesToSendRead(p.getContent()));
@@ -181,16 +185,8 @@ public class FileToSendPresenter {
                                 currentUser.getUser().getEmail(),
                                 currentUser.getUser()),
                         ODateUitls.localDateTimeToDate(LocalDateTime.now().plusSeconds(5)));
-                /* Disminuir saldo a usar */
-                /*TODO: FIX. Disminuir el saldo a usar. */
-//                BalanceWebClient balanceWebClient = new BalanceWebClient(webClient, SystemIdBalanceOResponse.class);
-//                try {
-//                    Mono<SystemIdBalanceOResponse> mono = balanceWebClient.callSyncData(e.getSystemId(), e.getTotalSmsToSend());
-//                    SystemIdBalanceOResponse block = mono.block();
-//                    System.out.println("Aca");
-//                } catch (IOException ex) {
-//                    throw new RuntimeException(ex);
-//                }
+                /* Blockear saldo a usar */
+                updateBalance(e.getSystemId(), e.getTotalSmsToSend());
             } else {
                 view.showUpdatedNotification();
                 dataProvider.refreshItem(e);
@@ -218,14 +214,11 @@ public class FileToSendPresenter {
     }
 
     private void updateBalance(String systemid, int numOfSms) {
-        BalanceWebClient balanceWebClient = new BalanceWebClient(webClient, SystemIdBalanceOResponse.class);
         try {
-            Mono<SystemIdBalanceOResponse> mono = balanceWebClient.callSyncData(systemid, numOfSms);
-            SystemIdBalanceOResponse block = mono.block();
+            systemIdBalanceOWebClient.updateSystemIdBalanceLockedBalance(systemid, numOfSms);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-
     }
 
     private void open(FIlesToSend fileToSend, boolean edit) {
