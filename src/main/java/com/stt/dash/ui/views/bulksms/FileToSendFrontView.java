@@ -23,6 +23,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import org.springframework.security.access.annotation.Secured;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -97,7 +98,13 @@ public class FileToSendFrontView extends PolymerTemplate<TemplateModel> implemen
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<Long> orderId = event.getRouteParameters().getLong(ORDER_ID);
+        Optional<Long> orderId = null;
+        try {
+            orderId = event.getRouteParameters().getLong(ORDER_ID);
+        } catch (Exception e) {
+            navigateToMainView();
+            return;
+        }
         if (orderId.isPresent()) {
             boolean isEditView = EDIT_SEGMENT.equals(getLastSegment(event));
             presenter.onNavigation(orderId.get(), isEditView);

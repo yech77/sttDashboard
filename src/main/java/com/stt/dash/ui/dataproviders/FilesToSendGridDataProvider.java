@@ -2,6 +2,7 @@ package com.stt.dash.ui.dataproviders;
 
 
 import com.stt.dash.app.security.CurrentUser;
+import com.stt.dash.backend.data.Status;
 import com.stt.dash.backend.data.entity.FIlesToSend;
 import com.stt.dash.backend.service.FilesToSendService;
 import com.stt.dash.ui.utils.BakeryConst;
@@ -12,6 +13,7 @@ import com.vaadin.flow.data.provider.QuerySortOrderBuilder;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.vaadin.artur.spring.dataprovider.FilterablePageableDataProvider;
@@ -57,6 +59,14 @@ public class FilesToSendGridDataProvider extends FilterablePageableDataProvider<
         FileToSendFilter filter = query.getFilter().orElse(FileToSendFilter.getEmptyFilter());
         Page<FIlesToSend> page = filesToSendService.findAnyMatchingAfterDateToSend(currentUser, Optional.ofNullable(filter.getFilter()),
                 getFilterDate(filter.isShowPrevious()), pageable);
+        if (page.isEmpty()) {
+            FIlesToSend emptyFileToSend = new FIlesToSend();
+            emptyFileToSend.setOrderDescription("Sin Programaciones a este momento.");
+            emptyFileToSend.setDateToSend(new Date());
+            emptyFileToSend.setStatus(Status.PREPARING_SMS);
+            /* envolve emptyFileToSend in a page */
+            page = new PageImpl<>(List.of(emptyFileToSend));
+        }
         System.out.println("******* " + page.getTotalElements() + "/" + page.getTotalPages() + "********");
         if (pageObserver != null) {
             pageObserver.accept(page);
@@ -72,8 +82,12 @@ public class FilesToSendGridDataProvider extends FilterablePageableDataProvider<
     @Override
     protected int sizeInBackEnd(Query<FIlesToSend, FileToSendFilter> query) {
         FileToSendFilter filter = query.getFilter().orElse(FileToSendFilter.getEmptyFilter());
-        return (int) filesToSendService
+        long l = filesToSendService
                 .countAnyMatchingAfterDateToSend(currentUser, Optional.ofNullable(filter.getFilter()), getFilterDate(filter.isShowPrevious()));
+        if (l == 0) {
+            l = 1;
+        }
+        return (int) l;
     }
 
     public void setPageObserver(Consumer<Page<FIlesToSend>> pageObserver) {
