@@ -7,6 +7,7 @@ import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.service.SystemIdBalanceWebClientService;
 import com.stt.dash.backend.util.ws.SystemIdBalanceOResponse;
 import com.stt.dash.ui.MainView;
+import com.stt.dash.ui.utils.ODateUitls;
 import com.stt.dash.uiv2.components.FlexBoxLayout;
 import com.stt.dash.uiv2.components.detailsdrawer.DetailsDrawer;
 import com.stt.dash.uiv2.components.detailsdrawer.DetailsDrawerFooter;
@@ -14,13 +15,11 @@ import com.stt.dash.uiv2.components.detailsdrawer.DetailsDrawerHeader;
 import com.stt.dash.views.ViewFrame;
 import com.vaadin.componentfactory.multiselect.MultiComboBox;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.board.Board;
-import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
@@ -28,6 +27,9 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.annotation.Secured;
+
+import java.text.NumberFormat;
+import java.util.Locale;
 
 @Route(value = "balance", layout = MainView.class)
 @Secured({Role.ADMIN, "UI_BALANCE"})
@@ -41,6 +43,7 @@ public class BalanceView extends ViewFrame {
     private DetailsDrawerHeader detailsDrawerHeader;
     private DetailsDrawerFooter detailsDrawerFooter;
     private TextField searchTextField;
+    private final NumberFormat integerInstance = NumberFormat.getIntegerInstance(new Locale("es", "ES"));
 
     public BalanceView(SystemIdBalanceWebClientService balanceWebClientService,
                        @Qualifier("getUserSystemIdString") ListGenericBean<String> stringListGenericBean,
@@ -70,21 +73,23 @@ public class BalanceView extends ViewFrame {
                 })
                 .setSortable(true)
                 .setHeader("Credencial");
-        grid.addColumn(SystemIdBalanceOResponse::getBalance_credit)
+        grid.addColumn(s -> integerInstance.format(s.getBalance_credit()))
                 .setSortable(true)
+                .setTextAlign(ColumnTextAlign.END)
                 .setHeader("Credito");
-        grid.addColumn(SystemIdBalanceOResponse::getCredit_used)
+        grid.addColumn(s -> integerInstance.format(s.getCredit_used()))
                 .setSortable(true)
+                .setTextAlign(ColumnTextAlign.END)
                 .setHeader("Usado");
-        grid.addColumn(SystemIdBalanceOResponse::getLocked_balance)
+        grid.addColumn(s -> integerInstance.format(s.getLocked_balance()))
                 .setSortable(true)
+                .setTextAlign(ColumnTextAlign.END)
                 .setHeader("Reservado");
-        grid.addColumn(v -> {
-                    return v.getBalance_credit() - (v.getCredit_used() + v.getLocked_balance());
-                })
+        grid.addColumn(v -> integerInstance.format(v.getBalance_credit() - (v.getCredit_used() + v.getLocked_balance())))
                 .setSortable(true)
+                .setTextAlign(ColumnTextAlign.END)
                 .setHeader("Disponible");
-        grid.addColumn(SystemIdBalanceOResponse::getExpiration_date)
+        grid.addColumn(s -> ODateUitls.dd_MM_yyyy.format(ODateUitls.valueOf(s.getExpiration_date())))
                 .setSortable(true)
                 .setHeader("Vencimiento");
         grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
