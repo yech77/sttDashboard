@@ -223,10 +223,10 @@ public class BulkSmsSchedulerForm extends FormLayout {
                     .withIgnoreEmptyLines(true)
                     .parse(new BufferedReader(isr));
             /*Obtener la unica linea*/
-            for (CSVRecord record : records) {
-                lineByValues = new String[record.size()];
+            for (CSVRecord recordLine : records) {
+                lineByValues = new String[recordLine.size()];
                 int pos = 0;
-                for (String string : record) {
+                for (String string : recordLine) {
                     System.out.println("POS y STRING: " + pos + ":" + string);
                     lineByValues[pos++] = string;
                 }

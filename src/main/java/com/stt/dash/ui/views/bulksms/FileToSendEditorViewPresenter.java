@@ -9,6 +9,8 @@ import com.stt.dash.backend.service.SystemIdWebClientService;
 import com.stt.dash.backend.util.ws.OWebClient;
 import com.stt.dash.backend.util.ws.SystemIdBalanceOResponse;
 import com.stt.dash.backend.util.ws.SystemIdOResponse;
+import com.stt.dash.utils.ws.UtilDto;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,12 +18,19 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+@Slf4j
 public class FileToSendEditorViewPresenter {
-    private final static Logger log = LoggerFactory.getLogger(FileToSendEditorViewPresenter.class);
+    //    private final static Logger log = LoggerFactory.getLogger(FileToSendEditorViewPresenter.class);
     private final FileToSendEditorView view;
     private final AgendaService agendaService;
     private final ListGenericBean<User> userChildrenList;
@@ -66,6 +75,19 @@ public class FileToSendEditorViewPresenter {
         try {
             log.info("Llamando: [{}]", properties.getOrinocoHost() + "orinoco-admin/ws/data/sid/balance/cod/" + systemid + "/date/" + stringDate);
             monoOResponse = we.getMonoOResponse(properties.getOrinocoHost() + "orinoco-admin/ws/data/sid/balance/cod/" + systemid + "/date/" + stringDate);
+            return monoOResponse.block();
+        } catch (Exception e) {
+            log.error("", e);
+            throw e;
+        }
+    }
+
+    public UtilDto findFilterWords(String text) throws IOException {
+        OWebClient<UtilDto> we = new OWebClient<>(webClient, UtilDto.class);
+        Mono<UtilDto> monoOResponse;
+        try {
+            log.info("Llamando: [{}]", properties.getOrinocoHost() + "orinoco-admin/ws/data/filterword/validate/" + text);
+            monoOResponse = we.getMonoOResponse(properties.getOrinocoHost() + "orinoco-admin/ws/data/filterword/validate/" + text);
             return monoOResponse.block();
         } catch (Exception e) {
             log.error("", e);

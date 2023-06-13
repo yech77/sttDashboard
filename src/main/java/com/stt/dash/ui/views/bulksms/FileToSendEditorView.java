@@ -12,13 +12,13 @@ import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.AgendaService;
 import com.stt.dash.backend.service.SystemIdBalanceWebClientService;
 import com.stt.dash.backend.service.SystemIdWebClientService;
-import com.stt.dash.backend.util.ws.SystemIdBalanceOResponse;
 import com.stt.dash.backend.util.ws.SystemIdOResponse;
 import com.stt.dash.ui.events.CancelEvent;
 import com.stt.dash.ui.utils.I18nUtils;
 import com.stt.dash.ui.utils.ODateUitls;
 import com.stt.dash.ui.views.HasNotifications;
 import com.stt.dash.ui.views.bulksms.events.BulkSmsReviewEvent;
+import com.stt.dash.utils.ws.UtilDto;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Tag;
@@ -78,84 +78,62 @@ import java.util.stream.Stream;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class FileToSendEditorView extends LitTemplate implements HasNotifications {
 
+    private static final Locale esLocale = new Locale("es", "ES");
+    private final String SMS_MESSAGE_WITHOUT_PARAMETER = "Escriba directamente su mensaje";
+    private final String SMS_MESSAGE_WITH_PARAMETER = "Mensaje contiene %s  parámetros; Tienes usados %s.";
+    private final Gson gson = new Gson();
+    /**/
+    private final FileToSendEditorViewPresenter presenter;
+    private final Binder<FIlesToSend> binder = new BeanValidationBinder<>(FIlesToSend.class);
+    String[] firstLineValues;
+    Type gsonType = new TypeToken<HashMap<Integer, Integer>>() {
+    }.getType();
     @Id("title")
     private H2 title;
-
     @Id("metaContainer")
     private Div metaContainer;
-
     @Id("orderNumber")
     private Span orderNumber;
-
     @Id("status")
     private ComboBox<Agenda> agendaComboBox;
-
     @Id("dueDate")
     private DateTimePicker dueDate;
     @Id("dueDate2")
     private DatePicker dueDate2;
     @Id("dueTime")
     private TimePicker dueTime;
-
     @Id("sendNow")
     private Checkbox sendNow;
-
+    //    @Id("warningSpan")
+//    private Span warningSpan;
     @Id("systemId")
     private ComboBox<String> systemIdMulti;
-
     @Id("orderName")
     private TextField orderName;
-
     @Id("orderDescription")
     private TextField orderDescription;
-
     @Id("message")
     private TextArea message;
-
     @Id("charCounter")
     private Paragraph paragraphCharCounter;
-
     @Id("acceptCheckbox")
     private Checkbox acceptCheckbox;
-
-//    @Id("warningSpan")
-//    private Span warningSpan;
-
-
+    //    private FileToSendEditorView fileToSendEditor;
     @Id("messageBuilded")
     private TextArea messageBuilded;
-
     @Id("cancel")
     private Button cancel;
-
     @Id("review")
     private Button programAgendaButton;
-
-    /**/
-    private FileToSendEditorViewPresenter presenter;
-
-    private final String SMS_MESSAGE_WITHOUT_PARAMETER = "Escriba directamente su mensaje";
-    private final String SMS_MESSAGE_WITH_PARAMETER = "Mensaje contiene %s  parámetros; Tienes usados %s.";
-//    private FileToSendEditorView fileToSendEditor;
-
     private User user;
-
-    private Binder<FIlesToSend> binder = new BeanValidationBinder<>(FIlesToSend.class);
     /**/
     private int numOfParameters;
-    String[] firstLineValues;
     private Map<Integer, Integer> lines;
     /**/
     private boolean hasMessageAllParameter = false;
     /**/
     private boolean hasEnougharmeters = false;
-    private final Gson gson = new Gson();
     private boolean hasMoreSms = false;
-    Type gsonType = new TypeToken<HashMap<Integer, Integer>>() {
-    }.getType();
-
-    private static Locale esLocale = new Locale("es", "ES");
-
     private int totsms = 0;
 
     public FileToSendEditorView(@Qualifier("getMyChildrenAndItsChildrenAndMe") ListGenericBean<User> userChildrenList,
@@ -182,6 +160,15 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
         cancel.addClickListener(e -> fireEvent(new CancelEvent(this, false)));
         programAgendaButton.addClickListener(e ->
         {
+            UtilDto filterWords = null;
+            try {
+                filterWords = presenter.findFilterWords(message.getValue());
+                if (!isValidText(filterWords)) {
+                    return;
+                }
+            } catch (Exception ex) {
+                showNotificationError("Error al buscar palabras para el filtro");
+            }
             Integer block = -1;
             try {
                 block = presenter.callBalance(systemIdMulti.getValue(), dueDate.getValue());
@@ -210,7 +197,7 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
             if (ObjectUtils.isEmpty(smsToSendList)) {
                 totsms = ((smsBoxCharCounter - 1) / 160 + 1) * totSmsLineAgenda;
             }
-            StringBuilder sb = new StringBuilder("");
+            StringBuilder sb = new StringBuilder();
             for (Map.Entry<Integer, Integer> entry : smsToSendList.entrySet()) {
                 sb.append("(" + entry.getValue() + ") registros de (" + entry.getKey() + ") sms. ");
                 /* Calcula total de Agenda Variable */
@@ -311,6 +298,21 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
         });
     }
 
+    private boolean isValidText(UtilDto filterWords) {
+
+        if (filterWords.isExistNoPass()) {
+            showNotificationError("No se puede enviar el mensaje, contiene palabra no permitida: " + filterWords.getNoPass());
+            return false;
+        }
+
+        if (filterWords.isExistAlerts() && (filterWords.getAlerts().size() > 1)) {
+            showNotificationError("No se puede enviar el mensaje, contiene palabras de alerta: " + filterWords.getAlerts());
+            return false;
+        }
+
+        return true;
+    }
+
     private void addListeners() {
         dueDate2.addValueChangeListener(lister -> {
             if (lister.getValue().isEqual(LocalDate.now())) {
@@ -355,14 +357,14 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
                 totsms = ((smsMsgboxCharCounter - 1) / 160 + 1) * totSmsLineAgenda;
             }
 
-            StringBuilder sb = new StringBuilder("");
+            StringBuilder sb = new StringBuilder();
             for (Map.Entry<Integer, Integer> entry : smsToSendList.entrySet()) {
                 sb.append("(" + entry.getValue() + ") registros de (" + entry.getKey() + ") sms. ");
 
                 /* Calcula total de Agenda Variable */
                 totsms += entry.getValue() * entry.getKey();
             }
-            paragraphCharCounter.setText(smsMsgboxCharCounter + "/160. " + sb.toString() + "Total Sms a enviar: " + totsms);
+            paragraphCharCounter.setText(smsMsgboxCharCounter + "/160. " + sb + "Total Sms a enviar: " + totsms);
 
             /* Tiene mas sms que lineas en la agenda */
             if (totsms != totSmsLineAgenda) {
@@ -381,17 +383,13 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
             /* al comenzar desde $1 se debe restar uno para que tenga la cantidad correcta de variables*/
             vars--;
             message.setHelperText(String.format(SMS_MESSAGE_WITH_PARAMETER, numOfParameters, vars));
-            if (numOfParameters != vars) {
-//                warningSpan.setText("Mensajes en esta Agenda necesitan "
-//                        + varCount
-//                        + " parámetros; Tienes "
-//                        + vars
-//                        + ".");
-                hasMessageAllParameter = false;
-            } else {
-//                warningSpan.setText("");
-                hasMessageAllParameter = true;
-            }
+            //                warningSpan.setText("Mensajes en esta Agenda necesitan "
+            //                        + varCount
+            //                        + " parámetros; Tienes "
+            //                        + vars
+            //                        + ".");
+            //                warningSpan.setText("");
+            hasMessageAllParameter = numOfParameters == vars;
             String newMsg = message.getValue() == null ? "" : message.getValue();
             if (vars > 0 && newMsg.contains("$")) {
                 for (int i = 1; i <= numOfParameters; i++) {
@@ -426,14 +424,14 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
             if (ObjectUtils.isEmpty(smsToSendList)) {
                 totsms = ((smsMsgboxCharCounter - 1) / 160 + 1) * totSmsLineAgenda;
             }
-            StringBuilder sb = new StringBuilder("");
+            StringBuilder sb = new StringBuilder();
             for (Map.Entry<Integer, Integer> entry : smsToSendList.entrySet()) {
                 sb.append("(" + entry.getValue() + ") registros de (" + entry.getKey() + ") sms. ");
 
                 /* Calcula total de Agenda Variable */
                 totsms += entry.getValue() * entry.getKey();
             }
-            paragraphCharCounter.setText(smsMsgboxCharCounter + "/160. " + sb.toString() + "Total Sms a enviar: " + totsms);
+            paragraphCharCounter.setText(smsMsgboxCharCounter + "/160. " + sb + "Total Sms a enviar: " + totsms);
 
             /* Tiene mas sms que lineas en la agenda */
             if (totsms != totSmsLineAgenda) {
@@ -452,17 +450,13 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
             /* al comenzar desde $1 se debe restar uno para que tenga la cantidad correcta de variables*/
             vars--;
             message.setHelperText(String.format(SMS_MESSAGE_WITH_PARAMETER, numOfParameters, vars));
-            if (numOfParameters != vars) {
-//                warningSpan.setText("Mensajes en esta Agenda necesitan "
-//                        + varCount
-//                        + " parámetros; Tienes "
-//                        + vars
-//                        + ".");
-                hasMessageAllParameter = false;
-            } else {
-//                warningSpan.setText("");
-                hasMessageAllParameter = true;
-            }
+            //                warningSpan.setText("Mensajes en esta Agenda necesitan "
+            //                        + varCount
+            //                        + " parámetros; Tienes "
+            //                        + vars
+            //                        + ".");
+            //                warningSpan.setText("");
+            hasMessageAllParameter = numOfParameters == vars;
             String newMsg = message.getValue() == null ? "" : message.getValue();
             if (vars > 0 && newMsg.contains("$")) {
                 for (int i = 1; i <= numOfParameters; i++) {
