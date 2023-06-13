@@ -67,7 +67,7 @@ public class UsersViewv2 extends AbstractBakeryCrudView<User> implements HasLogg
     public void setupGrid(Grid<User> grid) {
         grid.addColumn(createNameRenderer()).setHeader("Nombre / Tipo").setAutoWidth(true);
         grid.addColumn(User::getEmail).setHeader("Correo").setAutoWidth(true);
-        grid.addColumn(createRolRenderer()).setHeader("Roles").setWidth("350px");
+//        grid.addColumn(createRolRenderer()).setHeader("Roles").setWidth("350px");
 //        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
     }
 
