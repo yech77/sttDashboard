@@ -15,7 +15,6 @@ import com.stt.dash.ui.utils.BeforeSavingResponse;
 import com.stt.dash.ui.views.agenda.EditAgendaView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.crud.BinderCrudEditor;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
@@ -29,6 +28,7 @@ import com.vaadin.flow.server.StreamResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.BufferedReader;
@@ -46,12 +46,17 @@ import java.util.logging.Logger;
 public class BulkSmsView extends AbstractBakeryCrudView<Agenda> {
     private final AgendaService service;
     private final CurrentUser currentUser;
+    private final WebClient webClient;
+    private final OProperties properties;
 
     @Autowired
-    public BulkSmsView(AgendaService service, CurrentUser currentUser, OProperties properties) {
+    public BulkSmsView(AgendaService service, CurrentUser currentUser, OProperties properties,
+                       WebClient webClient) {
         super(Agenda.class, service, new Grid<>(), createForm(currentUser, properties), currentUser);
         this.service = service;
         this.currentUser = currentUser;
+        this.webClient = webClient;
+        this.properties = properties;
         AgendaFileUtils.setBaseDir(properties.getAgendaFilePathUpload());
     }
 
@@ -82,7 +87,7 @@ public class BulkSmsView extends AbstractBakeryCrudView<Agenda> {
     @Async
     protected void afterSaving(long idBeforeSave, Agenda agenda) {
         if (idBeforeSave == 0l) {
-            AgendaParserRunnable parser = new AgendaParserRunnable(agenda, service, agenda.getCreatorEmail());
+            AgendaParserRunnable parser = new AgendaParserRunnable(agenda, service, agenda.getCreatorEmail(), webClient, properties);
             parser.run();
         }
     }

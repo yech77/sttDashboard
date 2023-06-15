@@ -2,13 +2,18 @@ package com.stt.dash.backend.thread;
 
 import com.google.gson.Gson;
 import com.googlecode.gentyref.TypeToken;
+import com.stt.dash.app.OProperties;
 import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.service.AgendaService;
 import com.stt.dash.backend.util.AgendaFileUtils;
+import com.stt.dash.backend.util.ws.OWebClient;
+import com.stt.dash.utils.ws.UtilDto;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,30 +34,30 @@ public class AgendaParserRunnable {
 
     /**/
     private final static Logger log = LoggerFactory.getLogger(AgendaParserRunnable.class);
-    /**/
-    private String userEmail;
-
-    // Agenda para procesar
-    private Agenda agenda;
-
-    // Servicios
-    private AgendaService agenda_service;
-
-    // Datos del archivo
-    private InputStream stream;
-
-    // Lista de errores de validacion
-    private List<String> agendaLog = new ArrayList<>();
     /* TODO: Descablear */
     private final static Pattern regexPattern = Pattern.compile("^(58)(412|414|416|424|426)([0-9]{7})$");
+    private final Gson gson = new Gson();
+    private final WebClient webClient;
+    private final OProperties properties;
     /**/
     Map<Integer, Integer> lineSizeMap = new HashMap<>();
-
-    private final Gson gson = new Gson();
     Type gsonType = new TypeToken<HashMap<Integer, Integer>>() {
     }.getType();
+    /**/
+    private String userEmail;
+    // Agenda para procesar
+    private Agenda agenda;
+    // Servicios
+    private AgendaService agenda_service;
+    // Datos del archivo
+    private InputStream stream;
+    // Lista de errores de validacion
+    private final List<String> agendaLog = new ArrayList<>();
 
-    public AgendaParserRunnable(Agenda agenda, AgendaService agenda_service, String userEmail) {
+    public AgendaParserRunnable(Agenda agenda, AgendaService agenda_service, String userEmail,
+                                WebClient webClient, OProperties properties) {
+        this.properties = properties;
+        this.webClient = webClient;
         Optional<Agenda> optional = agenda_service.findById(agenda.getId());
         if (!optional.isPresent()) {
             return;
@@ -131,8 +136,27 @@ public class AgendaParserRunnable {
                     }
                     sb.deleteCharAt(sb.lastIndexOf(","));
                     log.info("{} NUM OF COLUMS {}", getStringLog(), record.size());
-                    log.info("{} FIRST LINE {}", getStringLog(), sb.toString());
+                    log.info("{} FIRST LINE {}", getStringLog(), sb);
                     agenda.setFirstLine(sb.toString());
+                }
+                /* keep substring from word value to the end of the string of record.toString() */
+                String substring = record.toString().substring(record.toString().indexOf("values="));
+                substring = substring.replaceAll(";", " ");
+                UtilDto filterWords = findFilterWords(substring);
+                if (filterWords.isExistAlertsOrNoPass()) {
+                    if (filterWords.isExistAlerts()) {
+                        log.info("{} LINE ({}) - INVALID WORDS ({}) ", getStringLog(), record.getRecordNumber(),
+                                filterWords.getAlerts());
+                        logLine(record.getRecordNumber(), "Palabras: \"" + filterWords.getAlerts() + "\" no estan permitidas");
+                        invalidItemCounter++;
+                    }
+                    if (filterWords.isExistNoPass()) {
+                        log.info("{} LINE ({}) - INVALID WORDS ({}) ", getStringLog(), record.getRecordNumber(),
+                                filterWords.getNoPass());
+                        logLine(record.getRecordNumber(), "Palabras: \"" + filterWords.getNoPass() + "\" no estan permitidas");
+                        invalidItemCounter++;
+                    }
+                    continue;
                 }
 
                 /* Validar cantidad de parametros */
@@ -190,7 +214,7 @@ public class AgendaParserRunnable {
             agenda.setItemCount(itemCounter);
             agenda.setStatus(invalidItemCounter > 0 ? Agenda.Status.HAS_WARNINGS : Agenda.Status.READY_TO_USE);
             agenda.setSizeOfLines(gson.toJson(lineSizeMap, gsonType));
-            if (agendaLog.size() < 1) {
+            if (agendaLog.isEmpty()) {
                 agendaLog.add("No hay problemas.");
             }
             // Genera un log de errores y actualiza la agenda en la tabla
@@ -234,6 +258,19 @@ public class AgendaParserRunnable {
             agendaLog.add("[Linea: " + line + "] --- " + msg);
         }
 
+    }
+
+    public UtilDto findFilterWords(String text) throws IOException {
+        OWebClient<UtilDto> we = new OWebClient<>(webClient, UtilDto.class);
+        Mono<UtilDto> monoOResponse;
+        try {
+            log.info("Llamando: [{}]", String.format("%sorinoco-admin/ws/data/filterword/validate/%s", properties.getOrinocoHost(), text));
+            monoOResponse = we.getMonoOResponse(properties.getOrinocoHost() + "orinoco-admin/ws/data/filterword/validate/" + text);
+            return monoOResponse.block();
+        } catch (Exception e) {
+            log.error("", e);
+            throw e;
+        }
     }
 
     private String getStringLog() {
