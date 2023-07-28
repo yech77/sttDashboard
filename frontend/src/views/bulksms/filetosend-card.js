@@ -54,7 +54,7 @@ class FileToSendCard extends PolymerElement {
                 }
 
                 .time-place {
-                    width: 120px;
+                    width: 150px;
                 }
 
                 .name-items {

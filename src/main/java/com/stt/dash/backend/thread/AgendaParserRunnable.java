@@ -94,23 +94,21 @@ public class AgendaParserRunnable {
         int invalidItemCounter = 0;
 
         try {
-            char separatorChar = '0';
+            Character separatorChar = '0';
             InputStreamReader isr = new InputStreamReader(stream,
                     StandardCharsets.UTF_8);
             BufferedReader br = new BufferedReader(isr);
             /* Marcar el principio del archivo para luego regresarme. */
             br.mark(1);
-            /* Buscar el primer caracter no numero para obtener el separador */
-            while (Character.isDigit(separatorChar)) {
-                separatorChar = (char) br.read();
-                log.info("{} PASING CHAR '{}'", getStringLog(), separatorChar);
-            }
+            /* El primer campo siempre es el numero de celular.*/
+            separatorChar = findSeparatorIfThereIsAny(separatorChar, br);
             /* Asignar un separador por defecto */
             if (separatorChar != ';' && separatorChar != ',' && separatorChar != '|') {
-                separatorChar = ',';
-                log.info("{} SEPARATOR NOT FOUND. ASSIGNED ['{}']", getStringLog(), separatorChar);
+                log.warn("Separador no encontrado");
+                logLine(0, "Separador no encontrado");
+                throw new IOException("No se pudo determinar el separador del archivo");
             }
-            log.info("{} SEPARATOR FOUND ['{}']", getStringLog(), separatorChar);
+//            log.info("{} SEPARATOR FOUND ['{}']", getStringLog(), separatorChar);
             /* Ir al inicio marcado */
             br.reset();
             /* READER */
@@ -124,20 +122,7 @@ public class AgendaParserRunnable {
                 itemCounter++;
                 /* Obtener size y regex de la primera linea */
                 if (record.getRecordNumber() == 1) {
-                    sizeOfFirsLine = record.size();
-                    StringBuilder sb = new StringBuilder();
-                    /* recorriendo las columnas de la primera fila */
-                    for (String string : record) {
-                        if (string.indexOf(',') > 0) {
-                            sb.append('"').append(string).append('"').append(',');
-                        } else {
-                            sb.append(string).append(',');
-                        }
-                    }
-                    sb.deleteCharAt(sb.lastIndexOf(","));
-                    log.info("{} NUM OF COLUMS {}", getStringLog(), record.size());
-                    log.info("{} FIRST LINE {}", getStringLog(), sb);
-                    agenda.setFirstLine(sb.toString());
+                    sizeOfFirsLine = saveFirsLine(record);
                 }
                 /* keep substring from word value to the end of the string of record.toString() */
                 String substring = record.toString().substring(record.toString().indexOf("values="));
@@ -178,7 +163,7 @@ public class AgendaParserRunnable {
 
                 /* Valida columnas vacias */
                 int errorOnColum = 0;
-                /* Recorrer las cloumnas  */
+                /* Recorrer las columnas  */
                 int totalSize = 0;
                 for (String string : record) {
                     if (string == null || "".equals(string.trim())) {
@@ -225,6 +210,32 @@ public class AgendaParserRunnable {
             updateAgendaStatus(Agenda.Status.CORRUPT_OR_LOST);
             System.out.println("Validation for file " + agenda.getFileName() + " failed. Exiting process.");
         }
+    }
+
+    private int saveFirsLine(CSVRecord record) {
+        int sizeOfFirsLine;
+        sizeOfFirsLine = record.size();
+        StringBuilder sb = new StringBuilder();
+        /* recorriendo las columnas de la primera fila */
+        for (String string : record) {
+            if (string.indexOf(',') > 0) {
+                sb.append('"').append(string).append('"').append(',');
+            } else {
+                sb.append(string).append(',');
+            }
+        }
+        sb.deleteCharAt(sb.lastIndexOf(","));
+        log.info("{} NUM OF COLUMS {}", getStringLog(), record.size());
+        log.info("{} FIRST LINE {}", getStringLog(), sb);
+        agenda.setFirstLine(sb.toString());
+        return sizeOfFirsLine;
+    }
+
+    private static char findSeparatorIfThereIsAny(char separatorChar, BufferedReader br) throws IOException {
+        while (Character.isDigit(separatorChar)) {
+            separatorChar = (char) br.read();
+        }
+        return separatorChar;
     }
 
     public boolean validatePhoneNumber(String number) {
