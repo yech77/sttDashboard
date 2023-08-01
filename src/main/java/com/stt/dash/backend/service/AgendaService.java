@@ -1,7 +1,6 @@
 package com.stt.dash.backend.service;
 
 import com.stt.dash.app.security.CurrentUser;
-import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.data.entity.MyAuditEventComponent;
 import com.stt.dash.backend.data.entity.ODashAuditEvent;
@@ -11,10 +10,9 @@ import com.stt.dash.backend.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +53,13 @@ public class AgendaService implements FilterableCrudService<Agenda> {
         return sb.toString();
     }
 
+    @Override
     public long count() {
+        return repo.count();
+    }
+
+    @Override
+    public long count(CurrentUser currentUser) {
         return repo.count();
     }
 
@@ -140,8 +144,20 @@ public class AgendaService implements FilterableCrudService<Agenda> {
         return repo.getAllAgendasInFamily(users);
     }
 
-    public List<Agenda> getAllValidAgendasInFamily(List<User> users) {
-        return repo.getAllValidAgendasInFamily(users, Agenda.Status.READY_TO_USE);
+    /**
+     * Utilizado para obtener todas las agendas que estan en estado READY_TO_USE cuando se
+     * va a crear una Programacion de masivo.
+     *
+     * @param currentUser
+     * @param users
+     * @return
+     */
+    public List<Agenda> getAllValidAgendasInFamily(CurrentUser currentUser, List<User> users) {
+        if (currentUser.getUser().getUserTypeOrd() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            return repo.getAllValidAgendasInFamily(users, Agenda.Status.READY_TO_USE);
+        } else {
+            return repo.findAllByStatusOrderByDateCreatedDesc(Agenda.Status.READY_TO_USE, PageRequest.ofSize(1000)).getContent();
+        }
     }
 
     public List<Agenda> findByName(String name) {
@@ -165,7 +181,12 @@ public class AgendaService implements FilterableCrudService<Agenda> {
 
     @Override
     public Page<Agenda> findAnyMatching(CurrentUser currentUser, Optional<String> filter, Pageable pageable) {
-        Page<Agenda> myAgendasAndMyAgendasSon = repo.findMyAgendasAndMyAgendasSon(getMeAndSon(currentUser.getUser()), pageable);
+        Page<Agenda> myAgendasAndMyAgendasSon = null;
+        if (currentUser.getUser().getUserTypeOrd() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            myAgendasAndMyAgendasSon = repo.findMyAgendasAndMyAgendasSon(getMeAndSon(currentUser.getUser()), pageable);
+        } else {
+            myAgendasAndMyAgendasSon = repo.findAllByStatusOrderByDateCreatedDesc(Agenda.Status.READY_TO_USE, PageRequest.ofSize(1000));
+        }
         isotherCounter = myAgendasAndMyAgendasSon.getTotalElements();
         return myAgendasAndMyAgendasSon;
     }

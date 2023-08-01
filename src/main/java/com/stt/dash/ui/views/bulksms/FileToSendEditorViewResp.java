@@ -3,6 +3,7 @@ package com.stt.dash.ui.views.bulksms;
 import com.google.gson.Gson;
 import com.googlecode.gentyref.TypeToken;
 import com.stt.dash.app.OProperties;
+import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.data.entity.FIlesToSend;
@@ -161,9 +162,10 @@ public class FileToSendEditorViewResp extends LitTemplate implements HasNotifica
                                     WebClient webClient,
                                     OProperties properties,
                                     SystemIdBalanceWebClientService webClientService,
-                                    SystemIdWebClientService systemidService) {
+                                    SystemIdWebClientService systemidService,
+                                    CurrentUser currentUser) {
         /**/
-        presenter = new FileToSendEditorViewPresenter(null, userChildrenList, agendaService, systemIdList, webClient, properties, webClientService, systemidService);
+        presenter = new FileToSendEditorViewPresenter(null, userChildrenList, agendaService, systemIdList, webClient, properties, webClientService, systemidService, currentUser);
         /**/
         acceptCheckbox.setVisible(false);
         dueDate.setVisible(false);

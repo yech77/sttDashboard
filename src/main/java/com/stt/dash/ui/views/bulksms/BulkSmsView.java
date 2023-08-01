@@ -40,6 +40,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Vista para todas las agendas
+ */
 @Route(value = BakeryConst.PAGE_BULKSMS, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_BULKSMS)
 @Secured({Role.ADMIN, "UI_AGENDA_SMS"})
@@ -62,7 +65,7 @@ public class BulkSmsView extends AbstractBakeryCrudView<Agenda> {
 
     @Override
     protected void setupGrid(Grid<Agenda> grid) {
-        grid.addColumn(Agenda::getName).setWidth("200px").setHeader("Nombre").setFlexGrow(5);
+        grid.addColumn(Agenda::getName).setWidth("200px").setHeader("Nombreeee").setFlexGrow(5);
         grid.addColumn(Agenda::getDescription).setHeader("Descripción").setWidth("230px").setFlexGrow(5);
         grid.addColumn(role -> {
             return role.getStringStatus();

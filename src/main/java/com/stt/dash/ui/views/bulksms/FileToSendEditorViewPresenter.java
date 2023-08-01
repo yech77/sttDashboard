@@ -1,6 +1,7 @@
 package com.stt.dash.ui.views.bulksms;
 
 import com.stt.dash.app.OProperties;
+import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.app.session.ListGenericBean;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.AgendaService;
@@ -39,6 +40,7 @@ public class FileToSendEditorViewPresenter {
     private final WebClient webClient;
     private final SystemIdBalanceWebClientService webClientService;
     private final SystemIdWebClientService systemidService;
+    private final CurrentUser currentUser;
 
     public final static String yyyy_MM_dd = "yyyy-MM-dd";
 
@@ -49,7 +51,8 @@ public class FileToSendEditorViewPresenter {
                                          WebClient webClient,
                                          OProperties properties,
                                          SystemIdBalanceWebClientService webClientService,
-                                         SystemIdWebClientService systemidService) {
+                                         SystemIdWebClientService systemidService,
+                                         CurrentUser currentUser) {
         this.view = view;
         this.agendaService = agendaService;
         this.userChildrenList = userChildrenList;
@@ -58,10 +61,11 @@ public class FileToSendEditorViewPresenter {
         this.webClient = webClient;
         this.webClientService = webClientService;
         this.systemidService = systemidService;
+        this.currentUser = currentUser;
     }
 
     public void setAgendaItems() {
-        view.setComboAgendaItems(agendaService.getAllValidAgendasInFamily(userChildrenList.getList()));
+        view.setComboAgendaItems(agendaService.getAllValidAgendasInFamily(currentUser, userChildrenList.getList()));
     }
 
     public void setSystemIdItems() {

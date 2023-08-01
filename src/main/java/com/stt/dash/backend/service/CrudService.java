@@ -2,6 +2,7 @@ package com.stt.dash.backend.service;
 
 import javax.persistence.EntityNotFoundException;
 
+import com.stt.dash.app.security.CurrentUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.stt.dash.backend.data.entity.AbstractEntitySequence;
@@ -33,6 +34,10 @@ public interface CrudService<T extends AbstractEntitySequence> {
     }
 
     default long count() {
+        return getRepository().count();
+    }
+
+    default long count(CurrentUser currentUser) {
         return getRepository().count();
     }
 
