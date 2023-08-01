@@ -22,6 +22,8 @@ public interface FilesToSendRepository extends JpaRepository<FIlesToSend, Long> 
 
     Page<FIlesToSend> findByUserCreatorInAndDateToSendAfter(@NonNull Collection<User> userCreators, @NonNull Date dateToSend, Pageable pageable);
 
+    Page<FIlesToSend> findByDateToSendAfter(@NonNull Date dateToSend, Pageable pageable);
+
     long countAllByUserCreatorInAndOrderNameContainingIgnoreCaseAndDateToSendAfter(Collection<User> userCreators, String orderName, Date dateToSend);
 
     long countAllByUserCreatorInAndOrderNameContainingIgnoreCase(Collection<User> userCreators, String searchQuery);

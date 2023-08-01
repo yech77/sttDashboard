@@ -141,6 +141,12 @@ public class FilesToSendService implements CrudService<FIlesToSend> {
             } else {
                 return filesToSendRepository.findFIlesToSendByOrderNameContainingIgnoreCase(optionalFilter.get(), pageable);
             }
+        } else if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            if (optionalFilterDate.isPresent()) {
+                return filesToSendRepository.findByDateToSendAfter(optionalFilterDate.get(), pageable);
+            } else {
+                return filesToSendRepository.findAll(pageable);
+            }
         } else {
             List<User> lu = getUserFamily(currentUser.getUser());
             /* es para indicar que el counter debe contar este*/

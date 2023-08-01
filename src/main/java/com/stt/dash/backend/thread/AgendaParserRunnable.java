@@ -25,6 +25,9 @@ import java.util.regex.Pattern;
 
 import java.lang.reflect.Type;
 
+/**
+ * Esta es la que se ejecuta para subir agendas y validar.
+ */
 public class AgendaParserRunnable {
 
     /**/
