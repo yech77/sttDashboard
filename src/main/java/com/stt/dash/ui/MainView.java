@@ -3,6 +3,8 @@ package com.stt.dash.ui;
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.ui.smsview.SmsView;
 import com.stt.dash.ui.views.HasConfirmation;
+import com.stt.dash.ui.views.PasswordChangeDialog;
+import com.stt.dash.ui.views.PasswordChangeView;
 import com.stt.dash.ui.views.admin.users.UserAuthoritiesForm;
 import com.stt.dash.ui.views.admin.users.v2.UsersViewv2;
 import com.stt.dash.ui.views.audit.AuditViewV2;
@@ -91,6 +93,7 @@ public class MainView extends AppLayout {
         MenuItem menuItem = menuBar.addItem(avatar);
         SubMenu subMenu = menuItem.getSubMenu();
 //        subMenu.addItem("Logout", menuItemClickEvent -> logout());
+        subMenu.addItem(createChangePasswordButton());
         subMenu.addItem(createLogoutButton(contextPath));
         /**/
         VerticalLayout verticalLayout = new VerticalLayout(menuBar);
@@ -175,6 +178,8 @@ public class MainView extends AppLayout {
         if (SecurityUtils.isAccessGranted(UserAuthoritiesForm.class)) {
             tabs.add(createTab(VaadinIcon.USER_CHECK, "Permisos", UserAuthoritiesForm.class));
         }
+//        tabs.add(createTab(VaadinIcon.USER_CHECK, "Cambiar Clave", PasswordChangeView.class));
+
         return tabs.toArray(new Tab[tabs.size()]);
     }
 
@@ -208,6 +213,17 @@ public class MainView extends AppLayout {
             VaadinSession.getCurrent().getSession().invalidate();
         });
         return logout;
+    }
+
+    private Button createChangePasswordButton() {
+        final Button password = new Button("Cambiar contraseña");
+        password.addClickListener(e -> {
+            getUI().ifPresent(ui -> ui.navigate("user-password-change"));
+//            PasswordChangeDialog passwordChangeDialog = new PasswordChangeDialog();
+//            passwordChangeDialog.open();
+//            passwordChangeDialog.setCloseOnOutsideClick(true);
+        });
+        return password;
     }
 
     private static <T extends HasComponents> T populateLink(T a, VaadinIcon vaadinIcon, String title) {

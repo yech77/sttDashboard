@@ -116,6 +116,11 @@ public class UserService implements FilterableCrudService<User> {
         return u;
     }
 
+    public User changePassword(User user) {
+        audit.add(ODashAuditEvent.OEVENT_TYPE.UPDATE_USER, user);
+        return getRepository().saveAndFlush(user);
+    }
+
     /*public User save(User currentUser, User entity, String changes) {
         throwIfUserLocked(entity);
         User u = getRepository().saveAndFlush(entity);
