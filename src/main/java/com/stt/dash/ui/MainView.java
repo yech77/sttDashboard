@@ -21,11 +21,13 @@ import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
@@ -212,6 +214,7 @@ public class MainView extends AppLayout {
         logout.addClickListener(e -> {
             VaadinSession.getCurrent().getSession().invalidate();
         });
+        logout.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
         return logout;
     }
 
@@ -219,10 +222,8 @@ public class MainView extends AppLayout {
         final Button password = new Button("Cambiar contraseña");
         password.addClickListener(e -> {
             getUI().ifPresent(ui -> ui.navigate("user-password-change"));
-//            PasswordChangeDialog passwordChangeDialog = new PasswordChangeDialog();
-//            passwordChangeDialog.open();
-//            passwordChangeDialog.setCloseOnOutsideClick(true);
         });
+        password.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         return password;
     }
 

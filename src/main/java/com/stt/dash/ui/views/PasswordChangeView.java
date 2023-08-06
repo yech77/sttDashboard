@@ -21,6 +21,7 @@ public class PasswordChangeView extends Div {
         PasswordChangePresenter passwordChangePresenter = new PasswordChangePresenter(currentUser, userService, passwordEncoder);
         PasswordChangeDialog passwordChangeDialog = new PasswordChangeDialog(passwordChangePresenter);
         passwordChangeDialog.open();
-        passwordChangeDialog.setCloseOnOutsideClick(true);
+        passwordChangeDialog.setCloseOnOutsideClick(false);
+        passwordChangeDialog.setCloseOnEsc(false);
     }
 }

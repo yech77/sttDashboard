@@ -5,7 +5,6 @@ import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.service.UserService;
 import com.vaadin.flow.server.VaadinSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 
 public class PasswordChangePresenter {
     private final UserService userService;
@@ -27,8 +26,8 @@ public class PasswordChangePresenter {
         }
     }
 
-    private boolean isMatches(String oldPassword) {
-        return passwordEncoder.matches(oldPassword, currentUser.getUser().getPasswordHash()) && oldPassword.matches("^(|(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,})$");
+    public boolean isMatches(String oldPassword) {
+        return passwordEncoder.matches(oldPassword, currentUser.getUser().getPasswordHash());
     }
 
 }
