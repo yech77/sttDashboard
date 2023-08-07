@@ -214,7 +214,7 @@ public class MainView extends AppLayout {
         logout.addClickListener(e -> {
             VaadinSession.getCurrent().getSession().invalidate();
         });
-        logout.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
+        logout.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
         return logout;
     }
 
@@ -223,7 +223,7 @@ public class MainView extends AppLayout {
         password.addClickListener(e -> {
             getUI().ifPresent(ui -> ui.navigate("user-password-change"));
         });
-        password.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        password.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
         return password;
     }
 
