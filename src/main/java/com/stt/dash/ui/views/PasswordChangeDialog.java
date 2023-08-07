@@ -12,9 +12,9 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 
 public class PasswordChangeDialog extends Dialog {
     private final FormLayout formLayout = new FormLayout();
-    private final PasswordField oldPassword = new PasswordField("Old Password");
-    private final PasswordField newPassword = new PasswordField("New Password");
-    private final PasswordField confirmPassword = new PasswordField("Confirm Password");
+    private final PasswordField oldPassword = new PasswordField("Clave Actual");
+    private final PasswordField newPassword = new PasswordField("Nueva Clave");
+    private final PasswordField confirmPassword = new PasswordField("Repetir Clave");
     private final DetailsDrawerFooterStt footer = new DetailsDrawerFooterStt();
 
     public PasswordChangeDialog(PasswordChangePresenter passwordChangePresenter) {
