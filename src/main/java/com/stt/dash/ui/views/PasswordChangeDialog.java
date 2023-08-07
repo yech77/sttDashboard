@@ -1,10 +1,8 @@
 package com.stt.dash.ui.views;
 
-import com.stt.dash.app.security.SecurityUtils;
 import com.stt.dash.ui.views.dashboard.main.MainDashboardView;
 import com.stt.dash.uiv2.components.detailsdrawer.DetailsDrawerFooterStt;
 import com.stt.dash.uiv2.util.LumoStyles;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -41,21 +39,30 @@ public class PasswordChangeDialog extends Dialog {
         newPassword.setPattern("^(|(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,})$");
         newPassword.setHelperText("Mínimo 6 caracteres y al menos 1 dígito, 1 minúscula y 1 mayúscula");
         newPassword.setErrorMessage("No cumple con el formato requerido");
-        newPassword.addValueChangeListener(e -> validForEnableSave());
+        newPassword.setValueChangeMode(ValueChangeMode.LAZY);
+        newPassword.addValueChangeListener(e -> {
+            if (!e.isFromClient() || confirmPassword.isEmpty()) {
+                return;
+            }
+            setInValidOrNotToButtonConfirmPassword();
+            validForEnableSave();
+        });
+        confirmPassword.setErrorMessage("Las contraseñas no coinciden");
         confirmPassword.setValueChangeMode(ValueChangeMode.LAZY);
         confirmPassword.addValueChangeListener(e -> {
-            if (!newPassword.getValue().equals(confirmPassword.getValue())) {
-                confirmPassword.setInvalid(true);
-                confirmPassword.setErrorMessage("Las contraseñas no coinciden");
-            } else {
-                confirmPassword.setInvalid(false);
-            }
+            setInValidOrNotToButtonConfirmPassword();
+            validForEnableSave();
+        });
+        confirmPassword.addBlurListener(e -> {
+            setInValidOrNotToButtonConfirmPassword();
             validForEnableSave();
         });
         footer.addSaveListener(e -> {
             if (newPassword.getValue().equals(confirmPassword.getValue())) {
                 passwordChangePresenter.changePassword(oldPassword.getValue(), newPassword.getValue());
                 close();
+            } else {
+                confirmPassword.blur();
             }
         });
         footer.addCancelListener(e -> {
@@ -65,10 +72,21 @@ public class PasswordChangeDialog extends Dialog {
     }
 
     /**
-     * Valida si los campos son válidos para habilitar el botón de guardar
+     * Valida si las contraseñas coinciden y setea confirmPassword segun este resultado.
+     */
+    private void setInValidOrNotToButtonConfirmPassword() {
+        confirmPassword.setInvalid(!isPasswordsEquals());
+    }
+
+    private boolean isPasswordsEquals() {
+        return newPassword.getValue().equals(confirmPassword.getValue());
+    }
+
+    /**
+     * Valida si los campos son válidos y si los password coinciden; habilita o deshabilita el botón de guardar
      */
     private void validForEnableSave() {
-        if (!isValid(oldPassword) || !isValid(newPassword) || !isValid(confirmPassword)) {
+        if (isNotValidValue(oldPassword) || isNotValidValue(newPassword) || isNotValidValue(confirmPassword) || !isPasswordsEquals()) {
             footer.disableSave();
         } else {
             footer.enableSave();
@@ -81,7 +99,7 @@ public class PasswordChangeDialog extends Dialog {
      * @param passwordField
      * @return
      */
-    private boolean isValid(PasswordField passwordField) {
-        return !passwordField.isEmpty() && !passwordField.isInvalid();
+    private boolean isNotValidValue(PasswordField passwordField) {
+        return passwordField.isEmpty() || passwordField.isInvalid();
     }
 }
