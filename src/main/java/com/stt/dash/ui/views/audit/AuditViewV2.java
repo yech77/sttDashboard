@@ -111,7 +111,11 @@ public class AuditViewV2 extends LitTemplate {
     /**/
     private final List<String> userChildren = new ArrayList<>();
 
-    public AuditViewV2(@Autowired CurrentUser currentUser, @Qualifier("getMyChildrenAndItsChildrenAndMe") ListGenericBean<User> userChildrenList, @Autowired ODashAuditEventService service, @Qualifier("getUserSystemIdString") ListGenericBean<String> stringListGenericBean) {
+    public AuditViewV2(@Autowired CurrentUser currentUser,
+                       @Qualifier("getAllUsers") ListGenericBean<User> allUsers,
+                       @Autowired ListGenericBean<User> mychildren,
+                       @Autowired ODashAuditEventService service,
+                       @Qualifier("getUserSystemIdString") ListGenericBean<String> stringListGenericBean) {
         presenter = new AuditPresenter(service, this);
         initDatepicker();
         /**/
@@ -119,7 +123,8 @@ public class AuditViewV2 extends LitTemplate {
         /**/
         createGrid();
         /**/
-        List<User> user = userChildrenList.getList();
+        List<User> user;
+        user = findUsers(currentUser, allUsers, mychildren);
         userChildren.addAll(user.stream().map(User::getEmail).collect(Collectors.toList()));
         /**/
         initCombo(user);
@@ -194,6 +199,17 @@ public class AuditViewV2 extends LitTemplate {
         addValueChangeListener();
         /**/
         searchButton.setEnabled(false);
+    }
+
+    private static List<User> findUsers(CurrentUser currentUser, ListGenericBean<User> allUsers, ListGenericBean<User> mychildren) {
+        List<User> user;
+        if (currentUser.getUser().getUserTypeOrd().equals(User.OUSER_TYPE_ORDINAL.COMERCIAL)) {
+            user = allUsers.getList();
+        } else {
+            user = mychildren.getList();
+            user.remove(currentUser.getUser());
+        }
+        return user;
     }
 
     private void initDatepicker() {
