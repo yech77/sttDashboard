@@ -231,21 +231,45 @@ public class AuditViewV2 extends LitTemplate {
     private void addValueChangeListener() {
         searchButton.addClickListener(click -> {
             click.getSource().setEnabled(false);
-            if (Objects.isNull(userCombo.getValue())) {
-                /* Todos los eventos */
-                if (Objects.isNull(eventCombo.getValue())) {
-                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
-                } else {
-                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userChildren, eventCombo.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
-                }
+            if (allUserCheck.getValue()) {
+                /* Un Evento. Todos los usuarios.*/
+                presenter.updateDataProviderPagin(firstDate.getValue(),
+                        secondDate.getValue(),
+                        userChildren,
+                        eventCombo.getValue(),
+                        currentPageTextbox.getValue() - 1,
+                        itemsPerPage);
+            } else if (allEventCheck.getValue()) {
+                /* Un usuario. Todos sus eventos. */
+                presenter.updateDataProviderPagin(firstDate.getValue(),
+                        secondDate.getValue(),
+                        userCombo.getValue().getEmail(),
+                        currentPageTextbox.getValue() - 1,
+                        itemsPerPage);
             } else {
-                /* Todos los eventos */
-                if (ObjectUtils.isEmpty(eventCombo.getValue())) {
-                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
-                } else {
-                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
-                }
+                /* Un usuario. Un evento. */
+                presenter.updateDataProviderPagin(firstDate.getValue(),
+                        secondDate.getValue(),
+                        userCombo.getValue().getEmail(),
+                        eventCombo.getValue(),
+                        currentPageTextbox.getValue() - 1,
+                        itemsPerPage);
             }
+//            if (Objects.isNull(userCombo.getValue())) {
+//                /* Todos los usuarios */
+//                if (Objects.isNull(eventCombo.getValue())) {
+//                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
+//                } else {
+//                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userChildren, eventCombo.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
+//                }
+//            } else {
+//                if (ObjectUtils.isEmpty(eventCombo.getValue())) {
+//                    /* Todos los eventos */
+//                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
+//                } else {
+//                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
+//                }
+//            }
             grid.setPageSize(itemsPerPage);
             /**/
             click.getSource().setEnabled(true);
