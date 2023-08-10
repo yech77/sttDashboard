@@ -21,12 +21,14 @@ public class FilesToSendService implements CrudService<FIlesToSend> {
 
     private static final String
             NO_SE_PUEDEN_BORRAR_PROGRAMACIONES_YA_ENVIADAS = "No se pueden borrar Programaciones ya enviadas.";
-    //    private MyAuditEventComponent auditEvent;
-    private static String UI_CODE = "SERV";
-    private FilesToSendRepository filesToSendRepository;
-    private final MyAuditEventComponent auditEvent;
-    private long isotherCounter = -1;
     private static final Logger log = LoggerFactory.getLogger(FilesToSendService.class.getName());
+    private static final Set<Status> notAvailableStates = Collections.unmodifiableSet(
+            EnumSet.complementOf(EnumSet.of(Status.INVALID, Status.WAITING_TO_SEND)));
+    //    private MyAuditEventComponent auditEvent;
+    private static final String UI_CODE = "SERV";
+    private final MyAuditEventComponent auditEvent;
+    private final FilesToSendRepository filesToSendRepository;
+    private long isotherCounter = -1;
 
     @Autowired
     public FilesToSendService(FilesToSendRepository filesToSendRepository,
@@ -35,9 +37,6 @@ public class FilesToSendService implements CrudService<FIlesToSend> {
         this.filesToSendRepository = filesToSendRepository;
         this.auditEvent = auditEvent;
     }
-
-    private static final Set<Status> notAvailableStates = Collections.unmodifiableSet(
-            EnumSet.complementOf(EnumSet.of(Status.INVALID, Status.WAITING_TO_SEND)));
 
     @Override
     public FIlesToSend save(User currentUser, FIlesToSend fIlesToSend) {
@@ -141,6 +140,12 @@ public class FilesToSendService implements CrudService<FIlesToSend> {
             } else {
                 return filesToSendRepository.findFIlesToSendByOrderNameContainingIgnoreCase(optionalFilter.get(), pageable);
             }
+        } else if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            if (optionalFilterDate.isPresent()) {
+                return filesToSendRepository.findByDateToSendAfter(optionalFilterDate.get(), pageable);
+            } else {
+                return filesToSendRepository.findAll(pageable);
+            }
         } else {
             List<User> lu = getUserFamily(currentUser.getUser());
             /* es para indicar que el counter debe contar este*/
@@ -159,19 +164,28 @@ public class FilesToSendService implements CrudService<FIlesToSend> {
     }
 
     public long countAnyMatchingAfterDateToSend(CurrentUser currentUser, Optional<String> optionalFilter, Optional<Date> optionalFilterDate) {
-        if (optionalFilter.isPresent() && optionalFilterDate.isPresent()) {
-//            return filesToSendRepository.countAllByOrderNameContainingIgnoreCaseAndDateToSendAfter(optionalFilter.get(),
-//                    optionalFilterDate.get());
-            return filesToSendRepository.countAllByUserCreatorInAndOrderNameContainingIgnoreCaseAndDateToSendAfter(getUserFamily(currentUser.getUser()), optionalFilter.get(),
-                    optionalFilterDate.get());
-        } else if (optionalFilter.isPresent()) {
-//            return filesToSendRepository.countAllByOrderNameContainingIgnoreCase(optionalFilter.get());
-            return filesToSendRepository.countAllByUserCreatorInAndOrderNameContainingIgnoreCase(getUserFamily(currentUser.getUser()), optionalFilter.get());
-        } else if (optionalFilterDate.isPresent()) {
-//            return filesToSendRepository.countAllByDateToSendAfter(optionalFilterDate.get());
-            return filesToSendRepository.countAllByUserCreatorInAndDateToSendAfter(getUserFamily(currentUser.getUser()), optionalFilterDate.get());
+        if (currentUser.getUser().getUserTypeOrd() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            if (optionalFilter.isPresent() && optionalFilterDate.isPresent()) {
+                return filesToSendRepository.countAllByUserCreatorInAndOrderNameContainingIgnoreCaseAndDateToSendAfter(getUserFamily(currentUser.getUser()), optionalFilter.get(),
+                        optionalFilterDate.get());
+            } else if (optionalFilter.isPresent()) {
+                return filesToSendRepository.countAllByUserCreatorInAndOrderNameContainingIgnoreCase(getUserFamily(currentUser.getUser()), optionalFilter.get());
+            } else if (optionalFilterDate.isPresent()) {
+                return filesToSendRepository.countAllByUserCreatorInAndDateToSendAfter(getUserFamily(currentUser.getUser()), optionalFilterDate.get());
+            } else {
+                return filesToSendRepository.countByUserCreatorIn(getUserFamily(currentUser.getUser()));
+            }
         } else {
-            return filesToSendRepository.countByUserCreatorIn(getUserFamily(currentUser.getUser()));
+            if (optionalFilter.isPresent() && optionalFilterDate.isPresent()) {
+                return filesToSendRepository.countAllByOrderNameContainingIgnoreCaseAndDateToSendAfter(optionalFilter.get(),
+                        optionalFilterDate.get());
+            } else if (optionalFilter.isPresent()) {
+                return filesToSendRepository.countAllByOrderNameContainingIgnoreCase(optionalFilter.get());
+            } else if (optionalFilterDate.isPresent()) {
+                return filesToSendRepository.countAllByDateToSendAfter(optionalFilterDate.get());
+            } else {
+                return filesToSendRepository.count();
+            }
         }
     }
 

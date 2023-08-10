@@ -3,6 +3,8 @@ package com.stt.dash.ui;
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.ui.smsview.SmsView;
 import com.stt.dash.ui.views.HasConfirmation;
+import com.stt.dash.ui.views.PasswordChangeDialog;
+import com.stt.dash.ui.views.PasswordChangeView;
 import com.stt.dash.ui.views.admin.users.UserAuthoritiesForm;
 import com.stt.dash.ui.views.admin.users.v2.UsersViewv2;
 import com.stt.dash.ui.views.audit.AuditViewV2;
@@ -19,11 +21,13 @@ import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
@@ -91,6 +95,7 @@ public class MainView extends AppLayout {
         MenuItem menuItem = menuBar.addItem(avatar);
         SubMenu subMenu = menuItem.getSubMenu();
 //        subMenu.addItem("Logout", menuItemClickEvent -> logout());
+        subMenu.addItem(createChangePasswordButton());
         subMenu.addItem(createLogoutButton(contextPath));
         /**/
         VerticalLayout verticalLayout = new VerticalLayout(menuBar);
@@ -175,6 +180,8 @@ public class MainView extends AppLayout {
         if (SecurityUtils.isAccessGranted(UserAuthoritiesForm.class)) {
             tabs.add(createTab(VaadinIcon.USER_CHECK, "Permisos", UserAuthoritiesForm.class));
         }
+//        tabs.add(createTab(VaadinIcon.USER_CHECK, "Cambiar Clave", PasswordChangeView.class));
+
         return tabs.toArray(new Tab[tabs.size()]);
     }
 
@@ -207,7 +214,17 @@ public class MainView extends AppLayout {
         logout.addClickListener(e -> {
             VaadinSession.getCurrent().getSession().invalidate();
         });
+        logout.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
         return logout;
+    }
+
+    private Button createChangePasswordButton() {
+        final Button password = new Button("Cambiar contraseña");
+        password.addClickListener(e -> {
+            getUI().ifPresent(ui -> ui.navigate("user-password-change"));
+        });
+        password.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
+        return password;
     }
 
     private static <T extends HasComponents> T populateLink(T a, VaadinIcon vaadinIcon, String title) {

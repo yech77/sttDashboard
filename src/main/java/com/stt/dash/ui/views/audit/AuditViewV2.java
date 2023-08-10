@@ -66,52 +66,55 @@ import static com.stt.dash.ui.utils.BakeryConst.PAGE_AUDIT;
 @Route(value = PAGE_AUDIT, layout = MainView.class)
 @Secured({Role.ADMIN, "UI_AUDIT"})
 public class AuditViewV2 extends LitTemplate {
+    /* Hora del servidor para establecer busquedas de YYYY-MM-DD*/
+    public static LocalDateTime localDateTime = LocalDateTime.now();
+    /**/
+    private final AuditPresenter presenter;
+    private final ComboBox<Client> clientCombobox = new ComboBox<>("Cliente");
+    /**/
+    private final List<String> userChildren = new ArrayList<>();
+    /**/
+    private final Locale esLocale = new Locale("es", "ES");
+    /**/
+    private final EnhancedDateRangePicker dateOne = new EnhancedDateRangePicker();
+    private final DatePicker firstDate = new DatePicker();
+    private final DatePicker secondDate = new DatePicker();
+    /**/
+//    private Button searchButton = new Button("Buscar");
+    private final IntegerField currentPageTextbox = new IntegerField("Página");
+    private final Label totalAmountOfPagesLabel = new Label();
+    private final ComboBox<User> userCombo = new ComboBox<>();
+    private final ComboBox<ODashAuditEvent.OEVENT_TYPE> eventCombo = new ComboBox<>();
+    private final Checkbox allUserCheck = new Checkbox("Todos los usuarios");
+    private final Checkbox allEventCheck = new Checkbox("Todos los eventos");
     @Id("firstline")
     Div firstline;
-
     @Id("secondline")
     Div secondline;
-    @Id("filterButton")
-    private Button searchButton;
     @Id("footer")
     Div footer;
     @Id("smsGrid")
     Grid<ODashAuditEvent> grid;
-    /**/
-    private Locale esLocale = new Locale("es", "ES");
-    /**/
-    private final AuditPresenter presenter;
+    ComboBox<Integer> comboItemsPerPage = new ComboBox<>("Mensajes por página");
+    FooterRow footerRow;
+    List<SystemId> systemIdList = new ArrayList<>(1);
+    @Id("filterButton")
+    private Button searchButton;
     /**/
     private Component componentWrapper;
-    /* Hora del servidor para establecer busquedas de YYYY-MM-DD*/
-    public static LocalDateTime localDateTime = LocalDateTime.now();
-    /**/
-    private EnhancedDateRangePicker dateOne = new EnhancedDateRangePicker();
-    private DatePicker firstDate = new DatePicker();
-    private DatePicker secondDate = new DatePicker();
-    /**/
-//    private Button searchButton = new Button("Buscar");
-    private IntegerField currentPageTextbox = new IntegerField("Página");
-    private Label totalAmountOfPagesLabel = new Label();
-    ComboBox<Integer> comboItemsPerPage = new ComboBox<>("Mensajes por página");
-    private final ComboBox<Client> clientCombobox = new ComboBox<>("Cliente");
-    FooterRow footerRow;
     /**/
     private int itemsPerPage = 25;
-    List<SystemId> systemIdList = new ArrayList<>(1);
-    private ComboBox<User> userCombo = new ComboBox<>();
-    private ComboBox<ODashAuditEvent.OEVENT_TYPE> eventCombo = new ComboBox<>();
-    private Checkbox allUserCheck = new Checkbox("Todos los usuarios");
-    private Checkbox allEventCheck = new Checkbox("Todos los eventos");
     /**/
     private Grid.Column<ODashAuditEvent> userColumn;
     private Grid.Column<ODashAuditEvent> eventTypeColumn;
     private Grid.Column<ODashAuditEvent> dateColumn;
     private Grid.Column<ODashAuditEvent> eventDescColumn;
-    /**/
-    private final List<String> userChildren = new ArrayList<>();
 
-    public AuditViewV2(@Autowired CurrentUser currentUser, @Qualifier("getMyChildrenAndItsChildrenAndMe") ListGenericBean<User> userChildrenList, @Autowired ODashAuditEventService service, @Qualifier("getUserSystemIdString") ListGenericBean<String> stringListGenericBean) {
+    public AuditViewV2(@Autowired CurrentUser currentUser,
+                       @Qualifier("getAllUsers") ListGenericBean<User> allUsers,
+                       @Autowired ListGenericBean<User> mychildren,
+                       @Autowired ODashAuditEventService service,
+                       @Qualifier("getUserSystemIdString") ListGenericBean<String> stringListGenericBean) {
         presenter = new AuditPresenter(service, this);
         initDatepicker();
         /**/
@@ -119,7 +122,8 @@ public class AuditViewV2 extends LitTemplate {
         /**/
         createGrid();
         /**/
-        List<User> user = userChildrenList.getList();
+        List<User> user;
+        user = findUsers(currentUser, allUsers, mychildren);
         userChildren.addAll(user.stream().map(User::getEmail).collect(Collectors.toList()));
         /**/
         initCombo(user);
@@ -133,28 +137,15 @@ public class AuditViewV2 extends LitTemplate {
         comboItemsPerPage.setItems(Arrays.asList(25, 50, 100, 200, 400, 800));
         comboItemsPerPage.setValue(itemsPerPage);
         comboItemsPerPage.addValueChangeListener(change -> {
-            if (change.isFromClient()) {
-                itemsPerPage = change.getValue();
-                if (Objects.isNull(userCombo.getValue())) {
-                    /* Todos los eventos */
-                    if (Objects.isNull(eventCombo.getValue())) {
-                        presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
-                    } else {
-                        presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userChildren, eventCombo.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
-                    }
-                } else {
-                    /* Todos los eventos */
-                    if (ObjectUtils.isEmpty(eventCombo.getValue())) {
-                        presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
-                    } else {
-                        presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
-                    }
-                }
-                try {
-                    grid.setPageSize(itemsPerPage);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            if (!change.isFromClient()) {
+                return;
+            }
+            itemsPerPage = change.getValue();
+            updateGridData();
+            try {
+                grid.setPageSize(itemsPerPage);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
         /**/
@@ -162,26 +153,13 @@ public class AuditViewV2 extends LitTemplate {
         currentPageTextbox.setMin(1);
         currentPageTextbox.setHasControls(true);
         currentPageTextbox.addValueChangeListener(change -> {
-            if (change.isFromClient()) {
-                try {
-                    if (Objects.isNull(userCombo.getValue())) {
-                        /* Todos los eventos */
-                        if (Objects.isNull(eventCombo.getValue())) {
-                            presenter.updateDataProvider(firstDate.getValue(), secondDate.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
-                        } else {
-                            presenter.updateDataProvider(firstDate.getValue(), secondDate.getValue(), userChildren, eventCombo.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
-                        }
-                    } else {
-                        /* Todos los eventos */
-                        if (ObjectUtils.isEmpty(eventCombo.getValue())) {
-                            presenter.updateDataProvider(firstDate.getValue(), secondDate.getValue(), userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
-                        } else {
-                            presenter.updateDataProvider(firstDate.getValue(), secondDate.getValue(), userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            if (!change.isFromClient()) {
+                return;
+            }
+            try {
+                updateGridData();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
         /**/
@@ -194,6 +172,44 @@ public class AuditViewV2 extends LitTemplate {
         addValueChangeListener();
         /**/
         searchButton.setEnabled(false);
+    }
+
+    private void updateGridData() {
+        if (Boolean.TRUE.equals(allUserCheck.getValue())) {
+            /* Un Evento. Todos los usuarios.*/
+            presenter.updateDataProviderPagin(firstDate.getValue(),
+                    secondDate.getValue(),
+                    userChildren,
+                    eventCombo.getValue(),
+                    currentPageTextbox.getValue() - 1,
+                    itemsPerPage);
+        } else if (Boolean.TRUE.equals(allEventCheck.getValue())) {
+            /* Un usuario. Todos sus eventos. */
+            presenter.updateDataProviderPagin(firstDate.getValue(),
+                    secondDate.getValue(),
+                    userCombo.getValue().getEmail(),
+                    currentPageTextbox.getValue() - 1,
+                    itemsPerPage);
+        } else {
+            /* Un usuario. Un evento. */
+            presenter.updateDataProviderPagin(firstDate.getValue(),
+                    secondDate.getValue(),
+                    userCombo.getValue().getEmail(),
+                    eventCombo.getValue(),
+                    currentPageTextbox.getValue() - 1,
+                    itemsPerPage);
+        }
+    }
+
+    private static List<User> findUsers(CurrentUser currentUser, ListGenericBean<User> allUsers, ListGenericBean<User> mychildren) {
+        List<User> user;
+        if (currentUser.getUser().getUserTypeOrd().equals(User.OUSER_TYPE_ORDINAL.COMERCIAL)) {
+            user = allUsers.getList();
+        } else {
+            user = mychildren.getList();
+            user.remove(currentUser.getUser());
+        }
+        return user;
     }
 
     private void initDatepicker() {
@@ -215,21 +231,7 @@ public class AuditViewV2 extends LitTemplate {
     private void addValueChangeListener() {
         searchButton.addClickListener(click -> {
             click.getSource().setEnabled(false);
-            if (Objects.isNull(userCombo.getValue())) {
-                /* Todos los eventos */
-                if (Objects.isNull(eventCombo.getValue())) {
-                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
-                } else {
-                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userChildren, eventCombo.getValue(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
-                }
-            } else {
-                /* Todos los eventos */
-                if (ObjectUtils.isEmpty(eventCombo.getValue())) {
-                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
-                } else {
-                    presenter.updateDataProviderPagin(firstDate.getValue(), secondDate.getValue(), userCombo.getValue().getEmail(), currentPageTextbox.getValue().intValue() - 1, itemsPerPage);
-                }
-            }
+            updateGridData();
             grid.setPageSize(itemsPerPage);
             /**/
             click.getSource().setEnabled(true);
@@ -274,7 +276,7 @@ public class AuditViewV2 extends LitTemplate {
         int day = now.getDayOfMonth();
         int hour = now.getHour();
         int min = now.getMinute();
-        String fileName = "" + year + "." + month + "." + day + "." + hour + ":" + (min < 9 ? "0" + min : min) + "-Auditoria.csv";
+        String fileName = year + "." + month + "." + day + "." + hour + ":" + (min < 9 ? "0" + min : min) + "-Auditoria.csv";
         Button download = new Button("Descargar Datos (" + year + "/" + month + "/" + day + "-" + hour + ":" + (min < 9 ? "0" + min : min) + ")");
 
         FileDownloadWrapper buttonWrapper = new FileDownloadWrapper(new StreamResource(fileName, () -> {
@@ -383,7 +385,7 @@ public class AuditViewV2 extends LitTemplate {
 
     private void initEventCheck() {
         allUserCheck.addValueChangeListener(listener -> {
-            if (allUserCheck.getValue()) {
+            if (Boolean.TRUE.equals(allUserCheck.getValue())) {
                 userCombo.setValue(null);
                 allEventCheck.setValue(false);
             }
@@ -393,7 +395,7 @@ public class AuditViewV2 extends LitTemplate {
         });
         /**/
         allEventCheck.addValueChangeListener(listener -> {
-            if (allUserCheck.getValue()) {
+            if (Boolean.TRUE.equals(allUserCheck.getValue())) {
                 eventCombo.setValue(null);
                 allUserCheck.setValue(false);
             }
@@ -406,9 +408,6 @@ public class AuditViewV2 extends LitTemplate {
      * @return
      */
     private boolean isValid() {
-        if ((Objects.isNull(userCombo.getValue()) && !allUserCheck.getValue()) || (Objects.isNull(eventCombo.getValue()) && !allEventCheck.getValue()) || Objects.isNull(firstDate.getValue()) || Objects.isNull(secondDate.getValue())) {
-            return false;
-        }
-        return true;
+        return (!Objects.isNull(userCombo.getValue()) || allUserCheck.getValue()) && (!Objects.isNull(eventCombo.getValue()) || allEventCheck.getValue()) && !Objects.isNull(firstDate.getValue()) && !Objects.isNull(secondDate.getValue());
     }
 }

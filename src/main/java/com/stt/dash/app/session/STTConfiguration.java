@@ -8,6 +8,7 @@ import com.stt.dash.app.security.SecurityUtils;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.SystemIdRepository;
+import com.stt.dash.backend.repositories.UserRepository;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +18,11 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -96,6 +100,7 @@ public class STTConfiguration {
      * @return
      */
     @Bean
+    @Primary
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public ListGenericBean<User> getMyChildrenAndItsChildrenAndMe(CurrentUser currentUser) {
         User thisUser = currentUser.getUser();
@@ -119,6 +124,20 @@ public class STTConfiguration {
                 currentUser.getUser().getEmail(),
                 allUsers.size());
         return () -> allUsers;
+    }
+
+    /**
+     * Devuelve todos los usuarios excepto los administradores y el usuario actual.
+     *
+     * @param currentUser
+     * @param userRepository
+     * @return
+     */
+    @Bean(name = "getAllUsers")
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public ListGenericBean<User> getAllUser(CurrentUser currentUser, UserRepository userRepository) {
+        Page<User> allByUserParentIsNotNullAndEmailIsNot = userRepository.findAllByUserParentIsNotNullAndEmailIsNot(currentUser.getUser().getEmail(), Pageable.ofSize(1000));
+        return allByUserParentIsNotNullAndEmailIsNot::getContent;
     }
 
     @Bean

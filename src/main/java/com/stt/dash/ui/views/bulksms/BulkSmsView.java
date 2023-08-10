@@ -47,6 +47,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Vista para todas las agendas
+ */
 @Route(value = BakeryConst.PAGE_BULKSMS, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_BULKSMS)
 @Secured({Role.ADMIN, "UI_AGENDA_SMS"})

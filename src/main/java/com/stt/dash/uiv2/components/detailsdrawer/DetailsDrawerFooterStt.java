@@ -24,6 +24,8 @@ public class DetailsDrawerFooterStt extends FlexBoxLayout {
 
         save = UIUtils.createPrimaryButton("Guardar");
         cancel = UIUtils.createTertiaryButton("Cancelar");
+        cancel.getStyle().set("margin-inline-end", "auto");
+        setJustifyContentMode(JustifyContentMode.END);
         add(cancel, save);
     }
 
@@ -37,4 +39,11 @@ public class DetailsDrawerFooterStt extends FlexBoxLayout {
         return cancel.addClickListener(listener);
     }
 
+    public void disableSave() {
+        save.setEnabled(false);
+    }
+
+    public void enableSave() {
+        save.setEnabled(true);
+    }
 }

@@ -115,14 +115,18 @@ public class AuditPresenter {
         view.updateDownloadButton(limitedList);
     }
 
-    public void updateDataProviderPagin(LocalDate firsDate, LocalDate secondDate,
+    public void updateDataProviderPagin(LocalDate firsDate,
+                                        LocalDate secondDate,
                                         int actualpage,
                                         int itemsPerPage) {
         updateDataProvider(firsDate, secondDate, actualpage, itemsPerPage);
         view.updateTotalPage(totPages);
     }
 
-    public void updateDataProviderPagin(LocalDate firsDate, LocalDate secondDate, List<String> userChildren, ODashAuditEvent.OEVENT_TYPE event,
+    public void updateDataProviderPagin(LocalDate firsDate,
+                                        LocalDate secondDate,
+                                        List<String> userChildren,
+                                        ODashAuditEvent.OEVENT_TYPE event,
                                         int actualpage,
                                         int itemsPerPage) {
         updateDataProvider(firsDate, secondDate, userChildren, event, actualpage, itemsPerPage);
@@ -136,7 +140,10 @@ public class AuditPresenter {
         view.updateTotalPage(totPages);
     }
 
-    public void updateDataProviderPagin(LocalDate firsDate, LocalDate secondDate, String email, ODashAuditEvent.OEVENT_TYPE event,
+    public void updateDataProviderPagin(LocalDate firsDate,
+                                        LocalDate secondDate,
+                                        String email,
+                                        ODashAuditEvent.OEVENT_TYPE event,
                                         int actualpage,
                                         int itemsPerPage) {
         updateDataProvider(firsDate, secondDate, email, event, actualpage, itemsPerPage);

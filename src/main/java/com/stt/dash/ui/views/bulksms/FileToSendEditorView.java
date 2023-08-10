@@ -146,12 +146,12 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
                                 SystemIdWebClientService systemidService) {
         /**/
         if (currentuser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
-            presenter = new FileToSendEditorViewPresenter(this, userChildrenList, agendaService, systemIdList, webClient, properties, webClientService, systemidService);
+            presenter = new FileToSendEditorViewPresenter(this, userChildrenList, agendaService, systemIdList, webClient, properties, webClientService, systemidService, currentuser);
         } else {
             /* Usuario solo puede ver sus SYstemIds */
             List<String> stringList = currentuser.getUser().getSystemids().stream().map(SystemId::getSystemId).collect(Collectors.toList());
             ListGenericBean<String> stringListGenericBean = () -> stringList;
-            presenter = new FileToSendEditorViewPresenter(this, userChildrenList, agendaService, stringListGenericBean, webClient, properties, webClientService, systemidService);
+            presenter = new FileToSendEditorViewPresenter(this, userChildrenList, agendaService, stringListGenericBean, webClient, properties, webClientService, systemidService, currentuser);
         }
         /**/
         acceptCheckbox.setVisible(false);
