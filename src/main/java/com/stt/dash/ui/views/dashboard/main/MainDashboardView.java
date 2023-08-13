@@ -161,6 +161,8 @@ public class MainDashboardView extends DashboardBase {
         DataSeries innerSeries = new DataSeries();
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
         innerPieOptions.setSize("70%");
+        innerPieOptions.getDataLabels().setInside(true);
+        innerPieOptions.getDataLabels().setDistance(40);
         innerSeries.setPlotOptions(innerPieOptions);
         /**/
         Configuration conf = monthlyProductSplit.getConfiguration();
@@ -191,6 +193,7 @@ public class MainDashboardView extends DashboardBase {
         plotOptionsPie.setInnerSize("80%");
         plotOptionsPie.getDataLabels().setEnabled(false);
         plotOptionsPie.getDataLabels().setCrop(false);
+        plotOptionsPie.setClassName("pie-inner-label");
 //        deliveriesPerProductSeries.setPlotOptions(plotOptionsPie);
 //        conf.addSeries(deliveriesPerProductSeries);
         series.setPlotOptions(plotOptionsPie);
@@ -202,6 +205,7 @@ public class MainDashboardView extends DashboardBase {
         innerSeries.setName("sms");
         series.setName("sms");
         conf.setSeries(innerSeries, series);
+//        conf.setSeries(innerSeries);
         conf.setTooltip(tooltip);
     }
 
