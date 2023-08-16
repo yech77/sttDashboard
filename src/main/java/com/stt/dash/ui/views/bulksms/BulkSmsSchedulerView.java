@@ -86,8 +86,8 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
     private static STTBinderCrudEditor<FIlesToSend> createForm(CurrentUser currentUser,
                                                                AgendaService agendaService,
                                                                SetGenericBean<SystemId> userSystemIdSet,
-                                                               ListGenericBean userChildren) {
-        List<Agenda> agendaList = agendaService.getAllValidAgendasInFamily(currentUser, userChildren.getList());
+                                                               ListGenericBean<User> userChildren) {
+        List<Agenda> agendaList = agendaService.getAllAgendasInFamily(currentUser, userChildren.getList());
         form = new BulkSmsSchedulerForm(agendaList, userSystemIdSet.getSet(), currentUser);
         return new STTBinderCrudEditor<FIlesToSend>(form.getBinder(), form);
     }

@@ -53,8 +53,9 @@ class FileToSendCard extends PolymerElement {
                     width: 100px;
                 }
 
+                /*Cambio de espacio en tarjeta de programacion*/
                 .time-place {
-                    width: 150px;
+                    width: 200px;
                 }
 
                 .name-items {

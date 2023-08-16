@@ -14,6 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -160,6 +161,14 @@ public class AgendaService implements FilterableCrudService<Agenda> {
         }
     }
 
+    public List<Agenda> getAllAgendasInFamily(CurrentUser currentUser, List<User> users) {
+        if (currentUser.getUser().getUserTypeOrd() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            return repo.getAllAgendasInFamily(users);
+        } else {
+            return repo.findAll(Sort.by(Sort.Direction.DESC, "dateCreated"));
+        }
+    }
+
     public List<Agenda> findByName(String name) {
         return repo.findByName(name);
     }
@@ -179,15 +188,28 @@ public class AgendaService implements FilterableCrudService<Agenda> {
         }
     }
 
+    /**
+     * Busca las agendas que pertenecen al usuario actual y a sus hijos o todas las agendas si es un comercial.
+     *
+     * @param currentUser
+     * @param filter
+     * @param pageable
+     * @return
+     */
     @Override
     public Page<Agenda> findAnyMatching(CurrentUser currentUser, Optional<String> filter, Pageable pageable) {
-        Page<Agenda> myAgendasAndMyAgendasSon = null;
+        Page<Agenda> myAgendasAndMyAgendasSon = findAgendas(currentUser, pageable);
+        isotherCounter = myAgendasAndMyAgendasSon.getTotalElements();
+        return myAgendasAndMyAgendasSon;
+    }
+
+    private Page<Agenda> findAgendas(CurrentUser currentUser, Pageable pageable) {
+        Page<Agenda> myAgendasAndMyAgendasSon;
         if (currentUser.getUser().getUserTypeOrd() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
             myAgendasAndMyAgendasSon = repo.findMyAgendasAndMyAgendasSon(getMeAndSon(currentUser.getUser()), pageable);
         } else {
-            myAgendasAndMyAgendasSon = repo.findAllByStatusOrderByDateCreatedDesc(Agenda.Status.READY_TO_USE, PageRequest.ofSize(1000));
+            myAgendasAndMyAgendasSon = repo.findAll(pageable);
         }
-        isotherCounter = myAgendasAndMyAgendasSon.getTotalElements();
         return myAgendasAndMyAgendasSon;
     }
 
@@ -242,7 +264,7 @@ public class AgendaService implements FilterableCrudService<Agenda> {
                 }
             }
         } catch (DataIntegrityViolationException e) {
-            throw new UserFriendlyDataException("Ya existe una agenda con ese nombe. Por favor seleccione otro nombre.");
+            throw new UserFriendlyDataException("Ya existe una agenda con ese nombre. Por favor seleccione otro nombre.");
         } catch (Exception d) {
             log.error("", d);
             throw new UserFriendlyDataException("Hubo un error y no se pudo salvar la agenda");

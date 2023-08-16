@@ -105,11 +105,10 @@ public class AgendaParserRunnable {
             br.mark(1);
             /* El primer campo siempre es el numero de celular.*/
             separatorChar = findSeparatorIfThereIsAny(separatorChar, br);
-            /* Asignar un separador por defecto */
+            /* En el caso de solo numeros, el archivo es sin separador */
             if (separatorChar != ';' && separatorChar != ',' && separatorChar != '|') {
-                log.warn("Separador no encontrado");
-                logLine(0, "Separador no encontrado");
-                throw new IOException("No se pudo determinar el separador del archivo");
+                log.warn("Separador no encontrado. Colocando por defecto ','");
+                separatorChar = ',';
             }
 //            log.info("{} SEPARATOR FOUND ['{}']", getStringLog(), separatorChar);
             /* Ir al inicio marcado */

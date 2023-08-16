@@ -74,7 +74,7 @@ public class CrudEntityPresenter<E extends AbstractEntitySequence> implements Ha
             consumeError(e, e.getMessage(), true);
         } catch (DataIntegrityViolationException e) {
             // Commit failed because of validation errors
-            consumeError(e, CrudErrorMessage.OPERATION_PREVENTED_BY_REFERENCES, true);
+            consumeError(e, CrudErrorMessage.OPERATION_PREVENTED_BY_REFERENCES, false);
         } catch (OptimisticLockingFailureException e) {
             consumeError(e, CrudErrorMessage.CONCURRENT_UPDATE, true);
         } catch (EntityNotFoundException e) {
