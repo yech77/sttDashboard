@@ -160,9 +160,10 @@ public class MainDashboardView extends DashboardBase {
         // The inner pie
         DataSeries innerSeries = new DataSeries();
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
-        innerPieOptions.setSize("70%");
+        innerPieOptions.setSize("75%");
         innerPieOptions.getDataLabels().setInside(true);
         innerPieOptions.getDataLabels().setDistance(40);
+        innerPieOptions.setClassName("product-split-donut");
         innerSeries.setPlotOptions(innerPieOptions);
         /**/
         Configuration conf = monthlyProductSplit.getConfiguration();
@@ -190,7 +191,7 @@ public class MainDashboardView extends DashboardBase {
         dataLabels.setEnabled(true);
         dataLabels.setFormatter("'<b>'+ this.point.name +'</b>: '+ this.percentage +' %'");
         PlotOptionsPie plotOptionsPie = new PlotOptionsPie();
-        plotOptionsPie.setInnerSize("80%");
+        plotOptionsPie.setInnerSize("76%");
         plotOptionsPie.getDataLabels().setEnabled(false);
         plotOptionsPie.getDataLabels().setCrop(false);
         plotOptionsPie.setClassName("pie-inner-label");
