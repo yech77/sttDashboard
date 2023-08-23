@@ -333,7 +333,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
     private void updateMonthlyChart(List<String> sids) {
         List<String> carrier_list = carrierMultiComboBox.getValue().stream().map(Carrier::getCarrierCharcode).collect(Collectors.toList());
         /* --------------DIARIO */
-        List<SmsByYearMonthDay> smsByDayList = smsHourService.groupSmsByYeMoDaTyWhYeMoSyIn(actualYear, actualMonth, sids);
+        List<SmsByYearMonthDay> smsByDayList = smsHourService.groupSmsByYeMoDaTyWhYeMoSyInFillingNoDataDay(actualYear, actualMonth, sids);
         List<SmsByYearMonthDay> smsByCarrierAndTypeList = smsHourService.groupSmsCarrierMessageTypeByYeMoDaWhYeMoSyIn_CarrierTyIn(actualYear,
                 actualMonth,
                 carrier_list,
@@ -518,7 +518,6 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         }
         confThisMonth.getxAxis().setCategories(da);
         /**/
-        PlotOptionsLine plotColum = new PlotOptionsLine();
         /**/
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
@@ -527,9 +526,18 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         confThisMonth.setTooltip(tooltip);
         /**/
         configureColumnChart(confThisMonth);
-        smsByDayList = orderGroup(fillWithCero(smsByDayList, monthToShowList));
+        confThisMonth.getChart().setType(ChartType.AREA);
+        /*crear un List de Integer de nombre daysofMonth, hasta el dia de la fecha actual*/
+        List<Integer> daysofMonth = new ArrayList<>();
+        for (int i = 1; i <= LocalDate.now().getDayOfMonth(); i++) {
+            daysofMonth.add(i);
+        }
+
+        List<? extends AbstractSmsByYearMonth> l0 = smsByDayList;
+        log.info("MONTH CHART COLUMN: {}", l0);
+        l0 = orderGroup(smsByDayList);
         /**/
-        List<DataSeries> list_series1 = findDataSeriesColumnsBase(smsByDayList);
+        List<DataSeries> list_series1 = findDataSeriesColumnsBase(l0);
         for (DataSeries list_sery : list_series1) {
             confThisMonth.addSeries(list_sery);
         }
@@ -543,7 +551,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         /* Averiguar cuales son los tres meses a calular. */
         List<Integer> monthList = monthToShowList;
         /* TODO: revisar no trae los MO*/
-        l = orderGroup(fillWithCero(l, monthToShowList));
+//        l = orderGroup(fillWithCero(l, monthToShowList));
         l = orderGroup(smsByCarrierAndTypeList);
         List<DataSeries> list_series2 = findDataSeriesLineBase(l);
         if (list_series2 == null || list_series2.size() == 0) {
@@ -605,7 +613,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         Map<String, List<Number>> MessageTypeMap = new HashMap<>();
         for (Integer integer : monthToShowList) {
             messageTypeToShowMap = monthlyDataToShowMap.get(integer);
-            System.out.println("Column Month: " + integer + " " + messageTypeToShowMap);
+            System.out.println("Column Day: " + integer + " " + messageTypeToShowMap);
             /* Agragar al map los Message Type selecionados. */
             for (OMessageType omessage_type : OMessageType.values()) {
                 if (!MessageTypeMap.containsKey(omessage_type.name())) {
