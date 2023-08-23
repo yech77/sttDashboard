@@ -382,6 +382,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         /**/
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
         innerPieOptions.setSize("70%");
+        innerPieOptions.setClassName("pie-chart");
         List<DataSeries> list_series = findDataSeriesPieBase(smsList,
                 "Total",
                 innerPieOptions);
@@ -457,6 +458,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         }
         PlotOptionsPie innerPieOptions = new PlotOptionsPie();
         innerPieOptions.setSize("70%");
+        innerPieOptions.setClassName("pie-chart");
         /**/
         Tooltip tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
@@ -905,7 +907,7 @@ public class CarrierChartView extends DashboardBase implements HasNotifications 
         donutSeries.setPlotOptions(plotOptionsPie2);
         List<DataSeries> list_series = new ArrayList<>(2);
         list_series.add(pieSeries);
-        list_series.add(donutSeries);
+//        list_series.add(donutSeries);
         /**/
         pieSeries.setName("SMS");
         donutSeries.setName("SMS");

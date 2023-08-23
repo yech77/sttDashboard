@@ -488,6 +488,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         });
         PlotOptionsPie plotPie = new PlotOptionsPie();
         plotPie.setSize("70%");
+        plotPie.setClassName("pie-chart");
         PlotOptionsPie plotDonut = new PlotOptionsPie();
         plotDonut.setInnerSize("75%");
         plotDonut.getDataLabels().setEnabled(false);
@@ -496,7 +497,7 @@ public class ClientChartView extends DashboardBase implements HasNotifications {
         donutSeries.setPlotOptions(plotDonut);
         /**/
         dataSeriesList.add(pieSeries);
-        dataSeriesList.add(donutSeries);
+//        dataSeriesList.add(donutSeries);
         /**/
         pieSeries.setName("SMS");
         donutSeries.setName("SMS");

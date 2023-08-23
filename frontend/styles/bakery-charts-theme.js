@@ -49,17 +49,17 @@ $_documentContainer.innerHTML = `<dom-module id="bakery-charts-theme" theme-for=
         font-weight: bold;
       }
       
-      .product-split-donut .highcharts-color-0 {
+      .pie-chart .highcharts-color-0 {
         stroke: white;
         fill: #8b60be;
       }
       
-      .product-split-donut .highcharts-color-1 {
+      .pie-chart .highcharts-color-1 {
         stroke: white;
         fill: #6093be;
       }
       
-      .product-split-donut .highcharts-color-2 {
+      .pie-chart .highcharts-color-2 {
         stroke: white;
         fill: #be6064;
       }

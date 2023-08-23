@@ -163,7 +163,7 @@ public class MainDashboardView extends DashboardBase {
         innerPieOptions.setSize("75%");
         innerPieOptions.getDataLabels().setInside(true);
         innerPieOptions.getDataLabels().setDistance(40);
-        innerPieOptions.setClassName("product-split-donut");
+        innerPieOptions.setClassName("pie-chart");
         innerSeries.setPlotOptions(innerPieOptions);
         /**/
         Configuration conf = monthlyProductSplit.getConfiguration();
@@ -205,8 +205,8 @@ public class MainDashboardView extends DashboardBase {
         //        series.getConfiguration().setTooltip(tooltip);
         innerSeries.setName("sms");
         series.setName("sms");
-        conf.setSeries(innerSeries, series);
-//        conf.setSeries(innerSeries);
+//        conf.setSeries(innerSeries, series);
+        conf.setSeries(innerSeries);
         conf.setTooltip(tooltip);
     }
 
