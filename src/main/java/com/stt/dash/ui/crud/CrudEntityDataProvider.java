@@ -47,8 +47,12 @@ public class CrudEntityDataProvider<T extends AbstractEntitySequence> extends Fi
 
     @Override
     protected int sizeInBackEnd(Query<T, String> query) {
-        return (int) crudService.countAnyMatching(query.getFilter());
+        return (int) crudService.countAnyMatching(currentUser, query.getFilter());
     }
 
+    @Override
+    public void setFilter(String filter) {
+        super.setFilter(filter);
+    }
 }
 

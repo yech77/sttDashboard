@@ -33,6 +33,8 @@ public interface AgendaRepository extends JpaRepository<Agenda, Long> {
             + "WHERE a.creator IN (:users)")
     Page<Agenda> findMyAgendasAndMyAgendasSon(List<User> users, Pageable pageable);
 
+    Long countAgendaByCreatorIn(List<User> users);
+
     /**/
     Agenda findByCreatorEmailIgnoreCase(String email);
 

@@ -11,10 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,21 +20,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AgendaService implements FilterableCrudService<Agenda> {
 
     public static final String MODIFY_LOCKED_USER_NOT_PERMITTED = "El Usuario está bloqueado para cambios.";
     private static final String DELETING_SELF_NOT_PERMITTED = "No puedes borrar tu cuenta.";
-
+    private static final Logger log = LoggerFactory.getLogger(AgendaService.class.getName());
     /**/
 //    private final MyAuditEventComponent auditEvent;
-    private static String UI_CODE = "SERV_AGEN";
-    private static final Logger log = LoggerFactory.getLogger(AgendaService.class.getName());
-    private AgendaRepository repo;
-    private UserRepository ouser_repo;
+    private static final String UI_CODE = "SERV_AGEN";
     private final MyAuditEventComponent auditEvent;
-    private long isotherCounter = -1;
+    private final AgendaRepository repo;
+    private final UserRepository ouser_repo;
 
     @Autowired
     public AgendaService(AgendaRepository repo, UserRepository ouser_repo, MyAuditEventComponent auditEvent) {
@@ -49,9 +45,7 @@ public class AgendaService implements FilterableCrudService<Agenda> {
     private String getStringLog() {
         //String id = VaadinSession.getCurrent().getSession().getId();
         String id = "THREAD";
-        StringBuilder sb = new StringBuilder();
-        sb.append('[').append(id).append("] [").append(UI_CODE).append("]");
-        return sb.toString();
+        return '[' + id + "] [" + UI_CODE + "]";
     }
 
     @Override
@@ -199,33 +193,41 @@ public class AgendaService implements FilterableCrudService<Agenda> {
     @Override
     public Page<Agenda> findAnyMatching(CurrentUser currentUser, Optional<String> filter, Pageable pageable) {
         Page<Agenda> myAgendasAndMyAgendasSon = findAgendas(currentUser, pageable);
-        isotherCounter = myAgendasAndMyAgendasSon.getTotalElements();
+        /* Filtrar myAgendasAndMyAgendasSon po el filter*/
+        if (filter.isPresent() && !myAgendasAndMyAgendasSon.isEmpty()) {
+            List<Agenda> collect = myAgendasAndMyAgendasSon.getContent().stream().filter(agenda -> {
+                return agenda.getName().toLowerCase().contains(filter.get().toLowerCase())
+                        || agenda.getDescription().toLowerCase().contains(filter.get().toLowerCase());
+            }).collect(Collectors.toList());
+            myAgendasAndMyAgendasSon = new PageImpl<>(collect, pageable, collect.size());
+        }
+        return myAgendasAndMyAgendasSon;
+    }
+
+    @Override
+    public long countAnyMatching(CurrentUser currentUser, Optional<String> filter) {
+        Long myAgendasAndMyAgendasSon;
+        if (currentUser.getUser().getUserTypeOrd() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            myAgendasAndMyAgendasSon = getRepository().countAgendaByCreatorIn(getMeAndSon(currentUser.getUser()));
+        } else {
+            myAgendasAndMyAgendasSon = getRepository().count();
+        }
         return myAgendasAndMyAgendasSon;
     }
 
     private Page<Agenda> findAgendas(CurrentUser currentUser, Pageable pageable) {
         Page<Agenda> myAgendasAndMyAgendasSon;
         if (currentUser.getUser().getUserTypeOrd() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
-            myAgendasAndMyAgendasSon = repo.findMyAgendasAndMyAgendasSon(getMeAndSon(currentUser.getUser()), pageable);
+            myAgendasAndMyAgendasSon = getRepository().findMyAgendasAndMyAgendasSon(getMeAndSon(currentUser.getUser()), pageable);
         } else {
-            myAgendasAndMyAgendasSon = repo.findAll(pageable);
+            myAgendasAndMyAgendasSon = getRepository().findAll(pageable);
         }
         return myAgendasAndMyAgendasSon;
     }
 
     @Override
     public long countAnyMatching(Optional<String> filter) {
-        if (filter.isPresent()) {
-            String repositoryFilter = "%" + filter.get() + "%";
-            return repo.countByCreator_EmailLikeIgnoreCaseOrNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(repositoryFilter, repositoryFilter, repositoryFilter);
-        } else {
-            if (isotherCounter > -1) {
-                long d = isotherCounter;
-                isotherCounter = -1;
-                return d;
-            }
-            return count();
-        }
+        return 0;
     }
 
     @Override

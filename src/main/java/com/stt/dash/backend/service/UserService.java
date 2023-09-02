@@ -28,8 +28,6 @@ public class UserService implements FilterableCrudService<User> {
         this.audit = audit;
     }
 
-    private long isotherCounter = -1;
-
     @Override
     public Page<User> findAnyMatching(Optional<String> filter, Pageable pageable) {
         if (filter.isPresent()) {
@@ -56,13 +54,26 @@ public class UserService implements FilterableCrudService<User> {
             String repositoryFilter = "%" + filter.get() + "%";
             return userRepository.countByEmailLikeIgnoreCaseOrFirstNameLikeIgnoreCaseOrLastNameLikeIgnoreCaseOrRoleLikeIgnoreCase(repositoryFilter, repositoryFilter, repositoryFilter, repositoryFilter);
         } else {
-            if (isotherCounter > -1) {
-                long d = isotherCounter;
-                isotherCounter = -1;
-                return d;
-            }
             return count();
         }
+    }
+
+    @Override
+    public long countAnyMatching(CurrentUser currentUser, Optional<String> filter) {
+        /* Comercial ve todos los usuarios */
+        if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            Long p = getRepository().countAllByUserParentIsNotNullAndEmailIsNot(currentUser.getUser().getEmail());
+            return p;
+        } else if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
+            /* ADMIN_EMPRESAS ve todos los usuarios de su empresa */
+            Long p = getRepository().countAllByClientsInAndUserTypeOrdNotAndIdIsNot(currentUser.getUser().getClients(), User.OUSER_TYPE_ORDINAL.COMERCIAL, currentUser.getUser().getId());
+            return p;
+        }
+        /* Usuario no comercial y no admin_empresas solo ve su familia*/
+        List<User> lu = getUserFamily(currentUser.getUser());
+        long u = lu.size();
+        return u;
+
     }
 
     public Page<User> findByUserTypeOrdAndClients(User.OUSER_TYPE_ORDINAL userTypeOrd, Client client, Pageable pageable) {
@@ -86,17 +97,14 @@ public class UserService implements FilterableCrudService<User> {
         /* Comercial ve todos los usuarios */
         if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
             Page<User> p = getRepository().findAllByUserParentIsNotNullAndEmailIsNot(currentUser.getUser().getEmail(), pageable);
-            isotherCounter = p.getTotalElements();
             return p;
         } else if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
             /* ADMIN_EMPRESAS ve todos los usuarios de su empresa */
             Page<User> p = getRepository().findByClientsInAndUserTypeOrdNotAndIdIsNot(currentUser.getUser().getClients(), User.OUSER_TYPE_ORDINAL.COMERCIAL, currentUser.getUser().getId(), pageable);
-            isotherCounter = p.getTotalElements();
             return p;
         }
         /* Usuario no comercial y no admin_empresas solo ve su familia*/
         List<User> lu = getUserFamily(currentUser.getUser());
-        isotherCounter = lu.size();
         Page<User> u = new PageImpl<>(lu);
         return u;
     }
