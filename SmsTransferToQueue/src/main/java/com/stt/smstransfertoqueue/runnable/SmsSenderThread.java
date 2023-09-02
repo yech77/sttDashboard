@@ -5,6 +5,8 @@
  */
 package com.stt.smstransfertoqueue.runnable;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.msv.orinocosms.bean.AbstractSMSDTO;
 import com.stt.smstransfertoqueue.OProperties;
 import com.stt.smstransfertoqueue.entity.FilesToSend;
@@ -20,7 +22,10 @@ import org.springframework.data.domain.Pageable;
 
 import javax.jms.JMSException;
 import javax.jms.ResourceAllocationException;
+import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import static com.stt.smstransfertoqueue.SmsTransferToQueueApplication.getAPP_NAME;
@@ -28,7 +33,7 @@ import static com.stt.smstransfertoqueue.SmsTransferToQueueApplication.getAPP_NA
 /**
  * @author Enrique
  */
-@SuppressWarnings("DuplicatedCode")
+//@SuppressWarnings("DuplicatedCode")
 public class SmsSenderThread extends Thread {
 
     /*Log*/
@@ -48,13 +53,17 @@ public class SmsSenderThread extends Thread {
 
     private final OProperties p;
 
-    private FilesToSend orderToBeExecuted;
+    private FilesToSend filesToSend;
 
-    public SmsSenderThread(FilesToSend orderToBeExecuted,
+    private final Gson gson = new Gson();
+    Type gsonType = new TypeToken<HashMap<Integer, Integer>>() {
+    }.getType();
+
+    public SmsSenderThread(FilesToSend filesToSend,
                            SendingSmsService sendingSmsService,
                            FilesToSendService files_service,
                            OProperties p) {
-        this.orderToBeExecuted = orderToBeExecuted;
+        this.filesToSend = filesToSend;
         this.sendingSmsService = sendingSmsService;
         this.files_service = files_service;
         this.p = p;
@@ -64,38 +73,36 @@ public class SmsSenderThread extends Thread {
     public void run() {
 
         try {
-            log.info("[{}] FILE ID [{}] RUNNING: ORDER NAME [{}]. FILE NAME [{}]", getAPP_NAME(),
-                    orderToBeExecuted.getFileId(),
-                    orderToBeExecuted.getOrderName(),
-                    orderToBeExecuted.getFileName());
+            log.info("[{}] [{}] BEGIN THREAD. ID [{}] FILE NAME [{}]", getAPP_NAME(),
+                    filesToSend.getOrderName(),
+                    filesToSend.getFileId(),
+                    filesToSend.getFileName());
             mainA = new MQHandler(p);
             mainA.createSender();
-            log.info("[{}] FILE ID [{}] UPDATING TO STATUS->SENDING: ORDER NAME [{}]. FILE NAME [{}]", getAPP_NAME(),
-                    orderToBeExecuted.getFileId(),
-                    orderToBeExecuted.getOrderName(),
-                    orderToBeExecuted.getFileName());
-            orderToBeExecuted.setStatus(FilesToSend.Status.SENDING);
-            files_service.save(orderToBeExecuted);
+            log.info("[{}] [{}] FILE ID [{}] UPDATING TO STATUS->SENDING", getAPP_NAME(),
+                    filesToSend.getOrderName(),
+                    filesToSend.getFileId());
+            filesToSend.setStatus(FilesToSend.Status.SENDING);
+            files_service.save(filesToSend);
 
-            log.info("[{}] FILE ID [{}] FINDING SMS TO SEND: ORDER NAME [{}]. FILE NAME [{}]", getAPP_NAME(),
-                    orderToBeExecuted.getFileId(),
-                    orderToBeExecuted.getOrderName(),
-                    orderToBeExecuted.getFileName());
+            log.info("[{}] [{}] FILE ID [{}] FINDING SMS TO SEND", getAPP_NAME(),
+                    filesToSend.getOrderName(),
+                    filesToSend.getFileId());
         } catch (JMSException e) {
             log.error("", e);
-            log.info("[{}] FILE ID [{}] UPDATING TO BEING PROCESSED->FALSE: ORDER NAME [{}]. FILE NAME [{}]", getAPP_NAME(),
-                    orderToBeExecuted.getFileId(),
-                    orderToBeExecuted.getOrderName(),
-                    orderToBeExecuted.getFileName());
-            orderToBeExecuted.setBeingProcessed(false);
-            files_service.save(orderToBeExecuted);
+            log.info("[{}] [{}] FILE ID [{}] UPDATING TO BEING PROCESSED->FALSE. FILE NAME [{}]", getAPP_NAME(),
+                    filesToSend.getOrderName(),
+                    filesToSend.getFileId(),
+                    filesToSend.getFileName());
+            filesToSend.setBeingProcessed(false);
+            files_service.save(filesToSend);
             return;
         }
 
         /* Entrar en un ciclo para obtener todas las paginas */
         while (true) {
             Pageable paging = PageRequest.of(0, 1000);
-            Page<SendingSms> sendingSmsPage = sendingSmsService.findAllByFileToSendId(orderToBeExecuted.getId(), paging);
+            Page<SendingSms> sendingSmsPage = sendingSmsService.findAllByFileToSendId(filesToSend.getId(), paging);
             List<SendingSms> smsToSendList = sendingSmsPage.getContent();
             int expectedSmsCount = smsToSendList.size();
             if (expectedSmsCount == 0) {
@@ -103,13 +110,13 @@ public class SmsSenderThread extends Thread {
             }
             int sentMessageCount = 0;
 
-            log.info("[{}] FILE ID [{}] PREPARING TO SEND - {} SMS: ORDER NAME [{}]. FILE NAME [{}]", getAPP_NAME(),
-                    orderToBeExecuted.getFileId(),
-                    expectedSmsCount,
-                    orderToBeExecuted.getOrderName(),
-                    orderToBeExecuted.getFileName());
+            log.info("[{}] [{}] FILE ID [{}]. PREPARING TO SEND - {} SMS", getAPP_NAME(),
+                    filesToSend.getOrderName(),
+                    filesToSend.getFileId(),
+                    expectedSmsCount);
 
             for (SendingSms msg : smsToSendList) {
+                Map<String, String> map = new HashMap<>(1000);
                 try {
                     AbstractSMSDTO newMsg = new AbstractSMSDTO();
 
@@ -125,6 +132,7 @@ public class SmsSenderThread extends Thread {
                     newMsg.setMsgSended(msg.getMsgSended());
                     newMsg.setSource(msg.getSource());
                     newMsg.setSystem_id(msg.getSystemId());
+                    newMsg.put(AbstractSMSDTO.ABSTRACT_OPTIONALS.CREATED_FROM.name(), "dash");
 
                     /* enviar mensaje a la cola */
                     mainA.send(newMsg);
@@ -132,15 +140,14 @@ public class SmsSenderThread extends Thread {
                     /* borrar el mensaje enviado a la cola */
                     sendingSmsService.delete(newMsg.getId());
                     sentMessageCount++;
-                    orderToBeExecuted.setNumSent(sentMessageCount);
-                    if (sentMessageCount % 1000 == 0) {
-                        log.info("[{}] FILE ID [{}] UPDATING NUMSENT {}: ORDER NAME [{}]. FILE NAME [{}]",
+                    filesToSend.setNumSent(sentMessageCount);
+                    if (sentMessageCount % 250 == 0) {
+                        log.info("[{}] [{}] FILE ID [{}] UPDATING NUMSENT {}",
+                                filesToSend.getOrderName(),
                                 getAPP_NAME(),
-                                orderToBeExecuted.getFileId(),
-                                sentMessageCount,
-                                orderToBeExecuted.getOrderName(),
-                                orderToBeExecuted.getFileName());
-                        files_service.save(orderToBeExecuted);
+                                filesToSend.getFileId(),
+                                sentMessageCount);
+                        files_service.save(filesToSend);
                     }
                 } catch (ResourceAllocationException rae) {
                     log.warn("The Message could not send to the queue: {}", msg);
@@ -148,44 +155,44 @@ public class SmsSenderThread extends Thread {
                     log.error("", jmse);
                 }
             }
-            log.info("[{}] FILE ID [{}] SENDED - {} SMS: ORDER NAME [{}]. FILE NAME [{}]", getAPP_NAME(),
-                    orderToBeExecuted.getFileId(),
-                    sentMessageCount,
-                    orderToBeExecuted.getOrderName(),
-                    orderToBeExecuted.getFileName());
+            log.info("[{}] [{}] FILE ID [{}] SENDED - {} SMS",
+                    filesToSend.getOrderName(),
+                    getAPP_NAME(),
+                    filesToSend.getFileId(),
+                    sentMessageCount);
             /**/
             if (expectedSmsCount == sentMessageCount) {
-                log.info("[{}] FILE ID [{}] UPDATING COMPLETED {} SMS: ORDER NAME [{}]. FILE NAME [{}]", getAPP_NAME(),
-                        orderToBeExecuted.getFileId(),
-                        sentMessageCount,
-                        orderToBeExecuted.getOrderName(),
-                        orderToBeExecuted.getFileName());
+                log.info("[{}] [{}] FILE ID [{}] UPDATING COMPLETED {} SMS", getAPP_NAME(),
+                        filesToSend.getOrderName(),
+                        getAPP_NAME(),
+                        filesToSend.getFileId(),
+                        sentMessageCount);
                 /**/
-                orderToBeExecuted.setNumSent(sentMessageCount);
-                orderToBeExecuted.setStatus(FilesToSend.Status.COMPLETED);
-                files_service.save(orderToBeExecuted);
-                log.info("[{}] FILE ID [{}] DELETING SENT SMS: ORDER NAME [{}]. FILE NAME [{}]", getAPP_NAME(),
-                        orderToBeExecuted.getFileId(),
-                        sentMessageCount,
-                        orderToBeExecuted.getOrderName(),
-                        orderToBeExecuted.getFileName());
+                filesToSend.setNumSent(sentMessageCount);
+                filesToSend.setStatus(FilesToSend.Status.COMPLETED);
+                files_service.save(filesToSend);
             } else {
                 //System.out.println("ERROR: Something went wrong with sending messages; Order will NOT be removed from database, and messages will be reinserted.");
-                log.error("ERROR: Algo ha ocurrido mal; El recado no sera borrado de las tablas.");
+                log.error("[{}] [{}] FILE ID [{}]. ERROR: mensajes enviados [{}] y mensajes esperados [{}] es diferente ", getAPP_NAME(),
+                        filesToSend.getOrderName(),
+                        getAPP_NAME(),
+                        filesToSend.getFileId(),
+                        sentMessageCount,
+                        sentMessageCount);
                 //sending_repo.saveAll(messages);
-                orderToBeExecuted.setBeingProcessed(false);
-                orderToBeExecuted.setStatus(FilesToSend.Status.INVALID);
-                files_service.save(orderToBeExecuted);
+                filesToSend.setBeingProcessed(false);
+                filesToSend.setStatus(FilesToSend.Status.INVALID);
+                files_service.save(filesToSend);
             }
         }
         try {
             mainA.close();
         } catch (JMSException jmse) {
-            log.info("[{}] ERROR CLOSING MQ FILE ID [{}] DELETING SENT SMS: ORDER NAME [{}]. FILE NAME [{}]",
+            log.info("[{}] [{}] ERROR CLOSING MQ FILE ID [{}] DELETING SENT SMS",
                     getAPP_NAME(),
-                    orderToBeExecuted.getFileId(),
-                    orderToBeExecuted.getOrderName(),
-                    orderToBeExecuted.getFileName());
+                    filesToSend.getOrderName(),
+                    filesToSend.getFileId(),
+                    filesToSend.getFileName());
         }
     }
 

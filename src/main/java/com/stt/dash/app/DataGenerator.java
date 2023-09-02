@@ -98,8 +98,12 @@ public class DataGenerator implements HasLogger {
 
     @PostConstruct
     public void loadData() {
-        getLogger().info("********************* * * * * * * * * * * * " + passwordEncoder.encode("admin"));
-        getLogger().info("********************* * * * * * * * * * * * " + passwordEncoder.encode("admin"));
+        getLogger().info("1Gbandres * * * * * * * * * * * " + passwordEncoder.encode("1Gbandres"));
+        getLogger().info("1Enavas * * * * * * * * * * * " + passwordEncoder.encode("1Enavas"));
+        getLogger().info("1Admin * * * * * * * * * * * " + passwordEncoder.encode("1Admin"));
+        getLogger().info("1Yecheverria * * * * * * * * * * * " + passwordEncoder.encode("1Yecheverria"));
+        getLogger().info("1Dsolorzano * * * * * * * * * * * " + passwordEncoder.encode("1Dsolorzano"));
+        getLogger().info("1Lsuarez * * * * * * * * * * * " + passwordEncoder.encode("1Lsuarez"));
         /**/
         if (true) {
             getLogger().info("Using existing database");
@@ -297,16 +301,16 @@ public class DataGenerator implements HasLogger {
 
             /*Roles*/
             Set<ORole> r = new HashSet<>();
-            r.add(orole_repo.findByRolName(ROL.AGENDAR_SMS.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.AUDITORIA.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.BUSQUEDA_SMS.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.EVOLUCION_CLIENTE.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.EVOLUCION_OPERADORA.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.EVOLUCION_PASAPORTES.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.PROGRAMAR_SMS.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.ROLES.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.TRAFICO_SMS.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.USUARIOS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.AGENDAR_SMS.name()));
+            r.add(orole_repo.findByRolName(ROL.AUDITORIA.name()));
+            r.add(orole_repo.findByRolName(ROL.BUSQUEDA_SMS.name()));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_CLIENTE.name()));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_OPERADORA.name()));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_PASAPORTES.name()));
+            r.add(orole_repo.findByRolName(ROL.PROGRAMAR_SMS.name()));
+            r.add(orole_repo.findByRolName(ROL.ROLES.name()));
+            r.add(orole_repo.findByRolName(ROL.TRAFICO_SMS.name()));
+            r.add(orole_repo.findByRolName(ROL.USUARIOS.name()));
             ouser.setRoles(r);
             /* Gleryxa fue creada por enavas*/
             ouser.setUserParent(user_repo.findByEmailIgnoreCase("admin@soltextech.com"));
@@ -331,16 +335,16 @@ public class DataGenerator implements HasLogger {
             }
             /*Roles*/
             r = new HashSet<>();
-            r.add(orole_repo.findByRolName(ROL.AGENDAR_SMS.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.AUDITORIA.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.BUSQUEDA_SMS.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.EVOLUCION_CLIENTE.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.EVOLUCION_OPERADORA.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.EVOLUCION_PASAPORTES.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.PROGRAMAR_SMS.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.ROLES.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.TRAFICO_SMS.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.USUARIOS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.AGENDAR_SMS.name()));
+            r.add(orole_repo.findByRolName(ROL.AUDITORIA.name()));
+            r.add(orole_repo.findByRolName(ROL.BUSQUEDA_SMS.name()));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_CLIENTE.name()));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_OPERADORA.name()));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_PASAPORTES.name()));
+            r.add(orole_repo.findByRolName(ROL.PROGRAMAR_SMS.name()));
+            r.add(orole_repo.findByRolName(ROL.ROLES.name()));
+            r.add(orole_repo.findByRolName(ROL.TRAFICO_SMS.name()));
+            r.add(orole_repo.findByRolName(ROL.USUARIOS.name()));
             ouser.setRoles(r);
 
             /* Gleryxa fue creada por enavas*/
@@ -369,16 +373,16 @@ public class DataGenerator implements HasLogger {
             }
             /*Roles*/
             r = new HashSet<>();
-            r.add(orole_repo.findByRolName(ROL.AGENDAR_SMS.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.AUDITORIA.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.BUSQUEDA_SMS.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.EVOLUCION_CLIENTE.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.EVOLUCION_OPERADORA.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.EVOLUCION_PASAPORTES.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.PROGRAMAR_SMS.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.ROLES.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.TRAFICO_SMS.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.USUARIOS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.AGENDAR_SMS.name()));
+            r.add(orole_repo.findByRolName(ROL.AUDITORIA.name()));
+            r.add(orole_repo.findByRolName(ROL.BUSQUEDA_SMS.name()));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_CLIENTE.name()));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_OPERADORA.name()));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_PASAPORTES.name()));
+            r.add(orole_repo.findByRolName(ROL.PROGRAMAR_SMS.name()));
+            r.add(orole_repo.findByRolName(ROL.ROLES.name()));
+            r.add(orole_repo.findByRolName(ROL.TRAFICO_SMS.name()));
+            r.add(orole_repo.findByRolName(ROL.USUARIOS.name()));
             ouser.setRoles(r);
 
             /* Luis fue creada por enavas*/
@@ -408,16 +412,16 @@ public class DataGenerator implements HasLogger {
 
             /*Roles*/
             r = new HashSet<>();
-            r.add(orole_repo.findByRolName(ROL.AGENDAR_SMS.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.AUDITORIA.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.BUSQUEDA_SMS.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.EVOLUCION_CLIENTE.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.EVOLUCION_OPERADORA.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.EVOLUCION_PASAPORTES.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.PROGRAMAR_SMS.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.ROLES.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.TRAFICO_SMS.name()).get(0));
-            r.add(orole_repo.findByRolName(ROL.USUARIOS.name()).get(0));
+            r.add(orole_repo.findByRolName(ROL.AGENDAR_SMS.name()));
+            r.add(orole_repo.findByRolName(ROL.AUDITORIA.name()));
+            r.add(orole_repo.findByRolName(ROL.BUSQUEDA_SMS.name()));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_CLIENTE.name()));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_OPERADORA.name()));
+            r.add(orole_repo.findByRolName(ROL.EVOLUCION_PASAPORTES.name()));
+            r.add(orole_repo.findByRolName(ROL.PROGRAMAR_SMS.name()));
+            r.add(orole_repo.findByRolName(ROL.ROLES.name()));
+            r.add(orole_repo.findByRolName(ROL.TRAFICO_SMS.name()));
+            r.add(orole_repo.findByRolName(ROL.USUARIOS.name()));
             ouser.setRoles(r);
 
             /* Denny fue creada por enavas*/

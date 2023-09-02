@@ -1,12 +1,14 @@
 package com.stt.dash.app.security;
 
 import com.stt.dash.app.DataGenerator;
+import com.stt.dash.backend.event.LogOutTesting;
 import com.stt.dash.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -19,6 +21,7 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.ui.utils.BakeryConst;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
 /**
  * Configures spring security, doing the following:
@@ -36,6 +39,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final String LOGIN_FAILURE_URL = "/login?error";
     private static final String LOGIN_URL = "/login";
     private static final String LOGOUT_SUCCESS_URL = "/" + BakeryConst.PAGE_STOREFRONT;
+
+    @Autowired
+    private LogOutTesting logOutTesting;
 
     @Autowired
     private final UserDetailsService userDetailsService;
@@ -113,10 +119,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 // Register the success handler that redirects users to the page they last tried
                 // to access
-                .successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
-
+                /* Comentado para que siempre entre al Dashboard*/
+//                .successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
                 // Configure logout
-                .and().logout().logoutSuccessUrl(LOGOUT_SUCCESS_URL);
+                .and().logout()
+                .logoutSuccessUrl("/")
+                .addLogoutHandler(logOutTesting);
     }
 
     /**

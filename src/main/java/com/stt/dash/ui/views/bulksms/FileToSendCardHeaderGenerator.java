@@ -7,6 +7,7 @@ import com.stt.dash.ui.views.storefront.beans.OrderCardHeader;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -41,7 +42,10 @@ public class FileToSendCardHeaderGenerator {
         }
     }
 
-    private final DateTimeFormatter HEADER_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("EEE, MMM d");
+    private final DateTimeFormatter HEADER_DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
+            .appendPattern("EEE, MMM d")
+            .toFormatter(new Locale("es", "ES"));
+
 
     private final Map<Long, OrderCardHeader> ordersWithHeaders = new HashMap<>();
     private List<FileToSendCardHeaderGenerator.HeaderWrapper> headerChain = new ArrayList<>();
@@ -71,12 +75,12 @@ public class FileToSendCardHeaderGenerator {
         LocalDate today = LocalDate.now();
         LocalDate tomorrow = today.plusDays(1);
         LocalDate nextWeekStart = today.minusDays(today.getDayOfWeek().getValue()).plusWeeks(1);
-        return new OrderCardHeader(showPrevious ? "This week starting tomorrow" : "This week",
+        return new OrderCardHeader(showPrevious ? "Esta semana comenzando mañana" : "Esta semana",
                 secondaryHeaderFor(tomorrow, nextWeekStart));
     }
 
     private OrderCardHeader getUpcomingHeader() {
-        return new OrderCardHeader("Próximos", "After this week");
+        return new OrderCardHeader("Próximos", "Después de esta semana");
     }
 
     private String secondaryHeaderFor(LocalDate date) {

@@ -6,41 +6,41 @@
     <artifactId>orinoco-dash</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>Orinoco Dash</name>
+    <name>Portal del cliente STT</name>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.4.5</version>
+        <version>2.5.8</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <!-- Dependencies -->
-        <vaadin.version>14.7.2</vaadin.version>
+        <vaadin.version>14.8.3</vaadin.version>
 
         <!-- Overrides the old version specified by the Spring Boot parent -->
-        <selenium.version>3.141.59</selenium.version>
+        <!--        <selenium.version>3.141.59</selenium.version>-->
 
         <!-- Plugins -->
-        <frontend.maven.plugin.version>1.6</frontend.maven.plugin.version>
-        <maven.war.plugin.version>3.1.0</maven.war.plugin.version>
-        <maven.resources.plugin.version>3.0.2</maven.resources.plugin.version>
-        <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
-        <maven.surefire.plugin.version>2.21.0</maven.surefire.plugin.version>
+        <!--        <frontend.maven.plugin.version>1.6</frontend.maven.plugin.version>-->
+        <!--        <maven.war.plugin.version>3.1.0</maven.war.plugin.version>-->
+        <!--        <maven.resources.plugin.version>3.0.2</maven.resources.plugin.version>-->
+        <!--        <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>-->
+        <!--        <maven.surefire.plugin.version>2.21.0</maven.surefire.plugin.version>-->
 
-        <gatling.version>3.0.2</gatling.version>
-        <gatling-plugin.version>3.0.1</gatling-plugin.version>
-        <scala-maven-plugin.version>3.4.4</scala-maven-plugin.version>
+        <!--        <gatling.version>3.0.2</gatling.version>-->
+        <!--        <gatling-plugin.version>3.0.1</gatling-plugin.version>-->
+        <!--        <scala-maven-plugin.version>3.4.4</scala-maven-plugin.version>-->
 
         <!-- Frontend -->
-        <node.version>v12.14.0</node.version>
-        <yarn.version>v1.16.0</yarn.version>
-        <buildtools.directory>build-tools</buildtools.directory>
+        <!--        <node.version>v12.14.0</node.version>-->
+        <!--        <yarn.version>v1.16.0</yarn.version>-->
+        <!--        <buildtools.directory>build-tools</buildtools.directory>-->
     </properties>
 
     <repositories>
@@ -203,6 +203,11 @@
             <version>3.0.2</version>
         </dependency>
         <dependency>
+            <groupId>com.vaadin.componentfactory</groupId>
+            <artifactId>multi-combo-box-flow</artifactId>
+            <version>0.4.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.vaadin.olli</groupId>
             <artifactId>file-download-wrapper</artifactId>
             <version>3.0.1</version>
@@ -287,6 +292,7 @@
             <artifactId>jsoup</artifactId>
             <version>1.13.1</version>
         </dependency>
+
         <!--        <dependency>-->
         <!--            <groupId>org.springframework.boot</groupId>-->
         <!--            <artifactId>spring-boot-starter-jdbc</artifactId>-->
@@ -319,6 +325,30 @@
             <groupId>com.github.javafaker</groupId>
             <artifactId>javafaker</artifactId>
             <version>1.0.2</version>
+        </dependency>
+        <!--CLient Rest-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.1-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
@@ -367,28 +397,13 @@
 
     <profiles>
         <profile>
-            <!-- Production mode is activated using -Pproduction -->
-            <id>production</id>
+            <!--  Production mode is activated using -Pproduction  -->
+            <id>prod</id>
             <properties>
-                <vaadin.productionMode>true</vaadin.productionMode>
+                <spring.profiles.active>prod</spring.profiles.active>
             </properties>
-
-            <dependencies>
-                <dependency>
-                    <groupId>com.vaadin</groupId>
-                    <artifactId>flow-server-production-mode</artifactId>
-                </dependency>
-            </dependencies>
-
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                        <configuration>
-                            <jvmArguments>-Dvaadin.productionMode</jvmArguments>
-                        </configuration>
-                    </plugin>
                     <plugin>
                         <groupId>com.vaadin</groupId>
                         <artifactId>vaadin-maven-plugin</artifactId>
@@ -401,34 +416,23 @@
                                 <phase>compile</phase>
                             </execution>
                         </executions>
+                        <configuration>
+                            <productionMode>true</productionMode>
+                            <pnpmEnable>false</pnpmEnable>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
-
         <profile>
             <!-- Production mode is activated using -Pproduction -->
             <id>qa</id>
             <properties>
-                <vaadin.productionMode>true</vaadin.productionMode>
+                <spring.profiles.active>qa</spring.profiles.active>
             </properties>
-
-            <dependencies>
-                <dependency>
-                    <groupId>com.vaadin</groupId>
-                    <artifactId>flow-server-production-mode</artifactId>
-                </dependency>
-            </dependencies>
 
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                        <configuration>
-                            <jvmArguments>-Dvaadin.productionMode</jvmArguments>
-                        </configuration>
-                    </plugin>
                     <plugin>
                         <groupId>com.vaadin</groupId>
                         <artifactId>vaadin-maven-plugin</artifactId>
@@ -441,6 +445,10 @@
                                 <phase>compile</phase>
                             </execution>
                         </executions>
+                        <configuration>
+                            <productionMode>true</productionMode>
+                            <pnpmEnable>false</pnpmEnable>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -499,50 +507,57 @@
             <id>local</id>
             <properties>
                 <spring.profiles.active>local</spring.profiles.active>
-                <vaadin.productionMode>true</vaadin.productionMode>
             </properties>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>start-spring-boot</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>start</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>stop-spring-boot</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>stop</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <!-- Runs the integration tests (*IT) after the server is started -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <groupId>com.vaadin</groupId>
+                        <artifactId>vaadin-maven-plugin</artifactId>
+                        <version>${vaadin.version}</version>
                         <executions>
                             <execution>
                                 <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
+                                    <goal>build-frontend</goal>
                                 </goals>
+                                <phase>compile</phase>
                             </execution>
                         </executions>
                         <configuration>
-                            <trimStackTrace>false</trimStackTrace>
-                            <enableAssertions>true</enableAssertions>
+                            <productionMode>false</productionMode>
+                            <pnpmEnable>false</pnpmEnable>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>dev</id>
+            <properties>
+                <spring.profiles.active>dev</spring.profiles.active>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.vaadin</groupId>
+                        <artifactId>vaadin-maven-plugin</artifactId>
+                        <version>${vaadin.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>build-frontend</goal>
+                                </goals>
+                                <phase>compile</phase>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <productionMode>true</productionMode>
+                            <pnpmEnable>false</pnpmEnable>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
 </project>

@@ -9,23 +9,24 @@ import org.springframework.data.domain.Pageable;
 
 public interface FilterableCrudService<T extends AbstractEntitySequence> extends CrudService<T> {
 
-	Page<T> findAnyMatching(Optional<String> filter, Pageable pageable);
+    Page<T> findAnyMatching(Optional<String> filter, Pageable pageable);
 
-	long countAnyMatching(Optional<String> filter);
+    long countAnyMatching(Optional<String> filter);
 
-	/**
-	 * Usada para el caso de User que no debe devolverlos todos.
-	 * @param currentUser
-	 * @param filter
-	 * @param pageable
-	 * @return
-	 */
-	default Page<T> findAnyMatching(CurrentUser currentUser, Optional<String> filter, Pageable pageable){
-		return findAnyMatching(filter, pageable);
-	}
+    /**
+     * Usada para el caso de filtro en los Views(User y Agendas).
+     *
+     * @param currentUser
+     * @param filter
+     * @param pageable
+     * @return
+     */
+    default Page<T> findAnyMatching(CurrentUser currentUser, Optional<String> filter, Pageable pageable) {
+        return findAnyMatching(filter, pageable);
+    }
 
-	default long countAnyMatching(CurrentUser currentUser, Optional<String> filter){
-		return countAnyMatching(filter);
-	}
+    default long countAnyMatching(CurrentUser currentUser, Optional<String> filter) {
+        return countAnyMatching(filter);
+    }
 
 }

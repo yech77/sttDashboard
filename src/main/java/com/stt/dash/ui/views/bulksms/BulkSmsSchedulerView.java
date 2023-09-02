@@ -16,9 +16,10 @@ import com.stt.dash.backend.thread.SmsGeneratorParserRunnable;
 import com.stt.dash.backend.util.AgendaFileUtils;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.crud.AbstractBakeryCrudView;
+import com.stt.dash.ui.crud.STTBinderCrudEditor;
 import com.stt.dash.ui.utils.BakeryConst;
+import com.stt.dash.ui.utils.BeforeSavingResponse;
 import com.stt.dash.ui.utils.ODateUitls;
-import com.vaadin.flow.component.crud.BinderCrudEditor;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.router.PageTitle;
@@ -38,7 +39,8 @@ import java.util.concurrent.ScheduledExecutorService;
 
 @Route(value = BakeryConst.PAGE_BULKSMS_SCHEDULER, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_BULKSMS_SCHEDULER)
-@Secured({Role.ADMIN, "UI_USER"})
+@Secured({Role.ADMIN, "UI_PROGRAM_SMS"})
+@Deprecated
 public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
 
     private static BulkSmsSchedulerForm form;
@@ -47,18 +49,20 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
     private final FilesToSendService files_service;
     private final String userEmail;
     private final CurrentUser currentUser;
+
     public BulkSmsSchedulerView(
-            OProperties properties, SystemIdRepository systemid_repo,
+            OProperties properties,
+            SystemIdRepository systemid_repo,
             AgendaService agendaService,
             FilesToSendService service,
             CurrentUser currentUser,
-            @Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
+            @Qualifier("getMyChildrenAndItsChildrenAndMe") ListGenericBean<User> userChildrenList,
             SetGenericBean<SystemId> userSystemIdSet) {
         super(FIlesToSend.class, null, new Grid<FIlesToSend>(), createForm(currentUser, agendaService, userSystemIdSet, userChildrenList), currentUser);
         this.files_service = service;
-        this.properties=properties;
+        this.properties = properties;
         this.userEmail = currentUser.getUser().getEmail();
-        this.systemid_repo=systemid_repo;
+        this.systemid_repo = systemid_repo;
         this.currentUser = currentUser;
     }
 
@@ -72,28 +76,30 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
         grid.addColumn(FIlesToSend::getOrderName).setWidth("250px").setHeader("Nombre").setFlexGrow(5);
         grid.addColumn(FIlesToSend::getOrderDescription).setHeader("Descripción").setWidth("180px").setFlexGrow(5);
         grid.addColumn(new LocalDateTimeRenderer<>(
-                order -> order.getDateToSend().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
-                DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")))
+                        order -> order.getDateToSend().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                        DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")))
                 .setComparator(order -> order.getDateToSend()).setHeader("Fecha para enviar")
                 .setAutoWidth(true);
         grid.addColumn(role -> role.getStatus()).setHeader("Status").setWidth("150px");
     }
 
-    private static BinderCrudEditor<FIlesToSend> createForm(CurrentUser currentUser,
-                                                            AgendaService agendaService,
-                                                            SetGenericBean<SystemId> userSystemIdSet,
-                                                            ListGenericBean userChildren) {
-        List<Agenda> agendaList = agendaService.getAllValidAgendasInFamily(userChildren.getList());
+    private static STTBinderCrudEditor<FIlesToSend> createForm(CurrentUser currentUser,
+                                                               AgendaService agendaService,
+                                                               SetGenericBean<SystemId> userSystemIdSet,
+                                                               ListGenericBean<User> userChildren) {
+        List<Agenda> agendaList = agendaService.getAllAgendasInFamily(currentUser, userChildren.getList());
         form = new BulkSmsSchedulerForm(agendaList, userSystemIdSet.getSet(), currentUser);
-        return new BinderCrudEditor<FIlesToSend>(form.getBinder(), form);
+        return new STTBinderCrudEditor<FIlesToSend>(form.getBinder(), form);
     }
 
     @Override
-    protected boolean beforeSaving(long idBeforeSave, FIlesToSend entity) {
-        if (idBeforeSave==0){
+    protected BeforeSavingResponse beforeSaving(long idBeforeSave, FIlesToSend entity) {
+        BeforeSavingResponse bsr = new BeforeSavingResponse();
+        bsr.setSuccess(true);
+        if (idBeforeSave == 0) {
             entity.setFileName(form.agendaCombo.getValue().getFileName());
         }
-        return true;
+        return bsr;
     }
 
     @Override
@@ -105,6 +111,7 @@ public class BulkSmsSchedulerView extends AbstractBakeryCrudView<FIlesToSend> {
         /**/
         Optional<SystemId> bySystemId = systemid_repo.findBySystemId(form.systemIdCombo.getValue());
         if (!bySystemId.isPresent()) {
+            /* TODO: Esto deberia generar un error.*/
             System.out.println("SysId not found!!!");
         } else {
             String clientCod = bySystemId.get().getClient().getClientCod();

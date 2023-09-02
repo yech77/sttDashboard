@@ -42,20 +42,22 @@ public class ORolesView extends AbstractBakeryCrudView<ORole> {
 
     @Override
     protected void setupGrid(Grid<ORole> grid) {
-        grid.addColumn(ORole::getRolName).setHeader("Rol Name");
+        grid.addColumn(ORole::getRolName)
+                .setHeader("Rol");
         grid.addColumn(role -> {
-            Set<OAuthority> authority = role.getAuthorities();
-            if (authority == null) {
-                return "-";
-            }
-            List<OAuthority> authList = new ArrayList<>(authority);
-            StringBuilder string = new StringBuilder();
+                    Set<OAuthority> authority = role.getAuthorities();
+                    if (authority == null) {
+                        return "-";
+                    }
+                    List<OAuthority> authList = new ArrayList<>(authority);
+                    StringBuilder string = new StringBuilder();
 
-            for (OAuthority auth : authList) {
-                string.append(auth.getAuthName()).append(", ");
-            }
-            return authList.isEmpty() ? "-" : string.toString().substring(0, string.length() - 2);
-        }).setHeader("Authorities").setFlexGrow(5);
+                    for (OAuthority auth : authList) {
+                        string.append(auth.getAuthName()).append(", ");
+                    }
+                    return authList.isEmpty() ? "-" : string.toString().substring(0, string.length() - 2);
+                }).setHeader("Permisos")
+                .setFlexGrow(5);
     }
 
     @Override
@@ -64,11 +66,9 @@ public class ORolesView extends AbstractBakeryCrudView<ORole> {
     }
 
     private static BinderCrudEditor<ORole> createForm(List<OAuthority> authorities) {
-        TextField roleName = new TextField("Role name");
-        MultiselectComboBox<OAuthority> Authorities = new MultiselectComboBox<>("Authorities");
+        TextField roleName = new TextField("Rol");
+        MultiselectComboBox<OAuthority> Authorities = new MultiselectComboBox<>("Permisos");
         roleName.getElement().setAttribute("colspan", "2");
-//		TextField price = new TextField("Unit price");
-//		price.getElement().setAttribute("colspan", "2");
 
         Authorities.setItems(authorities);
         Authorities.setItemLabelGenerator(OAuthority::getAuthName);
@@ -85,7 +85,7 @@ public class ORolesView extends AbstractBakeryCrudView<ORole> {
 //		price.setPattern("\\d+(\\.\\d?\\d?)?$");
 //		price.setPreventInvalidInput(true);
 
-        String currencySymbol = Currency.getInstance(BakeryConst.APP_LOCALE).getSymbol();
+//        String currencySymbol = Currency.getInstance(BakeryConst.APP_LOCALE).getSymbol();
 //		price.setPrefixComponent(new Span(currencySymbol));
 
         return new BinderCrudEditor<>(binder, form);

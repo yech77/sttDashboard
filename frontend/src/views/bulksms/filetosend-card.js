@@ -50,11 +50,12 @@ class FileToSendCard extends PolymerElement {
 
                 .badge {
                     margin: var(--lumo-space-s) 0;
-                    width: 120px;
+                    width: 100px;
                 }
 
+                /*Cambio de espacio en tarjeta de programacion*/
                 .time-place {
-                    width: 120px;
+                    width: 200px;
                 }
 
                 .name-items {

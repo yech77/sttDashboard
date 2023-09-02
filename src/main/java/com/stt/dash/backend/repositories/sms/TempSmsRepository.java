@@ -33,8 +33,10 @@ public interface TempSmsRepository extends JpaRepository<TempSms, Long> {
             + "group by o.carrier_char_code, day, hour, o.message_type, month, o.system_id, year", nativeQuery = true)
     public void insertResume(Long id);
 
-    @Modifying
-    @Query(value = "DELETE FROM temp_sms o "
-            + "WHERE o.Id<= :id ", nativeQuery = true)
-    public void deleteResume(Long id);
+//    @Modifying
+//    @Query(value = "DELETE FROM temp_sms o "
+//            + "WHERE o.Id<= :id ", nativeQuery = true)
+//    public void deleteByIdIsLessThanEqual(Long id);
+
+    public long deleteByIdIsLessThanEqual(Long id);
 }

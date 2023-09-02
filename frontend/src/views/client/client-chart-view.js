@@ -67,9 +67,10 @@ class ClientChartView extends PolymerElement {
                 }
 
             </style>
-
-            <div id="divHeader" class="row" ></div>
             <vaadin-board>
+                <vaadin-board-row>
+                    <div id="divHeader" class="vaadin-board-cell"></div>
+                </vaadin-board-row>
                 <vaadin-board-row>
                     <div class="vaadin-board-cell">
                         <vaadin-chart id="deliveriesThisMonth" class="column-chart"></vaadin-chart>
@@ -79,7 +80,7 @@ class ClientChartView extends PolymerElement {
                     </div>
                 </vaadin-board-row>
                 <vaadin-board-row>
-                        <vaadin-chart id="carrierDailyChart" class="class="yearly-sales""></vaadin-chart>
+                    <vaadin-chart id="carrierDailyChart" class="yearly-sales"></vaadin-chart>
                 </vaadin-board-row>
                 <vaadin-board-row>
                     <div class="vaadin-board-cell">

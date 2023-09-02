@@ -12,39 +12,51 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-public class ODashAuditEvent extends AbstractEntitySequence{
+public class ODashAuditEvent extends AbstractEntitySequence {
 
 
     public static enum OEVENT_TYPE {
-        LOGIN,
-        LOGOUT,
-        CREATE_AGENDA,
-        CREATE_RECADO,
-        CREATE_USER,
-        UPDATE_AGENDA,
-        UPDATE_RECADO,
-        UPDATE_USER,
-        DELETE_AGENDA,
-        DELETE_RECADO,
-        DELETE_USER,
-        PASSWORD_CHANGED,
-        DOWNLOAD_FILE_AGENDA, DOWNLOAD_FILE_TRAFFIC_SMS, DOWNLOAD_FILE_SEARCH_SMS,
-        DOWNLOAD_FILE_AUDITEVENT
+        LOGIN(0, "LOGIN"),
+        LOGOUT(1, "LOGIN"),
+        CREATE_AGENDA(2, "agenda creada"),
+        CREATE_RECADO(3, "masivo programada"),
+        CREATE_USER(4, "usuario creado"),
+        UPDATE_AGENDA(5, "agenda actualizada"),
+        UPDATE_RECADO(6, "masivo actualizado"),
+        UPDATE_USER(7, "usuario actualizado"),
+        DELETE_AGENDA(8, "agenda borrada"),
+        DELETE_RECADO(9, "masivo borrado"),
+        DELETE_USER(10, "usuario borrado"),
+        PASSWORD_CHANGED(11, "clave cambiada"),
+        DOWNLOAD_FILE_AGENDA(12, "descarga de agenda"),
+        DOWNLOAD_FILE_TRAFFIC_SMS(13, "descarga de tráfico"),
+        DOWNLOAD_FILE_SEARCH_SMS(14, "descarga de busqueda sms"),
+        DOWNLOAD_FILE_AUDITEVENT(15, "descarga de archivo de auditoria"),
+        ACCEPTED_SMS(16, "Aceptar envio de mensajes"),
+        BLOCKED(17, "Usuario bloqueado");
+
+        private int eventId;
+        private String eventName;
+
+        OEVENT_TYPE(int eventId, String eventName) {
+            this.eventId = eventId;
+            this.eventName = eventName;
+        }
     }
 
-    @GridColumn(order = 2, columnName = "Date")
+    @GridColumn(order = 2, columnName = "Fecha")
     private Date eventDate;
 
     @Size(min = 3, max = 100)
     @Column(length = 100)
-    @GridColumn(order = 0, columnName = "USUARIO")
+    @GridColumn(order = 0, columnName = "Usuario")
     private String principal;
 
-    @GridColumn(order = 1, columnName = "TIPO")
+    @GridColumn(order = 1, columnName = "Tipo")
     @Enumerated(EnumType.ORDINAL)
     private OEVENT_TYPE eventType;
 
-    @GridColumn(order = 3, columnName = "DESSCRIPCION")
+    @GridColumn(order = 3, columnName = "Descripcion")
     @Size(min = 3)
     private String eventDesc;
 
@@ -73,7 +85,10 @@ public class ODashAuditEvent extends AbstractEntitySequence{
     }
 
     public String getEventDesc() {
-        return eventDesc;
+        if (eventDesc == null) {
+            return "";
+        }
+        return eventDesc.substring(0, eventDesc.length() - 1);
     }
 
     public void setEventDesc(String eventDesc) {

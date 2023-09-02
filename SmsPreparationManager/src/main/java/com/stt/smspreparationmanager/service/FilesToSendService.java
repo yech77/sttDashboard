@@ -40,31 +40,31 @@ public class FilesToSendService {
         files_repo.delete(file);
     }
 
-    public void save(FilesToSend files) {
-        if (files == null) {
+    public void save(FilesToSend filesToSend) {
+        if (filesToSend == null) {
             log.warn("{} FilesToSend is null", SmsPreparationManagerApplication.getAPP_NAME());
             return;
         }
         try {
-            Long id = files.getId();
-            files_repo.save(files);
+            Long id = filesToSend.getId();
+            files_repo.save(filesToSend);
             if (id == null) {
-                log.info("{} SAVED: ORDER NAME [{}] STATUS [{} - {}] BEING PRO[{}] READY TO SEND[{}]", SmsPreparationManagerApplication.getAPP_NAME(), 
-                        files.getOrderName(),
-                        files.getStatus().name(),
-                        files.getStatusText(),
-                        files.isBeingProcessed(),
-                        files.isReadyToSend());
+                log.info("[{}] [{}] SAVED STATUS [{} - {}] BEING PRO[{}] READY TO SEND[{}]", SmsPreparationManagerApplication.getAPP_NAME(),
+                        filesToSend.getOrderName(),
+                        filesToSend.getStatus().name(),
+                        filesToSend.getStatusText(),
+                        filesToSend.isBeingProcessed(),
+                        filesToSend.isReadyToSend());
             } else {
-                log.info("{} UPDATED: ORDER NAME [{}] STATUS [{} - {}] BEING PRO[{}] READY TO SEND[{}]", SmsPreparationManagerApplication.getAPP_NAME(), 
-                        files.getOrderName(),
-                        files.getStatus().name(),
-                        files.getStatusText(),
-                        files.isBeingProcessed(),
-                        files.isReadyToSend());
+                log.info("[{}] [{}] UPDATED: ORDER NAME STATUS [{} - {}] BEING PRO[{}] READY TO SEND[{}]", SmsPreparationManagerApplication.getAPP_NAME(),
+                        filesToSend.getOrderName(),
+                        filesToSend.getStatus().name(),
+                        filesToSend.getStatusText(),
+                        filesToSend.isBeingProcessed(),
+                        filesToSend.isReadyToSend());
             }
         } catch (Exception d) {
-            log.error("{} Error on Save:", SmsPreparationManagerApplication.getAPP_NAME());
+            log.error("[{}] [{}] Error on Save:", SmsPreparationManagerApplication.getAPP_NAME(), filesToSend.getOrderName());
             log.error("", d);
         }
     }
@@ -83,14 +83,6 @@ public class FilesToSendService {
         }
         return files_repo.filterSearchNameSystemId(filterText, systemId);
     }
-
-//    public List<FilesToSend> getUnsentOrders(LocalDateTime time) {
-//        return files_repo.getUnsentOrders(ODateUitls.localDateTimeToDate(LocalDateTime.now()));
-//    }
-//
-//    public List<FilesToSend> getUnsentOrders(Date now) {
-//        return files_repo.getUnsentOrders(now);
-//    }
 
     public List<FilesToSend> getUnsentOrders(LocalDateTime time, List<String> sys_ids) {
         return files_repo.getUnsentOrders(ODateUitls.localDateTimeToDate(LocalDateTime.now()),
@@ -113,7 +105,7 @@ public class FilesToSendService {
         if(item.isPresent()){
             return item.get();
         }
-        log.warn("No hay FileToSend con este Id: [{}]", id);
+        log.warn("[{}] No hay FileToSend con este Id: [{}]", SmsPreparationManagerApplication.getAPP_NAME(), id);
         return null;
     }
 }

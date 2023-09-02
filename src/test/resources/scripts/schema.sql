@@ -11,7 +11,7 @@ BEGIN
 END;
 ';
 
-alter function insertintotempsms() owner to postgres;
+alter function insertintotempsms() owner to odash;
 
 
 /******

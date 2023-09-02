@@ -77,22 +77,23 @@ public class FileToSendCard {
 
     public String getState() {
         System.out.println("STATUS: " + order.getStatus().name());
-        return order.getStatus().name();
+        return order.getStatus().getText();
     }
+
     public String getFileName() {
         System.out.println("STATUS: " + order.getFileName());
         return order.getFileName();
     }
 
-    public String getOrderName(){
+    public String getOrderName() {
         return order.getOrderName();
     }
 
-    public String getOrderDescription(){
+    public String getOrderDescription() {
         return order.getOrderDescription();
     }
 
-    public String getCreatedBy(){
+    public String getCreatedBy() {
         return "Creador";
     }
 

@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.List;
 
-public class AgendaFileUtils  {
+public class AgendaFileUtils {
 
     private static final Logger log = LoggerFactory.getLogger(AgendaFileUtils.class);
 
@@ -17,10 +17,11 @@ public class AgendaFileUtils  {
 //    private final static String baseDir = "src/main/resources/agendafiles/";
     private static String baseDir = "";
 
-    public final static void setBaseDir(String base){
-        baseDir=base;
+    public final static void setBaseDir(String base) {
+        baseDir = base;
         System.out.println("***** Asignando Upload ****** " + base);
     }
+
     /**
      * Genera un nombre de archivo válido y único basado en fileName
      *
@@ -61,14 +62,13 @@ public class AgendaFileUtils  {
 
             File targetFile = new File(baseDir + fileName);
             if (targetFile.exists()) {
-                System.out.println("Over-writing new Agenda onto old Agenda");
                 targetFile.delete();
             }
             OutputStream outStream = new FileOutputStream(targetFile);
             outStream.write(buffer);
 
         } catch (IOException ex) {
-            System.out.println("PROBLEMA CREANDO ARCHIVO");
+            log.error("", ex);
             return false;
         }
         return true;
@@ -121,6 +121,7 @@ public class AgendaFileUtils  {
     public final static InputStream getStreamValidationLog(String fileName) {
         return getStreamValidationLog("", fileName);
     }
+
     /**
      * Encuentra el archivo con información sobre los errores de la agenda a la
      * cual le corresponde (en forma de InputStream)
@@ -131,7 +132,7 @@ public class AgendaFileUtils  {
      */
     public final static InputStream getStreamValidationLog(String userEmail, String fileName) {
         int len = fileName.length();
-        if (len < 5 ) {
+        if (len < 5) {
             log.warn("[ODASH] [{}] [{}] Bad name or fileType when fetching file.", userEmail, fileName);
             return null;
         }
@@ -159,6 +160,7 @@ public class AgendaFileUtils  {
     public final static boolean createFileValidationLog(String fileName, List<String> errorList) {
         return createFileValidationLog(fileName, errorList, "");
     }
+
     /**
      * Crea un archivo con información sobre los errores de la agenda a la cual
      * le corresponde
@@ -170,7 +172,7 @@ public class AgendaFileUtils  {
     public final static boolean createFileValidationLog(String fileName, List<String> errorList, String userEmail) {
         log.info("[ODASH] [{}] [{}]({}) CREATING VALIDATION FILE", userEmail, fileName, errorList.size());
         int len = fileName.length();
-        if (len < 5 ) {
+        if (len < 5) {
             log.warn("[ODASH] [{}] [{}] Bad name or fileType when fetching file.", userEmail, fileName);
             return false;
         }

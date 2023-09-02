@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class ODateUitls {
 
-    public final static SimpleDateFormat dd_MM_yyyy_HH_mm_SS = new SimpleDateFormat("dd/MM/yyyy HH:mm:SS");
+    public final static SimpleDateFormat dd_MM_yyyy_HH_mm_SS = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     public final static SimpleDateFormat dd_MM_yyyy = new SimpleDateFormat("dd/MM/yyyy");
 
     public static synchronized LocalDateTime valueOf(Date dateToConvert) {
@@ -17,6 +17,7 @@ public class ODateUitls {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
     }
+
     public static synchronized LocalDate valueOf2(Date dateToConvert) {
         return dateToConvert.toInstant()
                 .atZone(ZoneId.systemDefault())
@@ -42,8 +43,9 @@ public class ODateUitls {
      * @throws ParseException
      */
     public static synchronized Date parseYearMonthDayHourToDate(int year, int month, int day, int hour, int min) throws ParseException {
-        return dd_MM_yyyy_HH_mm_SS.parse(day + "/" + month + "/" + year + " " + hour + ":"+min+":00");
+        return dd_MM_yyyy_HH_mm_SS.parse(day + "/" + month + "/" + year + " " + hour + ":" + min + ":00");
     }
+
     /**
      * devuelve una fecha con year, month, day con los hour, minute y los
      * segundos siempre en cero.
@@ -55,7 +57,7 @@ public class ODateUitls {
      * @throws ParseException
      */
     public static synchronized Date parseYearMonthDayToDate(int year, int month, int day) throws ParseException {
-        return dd_MM_yyyy_HH_mm_SS.parse(day + "/" + month + "/" + year + " " +"00:00:00");
+        return dd_MM_yyyy_HH_mm_SS.parse(day + "/" + month + "/" + year + " " + "00:00:00");
     }
 
     /**
@@ -66,9 +68,53 @@ public class ODateUitls {
      * @throws ParseException
      */
     public static synchronized Date parseToYearMonthDay(LocalDate localDate) throws ParseException {
+        return parseToYearMonthDay(localDate, "00:00:00");
+    }
+
+    /**
+     * devuelve una fecha con year, month, day con los hour, minute y los
+     * segundos en "23:59:59".
+     *
+     * @return
+     * @throws ParseException
+     */
+    public static synchronized Date parseToDateTo(LocalDate localDate) throws ParseException {
+        return parseToYearMonthDay(localDate, "23:59:59");
+    }
+
+    /**
+     * devuelve una fecha con year, month, day con los hour, minute y los
+     * segundos en "{hour}:00:00".
+     *
+     * @return
+     * @throws ParseException
+     */
+    public static synchronized Date parseToDateFrom(LocalDate localDate, int hour) throws ParseException {
+        return parseToYearMonthDay(localDate, hour + ":00:00");
+    }
+
+    /**
+     * devuelve una fecha con year, month, day con los hour, minute y los
+     * segundos en "{hour}:59:59".
+     *
+     * @return
+     * @throws ParseException
+     */
+    public static synchronized Date parseToDateTo(LocalDate localDate, int hour) throws ParseException {
+        return parseToYearMonthDay(localDate, hour + ":59:59");
+    }
+
+    /**
+     * devuelve una fecha con year, month, day con los hour, minute y los
+     * segundos segun hh_mm_ss.
+     *
+     * @return
+     * @throws ParseException
+     */
+    public static synchronized Date parseToYearMonthDay(LocalDate localDate, String hh_mm_ss) throws ParseException {
         int year = localDate.getYear();
         int month = localDate.getMonthValue();
         int day = localDate.getDayOfMonth();
-        return dd_MM_yyyy_HH_mm_SS.parse(day + "/" + month + "/" + year + " " +"00:00:00");
+        return dd_MM_yyyy_HH_mm_SS.parse(day + "/" + month + "/" + year + " " + hh_mm_ss);
     }
 }

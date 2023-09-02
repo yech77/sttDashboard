@@ -6,6 +6,7 @@ import com.stt.dash.backend.data.entity.Agenda;
 import com.stt.dash.backend.data.entity.FIlesToSend;
 import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.ui.utils.ODateUitls;
+import com.stt.dash.uiv2.util.UIUtils;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
@@ -23,7 +24,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
-import  java.io.BufferedReader;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -60,6 +61,7 @@ public class BulkSmsSchedulerForm extends FormLayout {
     private boolean hasEnougharmeters = false;
     /**/
     private int sendTime = 1;
+
     public BulkSmsSchedulerForm(List<Agenda> agendaList, Collection<SystemId> systemIdCollection, CurrentUser currentUser) {
         setResponsiveSteps(
                 new ResponsiveStep("25em", 1, ResponsiveStep.LabelsPosition.TOP),
@@ -86,19 +88,25 @@ public class BulkSmsSchedulerForm extends FormLayout {
         systemIdCombo.setWidthFull();
         messageBox.setWidthFull();
         messageBox.setValueChangeMode(ValueChangeMode.EAGER);
-        setColspan(addFormItem(orderName, "Nombre del Recado"), 2);
-        setColspan(addFormItem(orderDescription, "Descripcion del Recado"), 2);
-        setColspan(addFormItem(agendaCombo, "Agenda"), 2);
-        setColspan(warningSpan, 3);
-        setColspan(addFormItem(systemIdCombo, "Pasaporte"), 2);
+        FormItem nombreDelRecado = addFormItem(orderName, "Nombre del Recado");
+        FormItem descripcionDelRecado = addFormItem(orderDescription, "Descripcion del Recado");
+        FormItem agenda = addFormItem(agendaCombo, "Agenda");
+        FormItem pasaporte = addFormItem(systemIdCombo, "Pasaporte");
         FormItem des = addFormItem(messageBox, "Mensaje a enviar");
         des.add(charCountSpan);
         des.add(warningSpan);
         des.add(messageBuilded);
-        setColspan(des, 2);
         FormItem despacho = addFormItem(dateTimePicker, "Fecha de Despacho");
         despacho.add(sendNow);
-        setColspan(despacho, 2);
+//        setColspan(nombreDelRecado, 2);
+//        setColspan(descripcionDelRecado, 2);
+//        setColspan(agenda, 2);
+        UIUtils.setColSpan(2, nombreDelRecado, descripcionDelRecado, agenda);
+        UIUtils.setColSpan(3, warningSpan);
+        UIUtils.setColSpan(2, pasaporte, des, despacho);
+//        setColspan(pasaporte, 2);
+//        setColspan(des, 2);
+//        setColspan(despacho, 2);
         addListeners();
         /**/
         dateTimePicker.setMin(LocalDateTime.now());
@@ -129,7 +137,7 @@ public class BulkSmsSchedulerForm extends FormLayout {
             /* al comenzar desde $1 se debe restar uno para que tenga la cantidad correcta de variables*/
             vars--;
             if (varCount != vars) {
-                warningSpan.setText("Mensajes en esta Agenda necesitan "
+                warningSpan.setText("Mensajes en esta agenda necesitan "
                         + varCount
                         + " parámetros; Tienes "
                         + vars
@@ -169,7 +177,7 @@ public class BulkSmsSchedulerForm extends FormLayout {
             hasMessageAllParameter = !hasEnougharmeters;
             messageBox.setEnabled(hasEnougharmeters);
         });
-        sendNow.addValueChangeListener(changeEvent->{
+        sendNow.addValueChangeListener(changeEvent -> {
             dateTimePicker.setValue(LocalDateTime.now());
         });
 
@@ -189,9 +197,9 @@ public class BulkSmsSchedulerForm extends FormLayout {
 
                     @Override
                     public LocalDateTime convertToPresentation(Date date, ValueContext valueContext) {
-                       if(date==null){
-                           return LocalDateTime.now();
-                       }
+                        if (date == null) {
+                            return LocalDateTime.now();
+                        }
                         return ODateUitls.valueOf(date);
                     }
                 })
@@ -215,10 +223,10 @@ public class BulkSmsSchedulerForm extends FormLayout {
                     .withIgnoreEmptyLines(true)
                     .parse(new BufferedReader(isr));
             /*Obtener la unica linea*/
-            for (CSVRecord record : records) {
-                lineByValues = new String[record.size()];
+            for (CSVRecord recordLine : records) {
+                lineByValues = new String[recordLine.size()];
                 int pos = 0;
-                for (String string : record) {
+                for (String string : recordLine) {
                     System.out.println("POS y STRING: " + pos + ":" + string);
                     lineByValues[pos++] = string;
                 }
@@ -232,6 +240,7 @@ public class BulkSmsSchedulerForm extends FormLayout {
     public boolean isValidData() {
         return binder.isValid() && hasMessageAllParameter;
     }
+
     /**
      * Clase para este form
      */

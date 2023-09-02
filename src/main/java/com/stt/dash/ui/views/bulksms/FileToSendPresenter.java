@@ -9,10 +9,15 @@ import com.stt.dash.backend.service.FilesToSendService;
 import com.stt.dash.backend.service.SystemIdService;
 import com.stt.dash.backend.thread.SmsGeneratorParserRunnable;
 import com.stt.dash.backend.util.AgendaFileUtils;
+import com.stt.dash.backend.util.ws.BalanceWebClient;
+import com.stt.dash.backend.util.ws.SystemIdBalanceOResponse;
 import com.stt.dash.ui.crud.EntityPresenter;
 import com.stt.dash.ui.dataproviders.FilesToSendGridDataProvider;
 import com.stt.dash.ui.utils.ODateUitls;
 import com.stt.dash.ui.views.storefront.beans.OrderCardHeader;
+import com.stt.dash.utils.ws.SystemIdBalanceOWebClient;
+import com.vaadin.flow.component.Focusable;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +25,16 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
 
 import static com.stt.dash.ui.utils.BakeryConst.PAGE_BULK_STOREFRONT_ORDER_EDIT;
 
@@ -35,6 +45,7 @@ public class FileToSendPresenter {
     private static final String DELETE_DENIED_INCORRECT_STATUS = "No se puede borrar. Programacion ya enviada.";
     private FileToSendCardHeaderGenerator headersGenerator;
     private FileToSendFrontView view;
+    private WebClient webClient;
 
     private final EntityPresenter<FIlesToSend, FileToSendFrontView> entityPresenter;
     private final FilesToSendGridDataProvider dataProvider;
@@ -42,31 +53,37 @@ public class FileToSendPresenter {
     private final FilesToSendService service;
     private final SystemIdService systemIdService;
     private final OProperties properties;
+    private final SystemIdBalanceOWebClient systemIdBalanceOWebClient;
 
     @Autowired
-    FileToSendPresenter(FilesToSendService service,
-                        SystemIdService systemIdService,
-                        OProperties properties,
-                        FilesToSendGridDataProvider dataProvider,
-                        EntityPresenter<FIlesToSend, FileToSendFrontView> entityPresenter, CurrentUser currentUser) {
+    FileToSendPresenter(@Autowired FilesToSendService service,
+                        @Autowired SystemIdService systemIdService,
+                        @Autowired OProperties properties,
+                        @Autowired FilesToSendGridDataProvider dataProvider,
+                        @Autowired EntityPresenter<FIlesToSend, FileToSendFrontView> entityPresenter,
+                        @Autowired WebClient webClient,
+                        @Autowired SystemIdBalanceOWebClient systemIdBalanceOWebClient,
+                        @Autowired CurrentUser currentUser) {
         this.entityPresenter = entityPresenter;
         this.dataProvider = dataProvider;
         this.currentUser = currentUser;
         this.service = service;
         this.systemIdService = systemIdService;
+        this.systemIdBalanceOWebClient = systemIdBalanceOWebClient;
         headersGenerator = new FileToSendCardHeaderGenerator();
         headersGenerator.resetHeaderChain(false);
         dataProvider.setPageObserver(p -> headersGenerator.filesToSendRead(p.getContent()));
         this.properties = properties;
+        this.webClient = webClient;
     }
 
     void init(FileToSendFrontView view) {
         this.entityPresenter.setView(view);
         this.view = view;
         view.getGrid().setDataProvider(dataProvider);
-        view.getOpenedOrderEditor().setCurrentUser(currentUser.getUser());
-        view.getOpenedOrderEditor().addCancelListener(e -> cancel());
-        view.getOpenedOrderEditor().addReviewListener(e -> review());
+        view.getOpenedFileToSendEditorView().setUser(currentUser.getUser());
+        view.getOpenedFileToSendEditorView().addCancelListener(e -> cancel());
+        view.getOpenedFileToSendEditorView().addReviewListener(e -> review());
         view.getOpenedOrderDetails().addSaveListenter(e -> save());
         view.getOpenedOrderDetails().addCancelListener(e -> cancel());
         view.getOpenedOrderDetails().addBackListener(e -> back());
@@ -89,7 +106,6 @@ public class FileToSendPresenter {
     }
 
     void createNewOrder() {
-        System.out.println("Llegue a crearNewOrder...");
         open(entityPresenter.createNew(), true);
     }
 
@@ -98,51 +114,62 @@ public class FileToSendPresenter {
     }
 
     void closeSilently() {
-        System.out.println("Llegue a closeSilently...");
         entityPresenter.close();
         view.setOpened(false);
     }
 
     void edit() {
-        System.out.println("Llegue edit...");
         UI.getCurrent()
                 .navigate(String.format(PAGE_BULK_STOREFRONT_ORDER_EDIT,
                         entityPresenter.getEntity().getId()));
     }
 
     void back() {
-        System.out.println("Llegue a back...");
         view.setDialogElementsVisibility(true);
     }
 
-    void review() {
-        System.out.println("Llegue a Review...");
-//         Using collect instead of findFirst to assure all streams are
-//         traversed, and every validation updates its view
-//        List<HasValue<?, ?>> fields = view.validate().collect(Collectors.toList());
-//        if (fields.isEmpty()) {
-        if (entityPresenter.writeEntity()) {
-            view.setDialogElementsVisibility(false);
-            view.getOpenedOrderDetails().display(entityPresenter.getEntity(), true);
-        }
-//        } else if (fields.get(0) instanceof Focusable) {
-//            ((Focusable<?>) fields.get(0)).focus();
+    //
+//    void review() {
+////         Using collect instead of findFirst to assure all streams are
+////         traversed, and every validation updates its view
+////        List<HasValue<?, ?>> fields = view.validate().collect(Collectors.toList());
+////        if (fields.isEmpty()) {
+//        if (entityPresenter.writeEntity()) {
+//            view.setDialogElementsVisibility(false);
+//            view.getOpenedOrderDetails().display(entityPresenter.getEntity(), true);
 //        }
+////        } else if (fields.get(0) instanceof Focusable) {
+////            ((Focusable<?>) fields.get(0)).focus();
+////        }
+//    }
+    void review() {
+        // Using collect instead of findFirst to assure all streams are
+        // traversed, and every validation updates its view
+        List<HasValue<?, ?>> fields = view.validate().collect(Collectors.toList());
+        if (fields.isEmpty()) {
+            if (entityPresenter.writeEntity()) {
+                view.setDialogElementsVisibility(false);
+                view.getOpenedOrderDetails().display(entityPresenter.getEntity(), true);
+            }
+        } else if (fields.get(0) instanceof Focusable) {
+            ((Focusable<?>) fields.get(0)).focus();
+        }
     }
 
     void save() {
         Optional<SystemId> bySystemId = systemIdService.findBySystemId(entityPresenter.getEntity().getSystemId());
         /* Solo llama a salvar si encuentra el cliente del system id */
         if (!bySystemId.isPresent()) {
-            view.showNotification("No se puedo crear la programacion. Si el problema persiste llame a su Administrador", true);
+            view.showNotificationError("No se puedo crear la programacion. Si el problema persiste llame a su Administrador", true);
             return;
         }
         entityPresenter.save(e -> {
             /* Si se salva correctamente se ejecuta este codigo. */
             if (entityPresenter.isNew()) {
-                System.out.println("Llegue a save is New...");
                 view.showCreatedNotification();
                 dataProvider.refreshAll();
+                /* Debo repetir el close porque colocarlo fuera al final del if no se ejecuta por el mono.block. */
+                close();
                 /**/
                 // Crea Nuevo hilo
                 ScheduledExecutorService localExecutor = Executors.newSingleThreadScheduledExecutor();
@@ -150,7 +177,6 @@ public class FileToSendPresenter {
                 /**/
                 String clientCod = bySystemId.get().getSystemId();
                 // Valida y Genera mensajes
-                System.out.println("Generando mensajes en 5 segundos...");
                 AgendaFileUtils.setBaseDir(properties.getAgendaFilePathUpload());
                 scheduler.schedule(new SmsGeneratorParserRunnable(properties,
                                 service,
@@ -159,50 +185,54 @@ public class FileToSendPresenter {
                                 currentUser.getUser().getEmail(),
                                 currentUser.getUser()),
                         ODateUitls.localDateTimeToDate(LocalDateTime.now().plusSeconds(5)));
-                /**/
+                /* Blockear saldo a usar */
+                updateBalance(e.getSystemId(), e.getTotalSmsToSend());
             } else {
-                System.out.println("Llegue a save not is New...");
                 view.showUpdatedNotification();
                 dataProvider.refreshItem(e);
+                close();
             }
-            close();
         });
     }
 
     void delete() {
-        EntityPresenter.CrudOperationListener<FIlesToSend>
-                onSuccess = entity -> {
+        EntityPresenter.CrudOperationListener<FIlesToSend> onSuccess = entity -> {
             dataProvider.refreshAll();
+            /* Devolver el saldo  */
+            updateBalance(entity.getSystemId(), entity.getTotalSmsToSend() * -1);
             view.showUpdatedNotification();
             close();
         };
-        EntityPresenter.CrudOnPreOperation<FIlesToSend>
-                onBeforeDelete = entity -> {
-            return entity.getStatus()!=Status.COMPLETED;
-        };
-        if (entityPresenter.getEntity().getStatus()!= Status.COMPLETED) {
+//        EntityPresenter.CrudOnPreOperation<FIlesToSend> onBeforeDelete = entity -> {
+//            return entity.getStatus() != Status.COMPLETED;
+//        };
+        if (entityPresenter.getEntity().getStatus() != Status.COMPLETED) {
             entityPresenter.delete(onSuccess);
-        }else{
-            view.showNotification(DELETE_DENIED_INCORRECT_STATUS, true);
+        } else {
+            view.showNotificationError(DELETE_DENIED_INCORRECT_STATUS, false);
         }
     }
 
-    private void open(FIlesToSend order, boolean edit) {
-        System.out.println("Llegue a Open...");
+    private void updateBalance(String systemid, int numOfSms) {
+        try {
+            systemIdBalanceOWebClient.updateSystemIdBalanceLockedBalance(systemid, numOfSms);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private void open(FIlesToSend fileToSend, boolean edit) {
         view.setDialogElementsVisibility(edit);
         view.setOpened(true);
         if (edit) {
-            view.getOpenedOrderEditor().read(order, entityPresenter.isNew());
-            System.out.println("Llegue a Open...TRUE");
+            view.getOpenedFileToSendEditorView().read(fileToSend, entityPresenter.isNew());
         } else {
-            view.getOpenedOrderDetails().display(order, false);
-            System.out.println("Llegue a Open...FALSE");
+            view.getOpenedOrderDetails().display(fileToSend, false);
         }
     }
 
     private void close() {
-        System.out.println("Llegue a Close...");
-        view.getOpenedOrderEditor().close();
+        view.getOpenedFileToSendEditorView().close();
         view.setOpened(false);
         view.navigateToMainView();
         entityPresenter.close();

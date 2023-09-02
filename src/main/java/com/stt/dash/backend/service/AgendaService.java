@@ -9,13 +9,19 @@ import com.stt.dash.backend.repositories.AgendaRepository;
 import com.stt.dash.backend.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -31,10 +37,10 @@ public class AgendaService implements FilterableCrudService<Agenda> {
     private AgendaRepository repo;
     private UserRepository ouser_repo;
     private final MyAuditEventComponent auditEvent;
+    private long isotherCounter = -1;
 
-    public AgendaService(AgendaRepository repo,
-                         UserRepository ouser_repo,
-                         MyAuditEventComponent auditEvent) {
+    @Autowired
+    public AgendaService(AgendaRepository repo, UserRepository ouser_repo, MyAuditEventComponent auditEvent) {
         this.repo = repo;
         this.ouser_repo = ouser_repo;
         this.auditEvent = auditEvent;
@@ -48,7 +54,13 @@ public class AgendaService implements FilterableCrudService<Agenda> {
         return sb.toString();
     }
 
+    @Override
     public long count() {
+        return repo.count();
+    }
+
+    @Override
+    public long count(CurrentUser currentUser) {
         return repo.count();
     }
 
@@ -133,8 +145,28 @@ public class AgendaService implements FilterableCrudService<Agenda> {
         return repo.getAllAgendasInFamily(users);
     }
 
-    public List<Agenda> getAllValidAgendasInFamily(List<User> users) {
-        return repo.getAllValidAgendasInFamily(users, Agenda.Status.READY_TO_USE);
+    /**
+     * Utilizado para obtener todas las agendas que estan en estado READY_TO_USE cuando se
+     * va a crear una Programacion de masivo.
+     *
+     * @param currentUser
+     * @param users
+     * @return
+     */
+    public List<Agenda> getAllValidAgendasInFamily(CurrentUser currentUser, List<User> users) {
+        if (currentUser.getUser().getUserTypeOrd() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            return repo.getAllValidAgendasInFamily(users, Agenda.Status.READY_TO_USE);
+        } else {
+            return repo.findAllByStatusOrderByDateCreatedDesc(Agenda.Status.READY_TO_USE, PageRequest.ofSize(1000)).getContent();
+        }
+    }
+
+    public List<Agenda> getAllAgendasInFamily(CurrentUser currentUser, List<User> users) {
+        if (currentUser.getUser().getUserTypeOrd() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            return repo.getAllAgendasInFamily(users);
+        } else {
+            return repo.findAll(Sort.by(Sort.Direction.DESC, "dateCreated"));
+        }
     }
 
     public List<Agenda> findByName(String name) {
@@ -150,21 +182,48 @@ public class AgendaService implements FilterableCrudService<Agenda> {
     public Page<Agenda> findAnyMatching(Optional<String> filter, Pageable pageable) {
         if (filter.isPresent()) {
             String repositoryFilter = "%" + filter.get() + "%";
-            return getRepository()
-                    .findByCreator_EmailLikeIgnoreCaseOrNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(
-                            repositoryFilter, repositoryFilter, repositoryFilter, pageable);
+            return getRepository().findByCreator_EmailLikeIgnoreCaseOrNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(repositoryFilter, repositoryFilter, repositoryFilter, pageable);
         } else {
             return find(pageable);
         }
+    }
+
+    /**
+     * Busca las agendas que pertenecen al usuario actual y a sus hijos o todas las agendas si es un comercial.
+     *
+     * @param currentUser
+     * @param filter
+     * @param pageable
+     * @return
+     */
+    @Override
+    public Page<Agenda> findAnyMatching(CurrentUser currentUser, Optional<String> filter, Pageable pageable) {
+        Page<Agenda> myAgendasAndMyAgendasSon = findAgendas(currentUser, pageable);
+        isotherCounter = myAgendasAndMyAgendasSon.getTotalElements();
+        return myAgendasAndMyAgendasSon;
+    }
+
+    private Page<Agenda> findAgendas(CurrentUser currentUser, Pageable pageable) {
+        Page<Agenda> myAgendasAndMyAgendasSon;
+        if (currentUser.getUser().getUserTypeOrd() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            myAgendasAndMyAgendasSon = repo.findMyAgendasAndMyAgendasSon(getMeAndSon(currentUser.getUser()), pageable);
+        } else {
+            myAgendasAndMyAgendasSon = repo.findAll(pageable);
+        }
+        return myAgendasAndMyAgendasSon;
     }
 
     @Override
     public long countAnyMatching(Optional<String> filter) {
         if (filter.isPresent()) {
             String repositoryFilter = "%" + filter.get() + "%";
-            return repo.countByCreator_EmailLikeIgnoreCaseOrNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(
-                    repositoryFilter, repositoryFilter, repositoryFilter);
+            return repo.countByCreator_EmailLikeIgnoreCaseOrNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(repositoryFilter, repositoryFilter, repositoryFilter);
         } else {
+            if (isotherCounter > -1) {
+                long d = isotherCounter;
+                isotherCounter = -1;
+                return d;
+            }
             return count();
         }
     }
@@ -179,35 +238,38 @@ public class AgendaService implements FilterableCrudService<Agenda> {
     }
 
     @Override
-    public Agenda save(User currentUser, Agenda entity) {
-        try {
-            try {
-                Long id = entity.getId();
-                entity = FilterableCrudService.super.save(currentUser, entity);
-                if (id == null) {
-                    log.info("{} Saved: Agenda[{}]", getStringLog(), entity.getName());
-                    try {
-                        auditEvent.add(ODashAuditEvent.OEVENT_TYPE.CREATE_AGENDA, entity);
-                    } catch (Exception e) {
-                        log.error("", e);
-                    }
-                } else {
-                    log.info("{} Updated: Agenda[{}]", getStringLog(), entity.getName());
-                    try {
-                        auditEvent.add(ODashAuditEvent.OEVENT_TYPE.UPDATE_AGENDA, entity);
-                    } catch (Exception e) {
-                        log.error("", e);
-                    }
-                }
-            } catch (Exception d) {
-                log.error("{} Error on Save:", getStringLog());
-                log.error("", d);
+    public Agenda save(User currentUser, @NotNull Agenda entity) {
+        /* Si id es nulo es un save y no una actualizacion */
+        boolean isNewEntity = Objects.isNull(entity.getId());
+        if (isNewEntity) {
+            if (existAlreadyAgendaName(entity.getName())) {
+                throw new UIFieldDataException("Ya existe");
             }
-            return entity;
-        } catch (DataIntegrityViolationException e) {
-            throw new UserFriendlyDataException(
-                    "Ya existe una agenda con ese nombe. Por favor seleccione otro nombre.");
         }
+        try {
+            entity = FilterableCrudService.super.save(currentUser, entity);
+            if (isNewEntity) {
+                log.info("{} Saved: Agenda[{}]", getStringLog(), entity.getName());
+                try {
+                    auditEvent.add(ODashAuditEvent.OEVENT_TYPE.CREATE_AGENDA, entity);
+                } catch (Exception e) {
+                    log.error("", e);
+                }
+            } else {
+                log.info("{} Updated: Agenda[{}]", getStringLog(), entity.getName());
+                try {
+                    auditEvent.add(ODashAuditEvent.OEVENT_TYPE.UPDATE_AGENDA, entity);
+                } catch (Exception e) {
+                    log.error("", e);
+                }
+            }
+        } catch (DataIntegrityViolationException e) {
+            throw new UserFriendlyDataException("Ya existe una agenda con ese nombre. Por favor seleccione otro nombre.");
+        } catch (Exception d) {
+            log.error("", d);
+            throw new UserFriendlyDataException("Hubo un error y no se pudo salvar la agenda");
+        }
+        return entity;
     }
 
     @Override
@@ -218,18 +280,7 @@ public class AgendaService implements FilterableCrudService<Agenda> {
             auditEvent.add(ODashAuditEvent.OEVENT_TYPE.DELETE_AGENDA, agenda);
         } catch (Exception e) {
             log.error("", e);
-        }
-    }
-
-    private void throwIfDeletingSelf(User currentUser, Agenda user) {
-        if (currentUser.equals(user)) {
-            throw new UserFriendlyDataException(DELETING_SELF_NOT_PERMITTED);
-        }
-    }
-
-    private void throwIfUserLocked(User entity) {
-        if (entity != null && entity.isLocked()) {
-            throw new UserFriendlyDataException(MODIFY_LOCKED_USER_NOT_PERMITTED);
+            throw new UserFriendlyDataException("Hubo un error y no se pudo borar la agenda");
         }
     }
 
@@ -238,4 +289,30 @@ public class AgendaService implements FilterableCrudService<Agenda> {
         return new Agenda();
     }
 
+    private Boolean existAlreadyAgendaName(@NotNull String name) {
+        /* buscar si existe el nombre */
+        return !repo.findByName(name).isEmpty();
+    }
+
+    private List<User> getMeAndSon(User currentUser) {
+        List<User> allUsers = new ArrayList<>();
+        List<User> currentFam = new ArrayList<>();
+        List<User> addingChildren = new ArrayList<>();
+
+        currentFam.add(currentUser);
+        addingChildren.addAll(currentUser.getUserChildren());
+        while (addingChildren.size() > 0) {
+            allUsers.addAll(currentFam);
+            currentFam.clear();
+            currentFam.addAll(addingChildren);
+            addingChildren.clear();
+            for (User user : currentFam) {
+                addingChildren.addAll(user.getUserChildren());
+            }
+        }
+        allUsers.addAll(currentFam);
+        System.out.println("Usuarios en la familia de " + currentUser.getEmail());
+
+        return allUsers;
+    }
 }

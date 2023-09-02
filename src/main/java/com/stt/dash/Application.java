@@ -1,10 +1,19 @@
 package com.stt.dash;
 
 import com.stt.dash.app.security.SecurityConfiguration;
+import com.stt.dash.backend.data.ClientCopycatDTO;
+import com.stt.dash.backend.data.SystemIdCopycatDTO;
+import com.stt.dash.backend.data.entity.Client;
+import com.stt.dash.backend.data.entity.SystemId;
 import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.UserRepository;
+import com.stt.dash.backend.service.ClientService;
+import com.stt.dash.backend.service.OdashConfService;
+import com.stt.dash.backend.service.SystemIdService;
 import com.stt.dash.backend.service.TempSmsService;
 import com.stt.dash.backend.service.UserService;
+import com.stt.dash.backend.util.ws.SyncClientWebClient;
+import com.stt.dash.backend.util.ws.SyncSystemIdWebClient;
 import com.stt.dash.ui.MainView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -16,34 +25,126 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Spring boot web application initializer.
  */
-@SpringBootApplication(scanBasePackageClasses = { SecurityConfiguration.class, MainView.class, Application.class,
-		UserService.class }, exclude = ErrorMvcAutoConfiguration.class)
-@EnableJpaRepositories(basePackageClasses = { UserRepository.class })
-@EntityScan(basePackageClasses = { User.class })
+@SpringBootApplication(scanBasePackageClasses = {SecurityConfiguration.class, MainView.class, Application.class,
+        UserService.class}, exclude = ErrorMvcAutoConfiguration.class)
+@EnableJpaRepositories(basePackageClasses = {UserRepository.class})
+@EntityScan(basePackageClasses = {User.class})
 @EnableScheduling
 public class Application extends SpringBootServletInitializer {
-	@Autowired
-	TempSmsService temp_serv;
-	private static String APP_NAME = "ODASH";
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+    @Autowired
+    TempSmsService temp_serv;
 
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(Application.class);
-	}
+    @Autowired
+    ClientService clientService;
 
-	@Scheduled(cron = "0 */1 * * * ?")
-	public void runResumeSms(){
-		temp_serv.doResume();
-	}
+    @Autowired
+    SystemIdService systemidService;
 
-	public static String getAPP_NAME(){
-		return APP_NAME;
-	}
+    @Autowired
+    OdashConfService odashService;
+
+    @Autowired
+    public WebClient webClient;
+
+    private final static String ORINOCO_HOST = "http://localhost:8081";
+
+    private static String APP_NAME = "ODASH";
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(Application.class);
+    }
+
+    @Scheduled(cron = "0 */1 * * * ?")
+    /* TODO: Agregar ScheduledLock */
+    public void runResumeSms() {
+        temp_serv.doResume();
+    }
+
+    /**
+     * Agrega los CLientes y Credenciales nuevas en Admin.
+     */
+    @Scheduled(cron = "0 */1 * * * ?")
+    /* TODO: Agregar ScheduledLock */
+    public void runSyncData() {
+        SyncSystemIdWebClient syncSystemIdWebClient = new SyncSystemIdWebClient(webClient, SystemIdCopycatDTO.class);
+        SyncClientWebClient syncClientWebClient = new SyncClientWebClient(webClient, ClientCopycatDTO.class);
+        Map<String, String> ConfMap = odashService.findSyncConfData(OdashConfService.ODASH_CONF_TYPE.SYNC);
+        int i = 0;
+        int sy = 0;
+        if (ConfMap.containsKey("CLI_ID")) {
+            i = Integer.valueOf(ConfMap.get("CLI_ID"));
+        }
+        if (ConfMap.containsKey("SYS_ID")) {
+            sy = Integer.valueOf(ConfMap.get("SYS_ID"));
+        }
+        try {
+            Flux<SystemIdCopycatDTO> syncDTOMono = syncSystemIdWebClient.callSyncData(sy);
+            Flux<ClientCopycatDTO> syncCliDTO = syncClientWebClient.callSyncData(i);
+            syncCliDTO.doOnTerminate(() -> {
+                syncDTOMono
+                        .doOnEach(s -> {
+                            if (s.hasValue()) {
+                                SystemIdCopycatDTO systemIdCopycatDTO = s.get();
+                                SystemId systemId = new SystemId();
+                                if (systemIdCopycatDTO.getSytemidId() != null) {
+                                    Optional<SystemId> optionalSystemId = systemidService.findBySystemId(systemIdCopycatDTO.getSystemId());
+                                    if (optionalSystemId.isPresent()) {
+                                        systemId = optionalSystemId.get();
+                                    }
+                                }
+                                /* Buscar el cliente por id. */
+                                systemId.setId(systemIdCopycatDTO.getId());
+                                systemId.setSystemId(systemIdCopycatDTO.getSystemId());
+                                Optional<Client> optionalClient = clientService.findById(systemIdCopycatDTO.getClientId());
+                                if (optionalClient.isPresent()) {
+                                    systemId.setClient(optionalClient.get());
+                                    systemId.setPaymentType(SystemId.PaymentMode.valueOf(systemIdCopycatDTO.getPaymentType()));
+                                    ConfMap.put("SYS_ID", String.valueOf(systemIdCopycatDTO.getId()));
+                                    systemidService.sync(systemId, ConfMap, systemIdCopycatDTO.getId());
+                                }
+                            }
+                        })
+                        .subscribe();
+            }).doOnEach(s -> {
+                if (s.hasValue()) {
+                    ClientCopycatDTO clientCopycatDTO = s.get();
+                    Client client = new Client();
+                    if (clientCopycatDTO.getClientId() != null) {
+                        Optional<Client> optionalClient = clientService.findById(clientCopycatDTO.getClientId());
+                        if (optionalClient.isPresent()) {
+                            client = optionalClient.get();
+                        }
+                    }
+                    client.setId(clientCopycatDTO.getClientId());
+                    client.setClientCod(clientCopycatDTO.getClientCod());
+                    client.setClientName(clientCopycatDTO.getClientName());
+                    client.setCuadrante(Client.Cuandrante.valueOf(clientCopycatDTO.getCuadrante()));
+                    client.setEmail(clientCopycatDTO.getEmail());
+                    ConfMap.put("CLI_ID", String.valueOf(clientCopycatDTO.getId()));
+                    clientService.sync(client, ConfMap, clientCopycatDTO.getId());
+                }
+            }).subscribe();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String getAPP_NAME() {
+        return APP_NAME;
+    }
 }

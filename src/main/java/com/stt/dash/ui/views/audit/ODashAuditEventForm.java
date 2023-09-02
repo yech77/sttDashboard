@@ -3,6 +3,7 @@ package com.stt.dash.ui.views.audit;
 import com.stt.dash.backend.data.entity.ODashAuditEvent;
 import com.stt.dash.backend.data.entity.OUser;
 import com.stt.dash.backend.data.entity.User;
+import com.stt.dash.ui.utils.I18nUtils;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
@@ -19,8 +20,9 @@ import com.vaadin.flow.shared.Registration;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 
-public class ODashAuditEventForm  extends FormLayout {
+public class ODashAuditEventForm extends FormLayout {
 
     private ComboBox<User> userCombo = new ComboBox<>();
     private ComboBox<ODashAuditEvent.OEVENT_TYPE> eventCombo = new ComboBox<>();
@@ -29,8 +31,9 @@ public class ODashAuditEventForm  extends FormLayout {
     private Button searchButton = new Button("BUSCAR");
     private Binder<OdashAuditEventFormBean> binder = new BeanValidationBinder<>(OdashAuditEventFormBean.class);
     /**/
-    private Checkbox allUserCheck = new Checkbox("todos los usuarios");
-    private Checkbox allEventCheck = new Checkbox("todos los eventos");
+    private Checkbox allUserCheck = new Checkbox("Todos los usuarios");
+    private Checkbox allEventCheck = new Checkbox("Todos los eventos");
+    private Locale esLocale = new Locale("es", "ES");
 
     public ODashAuditEventForm(List<User> userList) {
         initCombo(userList);
@@ -61,7 +64,7 @@ public class ODashAuditEventForm  extends FormLayout {
                                 return false;
                             }
                         },
-                        "Seleccione el Usuario")
+                        "Debe seleccionar un usuario")
                 .bind(OdashAuditEventFormBean::getUserCombo, OdashAuditEventFormBean::setUserCombo);
         /* Event */
         binder.forField(eventCombo)
@@ -75,7 +78,7 @@ public class ODashAuditEventForm  extends FormLayout {
                                 return false;
                             }
                         },
-                        "Seleccione el Evento")
+                        "Debe seleccionar un evento")
                 .bind(OdashAuditEventFormBean::getEventCombo, OdashAuditEventFormBean::setEventCombo);
 
 //        binder.forField(eventCombo)
@@ -94,12 +97,15 @@ public class ODashAuditEventForm  extends FormLayout {
         binder.forField(secondDate)
                 .asRequired()
                 .bind(OdashAuditEventFormBean::getSecondDate, OdashAuditEventFormBean::setSecondDate);
-
         // Revalidate return date when departure date changes
         secondDate.addValueChangeListener(
                 event -> returningBinding.validate());
         binder.addStatusChangeListener(evt -> searchButton.setEnabled(isValid()));
         binder.setBean(new OdashAuditEventFormBean());
+        secondDate.setLocale(esLocale);
+        firstDate.setLocale(esLocale);
+        firstDate.setI18n(I18nUtils.getDatepickerI18n());
+        secondDate.setI18n(I18nUtils.getDatepickerI18n());
     }
 
     public OdashAuditEventFormBean getBinderBean() {

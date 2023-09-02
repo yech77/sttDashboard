@@ -23,7 +23,7 @@ public class User extends AbstractEntitySequence {
     }
 
     public static enum OUSER_TYPE_ORDINAL {
-        COMERCIAL, ADMIN_EMPRESAS, EMPRESA, USUARIO
+        COMERCIAL, ADMIN_EMPRESAS, EMPRESA, USUARIO, NO_COMERCIAL
     }
 
     @NotEmpty
@@ -76,7 +76,7 @@ public class User extends AbstractEntitySequence {
     @Enumerated(EnumType.ORDINAL)
     private User.OUSER_TYPE_ORDINAL userTypeOrd;
 
-    /*Usuario tiene cliente(s) si es de tipo HAS o IS*/
+    /*+*/
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_has_clients",
@@ -95,6 +95,7 @@ public class User extends AbstractEntitySequence {
 
     /*Usuario puede tener un padre*/
     @ManyToOne(fetch = FetchType.EAGER)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private User userParent;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "userParent")
@@ -152,11 +153,7 @@ public class User extends AbstractEntitySequence {
     }
 
     public Client getClient() {
-        Client cl = null;
-        for (Client c : clients) {
-            cl = c;
-        }
-        return cl;
+        return clients != null && clients.size() > 0 ? clients.stream().findFirst().get() : null;
     }
 
     public void setClient(Client client) {
@@ -165,10 +162,9 @@ public class User extends AbstractEntitySequence {
             return;
         }
         /* Por algun motivo daba error de null, asi que si
-        * es un tipo de useuario distinto de has, cada vez que
-        * asigne el cliente instancia el hash. */
+         * es un tipo de useuario distinto de has, cada vez que
+         * asigne el cliente instancia el hash. */
         this.clients = new HashSet<>();
-        System.out.println("VALOR DEL CLIENTE: " + clients +" ---- "+client);
         clients.add(client);
     }
 
@@ -177,7 +173,6 @@ public class User extends AbstractEntitySequence {
     }
 
     public void setClients(Set<Client> clients) {
-        System.out.println("Llame a setClients con: " + clients.size());
         this.clients = clients;
     }
 

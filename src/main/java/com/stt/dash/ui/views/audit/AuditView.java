@@ -14,7 +14,6 @@ import com.stt.dash.backend.data.entity.User;
 import com.stt.dash.backend.repositories.UserRepository;
 import com.stt.dash.backend.service.ODashAuditEventService;
 import com.stt.dash.backend.service.OUserService;
-import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.utils.BakeryConst;
 import com.stt.dash.ui.utils.ODateUitls;
 import com.vaadin.flow.component.button.Button;
@@ -35,10 +34,8 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.QuerySortOrder;
-import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.function.SerializableComparator;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,9 +55,7 @@ import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.stt.dash.ui.utils.BakeryConst.PAGE_AUDIT;
-
-@Route(value = PAGE_AUDIT, layout = MainView.class)
+//@Route(value = PAGE_AUDIT, layout = MainView.class)
 @PageTitle(BakeryConst.TITLE_AUDIT)
 @Secured({Role.ADMIN, "UI_AUDIT"})
 public class AuditView extends VerticalLayout {
@@ -71,7 +66,7 @@ public class AuditView extends VerticalLayout {
     /**/
 //    private final SessionObjectUtils utils;
     /**/
-    private Grid<ODashAuditEvent> grid = new Grid<>();
+    private Grid<ODashAuditEvent> grid;
     private Button downloadButton = new Button("Descargar");
     //    private TextField filter = new TextField("Filtrar por Evento");
     private Button filterButton = new Button(VaadinIcon.FILTER.create());
@@ -92,13 +87,15 @@ public class AuditView extends VerticalLayout {
     private final List<String> userChildren = new ArrayList<>();
 
     public AuditView(@Autowired CurrentUser currentUser,
-                     @Qualifier("getUserMeAndChildren") ListGenericBean<User> userChildrenList,
+                     @Qualifier("getMyChildrenAndItsChildrenAndMe") ListGenericBean<User> userChildrenList,
                      @Autowired ODashAuditEventService event_serv,
                      @Autowired OUserService user_serv,
                      @Autowired OUserSession ouser_session,
                      @Autowired UserRepository ouser_repo,
-                     @Autowired MyAuditEventComponent auditEvent) {
+                     @Autowired MyAuditEventComponent auditEvent,
+                     @Autowired Grid<ODashAuditEvent> grid) {
 //        utils = new SessionObjectUtils(ouser_session);
+        this.grid = grid;
         /**/
         this.event_serv = event_serv;
 //        List<User> user = utils.getUserFamily(currentUser);
@@ -120,20 +117,20 @@ public class AuditView extends VerticalLayout {
         setWidth("100%");
         /**/
         grid.setSelectionMode(Grid.SelectionMode.MULTI);
-        grid.setHeight("400px");
-        grid.addColumn(ODashAuditEvent::getPrincipal)
-                .setHeader("Usuario");
-
-        grid.addColumn(ODashAuditEvent::getEventDate)
-                .setHeader("Fecha");
-
-        grid.addColumn(TemplateRenderer.<ODashAuditEvent>of(
-                        "<div><small><b>[[item.name]]</b></small><br>[[item.purchasedate]]</div>")
-                .withProperty("name", col -> {
-                    return col.getEventType().name();
-                })
-                .withProperty("purchasedate", ODashAuditEvent::getEventDesc));
-        grid.getColumns().stream().forEach(col -> col.setAutoWidth(true));
+//        grid.setHeight("400px");
+//        grid.addColumn(ODashAuditEvent::getPrincipal)
+//                .setHeader("Usuario");
+//
+//        grid.addColumn(ODashAuditEvent::getEventDate)
+//                .setHeader("Fecha");
+//
+//        grid.addColumn(TemplateRenderer.<ODashAuditEvent>of(
+//                        "<div><small><b>[[item.name]]</b></small><br>[[item.purchasedate]]</div>")
+//                .withProperty("name", col -> {
+//                    return col.getEventType().name();
+//                })
+//                .withProperty("purchasedate", ODashAuditEvent::getEventDesc));
+//        grid.getColumns().stream().forEach(col -> col.setAutoWidth(true));
 
         /**/
         createDetailsVertical();
@@ -211,32 +208,32 @@ public class AuditView extends VerticalLayout {
             Date one = ODateUitls.parseToYearMonthDay(event.getUser().getFirstDate());
             Date two = ODateUitls.parseToYearMonthDay(event.getUser().getSecondDate().plusDays(1));
             /* Buscar todos los usuarios. */
-            if (event.getUser().getUserCombo() == null) {
-                /* Todos los eventos */
-                if (event.getUser().getEventCombo() == null
-                        || "".equals(event.getUser().getEventCombo())) {
-                    items = event_serv.findAll(one, two);
-                    setItemsGrid(items);
-                } else {
-                    items = event_serv.findAll(userChildren,
-                            event.getUser().getEventCombo(),
-                            one, two);
-                    setItemsGrid(items);
-                }
-            } else {
-                /* Todos los eventos */
-                if (event.getUser().getEventCombo() == null
-                        || "".equals(event.getUser().getEventCombo())) {
-                    items = event_serv.findAll(event.getUser().getUserCombo().getEmail(),
-                            one, two);
-                    setItemsGrid(items);
-                } else {
-                    items = event_serv.findAll(event.getUser().getUserCombo().getEmail(),
-                            event.getUser().getEventCombo(),
-                            one, two);
-                    setItemsGrid(items);
-                }
-            }
+//            if (event.getUser().getUserCombo() == null) {
+//                /* Todos los eventos */
+//                if (event.getUser().getEventCombo() == null
+//                        || "".equals(event.getUser().getEventCombo())) {
+//                    items = event_serv.findAll(one, two);
+//                    setItemsGrid(items);
+//                } else {
+//                    items = event_serv.findAll(userChildren,
+//                            event.getUser().getEventCombo(),
+//                            one, two);
+//                    setItemsGrid(items);
+//                }
+//            } else {
+//                /* Todos los eventos */
+//                if (event.getUser().getEventCombo() == null
+//                        || "".equals(event.getUser().getEventCombo())) {
+//                    items = event_serv.findAll(event.getUser().getUserCombo().getEmail(),
+//                            one, two);
+//                    setItemsGrid(items);
+//                } else {
+//                    items = event_serv.findAll(event.getUser().getUserCombo().getEmail(),
+//                            event.getUser().getEventCombo(),
+//                            one, two);
+//                    setItemsGrid(items);
+//                }
+//            }
             /**/
             if (items.isEmpty()) {
                 showNotification("No hay información a mostrar.");
@@ -289,6 +286,7 @@ public class AuditView extends VerticalLayout {
         StringWriter output = new StringWriter();
         StatefulBeanToCsv<ODashAuditEvent> writer = new StatefulBeanToCsvBuilder<ODashAuditEvent>(output)
                 .withSeparator(separatorText.getValue().toCharArray()[0])
+                .withQuotechar(quoteDelimiterText.getValue().toCharArray()[0])
                 .build();
         try {
             writer.write(persons);

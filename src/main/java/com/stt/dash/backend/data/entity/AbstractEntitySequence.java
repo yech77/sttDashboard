@@ -8,37 +8,37 @@ import javax.persistence.*;
 @MappedSuperclass
 public abstract class AbstractEntitySequence implements Serializable {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
 
-	@Version
-	@Column(columnDefinition = "integer default 0")
-	private int version=0;
+    @Version
+    @Column(columnDefinition = "integer default 0")
+    private int version = 0;
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public int getVersion() {
-		return version;
-	}
+    public int getVersion() {
+        return version;
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(id, version);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, version);
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		AbstractEntitySequence that = (AbstractEntitySequence) o;
-		return version == that.version &&
-				Objects.equals(id, that.id);
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AbstractEntitySequence that = (AbstractEntitySequence) o;
+        return version == that.version &&
+                Objects.equals(id, that.id);
+    }
 }

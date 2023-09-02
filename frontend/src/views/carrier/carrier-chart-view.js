@@ -67,20 +67,33 @@ class CarrierChartView extends PolymerElement {
                 }
 
             </style>
-
-            <div id="divHeader" class="row" ></div>
             <vaadin-board>
+                <vaadin-board-row class="vaadin-board-cell">
+                    <vaadin-form-layout>
+                        <vaadin-combo-box id="beanComboBox"></vaadin-combo-box>
+                        <vcf-multiselect-combo-box id="beanMultiComboBox"></vcf-multiselect-combo-box>
+                        <vaadin-checkbox-group id="beanCheckboxGroup"></vaadin-checkbox-group>
+                    </vaadin-form-layout>
+                </vaadin-board-row>
+                <buttons-bar id="footer" class="vaadin-board-cell">
+                    <vaadin-button slot="right" id="filterButton" theme="primary">Buscar</vaadin-button>
+                </buttons-bar>
+
                 <vaadin-board-row>
                     <div class="vaadin-board-cell">
                         <vaadin-chart id="deliveriesThisMonth" class="column-chart"></vaadin-chart>
                     </div>
                     <div class="vaadin-board-cell" board-cols="2">
-                        <vaadin-chart id="carrierTriLineChart" class="column-chart"></vaadin-chart>
+                        <vaadin-chart id="smsThisDayChart" class="column-chart"></vaadin-chart>
                     </div>
                 </vaadin-board-row>
+
                 <vaadin-board-row>
-                        <vaadin-chart id="carrierDailyChart" class="class="yearly-sales""></vaadin-chart>
+                    <div class="vaadin-board-cell">
+                        <vaadin-chart id="carrierDailyChart" class="yearly-sales"></vaadin-chart>
+                    </div>
                 </vaadin-board-row>
+
                 <vaadin-board-row>
                     <div class="vaadin-board-cell">
                         <vaadin-chart id="carrierTriPieChart" class="pie-chart"></vaadin-chart>

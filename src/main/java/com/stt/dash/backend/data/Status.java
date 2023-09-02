@@ -5,13 +5,23 @@ import com.vaadin.flow.shared.util.SharedUtil;
 import java.util.Locale;
 
 public enum Status {
-    VALIDATING,
-    GENERATING_MESSAGES,
-    PREPARING_SMS,
-    WAITING_TO_SEND,
-    SENDING,
-    COMPLETED,
-    INVALID;
+    VALIDATING("Validando"),
+    GENERATING_MESSAGES("Generando"),
+    PREPARING_SMS("Preparando"),
+    WAITING_TO_SEND("Por enviar"),
+    SENDING("Enviando"),
+    COMPLETED("Enviados"),
+    INVALID("Invalido");
+
+    private String text;
+
+    Status(String text) {
+        this.text = text;
+    }
+
+    public String getText() {
+        return text;
+    }
 
     /**
      * Gets a version of the enum identifier in a human friendly format.
