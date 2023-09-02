@@ -87,7 +87,7 @@ public class EntityPresenter<T extends AbstractEntitySequence, V extends EntityV
         } catch (DataIntegrityViolationException e) {
             // Commit failed because of validation errors
             consumeError(
-                    e, CrudErrorMessage.OPERATION_PREVENTED_BY_REFERENCES, true);
+                    e, CrudErrorMessage.OPERATION_PREVENTED_BY_REFERENCES, false);
         } catch (OptimisticLockingFailureException e) {
             consumeError(e, CrudErrorMessage.CONCURRENT_UPDATE, true);
         } catch (EntityNotFoundException e) {
@@ -100,7 +100,7 @@ public class EntityPresenter<T extends AbstractEntitySequence, V extends EntityV
 
     private void consumeError(Exception e, String message, boolean isPersistent) {
         getLogger().debug(message, e);
-        view.showError(message, isPersistent);
+        view.showNotificationError(message, isPersistent);
     }
 
     private void saveEntity() {

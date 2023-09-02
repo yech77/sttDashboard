@@ -48,12 +48,73 @@ $_documentContainer.innerHTML = `<dom-module id="bakery-charts-theme" theme-for=
         font-size: 16px;
         font-weight: bold;
       }
-
+      
+      .pie-chart .highcharts-color-0 {
+        stroke: white;
+        fill: #8b60be;
+      }
+      
+      .pie-chart .highcharts-color-1 {
+        stroke: white;
+        fill: #6093be;
+      }
+      
+      .pie-chart .highcharts-color-2 {
+        stroke: white;
+        fill: #be6064;
+      }
+      
+      .product-split-donut .highcharts-color-3 {
+        stroke: white;
+        fill: #d5d7d4;
+      }
+      
+      .product-split-donut .highcharts-color-4 {
+        stroke: white;
+        fill: #a4abab;
+      }
+      
+      .product-split-donut .highcharts-color-5 {
+        stroke: white;
+        fill: #878c8c;
+      }
+      
+      .pie-inner-label .highcharts-color-0 {
+        stroke: white;
+        fill: #c6abe5;
+      }
+      
+      .pie-inner-label .highcharts-color-1 {
+        stroke: white;
+        fill: #be9be8;
+      }
+      
+      .pie-inner-label .highcharts-color-2 {
+        stroke: white;
+        fill: #92c0e7;
+      }
+      
+      .pie-inner-label .highcharts-color-3 {
+        stroke: white;
+        fill: #83b3dc;
+      }
+      
+      .pie-inner-label .highcharts-color-4 {
+        stroke: white;
+        fill: rgb(210,129,133);
+      }
+      
+      .pie-inner-label .highcharts-color-5 {
+        stroke: white;
+        fill:  #ce7074;
+      }      
+      
+      
       :host(.yearly-sales) .highcharts-color-0 {
         stroke: #18ddf2;
         fill: #18ddf2;
       }
-
+      
       :host(.yearly-sales) .highcharts-color-1 {
         stroke: #1877f3;
         fill: #1877f3;

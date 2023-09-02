@@ -56,7 +56,7 @@ class FileToSendCard extends LitElement {
                 }
 
                 .time-place {
-                    width: 120px;
+                    width: 500px;
                 }
 
                 .name-items {

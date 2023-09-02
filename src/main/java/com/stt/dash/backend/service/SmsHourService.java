@@ -15,13 +15,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class SmsHourService {
+    private static final Logger log = LoggerFactory.getLogger(SmsHourService.class.getName());
     private final SmsHourRepository smshour_repo;
 
     public SmsHourService(SmsHourRepository smshour_repo) {
         this.smshour_repo = smshour_repo;
     }
-
-    private static final Logger log = LoggerFactory.getLogger(SmsHourService.class.getName());
 //    private SmsHourRepository smshour_repo;
 //    private MyAuditEventComponent my;
 
@@ -324,7 +323,7 @@ public class SmsHourService {
         Calendar c = Calendar.getInstance();
         carrier_list.stream().forEach(actualCarrierForeach -> {
             messageTypeSms.stream().forEach(actualMessageTypeForeach -> {
-                for (int actualDayFor = 1; actualDayFor < c.get(Calendar.DAY_OF_MONTH); actualDayFor++) {
+                for (int actualDayFor = 1; actualDayFor <= c.get(Calendar.DAY_OF_MONTH); actualDayFor++) {
                     boolean ithasit = false;
                     for (SmsByYearMonthDay smsByYearMonthDay : smsByYearMonthDays) {
                         if (smsByYearMonthDay.getGroupBy() == actualDayFor &&
@@ -538,6 +537,52 @@ public class SmsHourService {
 
     public List<SmsByYearMonthDay> groupSmsByYeMoDaTyWhYeMoSyIn(int yearSms, int monthSms, List<String> list_sid) {
         return smshour_repo.groupSmsMessageTypeByYeMoDaWhYeMoSyIn(yearSms, monthSms, list_sid);
+    }
+
+    /**
+     * Agrupa para consulta de los dias del mes Usado en Carrier
+     *
+     * @param yearSms
+     * @param monthSms
+     * @param list_sid
+     * @return Lista de dias del mes completando los dias sin data con 0.
+     */
+    public List<SmsByYearMonthDay> groupSmsByYeMoDaTyWhYeMoSyInFillingNoDataDay(int yearSms, int monthSms, List<String> list_sid) {
+        List<String> messageTypeList = Arrays.stream(OMessageType.values()).map(OMessageType::name).collect(Collectors.toList());
+        List<SmsByYearMonthDay> smsByYearMonthDays = smshour_repo.groupSmsMessageTypeByYeMoDaWhYeMoSyIn(yearSms, monthSms, list_sid);
+        Map<String, SmsByYearMonthDay> yearMonthDayWithZero = fillDaysWithZero(yearSms, monthSms, messageTypeList);
+        /* Sustituir los valores en el Map */
+        for (SmsByYearMonthDay smsByYearMonthDay : smsByYearMonthDays) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(smsByYearMonthDay.getYearSms()).append(smsByYearMonthDay.getMonthSms()).append(smsByYearMonthDay.getDaySms()).append(smsByYearMonthDay.getSomeCode());
+            yearMonthDayWithZero.put(sb.toString(), smsByYearMonthDay);
+        }
+        /* Crear la lista de respuesta */
+        return new ArrayList<>(yearMonthDayWithZero.values());
+    }
+
+    /**
+     * Desde 1 hasta el día actual crea una Lista de vaolers con 0.
+     *
+     * @param yearSms
+     * @param monthSms
+     * @param l
+     * @return
+     */
+    private Map<String, SmsByYearMonthDay> fillDaysWithZero(int yearSms, int monthSms, List<String> l) {
+        Map<String, SmsByYearMonthDay> yearMonthDayWithZero = new HashMap<>();
+
+        Calendar c = Calendar.getInstance();
+        /* Crear un Map con todos los dias, con sus valores en Cero */
+        for (int actualDayFor = 1; actualDayFor <= c.get(Calendar.DAY_OF_MONTH); actualDayFor++) {
+            for (String actualMessageTypeForeach : l) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(yearSms).append(monthSms).append(actualDayFor).append(actualMessageTypeForeach);
+                yearMonthDayWithZero.put(sb.toString(),
+                        new SmsByYearMonthDay(0, yearSms, monthSms, actualDayFor, actualMessageTypeForeach));
+            }
+        }
+        return yearMonthDayWithZero;
     }
 
     public List<SmsByYearMonthDay> groupSmsMessageTypeByYeMoDaWhYeMoDaSyIn(int yearSms, int monthSms, int daySms, List<String> list_sid) {

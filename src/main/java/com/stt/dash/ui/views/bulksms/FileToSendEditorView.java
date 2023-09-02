@@ -216,10 +216,10 @@ public class FileToSendEditorView extends LitTemplate implements HasNotification
                     if (block == 10_000_000) {
 //                        showNotification(String.format("La Credencial %s es POSTPAGO Ilimitado", systemIdMulti.getValue()));
                     } else {
-                        showNotificationInformation(String.format("%s tiene aproximadamente %ssms para su uso.", systemIdMulti.getValue(), block));
+                        showNotificationInformation(String.format("%s tiene aproximadamente %s sms para su uso.", systemIdMulti.getValue(), block));
                     }
                 } else {
-                    showNotificationInformation(String.format("%s tiene aproximadamente %ssms para su uso.", systemIdMulti.getValue(), block));
+                    showNotificationInformation(String.format("%s tiene aproximadamente %s sms para su uso.", systemIdMulti.getValue(), block));
                 }
             }
 

@@ -59,18 +59,25 @@ public class FilesToSendGridDataProvider extends FilterablePageableDataProvider<
         FileToSendFilter filter = query.getFilter().orElse(FileToSendFilter.getEmptyFilter());
         Page<FIlesToSend> page = filesToSendService.findAnyMatchingAfterDateToSend(currentUser, Optional.ofNullable(filter.getFilter()),
                 getFilterDate(filter.isShowPrevious()), pageable);
-        if (page.isEmpty()) {
-            FIlesToSend emptyFileToSend = new FIlesToSend();
-            emptyFileToSend.setOrderDescription("Sin Programaciones a este momento.");
-            emptyFileToSend.setDateToSend(new Date());
-            emptyFileToSend.setStatus(Status.PREPARING_SMS);
-            /* envolve emptyFileToSend in a page */
-            page = new PageImpl<>(List.of(emptyFileToSend));
-        }
+        /* No agregar pagina por defecto. */
+//        if (page.isEmpty()) {
+//            page = addDefaultCard();
+//        }
         System.out.println("******* " + page.getTotalElements() + "/" + page.getTotalPages() + "********");
         if (pageObserver != null) {
             pageObserver.accept(page);
         }
+        return page;
+    }
+
+    private Page<FIlesToSend> addDefaultCard() {
+        Page<FIlesToSend> page;
+        FIlesToSend emptyFileToSend = new FIlesToSend();
+        emptyFileToSend.setOrderDescription("Sin Programaciones a este momento.");
+        emptyFileToSend.setDateToSend(new Date());
+        emptyFileToSend.setStatus(Status.PREPARING_SMS);
+        /* envolve emptyFileToSend in a page */
+        page = new PageImpl<>(List.of(emptyFileToSend));
         return page;
     }
 
@@ -84,9 +91,10 @@ public class FilesToSendGridDataProvider extends FilterablePageableDataProvider<
         FileToSendFilter filter = query.getFilter().orElse(FileToSendFilter.getEmptyFilter());
         long l = filesToSendService
                 .countAnyMatchingAfterDateToSend(currentUser, Optional.ofNullable(filter.getFilter()), getFilterDate(filter.isShowPrevious()));
-        if (l == 0) {
-            l = 1;
-        }
+        /* Se comenta porque ya no hay Card por defecto. */
+//        if (l == 0) {
+//            l = 1;
+//        }
         return (int) l;
     }
 
