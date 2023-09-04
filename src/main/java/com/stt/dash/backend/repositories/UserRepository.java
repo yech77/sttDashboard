@@ -16,7 +16,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Page<User> findAllByUserParentIsNotNullAndEmailIsNot(String email, Pageable pageable);
 
+    Long countAllByUserParentIsNotNullAndEmailIsNot(String email);
+
     Page<User> findByClientsInAndUserTypeOrdNotAndIdIsNot(Collection<Client> clients, User.OUSER_TYPE_ORDINAL userTypeOrd, Long id, Pageable pageable);
+
+    Long countAllByClientsInAndUserTypeOrdNotAndIdIsNot(Collection<Client> clients, User.OUSER_TYPE_ORDINAL userTypeOrd, Long id);
 
 
     Page<User> findByEmailLikeIgnoreCaseOrFirstNameLikeIgnoreCaseOrLastNameLikeIgnoreCaseOrRoleLikeIgnoreCase(

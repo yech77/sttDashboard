@@ -25,6 +25,13 @@ public interface FilterableCrudService<T extends AbstractEntitySequence> extends
         return findAnyMatching(filter, pageable);
     }
 
+    /**
+     * Cuenta los elementos segun el tipo de usuario que este logueado.
+     *
+     * @param currentUser
+     * @param filter
+     * @return
+     */
     default long countAnyMatching(CurrentUser currentUser, Optional<String> filter) {
         return countAnyMatching(filter);
     }
