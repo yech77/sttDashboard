@@ -45,7 +45,7 @@ import static com.stt.dash.ui.utils.BakeryConst.PAGE_USERS;
 @PageTitle(BakeryConst.TITLE_USERS)
 @Secured({Role.ADMIN, "UI_USER"})
 public class UsersViewv2 extends AbstractBakeryCrudView<User> implements HasLogger {
-    private static Logger log = LoggerFactory.getLogger(UsersViewv2.class);
+    private static final Logger log = LoggerFactory.getLogger(UsersViewv2.class);
     private final CurrentUser currentUser;
     private final UserService userService;
 
@@ -63,20 +63,15 @@ public class UsersViewv2 extends AbstractBakeryCrudView<User> implements HasLogg
         log.info(comercial.getSet().size() + "*************");
     }
 
-    @Override
-    public void setupGrid(Grid<User> grid) {
-        grid.addColumn(createNameRenderer()).setHeader("Nombre / Tipo").setAutoWidth(true);
-        grid.addColumn(User::getEmail).setHeader("Correo").setAutoWidth(true);
-//        grid.addColumn(createRolRenderer()).setHeader("Roles").setWidth("350px");
-//        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
-    }
-
     private static TemplateRenderer<User> createNameRenderer() {
         return TemplateRenderer.<User>of("<div>[[item.userType]]<br><small><span style=\"font-size: var(--lumo-font-size-xxs); color: var(--lumo-secondary-text-color);\">[[item.userTypeOrd]]</span></small></div>")
                 .withProperty("userType", u -> {
                     return u.getFirstName() + " " + u.getLastName();
                 })
                 .withProperty("userTypeOrd", u -> {
+                    if (u.getUserParent() == null) {
+                        return "";
+                    }
                     return u.getUserParent().getFirstName().toLowerCase() + " " + u.getUserParent().getLastName().toLowerCase();
                 });
     }
@@ -94,11 +89,6 @@ public class UsersViewv2 extends AbstractBakeryCrudView<User> implements HasLogg
                     }
                     return stringJoiner.toString();
                 });
-    }
-
-    @Override
-    protected String getBasePage() {
-        return PAGE_USERS + "v2";
     }
 
     private static BinderCrudEditor<User> createForm(List<ORole> roleList, UserService userService, CurrentUser currentUser, Set<SystemId> systemIdSet, PasswordEncoder passwordEncoder, ClientService clientService) {
@@ -135,6 +125,18 @@ public class UsersViewv2 extends AbstractBakeryCrudView<User> implements HasLogg
         return currentUser.getUser().getUserTypeOrd() == COMERCIAL ? userService.getRepository().findAll() : sessionObjectUtils.getUserFamily(currentUser);
     }
 
+    @Override
+    public void setupGrid(Grid<User> grid) {
+        grid.addColumn(createNameRenderer()).setHeader("Nombre / Tipo").setAutoWidth(true);
+        grid.addColumn(User::getEmail).setHeader("Correo").setAutoWidth(true);
+//        grid.addColumn(createRolRenderer()).setHeader("Roles").setWidth("350px");
+//        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+    }
+
+    @Override
+    protected String getBasePage() {
+        return PAGE_USERS + "v2";
+    }
 
     @Override
     protected BeforeSavingResponse beforeSaving(long idBeforeSave, User userToCreate) {

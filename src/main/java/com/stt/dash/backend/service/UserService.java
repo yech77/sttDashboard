@@ -1,6 +1,7 @@
 package com.stt.dash.backend.service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.stt.dash.app.security.CurrentUser;
 import com.stt.dash.backend.data.entity.Client;
@@ -41,8 +42,14 @@ public class UserService implements FilterableCrudService<User> {
     @Override
     public Page<User> findAnyMatching(CurrentUser currentUser, Optional<String> filter, Pageable pageable) {
         if (filter.isPresent()) {
-            String repositoryFilter = "%" + filter.get() + "%";
-            return getRepository().findByEmailLikeIgnoreCaseOrFirstNameLikeIgnoreCaseOrLastNameLikeIgnoreCaseOrRoleLikeIgnoreCase(repositoryFilter, repositoryFilter, repositoryFilter, repositoryFilter, pageable);
+            String repositoryFilter = filter.get();
+            if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+                return getRepository().findAllByUserParentIsNotNullAndEmailIsNotAndFirstNameIsStartingWithOrLastNameIsStartingWith(
+                        currentUser.getUser().getEmail(), repositoryFilter, repositoryFilter, pageable);
+            } else {
+                /* ADMIN_EMPRESAS ve todos los usuarios de su empresa */
+                return getRepository().findByClientsInAndUserTypeOrdNotAndIdIsNot(currentUser.getUser().getClients(), User.OUSER_TYPE_ORDINAL.COMERCIAL, currentUser.getUser().getId(), pageable);
+            }
         } else {
             return find(currentUser, pageable);
         }
@@ -62,6 +69,10 @@ public class UserService implements FilterableCrudService<User> {
     public long countAnyMatching(CurrentUser currentUser, Optional<String> filter) {
         /* Comercial ve todos los usuarios */
         if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            if (filter.isPresent()) {
+                String repositoryFilter = filter.get();
+                return getRepository().countAllByUserParentIsNotNullAndEmailIsNotAndFirstNameIsStartingWithOrLastNameIsStartingWith(currentUser.getUser().getEmail(), repositoryFilter, repositoryFilter);
+            }
             Long p = getRepository().countAllByUserParentIsNotNullAndEmailIsNot(currentUser.getUser().getEmail());
             return p;
         } else if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
@@ -107,6 +118,28 @@ public class UserService implements FilterableCrudService<User> {
         List<User> lu = getUserFamily(currentUser.getUser());
         Page<User> u = new PageImpl<>(lu);
         return u;
+    }
+
+    public Page<User> find(CurrentUser currentUser, Optional<String> filter, Pageable pageable) {
+        /* Comercial ve todos los usuarios */
+        if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            return getRepository().findAllByUserParentIsNotNullAndEmailIsNotAndFirstNameIsStartingWithOrLastNameIsStartingWith(currentUser.getUser().getEmail(),
+                    filter.get(), filter.get(), pageable);
+        } else if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.ADMIN_EMPRESAS) {
+            /* ADMIN_EMPRESAS ve todos los usuarios de su empresa */
+            return getRepository().findByClientsInAndUserTypeOrdNotAndIdIsNotAndFirstNameIsStartingWithOrLastNameIsStartingWith(currentUser.getUser().getClients(),
+                    User.OUSER_TYPE_ORDINAL.COMERCIAL,
+                    currentUser.getUser().getId(),
+                    filter.get(),
+                    filter.get(),
+                    pageable);
+        }
+        /* Usuario no comercial y no admin_empresas solo ve su familia*/
+        List<User> lu = getUserFamily(currentUser.getUser())
+                .stream()
+                .filter(u -> u.getFirstName().startsWith(filter.get().toLowerCase()) || u.getLastName().startsWith(filter.get().toLowerCase()))
+                .collect(Collectors.toList());
+        return new PageImpl<>(lu);
     }
 
     @Override
