@@ -6,14 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface AgendaRepository extends JpaRepository<Agenda, Long> {
 
-    @Query("select a from Agenda a "
-            + "WHERE a.creator IN (:users) ")
+    @Query("select a from Agenda a WHERE a.creator IN (:users) ")
     public List<Agenda> getAllAgendasInFamily(List<User> users);
 
     public List<Agenda> findByName(String name);
@@ -29,11 +29,39 @@ public interface AgendaRepository extends JpaRepository<Agenda, Long> {
     Page<Agenda> findAllByStatusOrderByDateCreatedDesc(Agenda.Status status, Pageable pageable);
 
 
-    @Query("select a from Agenda a "
-            + "WHERE a.creator IN (:users)")
-    Page<Agenda> findMyAgendasAndMyAgendasSon(List<User> users, Pageable pageable);
+    @Query("select a from Agenda a where a.creator in :users")
+    Page<Agenda> findAllByCreatorIn(@Param("users") List<User> users, Pageable pageable);
 
+    @Query("select count(a) from Agenda a where a.creator in ?1")
     Long countAgendaByCreatorIn(List<User> users);
+
+    @Query("select a from Agenda a " +
+            "where a.creator in :users and (a.name like concat(:name, '%') or a.description like concat(:description, '%'))")
+    Page<Agenda> findAllByCreatorInAndNameIsStartingWithOrDescriptionIsStartingWith(@Param("users") List<User> users, @Param("name") String name, @Param("description") String description, Pageable pageable);
+
+    Long countAgendaByCreatorInAndNameIsStartingWithOrDescriptionIsStartingWith(@Param("users") List<User> users, @Param("name") String name, @Param("description") String description);
+
+    /**
+     * Busqueda de Agendas para usuarios comercial
+     *
+     * @param name
+     * @param description
+     * @param pageable
+     * @return
+     */
+    @Query("select a from Agenda a where a.name like concat(:name, '%') or a.description like concat(:description, '%')")
+    Page<Agenda> findAllByNameIsStartingWithOrDescriptionIsStartingWith(@Param("name") String name, @Param("description") String description, Pageable pageable);
+
+    /**
+     * Conteo de Agendas para usuarios comercial
+     *
+     * @param name
+     * @param description
+     * @return
+     */
+    @Query("select count(a) from Agenda a " +
+            "where a.name like concat(:name, '%') or a.description like concat(:description, '%')")
+    Long countAllByNameIsStartingWithOrDescriptionIsStartingWith(@Param("name") String name, @Param("description") String description);
 
     /**/
     Agenda findByCreatorEmailIgnoreCase(String email);

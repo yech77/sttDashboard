@@ -42,17 +42,9 @@ public class UserService implements FilterableCrudService<User> {
     @Override
     public Page<User> findAnyMatching(CurrentUser currentUser, Optional<String> filter, Pageable pageable) {
         if (filter.isPresent()) {
-            String repositoryFilter = filter.get();
-            if (currentUser.getUser().getUserTypeOrd() == User.OUSER_TYPE_ORDINAL.COMERCIAL) {
-                return getRepository().findAllByUserParentIsNotNullAndEmailIsNotAndFirstNameIsStartingWithOrLastNameIsStartingWith(
-                        currentUser.getUser().getEmail(), repositoryFilter, repositoryFilter, pageable);
-            } else {
-                /* ADMIN_EMPRESAS ve todos los usuarios de su empresa */
-                return getRepository().findByClientsInAndUserTypeOrdNotAndIdIsNot(currentUser.getUser().getClients(), User.OUSER_TYPE_ORDINAL.COMERCIAL, currentUser.getUser().getId(), pageable);
-            }
-        } else {
-            return find(currentUser, pageable);
+            return find(currentUser, filter, pageable);
         }
+        return find(currentUser, pageable);
     }
 
     @Override

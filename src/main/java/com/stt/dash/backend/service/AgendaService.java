@@ -135,10 +135,6 @@ public class AgendaService implements FilterableCrudService<Agenda> {
         }
     }
 
-    public List<Agenda> getAllAgendasInFamily(List<User> users) {
-        return repo.getAllAgendasInFamily(users);
-    }
-
     /**
      * Utilizado para obtener todas las agendas que estan en estado READY_TO_USE cuando se
      * va a crear una Programacion de masivo.
@@ -192,35 +188,64 @@ public class AgendaService implements FilterableCrudService<Agenda> {
      */
     @Override
     public Page<Agenda> findAnyMatching(CurrentUser currentUser, Optional<String> filter, Pageable pageable) {
-        Page<Agenda> myAgendasAndMyAgendasSon = findAgendas(currentUser, pageable);
-        /* Filtrar myAgendasAndMyAgendasSon po el filter*/
-        if (filter.isPresent() && !myAgendasAndMyAgendasSon.isEmpty()) {
-            List<Agenda> collect = myAgendasAndMyAgendasSon.getContent().stream().filter(agenda -> {
-                return agenda.getName().toLowerCase().contains(filter.get().toLowerCase())
-                        || agenda.getDescription().toLowerCase().contains(filter.get().toLowerCase());
-            }).collect(Collectors.toList());
-            myAgendasAndMyAgendasSon = new PageImpl<>(collect, pageable, collect.size());
+        Page<Agenda> myAgendasAndMyAgendasSon;
+        if (filter.isPresent()) {
+            myAgendasAndMyAgendasSon = findAgendasByUserType(currentUser, filter, pageable);
+        } else {
+            myAgendasAndMyAgendasSon = findAgendasByUserType(currentUser, pageable);
         }
         return myAgendasAndMyAgendasSon;
     }
 
     @Override
     public long countAnyMatching(CurrentUser currentUser, Optional<String> filter) {
-        Long myAgendasAndMyAgendasSon;
+        Long totalAgendas;
         if (currentUser.getUser().getUserTypeOrd() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
-            myAgendasAndMyAgendasSon = getRepository().countAgendaByCreatorIn(getMeAndSon(currentUser.getUser()));
+            totalAgendas = countAgenda(currentUser, filter);
         } else {
-            myAgendasAndMyAgendasSon = getRepository().count();
+            totalAgendas = countAgendaForCommercial(filter);
+        }
+        return totalAgendas;
+    }
+
+    private Long countAgendaForCommercial(Optional<String> filter) {
+        Long totalAgendas;
+        if (filter.isPresent()) {
+            totalAgendas =
+                    getRepository().countAllByNameIsStartingWithOrDescriptionIsStartingWith(filter.get(), filter.get());
+        } else {
+            totalAgendas =
+                    getRepository().count();
+        }
+        return totalAgendas;
+    }
+
+    private Long countAgenda(CurrentUser currentUser, Optional<String> filter) {
+        Long totalAgendas;
+        if (filter.isPresent()) {
+            totalAgendas = getRepository().countAgendaByCreatorInAndNameIsStartingWithOrDescriptionIsStartingWith(getMeAndSon(currentUser.getUser()), filter.get(), filter.get());
+        } else {
+            totalAgendas = getRepository().countAgendaByCreatorIn(getMeAndSon(currentUser.getUser()));
+        }
+        return totalAgendas;
+    }
+
+    private Page<Agenda> findAgendasByUserType(CurrentUser currentUser, Pageable pageable) {
+        Page<Agenda> myAgendasAndMyAgendasSon;
+        if (currentUser.getUser().getUserTypeOrd() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
+            myAgendasAndMyAgendasSon = getRepository().findAllByCreatorIn(getMeAndSon(currentUser.getUser()), pageable);
+        } else {
+            myAgendasAndMyAgendasSon = getRepository().findAll(pageable);
         }
         return myAgendasAndMyAgendasSon;
     }
 
-    private Page<Agenda> findAgendas(CurrentUser currentUser, Pageable pageable) {
+    private Page<Agenda> findAgendasByUserType(CurrentUser currentUser, Optional<String> filter, Pageable pageable) {
         Page<Agenda> myAgendasAndMyAgendasSon;
         if (currentUser.getUser().getUserTypeOrd() != User.OUSER_TYPE_ORDINAL.COMERCIAL) {
-            myAgendasAndMyAgendasSon = getRepository().findMyAgendasAndMyAgendasSon(getMeAndSon(currentUser.getUser()), pageable);
+            myAgendasAndMyAgendasSon = getRepository().findAllByCreatorInAndNameIsStartingWithOrDescriptionIsStartingWith(getMeAndSon(currentUser.getUser()), filter.get(), filter.get(), pageable);
         } else {
-            myAgendasAndMyAgendasSon = getRepository().findAll(pageable);
+            myAgendasAndMyAgendasSon = getRepository().findAllByNameIsStartingWithOrDescriptionIsStartingWith(filter.get(), filter.get(), pageable);
         }
         return myAgendasAndMyAgendasSon;
     }

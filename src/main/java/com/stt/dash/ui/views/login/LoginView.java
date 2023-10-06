@@ -3,8 +3,14 @@ package com.stt.dash.ui.views.login;
 import com.stt.dash.ui.MainView;
 import com.stt.dash.ui.views.dashboard.main.MainDashboardView;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.html.H4;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Viewport;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
@@ -30,9 +36,8 @@ public class LoginView extends LoginOverlay
     public LoginView() {
         LoginI18n i18n = LoginI18n.createDefault();
         i18n.setHeader(new LoginI18n.Header());
-        i18n.getHeader().setTitle("Orinoco");
-
-        i18n.getHeader().setDescription("Portal del cliente - Soluciones TextTech");
+//        i18n.getHeader().setTitle("Orinoco");
+        i18n.getHeader().setDescription("");
         i18n.setAdditionalInformation(null);
         i18n.setForm(new LoginI18n.Form());
         i18n.getForm().setSubmit("Entrar");
@@ -45,6 +50,14 @@ public class LoginView extends LoginOverlay
         setI18n(i18n);
         setForgotPasswordButtonVisible(false);
         setAction("login");
+        Image image = new Image("images/iconStt.png", "orinoco-admin logo");
+        image.setHeight("125px");
+        Label soltexTech1 = new Label("Orinoco Dashboard");
+        VerticalLayout soltexTech = new VerticalLayout(image, soltexTech1);
+        soltexTech.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
+//        soltexTech.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        setTitle(soltexTech);
+
     }
 
     @Override

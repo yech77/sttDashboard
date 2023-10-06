@@ -30,7 +30,7 @@ public class Message {
     }
 
     private static MessageSupplier createMessage(String caption, String okText, String cancelText, String message) {
-        return (parameters) -> new Message(caption, okText, cancelText, String.format(message, parameters));
+        return parameters -> new Message(caption, okText, cancelText, String.format(message, parameters));
     }
 
     public String getCaption() {

@@ -57,7 +57,15 @@ import java.util.Optional;
 import static com.stt.dash.ui.utils.BakeryConst.*;
 
 @Viewport(VIEWPORT)
-@PWA(name = "Orinoco App Starter", shortName = "Orinoco Dash", startPath = "login", backgroundColor = "#227aef", themeColor = "#227aef", offlinePath = "offline-page.html", offlineResources = {"images/offline-login-banner.jpg"}, enableInstallPrompt = false)
+@PWA(name = "Orinoco App Starter",
+        shortName = "Orinoco Dash",
+        iconPath = "icons/iconOri.png",
+        startPath = "login",
+        backgroundColor = "#227aef",
+        themeColor = "#227aef",
+        offlinePath = "offline-page.html",
+        offlineResources = {"images/offline-login-banner.jpg"},
+        enableInstallPrompt = false)
 //@PWA(name = "VaadinCRM", shortName = "CRM")
 //@Theme(themeFolder = "odashboard")
 public class MainView extends AppLayout {
