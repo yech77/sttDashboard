@@ -22,6 +22,10 @@
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <!-- Dependencies -->
         <vaadin.version>14.8.3</vaadin.version>
+        <!-- Sleuth -->
+        <spring-cloud.version>2021.0.8</spring-cloud.version>
+        <!-- Client Admin -->
+        <!--        <spring-boot-admin-version>2.7.10</spring-boot-admin-version>-->
 
         <!-- Overrides the old version specified by the Spring Boot parent -->
         <!--        <selenium.version>3.141.59</selenium.version>-->
@@ -91,6 +95,20 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!--            <dependency>-->
+            <!--                <groupId>de.codecentric</groupId>-->
+            <!--                <artifactId>spring-boot-admin-dependencies</artifactId>-->
+            <!--                <version>${spring-boot-admin-version}</version>-->
+            <!--                <type>pom</type>-->
+            <!--                <scope>import</scope>-->
+            <!--            </dependency>-->
         </dependencies>
     </dependencyManagement>
 
@@ -268,10 +286,6 @@
             <version>1.4</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
@@ -349,6 +363,23 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-sleuth</artifactId>
+        </dependency>
+        <!--        ESta comentado porque el Admin server está en otro sitio. Cuando eso se defina se podra activar esto-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.hibernate</groupId>-->
+        <!--            <artifactId>hibernate-micrometer</artifactId>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>de.codecentric</groupId>-->
+        <!--            <artifactId>spring-boot-admin-starter-client</artifactId>-->
+        <!--        </dependency>-->
     </dependencies>
 
     <build>
