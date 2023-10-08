@@ -278,7 +278,7 @@
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
-            <version>5.4</version>
+            <version>5.8</version>
         </dependency>
         <!-- Agregado el 06/07/21 -->
         <dependency>
